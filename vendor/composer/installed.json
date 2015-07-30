@@ -3060,7 +3060,15 @@
             "psr-4": {
                 "Addons\\Core\\": "core/src/",
                 "Addons\\Smarty\\": "smarty/src/"
-            }
+            },
+            "files": [
+                "func/src/func/array.func.php",
+                "func/src/func/core.func.php",
+                "func/src/func/file.func.php",
+                "func/src/func/math.func.php",
+                "func/src/func/text.func.php",
+                "func/src/func/time.func.php"
+            ]
         },
         "notification-url": "",
         "license": [

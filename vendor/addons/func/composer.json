@@ -1,0 +1,30 @@
+{
+    "name": "addons/func",
+    "description": "Some Function files.",
+    "keywords": ["L5", "Laravel 5", "Laravel", "Function"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fly",
+            "email": "fly@load-page.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.1.0",
+    },
+    "autoload": {
+        "files": [
+            "/src/func/array.func.php",
+            "/src/func/core.func.php",
+            "/src/func/file.func.php",
+            "/src/func/math.func.php",
+            "/src/func/text.func.php",
+            "/src/func/time.func.php"
+        ]
+    },
+     "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
+}

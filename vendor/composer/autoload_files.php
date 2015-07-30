@@ -14,4 +14,10 @@ return array(
     $vendorDir . '/danielstjules/stringy/src/Create.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
+    $vendorDir . '/addons/func/src/func/array.func.php',
+    $vendorDir . '/addons/func/src/func/core.func.php',
+    $vendorDir . '/addons/func/src/func/file.func.php',
+    $vendorDir . '/addons/func/src/func/math.func.php',
+    $vendorDir . '/addons/func/src/func/text.func.php',
+    $vendorDir . '/addons/func/src/func/time.func.php',
 );

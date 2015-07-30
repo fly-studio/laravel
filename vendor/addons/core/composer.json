@@ -1,12 +1,12 @@
 {
     "name": "addons/core",
-    "description": "This package lets you run Smarty3 on Laravel5 elegantly.",
-    "keywords": ["L5", "Laravel 5", "Laravel", "Smarty", "Smarty 3", "View", "Templating"],
+    "description": "Laravel's Addons.",
+    "keywords": ["L5", "Laravel 5", "Laravel","Addons"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Latrell Chan",
-            "email": "i@latrell.me"
+            "name": "Fly",
+            "email": "fly@load-page.com"
         }
     ],
     "require": {
@@ -15,6 +15,7 @@
         "illuminate/cache": "5.*",
         "illuminate/config": "5.*",
         "smarty/smarty": "3.*@stable"
+        "addons/smarty": "~1.*"
     },
     "autoload": {
         "psr-0": {
