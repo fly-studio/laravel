@@ -1,9 +1,9 @@
 <?php
-namespace Addons\Smarty;
+namespace Addons\Smarty\View;
 
-use Illuminate\Support\ServiceProvider as SP;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class ServiceProvider extends SP
+class ServiceProvider extends BaseServiceProvider
 {
 
 	/**

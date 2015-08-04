@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Smarty;
+namespace Addons\Smarty\View;
 
 use Illuminate\View;
 use Illuminate\View\Engines;

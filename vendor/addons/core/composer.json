@@ -18,7 +18,7 @@
         "addons/smarty": "~1.*"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Addons\\Core\\": "src/"
         },
         "classmap": [

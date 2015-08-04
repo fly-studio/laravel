@@ -17,8 +17,8 @@
         "smarty/smarty": "3.*@stable"
     },
     "autoload": {
-        "psr-0": {
-            "Addons\\Smarty\\": "src/Smarty/"
+        "psr-4": {
+            "Addons\\Smarty\\": "src/"
         },
         "classmap": [
             "/src"
