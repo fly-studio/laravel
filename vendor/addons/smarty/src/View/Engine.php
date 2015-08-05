@@ -4,7 +4,7 @@ namespace Addons\Smarty\View;
 use Illuminate\View;
 use Illuminate\View\Engines;
 use Illuminate\View\Compilers\CompilerInterface;
-
+use \Smarty;
 class Engine implements Engines\EngineInterface
 {
 
@@ -49,6 +49,9 @@ class Engine implements Engines\EngineInterface
 
 		$escape_html = $this->config('escape_html', false);
 
+		$left_delimiter = $this->config('left_delimiter', '{');
+		$right_delimiter = $this->config('right_delimiter', '}');
+
 		// Create smarty object.
 		$smarty = new \Smarty();
 
@@ -72,7 +75,10 @@ class Engine implements Engines\EngineInterface
 		//
 		$smarty->escape_html = $escape_html;
 
-		$smarty->error_reporting = E_ALL & ~ E_NOTICE;
+		$smarty->left_delimiter = $left_delimiter;
+		$smarty->right_delimiter = $right_delimiter;
+
+		$smarty->error_reporting = error_reporting();
 
 		foreach ($__data as $var => $val) {
 			$smarty->assign($var, $val);

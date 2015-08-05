@@ -4,19 +4,25 @@ return [
 	'extension' => 'tpl',
 
 	'debugging' => false,
-	'caching' => true,
-	'cache_lifetime' => 120,
+	'caching' => false,
+	'cache_lifetime' => 60,
 
 	// 相关路径配置。
-	'template_path' => base_path('resources/views'),
+	'template_path' => [base_path('resources/views'), __DIR__.'/../../../core/resouces/views'],
 	'cache_path' => storage_path('smarty/cache'),
 	'compile_path' => storage_path('smarty/compile'),
 	'plugins_paths' => [
-		base_path('resources/smarty/plugins')
+		base_path('resources/smarty/plugins'),
+		realpath(__DIR__.'/../plugins'),
 	],
 	'config_paths' => [
 		base_path('resources/smarty/config')
 	],
+
+	// use different delimiters throughout your templates if you really want to!
+	'left_delimiter'  =>  '<{',
+	'right_delimiter' =>  '}>',
+
 
 	// 当系统缓存驱动不为“file”时有效。
 	'cache_prefix' => 'smarty',
@@ -24,5 +30,5 @@ return [
 	// escape HTML: if this is set to true, then all variables will be escaped.
 	// See http://www.smarty.net/docs/en/variable.escape.html.tpl
 	//
-	'escape_html' => false,
+	'escape_html' => true,
 ];
