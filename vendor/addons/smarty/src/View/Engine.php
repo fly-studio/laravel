@@ -8,34 +8,13 @@ use \Smarty;
 class Engine implements Engines\EngineInterface
 {
 
-	protected $config;
+	protected $_config;
+	protected $smary;
 
 	public function __construct($config)
 	{
-		$this->config = $config;
-	}
+		$this->_config = $config;
 
-	/**
-	 * Get the evaluated contents of the view.
-	 *
-	 * @param string $path
-	 * @param array $data
-	 * @return string
-	 */
-	public function get($path, array $data = array())
-	{
-		return $this->evaluatePath($path, $data);
-	}
-
-	/**
-	 * Get the evaluated contents of the view at the given path.
-	 *
-	 * @param string $path
-	 * @param array $data
-	 * @return string
-	 */
-	protected function evaluatePath($__path, $__data)
-	{
 		$caching = $this->config('caching');
 		$cache_lifetime = $this->config('cache_lifetime');
 		$debugging = $this->config('debugging');
@@ -53,7 +32,7 @@ class Engine implements Engines\EngineInterface
 		$right_delimiter = $this->config('right_delimiter', '}');
 
 		// Create smarty object.
-		$smarty = new \Smarty();
+		$this->smarty = $smarty = new \Smarty();
 
 		$smarty->setTemplateDir($template_path);
 		$smarty->setCompileDir($compile_path);
@@ -79,12 +58,35 @@ class Engine implements Engines\EngineInterface
 		$smarty->right_delimiter = $right_delimiter;
 
 		$smarty->error_reporting = error_reporting();
+	}
 
-		foreach ($__data as $var => $val) {
-			$smarty->assign($var, $val);
+	/**
+	 * Get the evaluated contents of the view.
+	 *
+	 * @param string $path
+	 * @param array $data
+	 * @return string
+	 */
+	public function get($path, array $data = array())
+	{
+		return $this->evaluatePath($path, $data);
+	}
+
+	/**
+	 * Get the evaluated contents of the view at the given path.
+	 *
+	 * @param string $path
+	 * @param array $data
+	 * @return string
+	 */
+	protected function evaluatePath($path, $data)
+	{
+		foreach ($data as $var => $val)
+		{
+			$this->smarty->assign($var, $val);
 		}
 
-		return $smarty->fetch($__path);
+		return $this->smarty->fetch($path);
 	}
 
 	/**
@@ -103,6 +105,6 @@ class Engine implements Engines\EngineInterface
 	protected function config($key, $default = null)
 	{
 		$configKey = 'smarty.';
-		return $this->config->get($configKey . $key, $default);
+		return $this->_config->get($configKey . $key, $default);
 	}
 }

@@ -7,8 +7,44 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Addons\Core\Output;
 use Addons\Smarty\View\Engine;
-
+use Illuminate\Support\Facades\Lang;
 class Controller extends BaseController {
+
+	public $site;
+	public $user;
+	public $role;
+	public $fields;
+
+	public function __construct()
+	{
+		
+		$this->beforeFilter('csrf', ['on' => 'post']);
+		/*Init*/
+		$this->site = app('config')->get('site');
+		$this->user = [];
+		$this->role = [];
+		$this->fields = [];
+
+		$this->site['titles'][] = ['title' => $this->site['title'], 'url' => '', 'target' => '_self'];
+	}
+
+	protected function subtitle($title, $url = NULL, $target = '_self')
+	{
+		$this->site['titles'][] = compact('title', 'url', 'target');
+	}
+
+	public function __set($key, $value)
+	{
+		view()->share($key, $value);
+	}
+
+	protected function view($filename, $data = [])
+	{
+		$_user = array_delete_selector($this->user, 'password');
+		$this->site['titles'] = !$this->site['title_reverse'] ? $this->site['titles'] : array_reverse($this->site['titles']);
+		
+		return view($filename, $data)->with('_site', $this->site)->with('_user', $_user)->with('_role', $this->role)->with('_fields', $this->fields);
+	}
 
 	protected function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
@@ -35,12 +71,12 @@ class Controller extends BaseController {
 		$msg = $message_name;
 		if (!is_array($message_name))
 		{
-			$msg = !empty($message_name) ? trans('common.'.$message_name) : []; $msg == $message_name && $msg = [];
+			$msg = Lang::has('common.'.$message_name)? trans('common.'.$message_name) : [];
 			$default = trans('Core::common.default.'.$type );
 			$msg = _extends( $msg, $default); //填充
 
 			foreach ($msg as $key => $value) 
-				$msg[$key] = empty($data) ?  $value : trans($value, array_keyflatten($data, '/', ':')); //转化成有意义的文字
+				$msg[$key] = empty($data) ?  $value : trans($value, $data); //转化成有意义的文字
 		}
 		
 		$msg = array_keyfilter($msg, 'title,content');
@@ -63,7 +99,6 @@ class Controller extends BaseController {
 		$of = strtolower($request->input('of'));
 		$jsonp = $request->input('jsonp'); 
 		empty($jsonp) && $jsonp = $request->input('callback');
-		$response = new Response();
 		$types = ['xml' => 'text/xml', 'yaml' => 'application/yaml', 'json' => 'application/json', 'jsonp' => 'application/x-javascript', 'script' => 'application/x-javascript', 'csv' => 'application/vnd.ms-excel', 'excel' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text' => 'text/plain', 'html' => 'text/html'];
 		if (!array_key_exists($of, $types))
 		{
@@ -72,9 +107,8 @@ class Controller extends BaseController {
 			else
 				$of = 'html';
 		}
-		$response->header('Content-Type', $types[$of].'; charset='.$charset);
-		$content = $of != 'html' ? Output::$of($data, $jsonp) : view('tips', ['_data' => $data]);
-		return $response->setContent($content);
+		$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
+		return response($content)->header('Content-Type', $types[$of].'; charset='.$charset);
 	}
 
 }

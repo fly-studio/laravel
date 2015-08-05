@@ -23,8 +23,10 @@ class ServiceProvider extends SP
      */
     public function boot()
     {
-        $this->app['view']->addLocation(__DIR__.'/../resources/views/');
-        $this->app['translator']->addNamespace('Core', __DIR__.'/../resources/lang/');
+        $this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
+        $this->app['translator']->addNamespace('Core', realpath(__DIR__.'/../resources/lang/'));
+
+        $this->app['view']->share('key', 'value');
     }
 
     /**
