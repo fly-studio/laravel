@@ -34,6 +34,9 @@
 		</div>
 	</div>
 </div>
+<script>
+	var DATA = <{$_data.data|json_encode nofilter}>
+</script>
 </body>
 </html>
 

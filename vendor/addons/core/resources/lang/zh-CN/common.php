@@ -42,10 +42,10 @@ return [
 			'title' => '数据库错误',
 			'content' => '服务器数据库出现错误，请稍后再试！',
 		],
-		'failure_post' => [
+		'failure_validate' => [
 			'title' => '提交资料失败',
-			'content' => '<ul class="post_faiure">:list</ul>',
-			'list' => '<li>:line</li>'.PHP_EOL,
+			'content' => '<ul class="post_faiure">:messages</ul>',
+			'list' => '<li>:message</li>'.PHP_EOL,
 		],
 		'failure_auth' => [
 			'title' => '权限不够',

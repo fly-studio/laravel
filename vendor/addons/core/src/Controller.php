@@ -5,9 +5,13 @@ namespace Addons\Core;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+
 use Addons\Core\Output;
 use Addons\Smarty\View\Engine;
+
 use Illuminate\Support\Facades\Lang;
+use Addons\Core\Facades\Core;
+
 class Controller extends BaseController {
 
 	public $site;
@@ -65,18 +69,29 @@ class Controller extends BaseController {
 		return $result;
 	}
 
+	protected function failure_validate(\Illuminate\Support\MessageBag $messagebag)
+	{
+		$errors = $messagebag->toArray();
+		$messages = [];
+		foreach ($errors as $lines) {
+			foreach ($lines as $message) {
+				$messages[] = trans('Core::common.default.failure_validate.list', compact('message'));
+			}
+		}
+		return $this->_make_output('failure', 'Core::common.default.failure_validate', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
+	}
+
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
-		
 		$msg = $message_name;
 		if (!is_array($message_name))
 		{
-			$msg = Lang::has('common.'.$message_name)? trans('common.'.$message_name) : [];
+			$msg = Lang::has($message_name)? trans($message_name) : [];
 			$default = trans('Core::common.default.'.$type );
 			$msg = _extends( $msg, $default); //填充
 
 			foreach ($msg as $key => $value) 
-				$msg[$key] = empty($data) ?  $value : trans($value, $data); //转化成有意义的文字
+				$msg[$key] = empty($data) ?  $value : Core::__($value, $data); //转化成有意义的文字
 		}
 		
 		$msg = array_keyfilter($msg, 'title,content');
