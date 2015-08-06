@@ -46,7 +46,7 @@ class AnsiExtended extends Validator {
 
         //宽字节按照字体的几个宽度计算，比如「微软雅黑」下，汉字占据两个显示宽度
         $rule = $this->getRule($attribute, 'Ansi');
-        $ansiWidth = empty($rule) || empty($rule[1]) ? 1 : $rule[1];
+        $ansiWidth = empty($rule) || empty($rule[1]) ? 1 : intval($rule[1]);
  
         return strlen_ansi($value, NULL, $ansiWidth);
         //return mb_strlen($value);

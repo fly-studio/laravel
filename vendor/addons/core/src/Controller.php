@@ -75,10 +75,10 @@ class Controller extends BaseController {
 		$messages = [];
 		foreach ($errors as $lines) {
 			foreach ($lines as $message) {
-				$messages[] = trans('Core::common.default.failure_validate.list', compact('message'));
+				$messages[] = trans('core::common.default.failure_validate.list', compact('message'));
 			}
 		}
-		return $this->_make_output('failure', 'Core::common.default.failure_validate', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
+		return $this->_make_output('failure', 'core::common.default.failure_validate', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
 	}
 
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
@@ -87,7 +87,7 @@ class Controller extends BaseController {
 		if (!is_array($message_name))
 		{
 			$msg = Lang::has($message_name)? trans($message_name) : [];
-			$default = trans('Core::common.default.'.$type );
+			$default = trans('core::common.default.'.$type );
 			$msg = _extends( $msg, $default); //填充
 
 			foreach ($msg as $key => $value) 
@@ -101,7 +101,7 @@ class Controller extends BaseController {
 			'run-time' => microtime(TRUE) - LARAVEL_START,
 			'uid' => 0,
 			'message' => $msg,
-			'url' => $url,
+			'url' => is_string($url) ? url($url) : $url,
 			'data' => $export_data ? $data : [],
 		);
 		return $this->output($result);

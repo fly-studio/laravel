@@ -34,9 +34,12 @@ class ServiceProvider extends SP
 	public function boot()
 	{
 		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
-		$this->app['translator']->addNamespace('Core', realpath(__DIR__.'/../resources/lang/'));
+		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));
 
-		$this->app['view']->share('key', 'value');
+		$this->app['view']->share('url', [
+			'current' => app('Illuminate\Routing\UrlGenerator')->current(),
+			'previous' => app('Illuminate\Routing\UrlGenerator')->previous(),
+		]);
 
 		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
 			return new Validation\AnsiExtended( $translator, $data, $rules, $messages, $customAttributes );
