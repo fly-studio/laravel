@@ -91,7 +91,7 @@ class Controller extends BaseController {
 			$msg = _extends( $msg, $default); //填充
 
 			foreach ($msg as $key => $value) 
-				$msg[$key] = empty($data) ?  $value : Core::__($value, $data); //转化成有意义的文字
+				$msg[$key] = empty($data) ?  $value : __($value, $data); //转化成有意义的文字
 		}
 		
 		$msg = array_keyfilter($msg, 'title,content');
