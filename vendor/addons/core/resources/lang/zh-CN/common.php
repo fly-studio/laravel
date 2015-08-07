@@ -26,6 +26,10 @@ return [
 			'title' => '操作失败',
 			'content' => '您的操作失败，请重试！',
 		],
+		'success_login' => [
+			'title' => '登录成功',
+			'content' => '即将跳转到刚才的页面！',
+		],
 		'error_param' => [
 			'title' => '参数错误',
 			'content' => '您传递的参数错误，请检查您的来路是否正确！',
@@ -49,11 +53,15 @@ return [
 		],
 		'failure_auth' => [
 			'title' => '权限不够',
-			'content' => '您的权限不够，无法访问本页面，切换用户请<a href="" target="_self">点击这里</a>！',
+			'content' => '您的权限不够，无法访问本页面，切换用户请<a href="'.url('auth').'" target="_self">点击这里</a>！',
+		],
+		'failure_login' => [
+			'title' => '登录失败',
+			'content' => '账号或密码错误！',
 		],
 		'failure_unlogin' => [
 			'title' => '您尚未登录',
-			'content' => '您的尚未登录，无法访问本页面，登录请<a href="" target="_self">点击这里</a>！',
+			'content' => '您尚未登录，无法访问本页面，登录请<a href="'.url('auth').'" target="_self">点击这里</a>！',
 		],
 		'failure_edit_other' => [
 			'title' => '修改越权',

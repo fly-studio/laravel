@@ -8,11 +8,11 @@ use Illuminate\Support\ServiceProvider as SP;
 class ServiceProvider extends SP
 {
 	/**
-     * 指定是否延缓提供者加载。
-     *
-     * @var bool
-     */
-    protected $defer = true;
+	 * 指定是否延缓提供者加载。
+	 *
+	 * @var bool
+	 */
+	protected $defer = false;
 	/**
 	 * Register the service provider.
 	 *
@@ -35,6 +35,16 @@ class ServiceProvider extends SP
 	{
 		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));
+		/*$this->app['response']->header('P3P','CP="CAO PSA OUR"');//解决跨域访问别个页面时丢失session的隐私声明
+		if (in_array($this->app['request']->method(), array( 'POST', 'PUT', 'DELETE' )))
+		{
+			//header no cache when post
+			$this->app['response']->header([
+				'Expires' => '0',
+				'Cache-Control' => 'no-store,private, post-check=0, pre-check=0, max-age=0',
+				'Pragma' => 'no-cache',
+			]);
+		}*/
 
 		$this->app['view']->share('url', [
 			'current' => app('Illuminate\Routing\UrlGenerator')->current(),
