@@ -14,7 +14,7 @@ class Controller extends BaseController {
 	public $fields;
 	public $user;
 	public $role;
-	//public $roles;
+	public $roles;
 
 	public function __construct()
 	{
@@ -34,7 +34,7 @@ class Controller extends BaseController {
 	private function initMember()
 	{
 		$this->user = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['uid' => 0, 'rid' => 0];
-		//$this->roles = (new Role)->getRoles();
+		$this->roles = (new Role)->getRoles();
 	}
 
 	protected function subtitle($title, $url = NULL, $target = '_self')

@@ -52,7 +52,7 @@ class ServiceProvider extends SP
 		]);
 
 		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
-			return new Validation\AnsiExtended( $translator, $data, $rules, $messages, $customAttributes );
+			return new Validation\Validator( $translator, $data, $rules, $messages, $customAttributes );
 		} );
 	}
 

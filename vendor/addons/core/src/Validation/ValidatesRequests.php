@@ -17,6 +17,21 @@ trait ValidatesRequests
 	 *
 	 * @var string
 	 */
+	
+	private function getValidationData($table, $keys)
+	{
+		$config = app('config')->get('validation.'.$table);
+		$keys == '*' && $keys = array_keys($config);
+		$validation_data = array_keyfilter($config, $keys);
+		$rules = $messages = $attributes = [];
+		array_walk($validation_data, function($v, $k) use(&$rules, &$messages, &$attributes){
+			isset($v['rules']) && $rules[$k] = $v['rules'];
+			isset($v['message']) && $messages[$k] = $v['message'];
+			isset($v['name']) && $attributes[$k] = $v['name'];
+		});
+
+		return compact('rules', 'messages', 'attributes');
+	}
 	/**
 	 * [validate description]
 	 * @param  Request $request [description]
@@ -26,17 +41,18 @@ trait ValidatesRequests
 	 */
 	public function validate(Request $request, $table, $keys = '*')
 	{
-		$config = app('config')->get('validation.'.$table);
-		$keys == '*' && $keys = array_keys($config);
-		$validation_data = array_keyfilter($config, $keys);
-		$rules = $messages = $customAttributes = [];
-		array_walk($validation_data, function($v, $k) use(&$rules, &$messages, &$customAttributes){
-			isset($v['rules']) && $rules[$k] = $v['rules'];
-			isset($v['message']) && $messages[$k] = $v['message'];
-			isset($v['name']) && $customAttributes[$k] = $v['name'];
-		});
-		$validator = $this->getValidationFactory()->make($request->all(), $rules, $messages, $customAttributes);
+		$validateData = $this->getValidationData($table, $keys);
+		$validator = $this->getValidationFactory()->make($request->all(), $validateData['rules'], array_keyflatten($validateData['messages'],'.'), $validateData['attributes']);
 		return $validator;
+	}
+
+	public function getScriptValidate($table, $keys = '*')
+	{
+		$validateData = $this->getValidationData($table, $keys);
+		$validator = $this->getValidationFactory()->make([], $validateData['rules'], $validateData['messages'], $validateData['attributes']);
+		$rules = $validator->getjQueryRules();
+
+		return ['rules' => $rules, 'messages' => $validateData['messages']];
 	}
 	/**
 	 * [autoValidate description]
@@ -47,6 +63,8 @@ trait ValidatesRequests
 	 */
 	public function autoValidate(Request $request, $table, $keys = '*')
 	{
+		if ($request->ajax()) return $this->tipsValidate($request, $table, $keys);
+
 		$validator = $this->validate($request, $table, $keys);
 		if ($validator->fails())
 			$this->throwValidationException($request, $validator);
