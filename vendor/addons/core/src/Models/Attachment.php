@@ -6,11 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 use \Curl\Curl;
 class Attachment extends Model{
+	protected $guarded = ['id'];
+
 	const UPLOAD_ERR_MAXSIZE = 100;
 	const UPLOAD_ERR_EXT = 101;
 	const UPLOAD_ERR_SAVE = 106;
 	const DOWNLOAD_ERR_URL = 104;
 	const DOWNLOAD_ERR_FILE = 105;
+
+	private $fileModel,$_config;
+
+	public function __construct(array $attributes = [])
+	{
+		parent::__construct($attributes);
+		$this->fileModel = new AttachmentFile();
+		$this->_config = config('attachment');
+	}
+
+	public function file()
+	{
+		return $this->hasOne('Addons\\Core\\Models\\AttachmentFile', 'id', 'afid');
+	}
+
 
 	public function upload($uid, $field_name, $description = '')
 	{
@@ -23,7 +40,7 @@ class Attachment extends Model{
 
 		//$ext = strtolower(pathinfo($_FILES[$field_name]['name'],PATHINFO_EXTENSION));
 
-		return $this->save($uid, $_FILES[$field_name]["tmp_name"], $_FILES[$field_name]['name'], NULL, NULL, $description);
+		return $this->savefile($uid, $_FILES[$field_name]["tmp_name"], $_FILES[$field_name]['name'], NULL, NULL, $description);
 	}
 
 	public function download($uid, $url, $filename = NULL, $ext = NULL)
@@ -57,17 +74,11 @@ class Attachment extends Model{
 			!empty($tmp) && $basename = mb_basename(trim($tmp[1],'\'"'));//pathinfo($download_filename,PATHINFO_BASENAME);
 		}
 
-		return $this->save($uid, $file_path, $basename, $filename, $ext, 'Download from:' . $url);
+		return $this->savefile($uid, $file_path, $basename, $filename, $ext, 'Download from:' . $url);
 
 	}
 
-	public function file()
-	{
-		return $this->hasOne('Addons\Models\AttachmentFile.php', 'id', 'afid');
-	}
-
-
-	public function save($uid, $original_file_path, $original_basename, $file_name = NULL, $file_ext = NULL, $description = NULL)
+	public function savefile($uid, $original_file_path, $original_basename, $file_name = NULL, $file_ext = NULL, $description = NULL)
 	{
 		if (!file_exists($original_file_path))
 			return FALSE;
@@ -85,10 +96,7 @@ class Attachment extends Model{
 		//传文件都耗费了那么多时间,还怕md5?
 		$hash = md5_file($original_file_path);
 
-		$file = $this->get_file_byhash($hash, $size);
-
-		$afid = 0;
-
+		$file = $this->fileModel->get_byhash($hash, $size);
 		if (empty($file))
 		{
 			$new_basename = $this->_get_hash_basename();
@@ -97,89 +105,37 @@ class Attachment extends Model{
 			if (!$this->_save_file($original_file_path, $new_basename))
 				return self::UPLOAD_ERR_SAVE;
 
-
-			$t = DB::insert('attachment_files',array('timeline','basename','path','hash','size'))->values(array(time(), $new_basename, $new_hash_path, $hash, $size))->execute();
-			$afid = array_shift($t);
+			$file = AttachmentFile::create([
+				'basename' => $new_basename,
+				'path' => $new_hash_path,
+				'hash' => $hash,
+				'size' => $size,
+			]);
 		}
 		else //已经存在此文件
-		{
-			$afid = $file['afid'];
 			@unlink($original_file_path);
-		}
 
-		$query = DB::insert('attachment',array('afid','filename','ext','original_basename','description','uid','timeline'))->values(array($afid, $file_name, $file_ext, $original_basename, $description, $uid, time()));
-		$t = $query->execute();
-		$aid = array_shift($t);
-
-		return $this->get($aid);
+		$attachment = $this->create([
+			'afid' => $file->id,
+			'filename' => $file_name,
+			'ext' => $file_ext,
+			'original_basename' => $original_basename,
+			'description' => $description,
+			'uid' => empty($uid) ? NULL : $uid,
+		]);
+		return $this->get($attachment->id);
 	}
 
-	public function get_file_byhash($hash, $size)
-	{
-		$result = array();
-		$hashkey = 'files_'.$hash.'_'.$size;
-		if (is_null($result = $this->get_cache($hashkey)))
-		{
-			$query = DB::select('*')->from('attachment_files')->where('hash','=',$hash)->and_where('size','=',$size);
-			$result = $query->execute()->current();
-			$this->set_cache($hashkey, $result);
-		}
-		return $result;
-	}
 
-	public function get_file_bybasename($basename)
-	{
-		$result = array();
-		$hashkey = 'files_basename_'.$basename;
-		if (is_null($result = $this->get_cache($hashkey)))
-		{
-			$query = DB::select('*')->from('attachment_files')->where('basename','=',$basename);
-			$result = $query->execute()->current();
-			$this->set_cache($hashkey, $result);
-		}
-		return $result;
-	}
 
-	public function get_file_byhash_path($hash_path)
+	public function get($id)
 	{
-		$result = array();
-		$hashkey = 'files_hash_path_'.$basename;
-		if (is_null($result = $this->get_cache($hashkey)))
+		$attachment = self::find($id);
+		$result = [];
+		if (!empty($attachment))
 		{
-			$query = DB::select('*')->from('attachment_files')->where('path','=',$hash_path);
-			$result = $query->execute()->current();
-			$this->set_cache($hashkey, $result);
-		}
-		return $result;
-	}
-
-	public function get_file($afid)
-	{
-		$result = array();
-		$hashkey = 'files_'.$afid;
-		if (is_null($result = $this->get_cache($hashkey)))
-		{
-			$query = DB::select('*')->from('attachment_files')->where('afid','=',$afid);
-			$result = $query->execute()->current();
-			$this->set_cache($hashkey, $result);
-		}
-		return $result;
-	}
-
-	public function get($aid)
-	{
-		$result = array();
-		$hashkey = $aid;
-		if (is_null($result = $this->get_cache($hashkey)))
-		{
-			$query = DB::select('a.*',array('a.src_basename','original_basename'),'b.path','b.size','b.hash','b.basename')->from(array('attachment','a'))->join(array('attachment_files','b'))->on('a.afid','=','b.afid')->where('a.aid','=',$aid);
-			$result = $query->execute()->current();
-			
-			if (!empty($result))
-			{
-				$result['displayname'] = $result['filename'].(!empty($result['ext']) ?  '.'.$result['ext'] : '' );
-			}
-			$this->set_cache($hashkey,$result);
+			$result = $attachment->toArray() + $attachment->file->toArray();
+			$result['displayname'] = $result['filename'].(!empty($result['ext']) ?  '.'.$result['ext'] : '' );
 		}
 		return $result;
 	}
@@ -195,46 +151,20 @@ class Attachment extends Model{
 		return NULL;
 	}
 
-	public function search($fields, $order_by = array('a.timeline' => 'DESC'), $page = 1, $pagesize = 0)
-	{
-		$_fields = array('aid' => array(), 'afid' => array(), 'filename' => '', 'duplicate' => NULL, 'ext' => array(), 'uid' => array(), 'timeline' => array('min' => NULL, 'max' => NULL, ), 'size' => array('min' => NULL, 'max' => NULL, ));
-		$fields = to_array_selector($fields, 'aid,afid,ext,uid');
-		$fields = _extends($fields, $_fields);
-
-	
-		$query = DB::select()->from(array('attachment','a'))->join(array('attachment_files','b'), 'INNER')->on('a.afid','=','b.afid');
-		$fields['duplicate'] && $query->group_by('a.afid');
-		!empty($fields['aid']) && $query->and_where('a.aid','IN',$fields['aid']);
-		!empty($fields['afid']) && $query->and_where('a.afid','IN',$fields['afid']);
-		!empty($fields['filename']) && $query->and_where('a.filename','LIKE','%'.$fields['filename'].'%');
-		!empty($fields['ext']) && $query->and_where('a.ext','IN',$fields['ext']);
-		!empty($fields['hash']) && $query->and_where('b.hash','=',$fields['ext']);
-		!empty($fields['uid']) && $query->and_where('a.uid','IN',$fields['uid']);
-		!is_null($fields['size']['min']) && $query->and_where('b.size','>=',$fields['size']['min']);
-		!is_null($fields['size']['max']) && $query->and_where('b.size','<=',$fields['size']['min']);
-		!is_null($fields['timeline']['min']) && $query->and_where('a.timeline','>=',$fields['timeline']['min']);
-		!is_null($fields['timeline']['max']) && $query->and_where('a.timeline','<=',$fields['timeline']['max'] + 86400);
-		foreach ($order_by as $key => $value)
-			$query->order_by($key, $value);
-
-		$result = $this->make_page($query, array('a.*',array('a.src_basename','original_basename'),'b.path','b.size','b.hash','b.basename'), 'a.aid', 'aid', $page, $pagesize);
-		return $result;
-	}
-
 	/**
 	 * 获取软连接的网址
 	 * 
-	 * @param  integer $aid     AID
+	 * @param  integer $id     AID
 	 * @param  boolean $protocol 是否有域名部分
 	 * @return string
 	 */
-	public function get_symlink_url($aid, $protocol = NULL)
+	public function get_symlink_url($id, $protocol = NULL)
 	{
-		$path = $this->_create_symlink($aid);
+		$path = $this->_create_symlink($id);
 		if (empty($path))
 			return FALSE;
 
-		return URL::site(str_replace(APPPATH, '', $path), $protocol, FALSE);
+		return url(str_replace(APPPATH, '', $path));
 	}
 
 	/**
@@ -295,14 +225,14 @@ class Attachment extends Model{
 	/**
 	 * 构造一个符合router标准的URL
 	 * 
-	 * @param  integer $aid      AID
+	 * @param  integer $id      AID
 	 * @param  boolean $protocol 是否有域名部分
 	 * @param  string $filename  需要放在网址结尾的文件名,用以欺骗浏览器
 	 * @return string
 	 */
-	public function get_url($aid, $protocol = NULL, $filename = NULL)
+	public function get_url($id, $filename = NULL)
 	{
-		return  URL::site(!empty($filename) ? 'attachment/index/'.$aid.'/'.urlencode($filename) : 'attachment?aid='.$aid, $protocol, FALSE);
+		return  url(!empty($filename) ? 'attachment/'.$id.'/'.urlencode($filename) : 'attachment?id='.$id);
 	}
 
 	/**
@@ -327,7 +257,7 @@ class Attachment extends Model{
 		do
 		{
 			$basename = uniqid(date('YmdHis,') . rand(100000,999999) . ',')  . (!empty($this->_config['normal_ext']) ? '.' . $this->_config['normal_ext'] : '');
-			$file = $this->get_file_bybasename($basename);
+			$file = $this->fileModel->get_bybasename($basename);
 		} while (!empty($file));
 		return $basename;
 	}
@@ -335,17 +265,17 @@ class Attachment extends Model{
 	/**
 	 * 在cache目录下创建一个软连接
 	 * 
-	 * @param  integer $aid AID
+	 * @param  integer $id AID
 	 * @return string
 	 */
-	protected function _create_symlink($aid, $life_time = Date::DAY)
+	protected function _create_symlink($id, $life_time = Date::DAY)
 	{
-		$data = $this->get($aid);
+		$data = $this->get($id);
 		if (empty($data))
 			return FALSE;
 		//将云端数据同步到本地
-		$this->remote && $this->sync($aid);
-		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($aid).'.'.$data['ext'];
+		$this->remote && $this->sync($id);
+		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($id).'.'.$data['ext'];
 		!file_exists($path) && @symlink($this->get_real_rpath($data['path']), $path);
 		return $path;
 	}
@@ -353,15 +283,15 @@ class Attachment extends Model{
 	/**
 	 * 删除软连接
 	 * 
-	 * @param  integer $aid AID
+	 * @param  integer $id AID
 	 * @return
 	 */
-	public function unlink_symlink($aid)
+	public function unlink_symlink($id)
 	{
-		$data = $this->get($aid);
+		$data = $this->get($id);
 		if (empty($data))
 			return FALSE;
-		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($aid).'.'.$data['ext'];
+		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($id).'.'.$data['ext'];
 		@unlink($path);
 	}
 
@@ -419,11 +349,11 @@ class Attachment extends Model{
 		return $result;
 	}
 
-	public function sync($aid, $life_time = NULL)
+	public function sync($id, $life_time = NULL)
 	{
 		if ($this->_config['remote']['enabled'])
 		{
-			$data = $this->get($aid);
+			$data = $this->get($id);
 			if (empty($data))
 				return FALSE;
 

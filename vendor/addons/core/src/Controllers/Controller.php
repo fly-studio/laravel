@@ -34,7 +34,7 @@ class Controller extends BaseController {
 
 	private function initMember()
 	{
-		$this->user = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['uid' => 0, 'rid' => 0];
+		$this->user = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['id' => 0, 'rid' => 0];
 		$this->roles = (new Role)->getRoles();
 	}
 
@@ -119,7 +119,7 @@ class Controller extends BaseController {
 		$msg = $message_name;
 		if (!is_array($message_name))
 		{
-			$msg = Lang::has($message_name) ? trans($message_name) : (Lang::has('common::common.'.$message_name) ? trans('common::common.'.$message_name) : []);
+			$msg = Lang::has($message_name) ? trans($message_name) : (Lang::has('core::common.'.$message_name) ? trans('core::common.'.$message_name) : []);
 			is_string($msg) && $msg = ['content' => $msg];
 			$default = trans('core::common.default.'.$type );
 			$msg = _extends($msg, $default); //填充

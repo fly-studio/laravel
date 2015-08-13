@@ -3,24 +3,27 @@ namespace Addons\Core\Controllers;
 
 use Addons\Core\Models\Attachment;
 use Addons\Core\Controllers\Controller as BaseController;
-use Addons\Core\File\MimeTypeGuesser;
+use Addons\Core\File\Mimes;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
-use Lang;
+use Lang,Crypt,Agent;
 class AttachmentController extends BaseController {
 
 	private $model;
 	public function __construct()
 	{
 		//解决flash上传的cookie问题
-		$session_id = Crypt::decrypt(trim($_POST['PHPSESSIONID']));
-		if (!empty($session_id)) session_id($session_id);
+		if (isset($_POST['PHPSESSIONID']))
+		{
+			$session_id = Crypt::decrypt(trim($_POST['PHPSESSIONID']));
+			if (!empty($session_id)) session_id($session_id);
+		}
 		
 		parent::__construct();
 
 		//$id = $this->request->param('do');
 		//empty($_GET['id']) && !empty($id) && $this->request->query('id', $_GET['id'] = $id);
 		
-		$this->model = new Model();
+		$this->model = new Attachment();
 	}
 
 	public function download($id)
@@ -28,26 +31,23 @@ class AttachmentController extends BaseController {
 		$id = intval($id);
 
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 
 		if (empty($data))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
-
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
+	
 		//获取远程文件
 		$this->model->sync($id);
 
 		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = MimeTypeGuesser::getInstance()->guess_by_ext($data['ext']);
+		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
 		$content_length = $data['size'];
-		$last_modified = $data['timeline'];
+		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
 		$cache = TRUE;
-		response()->download($full_path, $data['displayname'], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
+		response()->download($full_path, $data['displayname'], [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 
 	}
 
@@ -56,31 +56,28 @@ class AttachmentController extends BaseController {
 		$id = intval($id);
 
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 		unset($data['path'], $data['afid'], $data['id'], $data['basename']); //array_delete_selector($data, 'path,afid,id,basename');
 		if (empty($data))
 		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 		}
 		return $this->success('',TRUE,$data);
 	}
 
-	public function index($id, $width = NULL, $height = NULL, $master = Image::AUTO, $quality = 100)
+	public function index($id, $width = NULL, $height = NULL)
 	{
 		$id = intval($id);
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 
 		if (empty($data))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
+		
 
 		if (in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
 		{
@@ -88,9 +85,7 @@ class AttachmentController extends BaseController {
 				return $this->resize($id, $width, $height, $master, $quality);
 			else
 			{
-				require_once Kohana::find_file('vendor', 'Mobile-Detect/Mobile_Detect');
-				$mobile_detect = new Mobile_Detect;
-	 			if ( $mobile_detect->isMobile() && !$mobile_detect->isTablet() )
+	 			if ( Agent::isMobile() && !Agent::isTablet() )
 					return $this->phone($id);
 				else
 					return $this->preview($id);
@@ -106,15 +101,13 @@ class AttachmentController extends BaseController {
 	{
 		$id = intval($id);
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 
 		if (empty($data))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
+		
 
 		if (!in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
 			return $this->failure('attachment.failure_resize');
@@ -138,27 +131,25 @@ class AttachmentController extends BaseController {
 			else
 				symlink($full_path, $new_path);
 		}
-		$mime_type = MimeTypeGuesser::getInstance()->guess_by_ext($data['ext']);
+		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
 		$content_length = NULL;//$data['size'];
-		$last_modified = $data['timeline'];
+		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
 		$cache = TRUE;
-		$this->response->x_send_file($new_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
+		return response()->download($new_path, NULL, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'), NULL);
 	}
 
 	public function phone($id)
 	{
 		$id = intval($id);
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 
 		if (empty($data))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
+		
 
 		if (in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
  			return $this->resize($id, 640, 960);
@@ -170,48 +161,41 @@ class AttachmentController extends BaseController {
 	{
 		$id = intval($id);
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$data = $this->model->get($id);
 
 		if (empty($data))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 
 		//获取远程文件
 		$this->model->sync($id);
 
 		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = MimeTypeGuesser::getInstance()->guess_by_ext($data['ext']);
+		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
 		$content_length = $data['size'];
-		$last_modified = $data['timeline'];
+		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
 		$cache = TRUE;
-		$this->response->x_send_file($full_path, NULL, compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
+		return response()->download($full_path, NULL, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'), NULL);
 	}
 
 	public function redirect($id)
 	{
 		$id = intval($id);
 		if (empty($id))
-			return $this->error_param();
+			return $this->error_param()->setStatusCode(404);
 
 		$link_path = $this->model->get_symlink_url($id);
 
 		if (empty($link_path))
-		{
-			$this->response->setStatusCode(404);
-			return $this->failure('attachment.failure_noexists');
-		}
+			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 
 		$this->redirect($link_path);
 	}
 
 	public function swfupload_query()
 	{
-		$this->checkauth(); //检查是否登录
 		$result = $this->model->upload($this->user['id'], 'Filedata');
 		if (!is_array($result))
 			return $this->failure_attachment($result);
@@ -346,7 +330,7 @@ class AttachmentController extends BaseController {
 			case 'listimage':
 			/* 列出文件 */
 			case 'listfile':
-				$list = $this->model->search(array('ext' => $_config['file_type']['image'], 'duplicate' => TRUE), array('a.timeline' => 'DESC'), $page, $pagesize);
+				$list = $this->model->search(array('ext' => $_config['file_type']['image'], 'duplicate' => TRUE), array('a.created_at' => 'DESC'), $page, $pagesize);
 				
 				$data = array(
 					'state' => 'SUCCESS',

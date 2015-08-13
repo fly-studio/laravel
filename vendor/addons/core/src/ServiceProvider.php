@@ -33,9 +33,9 @@ class ServiceProvider extends SP
 			return new ResponseFactory($app['Illuminate\Contracts\View\Factory'], $app['redirect']);
 		});
 
-		$configPath = __DIR__ . '/config/attachment.php';
-		$this->mergeConfigFrom($configPath, 'attachment');
-		app('Illuminate\Contracts\Routing\ResponseFactory');
+		$this->mergeConfigFrom(__DIR__ . '/config/attachment.php', 'attachment');
+		$this->mergeConfigFrom(__DIR__ . '/config/mimes.php', 'mimes');
+		
 	}
 	/**
 	 * Bootstrap the application events.
@@ -44,8 +44,8 @@ class ServiceProvider extends SP
 	 */
 	public function boot()
 	{
-		$configPath = __DIR__ . '/config/attachment.php';
-		$this->publishes([$configPath => config_path('attachment.php')], 'config');
+		$this->publishes([__DIR__ . '/config/attachment.php' => config_path('attachment.php')], 'config');
+		$this->publishes([__DIR__ . '/config/mimes.php' => config_path('mimes.php')], 'config');
 
 		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));

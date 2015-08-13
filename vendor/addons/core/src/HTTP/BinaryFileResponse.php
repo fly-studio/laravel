@@ -55,7 +55,10 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 		if ($lastModified === true)
 			$this->setAutoLastModified();
 		elseif (!empty($lastModified))
-			$this->setLastModified(\DateTime::createFromFormat('U', $lastModified));
+		{
+			is_numeric($lastModified) && $lastModified = '@'.$lastModified;
+			$this->setLastModified(new \DateTime($lastModified));
+		}
 
 		if ($contentDisposition)
 			$this->setContentDisposition($contentDisposition);
