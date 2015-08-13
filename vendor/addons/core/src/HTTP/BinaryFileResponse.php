@@ -77,12 +77,12 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 
 		if (!empty($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getEtag())
 		{
-			$this->status(304);
+			$this->setStatusCode(304);
 			$this->maxlen = 0;
 		}
 		else if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= strtotime($this->getLastModified()))
 		{
-			$this->status(304);
+			$this->setStatusCode(304);
 			$this->maxlen = 0;
 		} else {
 			switch (substr($_SERVER['SERVER_SOFTWARE'], 0, (int)strpos($_SERVER['SERVER_SOFTWARE'],'/'))) {
