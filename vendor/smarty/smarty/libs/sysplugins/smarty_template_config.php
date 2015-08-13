@@ -74,7 +74,7 @@ class Smarty_Template_Config extends Smarty_Template_Source
      */
     public function __construct(Smarty_Resource $handler, Smarty $smarty, $resource, $type, $name)
     {
-        $this->handler = clone $handler; // Note: prone to circular references
+        $this->handler = $handler; // Note: prone to circular references
         $this->resource = $resource;
         $this->type = $type;
         $this->name = $name;
@@ -109,8 +109,8 @@ class Smarty_Template_Config extends Smarty_Template_Source
         $resource = Smarty_Resource::load($smarty, $type);
         $source = new Smarty_Template_Config($resource, $smarty, $template_resource, $type, $name);
         $resource->populate($source, $_template);
-        if ((!isset($source->exists) || !$source->exists) && isset($_template->smarty->default_config_handler_func)) {
-            Smarty_Internal_Extension_DefaultTemplateHandler::_getDefault($_template, $source, $resource);
+        if (!$source->exists && isset($_template->smarty->default_config_handler_func)) {
+            Smarty_Internal_Extension_DefaultTemplateHandler::_getDefault($_template, $source);
         }
         $source->unique_resource = $resource->buildUniqueResourceName($smarty, $name, true);
         return $source;

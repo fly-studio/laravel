@@ -109,9 +109,6 @@ class Smarty_Template_Cached
     {
         $this->compile_id = $_template->compile_id;
         $this->cache_id = $_template->cache_id;
-        if (!isset($_template->source)) {
-            $_template->loadSource();
-        }
         $this->source = $_template->source;
         if (!class_exists('Smarty_CacheResource', false)) {
             require SMARTY_SYSPLUGINS_DIR . 'smarty_cacheresource.php';
@@ -158,7 +155,7 @@ class Smarty_Template_Cached
                     // lifetime expired
                     $this->valid = false;
                 }
-                if ($this->valid && $_template->source->timestamp > $this->timestamp) {
+                if ($this->valid && $_template->smarty->compile_check == 1 && $_template->source->getTimeStamp() > $this->timestamp) {
                     $this->valid = false;
                 }
                 if ($this->valid || !$_template->smarty->cache_locking) {
@@ -210,10 +207,11 @@ class Smarty_Template_Cached
      * Process cached template
      *
      * @param Smarty_Internal_Template $_template template object
+     * @param bool                     $update flag if called because cache update
      */
-    public function process(Smarty_Internal_Template $_template)
+    public function process(Smarty_Internal_Template $_template, $update = false)
     {
-        if ($this->handler->process($_template, $this) === false) {
+        if ($this->handler->process($_template, $this, $update) === false) {
             $this->valid = false;
         }
         if ($this->valid) {
@@ -392,8 +390,7 @@ class Smarty_Template_Cached
                         $_SERVER['SMARTY_PHPUNIT_HEADERS'][] = 'Last-Modified: ' . gmdate('D, d M Y H:i:s', $this->timestamp) . ' GMT';
                     }
                     break;
-
-                default:
+               default:
                     header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $this->timestamp) . ' GMT');
                     break;
             }

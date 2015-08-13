@@ -12,7 +12,8 @@
         "doctrine/dbal": "^2.5",
         "intervention/image": "^2.3@dev",
         "mews/captcha": "dev-master",
-        "zizaco/entrust": "dev-master"
+        "zizaco/entrust": "dev-master",
+        "php-curl-class/php-curl-class": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

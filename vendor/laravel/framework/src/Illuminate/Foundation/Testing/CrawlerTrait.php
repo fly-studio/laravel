@@ -2,6 +2,7 @@
 
 namespace Illuminate\Foundation\Testing;
 
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -143,6 +144,21 @@ trait CrawlerTrait
     }
 
     /**
+     * Send the given request through the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return $this
+     */
+    public function handle(Request $request)
+    {
+        $this->currentUri = $request->fullUrl();
+
+        $this->response = $this->app->prepareResponse($this->app->handle($request));
+
+        return $this;
+    }
+
+    /**
      * Make a request to the application and create a Crawler instance.
      *
      * @param  string  $method
@@ -276,6 +292,52 @@ trait CrawlerTrait
     }
 
     /**
+     * Assert that an input field contains the given value.
+     *
+     * @param  string  $selector
+     * @param  string  $expected
+     * @return $this
+     */
+    public function seeInField($selector, $expected)
+    {
+        $this->assertSame(
+            $this->getInputOrTextAreaValue($selector), $expected,
+            "The input [{$selector}] does not contain the expected value [{$expected}]."
+        );
+
+        return $this;
+    }
+
+    /**
+     * Get the value of an input or textarea.
+     *
+     * @param  string  $selector
+     * @return string
+     *
+     * @throws \Exception
+     */
+    protected function getInputOrTextAreaValue($selector)
+    {
+        $field = $this->filterByNameOrId($selector);
+
+        if ($field->count() == 0) {
+            throw new Exception("There are no elements with the name or ID [$selector]");
+        }
+
+        $element = $field->nodeName();
+
+        if ($element == 'input') {
+            return $field->attr('value');
+        }
+
+        if ($element == 'textarea') {
+            return $field->text();
+        }
+
+        throw new Exception("Given selector [$selector] is not an input or textarea");
+    }
+
+    /**
      * Assert that the response contains JSON.
      *
      * @param  array|null  $data
@@ -296,7 +358,7 @@ trait CrawlerTrait
     {
         $this->seeJson();
 
-        if (!is_null($data)) {
+        if (! is_null($data)) {
             return $this->seeJson($data);
         }
     }
@@ -448,7 +510,7 @@ trait CrawlerTrait
 
         $this->assertTrue($headers->has($headerName), "Header [{$headerName}] not present on response.");
 
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             $this->assertEquals(
                 $headers->get($headerName), $value,
                 "Header [{$headerName}] was found, but value [{$headers->get($headerName)}] does not match [{$value}]."
@@ -480,7 +542,7 @@ trait CrawlerTrait
 
         $this->assertTrue($exist, "Cookie [{$cookieName}] not present on response.");
 
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             $this->assertEquals(
                 $cookie->getValue(), $value,
                 "Cookie [{$cookieName}] was found, but value [{$cookie->getValue()}] does not match [{$value}]."
@@ -500,10 +562,10 @@ trait CrawlerTrait
     {
         $link = $this->crawler->selectLink($name);
 
-        if (!count($link)) {
+        if (! count($link)) {
             $link = $this->filterByNameOrId($name, 'a');
 
-            if (!count($link)) {
+            if (! count($link)) {
                 throw new InvalidArgumentException(
                     "Could not find a link with a body, name, or ID attribute of [{$name}]."
                 );
@@ -536,6 +598,17 @@ trait CrawlerTrait
     protected function check($element)
     {
         return $this->storeInput($element, true);
+    }
+
+    /**
+     * Uncheck a checkbox on the page.
+     *
+     * @param  string  $element
+     * @return $this
+     */
+    protected function uncheck($element)
+    {
+        return $this->storeInput($element, false);
     }
 
     /**
@@ -599,7 +672,7 @@ trait CrawlerTrait
      */
     protected function fillForm($buttonText, $inputs = [])
     {
-        if (!is_string($buttonText)) {
+        if (! is_string($buttonText)) {
             $inputs = $buttonText;
 
             $buttonText = null;
@@ -657,7 +730,7 @@ trait CrawlerTrait
     {
         $crawler = $this->filterByNameOrId($filter);
 
-        if (!count($crawler)) {
+        if (! count($crawler)) {
             throw new InvalidArgumentException(
                 "Nothing matched the filter [{$filter}] CSS query provided for [{$this->currentUri}]."
             );
@@ -779,7 +852,7 @@ trait CrawlerTrait
             $uri = substr($uri, 1);
         }
 
-        if (!Str::startsWith($uri, 'http')) {
+        if (! Str::startsWith($uri, 'http')) {
             $uri = $this->baseUrl.'/'.$uri;
         }
 
@@ -795,10 +868,13 @@ trait CrawlerTrait
     protected function transformHeadersToServerVars(array $headers)
     {
         $server = [];
+        $prefix = 'HTTP_';
 
         foreach ($headers as $name => $value) {
-            if (!starts_with($name, 'HTTP_')) {
-                $name = 'HTTP_'.strtr(strtoupper($name), '-', '_');
+            $name = strtr(strtoupper($name), '-', '_');
+
+            if (! starts_with($name, $prefix) && $name != 'CONTENT_TYPE') {
+                $name = $prefix.$name;
             }
 
             $server[$name] = $value;
