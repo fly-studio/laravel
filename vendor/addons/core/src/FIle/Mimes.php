@@ -6,20 +6,42 @@ namespace Addons\Core\File;
 class Mimes {
 
 	private $mimes;
+	 /**
+     * The singleton instance.
+     *
+     * @var ExtensionGuesser
+     */
+    private static $instance = null;
 
-	public function __construct($guess = '')
+	public function __construct()
 	{
 		$this->mimes = (array)config('mimes');
 	}
 
+	/**
+     * Returns the singleton instance.
+     *
+     * @return ExtensionGuesser
+     */
+    public static function getInstance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
 	public function mime_by_ext($ext)
 	{
-		return array_search(strtolower($ext), $this->mimes);
+		return $this->mimes[strtolower($ext)][0] ?: FALSE;
 	}
 
 	public function ext_by_mime($mime)
 	{
-		return $this->mimes[$mime];
+		foreach ($this->mimes as $key => $value)
+			if (in_array($mime, $value)) return $key;
+		return $key;
 	}
 
 	public function get_mimes()

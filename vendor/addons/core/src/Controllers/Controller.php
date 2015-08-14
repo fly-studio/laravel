@@ -4,10 +4,11 @@ namespace Addons\Core\Controllers;
 use Illuminate\Routing\Controller as BaseController;
 use Addons\Core\Models\Role;
 use Addons\Core\Output;
+use Addons\Core\File\Mimes;
 //Trait
 use Addons\Core\Controllers\OutputTrait;
 //Facades
-use Auth, Illuminate\Support\Facades\Lang;
+use Auth, Lang;
 
 class Controller extends BaseController {
 	use OutputTrait;
@@ -149,15 +150,21 @@ class Controller extends BaseController {
 		$of = strtolower($request->input('of'));
 		$jsonp = $request->input('jsonp'); 
 		empty($jsonp) && $jsonp = $request->input('callback');
-		$types = ['xml' => 'text/xml', 'yaml' => 'application/yaml', 'json' => 'application/json', 'jsonp' => 'application/x-javascript', 'script' => 'application/x-javascript', 'csv' => 'application/vnd.ms-excel', 'excel' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text' => 'text/plain', 'html' => 'text/html'];
-		if (!array_key_exists($of, $types))
+		
+		if (!in_array($of, ['js', 'json', 'jsonp', 'xml', 'txt', 'text', 'csv', 'xls', 'xlsx', 'yaml', 'html', 'pdf' ]))
 		{
-			if ($request->ajax())
+			if ($request->ajax()) //自动切换ajax提交为json数据
 				$of = empty($jsonp) ? 'json' : 'jsonp';
 			else
 				$of = 'html';
 		}
-		$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
-		return $this->response($content)->header('Content-Type', $types[$of].'; charset='.$charset);
+		if (in_array($of, ['yaml', 'csv', 'xls', 'xlsx', 'pdf']))
+		{
+			$filename = Output::$of($data['data']);
+			return response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
+		} else {
+			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
+			return $this->response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
+		}
 	}
 }

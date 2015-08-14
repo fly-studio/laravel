@@ -5,6 +5,7 @@ namespace Addons\Core\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use \Curl\Curl;
+use Addons\Core\SSH;
 class Attachment extends Model{
 	protected $guarded = ['id'];
 
@@ -275,7 +276,7 @@ class Attachment extends Model{
 			return FALSE;
 		//将云端数据同步到本地
 		$this->remote && $this->sync($id);
-		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($id).'.'.$data['ext'];
+		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($id).'.'.$data['ext']);
 		!file_exists($path) && @symlink($this->get_real_rpath($data['path']), $path);
 		return $path;
 	}
@@ -291,7 +292,7 @@ class Attachment extends Model{
 		$data = $this->get($id);
 		if (empty($data))
 			return FALSE;
-		$path = Kohana::$cache_dir.DIRECTORY_SEPARATOR.'attachment,'.md5($id).'.'.$data['ext'];
+		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($id).'.'.$data['ext']);
 		@unlink($path);
 	}
 

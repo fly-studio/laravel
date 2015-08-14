@@ -14,7 +14,9 @@
         "mews/captcha": "dev-master",
         "zizaco/entrust": "dev-master",
         "php-curl-class/php-curl-class": "dev-master",
-        "jenssegers/agent": "^3.0@dev"
+        "jenssegers/agent": "^3.0@dev",
+        "maatwebsite/excel": "dev-master",
+        "aferrandini/phpqrcode": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -1,6 +1,7 @@
 <?php
 namespace Addons\Core;
 
+use Addons\Core\Spyc;
 
 class Output {
 
@@ -14,36 +15,70 @@ class Output {
 		return 'if (typeof '.$jsonp.' == "Function") {'.$jsonp.'.call(this,'.self::json($data).');}';
 	}
 
-	public static function script($data)
+	public static function js($data)
 	{
 		return 'var RESULT = '.self::json($data).';if (self != parent) parent.RESULT = self.RESULT;';
 	}
 
-	public static function csv($data)
+	public static function excel($data, $ext = 'xlsx', $filepath = TRUE)
 	{
-		return csv_encode($data);
-	}
-
-	public static function excel($data)
-	{
-		$excel = new PHPExcel();
+		$excel = new \PHPExcel();
 		$excel->setActiveSheetIndex(0);
 		$sheet = $excel->getActiveSheet();
 		$sheet->fromArray($data);
 
-		$filepath = tempnam(Kohana::$cache_dir.DIRECTORY_SEPARATOR.'util', 'phpexcel_');
-		$result = NULL;
-		$objWriter = new PHPExcel_Writer_Excel2007($excel);
-		$objWriter->save($filepath);
-		$result = file_get_contents($filepath);
-		@unlink($filepath);
-		return $result;
+		$filepath == TRUE && $filepath = tempnam(storage_path('utils'),'excel');
+		switch (strtolower($ext)) {
+			case 'xlsx':
+				$objWriter = new \PHPExcel_Writer_Excel2007($excel);
+				break;
+			case 'xls':
+				$objWriter = new \PHPExcel_Writer_Excel5($excel);
+				break;
+			case 'csv':
+				$objWriter = new \PHPExcel_Writer_CSV($excel);
+				break;
+			case 'pdf':
+				$objWriter = new \PHPExcel_Writer_PDF($excel);
+				break;
+			default:
+				# code...
+				break;
+		}		
+		 $objWriter->save($filepath);
+		//@unlink($filepath);
+		return $filepath;
+	}
+
+	public static function csv($data)
+	{
+		return self::excel($data ,'csv');
+	}
+
+	public static function xls($data)
+	{
+		return self::excel($data ,'xls');
+	}
+
+	public static function xlsx($data)
+	{
+		return self::excel($data ,'xlsx');
+	}
+
+	public static function pdf($data)
+	{
+		return self::excel($data ,'pdf');
 	}
 
 	public static function text($data)
 	{
-		is_array($data) && $data = var_export($data);
+		is_array($data) && $data = var_export($data, TRUE);
 		return $data;
+	}
+
+	public static function txt($data)
+	{
+		return $this->text($data);
 	}
 
 	public static function xml($data)
@@ -53,7 +88,9 @@ class Output {
 
 	public static function yaml($data)
 	{
-		return function_exists('yaml_emit') ? yaml_emit($data) : Spyc::YAMLDump($data);
+		$filepath = tempnam(storage_path('utils'), 'yaml');
+		file_put_contents($filepath, function_exists('yaml_emit') ? yaml_emit($data) : Spyc::YAMLDump($data));
+		return $filepath;
 	}
 
 

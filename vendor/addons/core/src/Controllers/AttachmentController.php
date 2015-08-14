@@ -4,7 +4,6 @@ namespace Addons\Core\Controllers;
 use Addons\Core\Models\Attachment;
 use Addons\Core\Controllers\Controller as BaseController;
 use Addons\Core\File\Mimes;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
 use Lang,Crypt,Agent,Image;
 class AttachmentController extends BaseController {
 
@@ -42,7 +41,7 @@ class AttachmentController extends BaseController {
 		$this->model->sync($id);
 
 		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
+		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
 		$content_length = $data['size'];
 		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
@@ -130,7 +129,7 @@ class AttachmentController extends BaseController {
 		} else
 			$new_path = $full_path;
 		unset($img);		
-		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
+		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
 		$content_length = NULL;//$data['size'];
 		$last_modified = true;
 		$etag = true;
@@ -171,7 +170,7 @@ class AttachmentController extends BaseController {
 		$this->model->sync($id);
 
 		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
+		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
 		$content_length = $data['size'];
 		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
@@ -366,7 +365,7 @@ class AttachmentController extends BaseController {
 		$dataurl = $this->request->post('DataURL');
 		
 		$part = parse_dataurl($dataurl);
-		$ext = ExtensionGuesser::getInstance()->guess($part['mine']);
+		$ext = Mimes::getInstance()->ext_by_mime($part['mine']);
 		$data = $part['data'];
 		$file_path = tempnam(sys_get_temp_dir(),'');
 		$fp = fopen($file_path,'wb+');
