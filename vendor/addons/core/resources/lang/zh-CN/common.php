@@ -125,6 +125,10 @@ return [
 			'title' => '上传/下载失败',
 			'content' => '文件大小超出:maxsize字节！',
 		],
+		Attachment::UPLOAD_ERR_EMPTY => [
+			'title' => '上传/下载失败',
+			'content' => '文件不能为空！',
+		],
 		Attachment::UPLOAD_ERR_EXT => [
 			'title' => '上传/下载失败',
 			'content' => '不合法的文件类型，请上传/下载常规的文件，以下是允许的文件类型：:ext',

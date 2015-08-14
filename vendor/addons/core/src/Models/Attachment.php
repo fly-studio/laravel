@@ -10,7 +10,8 @@ class Attachment extends Model{
 	protected $guarded = ['id'];
 
 	const UPLOAD_ERR_MAXSIZE = 100;
-	const UPLOAD_ERR_EXT = 101;
+	const UPLOAD_ERR_EMPTY = 101;
+	const UPLOAD_ERR_EXT = 102;
 	const UPLOAD_ERR_SAVE = 106;
 	const DOWNLOAD_ERR_URL = 104;
 	const DOWNLOAD_ERR_FILE = 105;
@@ -79,6 +80,28 @@ class Attachment extends Model{
 
 	}
 
+	public function hash($uid, $hash, $size, $original_basename, $file_name = NULL, $file_ext = NULL, $description = NULL)
+	{
+		if (empty($hash) || empty($size))
+			return FALSE;
+		$file = $this->fileModel->get_byhash($hash, $size);
+		if (empty($file))
+			return FALSE;
+
+		is_null($file_ext) && $file_ext = strtolower(pathinfo($original_basename, PATHINFO_EXTENSION));
+		is_null($file_name) && $file_name = mb_basename($original_basename, '.'.$file_ext); //支持中文的basename
+		
+		$attachment = $this->create([
+			'afid' => $file->id,
+			'filename' => $file_name,
+			'ext' => $file_ext,
+			'original_basename' => $original_basename,
+			'description' => $description,
+			'uid' => empty($uid) ? NULL : $uid,
+		]);
+		return $this->get($attachment->id);
+	}
+
 	public function savefile($uid, $original_file_path, $original_basename, $file_name = NULL, $file_ext = NULL, $description = NULL)
 	{
 		if (!file_exists($original_file_path))
@@ -93,6 +116,8 @@ class Attachment extends Model{
 			return self::UPLOAD_ERR_EXT;
 		if ($size > $this->_config['maxsize'])
 			return self::UPLOAD_ERR_MAXSIZE;
+		if (empty($size))
+			return self::UPLOAD_ERR_EMPTY;
 
 		//传文件都耗费了那么多时间,还怕md5?
 		$hash = md5_file($original_file_path);

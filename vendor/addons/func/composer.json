@@ -14,12 +14,7 @@
     },
     "autoload": {
         "files": [
-            "src/func/array.func.php",
-            "src/func/core.func.php",
-            "src/func/file.func.php",
-            "src/func/math.func.php",
-            "src/func/text.func.php",
-            "src/func/time.func.php"
+            "src/func/helper.php",
         ]
     },
      "extra": {

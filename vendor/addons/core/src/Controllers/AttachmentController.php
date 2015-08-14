@@ -2,10 +2,12 @@
 namespace Addons\Core\Controllers;
 
 use Addons\Core\Models\Attachment;
-use Addons\Core\Controllers\Controller as BaseController;
+use Addons\Core\Models\AttachmentFile;
+use Addons\Core\Controllers\Controller;
+use Illuminate\Http\Request;
 use Addons\Core\File\Mimes;
 use Lang,Crypt,Agent,Image;
-class AttachmentController extends BaseController {
+class AttachmentController extends Controller {
 
 	private $model;
 	public function __construct()
@@ -200,6 +202,21 @@ class AttachmentController extends BaseController {
 		return $this->success('', FALSE, $result);
 	}
 
+	public function hash_query(Request $request)
+	{
+		$hash = $request->input('hash');
+		$size = $request->input('size');
+		$filename = $request->input('filename');
+		$ext = $request->input('ext');
+
+		if (empty($hash) || empty($size) || empty($filename))
+			return $this->error_param()->setStatusCode(404);
+		$result = $this->model->hash($this->user['id'], $hash, $size, $filename);
+		if (!is_array($result))
+			return $this->failure_attachment($result);
+		return $this->success('', FALSE, $result);
+	}
+
 	public function kindeditor_upload_query()
 	{
 		$data = array('error' => 0, 'url' => '');
@@ -360,9 +377,9 @@ class AttachmentController extends BaseController {
 		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
 	}
 
-	public function upload_dataurl_query()
+	public function upload_dataurl_query(Request $request)
 	{
-		$dataurl = $this->request->post('DataURL');
+		$dataurl = $request->post('DataURL');
 		
 		$part = parse_dataurl($dataurl);
 		$ext = Mimes::getInstance()->ext_by_mime($part['mine']);

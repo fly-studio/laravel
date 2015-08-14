@@ -116,6 +116,12 @@ class Controller extends BaseController {
 		return $this->_make_output('failure', 'default.failure_validate', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
 	}
 
+	protected function failure_attachment($error_no, $url = FALSE)
+	{
+		$_config = config('attachment');
+		return $this->failure('attachment.'.$error_no, $url, ['maxsize' => format_bytes($_config['maxsize']), 'ext' => implode(',', $_config['ext'])]);
+	}
+
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
 		$msg = $message_name;

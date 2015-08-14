@@ -2,7 +2,7 @@
 namespace Addons\Core\Controllers;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Http\Response;
+//use Illuminate\Http\Response;
 
 class PlaceholderController extends Controller {
 
@@ -23,7 +23,6 @@ class PlaceholderController extends Controller {
 	public function index($size = '100x100', $bgcolor = 'ccc', $color = '555', $text = '', $fontsize = NULL)
 	{
 
-		
 		// Dimensions
 		list($width, $height) = explode('x', $size);
 		empty($height) && $height = $width;
@@ -43,10 +42,10 @@ class PlaceholderController extends Controller {
 		// Text positioning
 		empty($fontsize) && $fontsize = ($width > $height) ? ($height / 10) : ($width / 10) ;
 		$font = __DIR__.'/../../../fonts/msyh.ttf';
-		$fontbox = imagettfbbox($fontsize, 0, $font, $text);
+		$fontbox = calculate_textbox($fontsize, 0, $font, $text);
 		// Generate text
 		imageantialias($image, true);
-		imagettftext($image, $fontsize, 0, ceil(($width - $fontbox[2]) / 2), ceil(($height - $fontbox[3]) / 2), $fontcolor, $font, $text);
+		imagettftext($image, $fontsize, 0, ceil(($width - $fontbox['width'] ) / 2 + $fontbox['left']), ceil(($height - $fontbox['height']  ) / 2 + $fontbox['top']), $fontcolor, $font, $text);
 
 		return response()->stream(function() use($image) {
 			@ob_clean(); //在输出文件前,清除缓冲区
