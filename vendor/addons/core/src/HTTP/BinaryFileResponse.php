@@ -80,10 +80,15 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 			$this->setStatusCode(304);
 			$this->maxlen = 0;
 		}
-		else if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= strtotime($this->getLastModified()))
+		else if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']))
 		{
-			$this->setStatusCode(304);
-			$this->maxlen = 0;
+			$lastModified = $this->getLastModified();
+			$lastModified instanceof \DateTime && $lastModified = $lastModified->getTimeStamp();
+			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $lastModified)
+			{
+				$this->setStatusCode(304);
+				$this->maxlen = 0;
+			}
 		} else {
 			switch (substr($_SERVER['SERVER_SOFTWARE'], 0, (int)strpos($_SERVER['SERVER_SOFTWARE'],'/'))) {
 				case 'nginx':

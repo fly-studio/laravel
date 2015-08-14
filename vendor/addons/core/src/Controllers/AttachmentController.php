@@ -5,7 +5,7 @@ use Addons\Core\Models\Attachment;
 use Addons\Core\Controllers\Controller as BaseController;
 use Addons\Core\File\Mimes;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeExtensionGuesser;
-use Lang,Crypt,Agent;
+use Lang,Crypt,Agent,Image;
 class AttachmentController extends BaseController {
 
 	private $model;
@@ -47,7 +47,7 @@ class AttachmentController extends BaseController {
 		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
 		$cache = TRUE;
-		response()->download($full_path, $data['displayname'], [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
+		return response()->download($full_path, $data['displayname'], [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 
 	}
 
@@ -82,7 +82,7 @@ class AttachmentController extends BaseController {
 		if (in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
 		{
 			if (!empty($width) || !empty($height))
-				return $this->resize($id, $width, $height, $master, $quality);
+				return $this->resize($id, $width, $height);
 			else
 			{
 	 			if ( Agent::isMobile() && !Agent::isTablet() )
@@ -97,7 +97,7 @@ class AttachmentController extends BaseController {
 		}
 	}
 
-	public function resize($id, $width = NULL, $height = NULL, $master = Image::AUTO, $quality = 100)
+	public function resize($id, $width = NULL, $height = NULL)
 	{
 		$id = intval($id);
 		if (empty($id))
@@ -116,25 +116,24 @@ class AttachmentController extends BaseController {
 		//获取远程文件
 		$this->model->sync($id);
 
-		$new_path = storage_path(str_replace('.','[dot]',$this->model->get_relative_rpath($data['path'])).';'.$width.'x'.$height.';'.$master.';'.$quality.'.'.$data['ext']);
-		if (!file_exists($new_path))
+		$full_path = $this->model->get_real_rpath($data['path']);
+		$img = Image::make($full_path);
+		if ((!empty($width) && $img->width() > $width) || (!empty($height) && $img->height() > $height))
 		{
-			$full_path = $this->model->get_real_rpath($data['path']);
-			$img = Image::factory($full_path, class_exists('Imagick') ? 'Imagick' : NULL);
-			!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
-
-			if ((!is_null($width) && $img->width > $width) || (!is_null($height) && $img->height > $height))
+			$wh = aspect_ratio($img->width(), $img->height(), $width, $height);extract($wh);
+			$new_path = storage_path(str_replace('.','[dot]',$this->model->get_relative_rpath($data['path'])).';'.$width.'x'.$height.'.'.$data['ext']);
+			if (!file_exists($new_path))
 			{
-				$img->resize($width, $height, $master);
-				$img->save($new_path, $quality);
+				!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
+				$img->resize($width, $height, function ($constraint) {$constraint->aspectRatio();})->save($new_path);
 			}
-			else
-				symlink($full_path, $new_path);
-		}
+		} else
+			$new_path = $full_path;
+		unset($img);		
 		$mime_type = (new Mimes())->mime_by_ext($data['ext']);
 		$content_length = NULL;//$data['size'];
-		$last_modified = $data['created_at'];
-		$etag = $data['hash'];
+		$last_modified = true;
+		$etag = true;
 		$cache = TRUE;
 		return response()->download($new_path, NULL, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'), NULL);
 	}
@@ -191,10 +190,10 @@ class AttachmentController extends BaseController {
 		if (empty($link_path))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 
-		$this->redirect($link_path);
+		redirect($link_path);
 	}
 
-	public function swfupload_query()
+	public function uploader_query()
 	{
 		$result = $this->model->upload($this->user['id'], 'Filedata');
 		if (!is_array($result))

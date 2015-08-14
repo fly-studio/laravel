@@ -62,11 +62,12 @@ class Controller extends BaseController {
 		if (in_array(app('request')->method(), array( 'POST', 'PUT', 'DELETE' )))
 		{
 			//header no cache when post
-			$response->header([
+			foreach([
 				'Expires' => '0',
 				'Cache-Control' => 'no-store,private, post-check=0, pre-check=0, max-age=0',
 				'Pragma' => 'no-cache',
-			]);
+			] as $k => $v)
+				$response->header($k, $v);
 		}
 		return $response;
 	}

@@ -1,6 +1,5 @@
 <!--本文件需要放置在common.js之后-->
-<script src="<{'static/js/swfupload/swfupload.js'|url}>"></script>
-<style type="text/css">
+<style>
 .upload-preview {position: relative;}
 .upload-preview img {border:1px solid #000;}
 .upload-preview .actions {position: absolute; width: 50px; height: 28px;
@@ -30,9 +29,4 @@
 	vertical-align: top;
 }
 </style>
-<script src="<{'static/js/swfupload/jquery.upload-file.js'|url}>?session_id=<{''|@session_id|encrypt|escape:'url'}>"></script>
-<script type="text/javascript">
-(function($){
-	$.fn.extend({uploader: $.fn.upload_file});
-})(jQuery);
-</script>
+<script src="<{'static/js/jquery.uploader.js'|url}>?session_id=<{''|@session_id|encrypt|escape:'url' nofilter}>"></script>
