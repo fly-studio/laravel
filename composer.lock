@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "214957aad989345d43da849be970ede6",
+    "hash": "cc488fac50df4b1d59b11d0af0bd010c",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -48,6 +48,63 @@
                 "qrcode"
             ],
             "time": "2014-10-25 08:51:14"
+        },
+        {
+            "name": "alchemy/binary-driver",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alchemy-fr/BinaryDriver.git",
+                "reference": "b32c03d4b56ce29f783051eac55887adae654b41"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/alchemy-fr/BinaryDriver/b32c03d4b56ce29f783051eac55887adae654b41.zip",
+                "reference": "b32c03d4b56ce29f783051eac55887adae654b41",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "~1.0",
+                "monolog/monolog": "~1.3",
+                "php": ">=5.3.3",
+                "psr/log": "~1.0",
+                "symfony/process": "~2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Alchemy": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Neutron",
+                    "email": "imprec@gmail.com",
+                    "homepage": "http://www.lickmychip.com/"
+                },
+                {
+                    "name": "Phraseanet Team",
+                    "email": "info@alchemy.fr",
+                    "homepage": "http://www.phraseanet.com/"
+                },
+                {
+                    "name": "Nicolas Le Goff",
+                    "email": "legoff.n@gmail.com"
+                }
+            ],
+            "description": "A set of tools to build binary drivers",
+            "keywords": [
+                "binary",
+                "driver"
+            ],
+            "time": "2013-06-21 15:51:20"
         },
         {
             "name": "barryvdh/laravel-debugbar",
@@ -716,6 +773,51 @@
             "time": "2014-09-09 13:34:57"
         },
         {
+            "name": "evenement/evenement",
+            "version": "1.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/igorw/evenement.git",
+                "reference": "8b0918f8374327dfed4408fe467980ab41d556dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/igorw/evenement/8b0918f8374327dfed4408fe467980ab41d556dd.zip",
+                "reference": "8b0918f8374327dfed4408fe467980ab41d556dd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Evenement": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch",
+                    "homepage": "http://wiedler.ch/igor/"
+                }
+            ],
+            "description": "Événement is a very simple event dispatching library for PHP 5.3",
+            "keywords": [
+                "event-dispatcher"
+            ],
+            "time": "2012-12-29 17:04:52"
+        },
+        {
             "name": "guzzlehttp/psr7",
             "version": "1.1.0",
             "source": {
@@ -1170,12 +1272,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "a53297cfb21e34a17aa2ad29f59b512cd5b80a1f"
+                "reference": "e3f7ddb789bcff377c26dd91fb0f98273a386063"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/thephpleague/flysystem/a53297cfb21e34a17aa2ad29f59b512cd5b80a1f.zip",
-                "reference": "a53297cfb21e34a17aa2ad29f59b512cd5b80a1f",
+                "url": "http://packagist.phpcomposer.com/files/thephpleague/flysystem/e3f7ddb789bcff377c26dd91fb0f98273a386063.zip",
+                "reference": "e3f7ddb789bcff377c26dd91fb0f98273a386063",
                 "shasum": ""
             },
             "require": {
@@ -1243,7 +1345,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2015-08-07 20:54:37"
+            "time": "2015-08-13 14:37:37"
         },
         {
             "name": "maatwebsite/excel",
@@ -1647,6 +1749,46 @@
             "time": "2015-06-25 04:19:39"
         },
         {
+            "name": "neutron/temporary-filesystem",
+            "version": "2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/romainneutron/Temporary-Filesystem.git",
+                "reference": "6b21fa99fd452efea16b9a7adb7304ccfff854d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/romainneutron/Temporary-Filesystem/6b21fa99fd452efea16b9a7adb7304ccfff854d0.zip",
+                "reference": "6b21fa99fd452efea16b9a7adb7304ccfff854d0",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/filesystem": "~2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Neutron": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Neutron",
+                    "email": "imprec@gmail.com",
+                    "homepage": "http://www.lickmychip.com/"
+                }
+            ],
+            "description": "Symfony filesystem extension to handle temporary files",
+            "time": "2013-10-10 10:58:09"
+        },
+        {
             "name": "nikic/php-parser",
             "version": "1.x-dev",
             "source": {
@@ -1697,12 +1839,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-curl-class/php-curl-class.git",
-                "reference": "342fbd311f1fe9a113749e8a6d7c6000f86e345b"
+                "reference": "473f080a12322365a4dac1e1a414590ea9fc1839"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/php-curl-class/php-curl-class/342fbd311f1fe9a113749e8a6d7c6000f86e345b.zip",
-                "reference": "342fbd311f1fe9a113749e8a6d7c6000f86e345b",
+                "url": "http://packagist.phpcomposer.com/files/php-curl-class/php-curl-class/473f080a12322365a4dac1e1a414590ea9fc1839.zip",
+                "reference": "473f080a12322365a4dac1e1a414590ea9fc1839",
                 "shasum": ""
             },
             "require": {
@@ -1745,7 +1887,76 @@
                 "web service",
                 "xml"
             ],
-            "time": "2015-08-12 03:50:56"
+            "time": "2015-08-13 15:50:05"
+        },
+        {
+            "name": "php-ffmpeg/php-ffmpeg",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHP-FFMpeg/PHP-FFMpeg.git",
+                "reference": "6e3134e4ecc96852b1205e6c88ceffdb8cf17d34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/PHP-FFMpeg/PHP-FFMpeg/6e3134e4ecc96852b1205e6c88ceffdb8cf17d34.zip",
+                "reference": "6e3134e4ecc96852b1205e6c88ceffdb8cf17d34",
+                "shasum": ""
+            },
+            "require": {
+                "alchemy/binary-driver": "~1.5",
+                "doctrine/cache": "~1.0",
+                "evenement/evenement": "~1.0",
+                "neutron/temporary-filesystem": "~2.1, >=2.1.1",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7",
+                "sami/sami": "~1.0",
+                "silex/silex": "~1.0"
+            },
+            "suggest": {
+                "php-ffmpeg/extras": "A compilation of common audio & video drivers for PHP-FFMpeg"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "FFMpeg": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Romain Neutron",
+                    "email": "imprec@gmail.com",
+                    "homepage": "http://www.lickmychip.com/"
+                },
+                {
+                    "name": "Phraseanet Team",
+                    "email": "info@alchemy.fr",
+                    "homepage": "http://www.phraseanet.com/"
+                }
+            ],
+            "description": "FFMpeg PHP, an Object Oriented library to communicate with AVconv / ffmpeg",
+            "keywords": [
+                "audio",
+                "audio processing",
+                "avconv",
+                "avprobe",
+                "ffmpeg",
+                "ffprobe",
+                "video",
+                "video processing"
+            ],
+            "time": "2015-01-30 19:07:38"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -2088,12 +2299,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e"
+                "reference": "547582fa5c445a167a5ad6ffd88be14798efb4f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/symfony/Console/d6cf02fe73634c96677e428f840704bfbcaec29e.zip",
-                "reference": "d6cf02fe73634c96677e428f840704bfbcaec29e",
+                "url": "http://packagist.phpcomposer.com/files/symfony/Console/547582fa5c445a167a5ad6ffd88be14798efb4f0.zip",
+                "reference": "547582fa5c445a167a5ad6ffd88be14798efb4f0",
                 "shasum": ""
             },
             "require": {
@@ -2137,7 +2348,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-28 15:18:12"
+            "time": "2015-08-11 20:08:57"
         },
         {
             "name": "symfony/css-selector",
@@ -2357,6 +2568,55 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
             "time": "2015-06-24 15:32:32"
+        },
+        {
+            "name": "symfony/filesystem",
+            "version": "2.8.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Filesystem.git",
+                "reference": "9f70c5625a32b2f1e6fc37222f52b4e0eb437b0e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "http://packagist.phpcomposer.com/files/symfony/Filesystem/9f70c5625a32b2f1e6fc37222f52b4e0eb437b0e.zip",
+                "reference": "9f70c5625a32b2f1e6fc37222f52b4e0eb437b0e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7|~3.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Filesystem\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Filesystem Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-07-09 16:11:14"
         },
         {
             "name": "symfony/finder",
@@ -3659,12 +3919,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "5700f75b23b0dd3495c0f495fe33a5e6717ee160"
+                "reference": "80da5500014051b9e70740f183c5e5586f38f977"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/phpspec/prophecy/5700f75b23b0dd3495c0f495fe33a5e6717ee160.zip",
-                "reference": "5700f75b23b0dd3495c0f495fe33a5e6717ee160",
+                "url": "http://packagist.phpcomposer.com/files/phpspec/prophecy/80da5500014051b9e70740f183c5e5586f38f977.zip",
+                "reference": "80da5500014051b9e70740f183c5e5586f38f977",
                 "shasum": ""
             },
             "require": {
@@ -3678,7 +3938,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4.x-dev"
+                    "dev-master": "1.5.x-dev"
                 }
             },
             "autoload": {
@@ -3711,7 +3971,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2015-06-30 10:26:46"
+            "time": "2015-08-13 10:25:47"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3910,12 +4170,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "7a9b0969488c3c54fd62b4d504b3ec758fd005d9"
+                "reference": "09fc125d65c344c53a7c7ad8f261e3f3af9f76c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/php-token-stream/7a9b0969488c3c54fd62b4d504b3ec758fd005d9.zip",
-                "reference": "7a9b0969488c3c54fd62b4d504b3ec758fd005d9",
+                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/php-token-stream/09fc125d65c344c53a7c7ad8f261e3f3af9f76c5.zip",
+                "reference": "09fc125d65c344c53a7c7ad8f261e3f3af9f76c5",
                 "shasum": ""
             },
             "require": {
@@ -3951,7 +4211,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-06-19 03:43:16"
+            "time": "2015-08-13 14:23:08"
         },
         {
             "name": "phpunit/phpunit",
@@ -4512,7 +4772,8 @@
         "php-curl-class/php-curl-class": 20,
         "jenssegers/agent": 20,
         "maatwebsite/excel": 20,
-        "aferrandini/phpqrcode": 20
+        "aferrandini/phpqrcode": 20,
+        "php-ffmpeg/php-ffmpeg": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

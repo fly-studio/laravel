@@ -16,7 +16,8 @@
         "php-curl-class/php-curl-class": "dev-master",
         "jenssegers/agent": "^3.0@dev",
         "maatwebsite/excel": "dev-master",
-        "aferrandini/phpqrcode": "dev-master"
+        "aferrandini/phpqrcode": "dev-master",
+        "php-ffmpeg/php-ffmpeg": "^0.5.0@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
