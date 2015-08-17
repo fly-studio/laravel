@@ -44,7 +44,7 @@ class PlaceholderController extends Controller {
 		$font = __DIR__.'/../../../fonts/msyh.ttf';
 		$fontbox = calculate_textbox($fontsize, 0, $font, $text);
 		// Generate text
-		imageantialias($image, true);
+		function_exists('imageantialias') && imageantialias($image, true);
 		imagettftext($image, $fontsize, 0, ceil(($width - $fontbox['width'] ) / 2 + $fontbox['left']), ceil(($height - $fontbox['height']  ) / 2 + $fontbox['top']), $fontcolor, $font, $text);
 
 		return response()->stream(function() use($image) {
