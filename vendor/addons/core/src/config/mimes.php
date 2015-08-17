@@ -185,6 +185,7 @@ return [
 	'wav' => ['audio/x-wav'],
 	'wax' => ['audio/x-ms-wax'],
 	'wbxml' => ['application/wbxml','application/vnd.wap.wbxml'],
+	'webapp' => ['application/x-web-app-manifest+json'],
 	'webm' => ['video/webm'],
 	'wm' => ['video/x-ms-wm'],
 	'wma' => ['audio/x-ms-wma'],
