@@ -3,8 +3,9 @@
 <script src="<{'static/js/webuploader/webuploader.nolog.min.js'|url}>"></script>
 <script src="<{'static/js/mimetype.min.js'|url}>"></script>
 <style>
+	.uploader-container {position: relative;}
 	.webuploader-dnd-over { border: 1px #ccc solid; padding: 20px;position: relative;box-shadow: 0px 0px 20px rgba(0,0,0,0.3);}
-	.uploader-container .drop-tips {top:20px; left:0;  width: 100%; height: 100%; position:absolute; display: none;text-align: center;}
+	.uploader-container .drop-tips {z-index:999999;top:20px; left:0; background-color: #fff; opacity: 0.8;filter: alpha(opacity=80);  width: 100%; height: 100%; position:absolute; display: none;text-align: center;}
 	.webuploader-dnd-over .drop-tips {display: block;}
 	.uploader-container .thumbnail .file-panel {
 		position: absolute;height: 0;width: 100%;top: 0;left: 0;overflow: hidden;z-index: 300;
