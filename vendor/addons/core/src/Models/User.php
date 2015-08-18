@@ -9,12 +9,14 @@ use Illuminate\Auth\Authenticatable;
 //use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 //use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
-use Zizaco\Entrust\Traits\EntrustUserTrait;;
+use Zizaco\Entrust\Traits\EntrustUserTrait;
+use Addons\Core\Models\Role;
 
 class User extends Model implements AuthenticatableContract/*, CanResetPasswordContract*/
 {
 	use Authenticatable/*, CanResetPassword*/;
 	use SoftDeletes, EntrustUserTrait;
+	use CacheTrait;
 
 	//protected $dates = ['deleted_at'];
 	//表名
@@ -32,4 +34,24 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 	 * @var array
 	 */
 	protected $hidden = ['password', 'remember_token'];
+
+	public function get($username)
+	{
+		return $this->where('username', $username)->first();
+	}
+
+	public function add($data, $rid = Role::VIEWER)
+	{
+		$data['password'] = bcrypt($data['password']);
+		$user = $this->create($data);
+		//加入view组
+		$user->attachRole($this->roles[$rid]['id']);
+		return $user->id;
+	}
+
+	public function auto_password($username)
+	{
+		$username = strtolower($username);
+		return md5($username.env('APP_KEY').md5($username));
+	}
 }

@@ -9,13 +9,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse as BaseBinaryFileRespons
 class BinaryFileResponse extends BaseBinaryFileResponse {
 
 	/**
-     * Automatically sets the ETag header according to the checksum of the file.
-     */
-    public function setAutoEtag()
-    {
+	 * Automatically sets the ETag header according to the checksum of the file.
+	 */
+	public function setAutoEtag()
+	{
 		$this->setEtag(md5(serialize(fileinfo($this->file->getPathname()))));
-        return $this;
-    }
+		return $this;
+	}
 
 
 	/**

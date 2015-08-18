@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\HTTP;
+namespace Addons\Core\Http;
 
 use Illuminate\Http\Response as BaseResponse;
 class Response extends BaseResponse {

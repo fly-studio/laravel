@@ -7,11 +7,11 @@ class Mimes {
 
 	private $mimes;
 	 /**
-     * The singleton instance.
-     *
-     * @var ExtensionGuesser
-     */
-    private static $instance = null;
+	 * The singleton instance.
+	 *
+	 * @var ExtensionGuesser
+	 */
+	private static $instance = null;
 
 	public function __construct()
 	{
@@ -19,18 +19,18 @@ class Mimes {
 	}
 
 	/**
-     * Returns the singleton instance.
-     *
-     * @return ExtensionGuesser
-     */
-    public static function getInstance()
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
+	 * Returns the singleton instance.
+	 *
+	 * @return ExtensionGuesser
+	 */
+	public static function getInstance()
+	{
+		if (null === self::$instance) {
+			self::$instance = new self();
+		}
 
-        return self::$instance;
-    }
+		return self::$instance;
+	}
 
 	public function mime_by_ext($ext)
 	{

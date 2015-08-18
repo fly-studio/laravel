@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use \Curl\Curl;
 use Addons\Core\SSH;
+use Addons\Core\Models\CacheTrait;
 class Attachment extends Model{
+
+	use CacheTrait;
+	
 	protected $guarded = ['id'];
 
 	const UPLOAD_ERR_MAXSIZE = 100;

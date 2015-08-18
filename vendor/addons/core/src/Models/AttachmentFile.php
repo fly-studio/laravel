@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AttachmentFile extends Model{
 	use SoftDeletes;
-	//protected $table = 'attachment_files';
+	use CacheTrait;
+
 	protected $guarded = ['id'];
+	
 	public function attachments()
 	{
 		return $this->belongsTo('Addons\\Core\\Models\Attachment', 'id', 'afid');

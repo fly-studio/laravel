@@ -5,7 +5,7 @@ use Illuminate\Support\ServiceProvider as SP;
 //use Illuminate\Translation\Translator;
 //use Illuminate\Contracts\Validation\Validator;
 //use Translator,Validator;
-use Addons\Core\HTTP\ResponseFactory;
+use Addons\Core\Http\ResponseFactory;
 class ServiceProvider extends SP
 {
 	/**
@@ -59,7 +59,7 @@ class ServiceProvider extends SP
 			return new Validation\Validator( $translator, $data, $rules, $messages, $customAttributes );
 		});
 
-		$this->app['router']->group(['namespace' => 'Addons\\Core\\Controller'], function($router) {
+		$this->app['router']->group(['namespace' => 'Addons\\Core\\Controllers'], function($router) {
 			require __DIR__.'/routes.php';
 		});
 	}
