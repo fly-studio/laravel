@@ -74,7 +74,6 @@ class Controller extends BaseController {
 		return $response;
 	}
 
-
 	protected function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
 		return $this->_make_output('error', $message_name, $url, $data, $export_data);
@@ -97,12 +96,17 @@ class Controller extends BaseController {
 
 	protected function success_login($url = TRUE, array $data = [], $export_data = TRUE)
 	{
-		return $this->success(Lang::has('auth.success') ? 'auth.success' : 'default.success_login', $url, $data, $export_data);
+		return $this->success('auth.success_login', $url, $data, $export_data);
+	}
+
+	protected function success_logout($url = TRUE, array $data = [], $export_data = TRUE)
+	{
+		return $this->success('auth.success_logout', $url, $data, $export_data);
 	}
 
 	protected function failure_login($url = FALSE, array $data = [], $export_data = FALSE)
 	{
-		return $this->failure(Lang::has('auth.failure') ? 'auth.failure' : 'default.failure_login', $url, $data, $export_data);
+		return $this->failure('auth.failure_login', $url, $data, $export_data);
 	}
 
 	protected function failure_validate(\Illuminate\Support\MessageBag $messagebag)
@@ -111,10 +115,10 @@ class Controller extends BaseController {
 		$messages = [];
 		foreach ($errors as $lines) {
 			foreach ($lines as $message) {
-				$messages[] = trans('default.failure_validate.list', compact('message'));
+				$messages[] = trans(Lang::has('validation.failure_post.list') ? 'validation.failure_post.list' : 'core::common.validation.failure_post.list', compact('message'));
 			}
 		}
-		return $this->_make_output('failure', 'default.failure_validate', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
+		return $this->_make_output('failure', 'validation.failure_post', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
 	}
 
 	protected function failure_attachment($error_no, $url = FALSE)

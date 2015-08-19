@@ -48,7 +48,7 @@ class Validator extends BaseValidator {
 		return !empty($value);
 	}
 
-	protected function validateFields($attribute, $value, $parameters)
+	protected function validateField($attribute, $value, $parameters)
 	{
 		return (new Field())->exists($value, empty($parameters) ? $attribute : $parameters[0]);;
 	}
@@ -141,7 +141,7 @@ class Validator extends BaseValidator {
 	public function getjQueryRules()
 	{
 		$jqueryRules = [];
-		$rules = $this->getParsedRules();
+		$rules = $this->getParsedRules();print_r($rules);
 		foreach($rules as $attribute => $_list)
 		{ //3
 			$jqueryRules[$attribute] = [];

@@ -10,7 +10,7 @@ class Role extends EntrustRole
 	const MANGER = 'manger';
 	const OWNER = 'owner';
 	const LEADER = 'leader';
-	const VIEWER = 'view';
+	const VIEWER = 'viewer';
 
 	//不能批量赋值
 	protected $guarded = [];

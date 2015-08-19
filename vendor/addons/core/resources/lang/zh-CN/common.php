@@ -26,14 +26,6 @@ return [
 			'title' => '操作失败',
 			'content' => '您的操作失败，请重试！',
 		],
-		'success_login' => [
-			'title' => '登录成功',
-			'content' => '即将跳转到刚才的页面！',
-		],
-		'success_logout' => [
-			'title' => '登出成功',
-			'content' => '即将跳转到刚才的页面！',
-		],
 		'error_param' => [
 			'title' => '参数错误',
 			'content' => '您传递的参数错误，请检查您的来路是否正确！',
@@ -50,12 +42,24 @@ return [
 			'title' => '数据库错误',
 			'content' => '服务器数据库出现错误，请稍后再试！',
 		],
-		'failure_validate' => [
+	],
+	'validation' => [
+		'failure_post' => [
 			'title' => '提交资料失败',
 			'content' => '<ul class="post_faiure">:messages</ul>',
 			'list' => '<li>:message</li>'.PHP_EOL,
 		],
-		'failure_auth' => [
+	],
+	'auth' => [
+		'success_login' => [
+			'title' => '登录成功',
+			'content' => '即将跳转到刚才的页面！',
+		],
+		'success_logout' => [
+			'title' => '登出成功',
+			'content' => '即将跳转到刚才的页面！',
+		],
+		'failure_permission' => [
 			'title' => '权限不够',
 			'content' => '您的权限不够，无法访问本页面，切换用户请<a href="'.url('auth').'" target="_self">点击这里</a>！',
 		],
@@ -67,6 +71,12 @@ return [
 			'title' => '您尚未登录',
 			'content' => '您尚未登录，无法访问本页面，登录请<a href="'.url('auth').'" target="_self">点击这里</a>！',
 		],
+	],
+	'document' => [
+		'failure_noexist' => [
+			'title' => '资料不存在',
+			'content' => '您要查找的资料不存在！',
+		],
 		'failure_edit_other' => [
 			'title' => '修改越权',
 			'content' => '您要修改的资料不属于您，请勿越权！',
@@ -74,10 +84,6 @@ return [
 		'failure_view_other' => [
 			'title' => '查看越权',
 			'content' => '您无法查看别人的资料！',
-		],
-		'failure_noexist' => [
-			'title' => '资料不存在',
-			'content' => '您要查找的资料不存在！',
 		],
 	],
 	'attachment' => [
