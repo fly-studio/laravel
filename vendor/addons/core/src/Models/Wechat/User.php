@@ -62,7 +62,7 @@ class User {
 			'username' => $openid,
 			'password' => $this->user->auto_password($openid),
 			'nickname' => '',
-		]) : $user['uid'];
+		])->id : $user['id'];
 
 		$hashkey = 'update-wechat-'.$uid;
 		$last = Cache::get($hashkey, NULL);

@@ -3,6 +3,7 @@ namespace Addons\Core\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use Addons\Core\Models\Role;
+use Addons\Core\Models\Field;
 use Addons\Core\Output;
 use Addons\Core\File\Mimes;
 //Trait
@@ -29,7 +30,7 @@ class Controller extends BaseController {
 	private function initCommon()
 	{
 		$this->site = app('config')->get('site');
-		$this->fields = [];
+		$this->fields = (new Field)->getFields();
 		$this->site['titles'][] = ['title' => $this->site['title'], 'url' => '', 'target' => '_self'];
 	}
 

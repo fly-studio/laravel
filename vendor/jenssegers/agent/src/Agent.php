@@ -38,12 +38,11 @@ class Agent extends Mobile_Detect {
     );
 
     /**
-     * List of additional browsers.
+     * List of additional properties.
      *
      * @var array
      */
     protected static $additionalProperties = array(
-
         // Operating systems
         'Windows'           => 'Windows NT [VER]',
         'Windows NT'        => 'Windows NT [VER]',
@@ -65,12 +64,14 @@ class Agent extends Mobile_Detect {
      * @var array
      */
     protected static $robots = array(
-        'Googlebot'         => 'googlebot',
+        'Google'            => 'googlebot',
         'MSNBot'            => 'msnbot',
         'Baiduspider'       => 'baiduspider',
         'Bing'              => 'bingbot',
         'Yahoo'             => 'yahoo',
         'Lycos'             => 'lycos',
+        'Facebook'          => 'facebookexternalhit',
+        'Twitter'           => 'Twitterbot',
     );
 
     /**
@@ -151,7 +152,7 @@ class Agent extends Mobile_Detect {
             if (empty($regex)) continue;
 
             // Check match
-            if ($this->match($regex, $userAgent)) return $key;
+            if ($this->match($regex, $userAgent)) return $key ?: reset($this->matchesArray);
         }
 
         return false;
@@ -223,16 +224,35 @@ class Agent extends Mobile_Detect {
     }
 
     /**
+     * Get the robot name.
+     *
+     * @param  string $userAgent
+     * @return string
+     */
+    public function robot($userAgent = null)
+    {
+        // Get bot rules
+        $rules = $this->mergeRules(
+            static::$robots, // NEW
+            array(static::$utilities['Bot']),
+            array(static::$utilities['MobileBot'])
+        );
+
+        return $this->findDetectionRulesAgainstUA($rules, $userAgent);
+    }
+
+    /**
      * Check if device is a robot.
      *
      * @param  string  $userAgent
-     * @return boolean
+     * @return bool
      */
     public function isRobot($userAgent = null)
     {
         // Get bot rules
         $rules = $this->mergeRules(
             array(static::$utilities['Bot']),
+            array(static::$utilities['MobileBot']),
             static::$robots // NEW
         );
 
@@ -308,7 +328,7 @@ class Agent extends Mobile_Detect {
      */
     public function __call($name, $arguments)
     {
-        //make sure the name starts with 'is', otherwise
+        // Make sure the name starts with 'is', otherwise
         if (substr($name, 0, 2) != 'is')
         {
             throw new BadMethodCallException("No such method exists: $name");

@@ -101,7 +101,7 @@ class Attachment extends Model{
 			'ext' => $file_ext,
 			'original_basename' => $original_basename,
 			'description' => $description,
-			'uid' => empty($uid) ? NULL : $uid,
+			'uid' => $uid,
 		]);
 		return $this->get($attachment->id);
 	}
@@ -151,7 +151,7 @@ class Attachment extends Model{
 			'ext' => $file_ext,
 			'original_basename' => $original_basename,
 			'description' => $description,
-			'uid' => empty($uid) ? NULL : $uid,
+			'uid' => $uid,
 		]);
 		return $this->get($attachment->id);
 	}

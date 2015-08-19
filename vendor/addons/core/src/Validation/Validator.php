@@ -2,8 +2,9 @@
 namespace Addons\Core\Validation;
  
 use Illuminate\Validation\Validator as BaseValidator;
+use Addons\Core\Models\Field;
 /**
- * 本Class主要是处理宽字符
+ * 本Class主要是处理宽字符的长度、Fields检索等
  * 
  */
 class Validator extends BaseValidator {
@@ -38,6 +39,18 @@ class Validator extends BaseValidator {
 				break;
 		}
 		return preg_match($patten, $value);
+	}
+
+	protected function validateNotZero($attribute, $value, $parameters)
+	{
+		if (!is_numeric($value)) return true;
+		$value += 0;
+		return !empty($value);
+	}
+
+	protected function validateFields($attribute, $value, $parameters)
+	{
+		return (new Field())->exists($value, empty($parameters) ? $attribute : $parameters[0]);;
 	}
 
 	protected function validateIdCard($attribute, $value, $parameters)
@@ -97,7 +110,7 @@ class Validator extends BaseValidator {
 		}
 
 		//宽字节按照字体的几个宽度计算，比如「微软雅黑」下，汉字占据两个显示宽度
-		$rule = $this->getRule($attribute, 'Ansi');print_r($rule);
+		$rule = $this->getRule($attribute, 'Ansi');
 		$ansiWidth = empty($rule) || empty($rule[0]) ? 1 : intval($rule[0]);
  
 		return strlen_ansi($value, NULL, $ansiWidth);
@@ -160,16 +173,16 @@ class Validator extends BaseValidator {
 						$parameters = '('.implode('|', array_map('preg_quote', $parameters)).')';
 						break;
 					case 'digits':
-						if (!empty($parameters)) {
-							$rule = 'digits';
+						if (!empty($parameters))
+						{
+							$jqueryRules[$attribute] += ['rangelength' => [$parameters, $parameters]];
 							$parameters = true;
-							$jqueryRules[$attribute] += ['range' => ['min' => $parameters[0], 'max' => $parameters[0]]];
 						}
 						break;
 					case 'digits_between':
+						$jqueryRules[$attribute] += ['rangelength' => [$parameters[0], $parameters[1]]];
 						$rule = 'digits';
 						$parameters = true;
-						$jqueryRules[$attribute] += ['range' => ['min' => $parameters[0], 'max' => $parameters[1]]];
 						break;
 					case 'ip':
 						$rule = 'regex';
@@ -181,6 +194,7 @@ class Validator extends BaseValidator {
 						break;
 					case 'size':
 						$rule = $this->isNumeric($_list) ? 'range' : 'rangelength';
+						$parameters = [$parameters, $parameters];
 						break;
 					case 'required_without_all': //任意一个有值
 						$rule = 'require_from_group';
@@ -191,10 +205,10 @@ class Validator extends BaseValidator {
 						$attribute =  [count($parameters) > 1 ? count($parameters) - 1 : 1, implode(',', array_map(function($v) {return '[name="'.$v.'"]';}, $parameters))];
 						break;
 					case 'max':
-						$rule = 'maxlength';
+						$rule = $this->isNumeric($_list) ? 'max' : 'maxlength';
 						break;
 					case 'min':
-						$rule = 'minlength';
+						$rule = $this->isNumeric($_list) ? 'min' : 'minlength';
 						break;
 					case 'between':
 						$rule = 'range';
@@ -225,6 +239,9 @@ class Validator extends BaseValidator {
 					case 'numeric':
 						$rule = 'number';
 						break;
+					case 'field':
+						$rule = 'digits';
+						break;
 					case 'before':
 					case 'different':
 					case 'exists':
@@ -238,7 +255,7 @@ class Validator extends BaseValidator {
 					case 'timezone':
 					case 'unique':
 						continue 2;
-					default: //email url regex required ansi phone idcard
+					default: //email url regex required ansi phone idcard zero
 						
 						break;
 				}

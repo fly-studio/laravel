@@ -12,6 +12,9 @@ class Role extends EntrustRole
 	const LEADER = 'leader';
 	const VIEWER = 'view';
 
+	//不能批量赋值
+	protected $guarded = [];
+
 	public function getRoles()
 	{
 		$roles = [];

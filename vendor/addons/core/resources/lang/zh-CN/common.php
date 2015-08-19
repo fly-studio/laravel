@@ -30,6 +30,10 @@ return [
 			'title' => '登录成功',
 			'content' => '即将跳转到刚才的页面！',
 		],
+		'success_logout' => [
+			'title' => '登出成功',
+			'content' => '即将跳转到刚才的页面！',
+		],
 		'error_param' => [
 			'title' => '参数错误',
 			'content' => '您传递的参数错误，请检查您的来路是否正确！',

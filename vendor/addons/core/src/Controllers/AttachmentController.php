@@ -136,7 +136,7 @@ class AttachmentController extends Controller {
 		$last_modified = true;
 		$etag = true;
 		$cache = TRUE;
-		return response()->download($new_path, NULL, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'), NULL);
+		return response()->preview($new_path, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 	}
 
 	public function phone($id)
@@ -177,7 +177,7 @@ class AttachmentController extends Controller {
 		$last_modified = $data['created_at'];
 		$etag = $data['hash'];
 		$cache = TRUE;
-		return response()->download($full_path, NULL, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'), NULL);
+		return response()->preview($full_path, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 	}
 
 	public function redirect($id)

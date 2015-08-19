@@ -3,6 +3,7 @@ namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Wechat\Wechat;
 use Addons\Core\Models\Wechat\User;
+use Session;
 class OAuth2 {
 	private $wechat;
 

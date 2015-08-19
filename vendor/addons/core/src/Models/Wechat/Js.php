@@ -2,7 +2,7 @@
 namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Wechat\Wechat;
-class OAuth2 {
+class Js {
 	private $wechat;
 
 	public function __construct($options)

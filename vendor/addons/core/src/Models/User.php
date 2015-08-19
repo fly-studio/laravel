@@ -40,13 +40,14 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 		return $this->where('username', $username)->first();
 	}
 
-	public function add($data, $rid = Role::VIEWER)
+	public function add($data, $role_name = Role::VIEWER)
 	{
 		$data['password'] = bcrypt($data['password']);
 		$user = $this->create($data);
 		//加入view组
-		$user->attachRole($this->roles[$rid]['id']);
-		return $user->id;
+		$role = Role::where('name', $role_name)->first();
+		!empty($role) && $user->attachRole($role);
+		return $user;
 	}
 
 	public function auto_password($username)

@@ -23,7 +23,7 @@ return [
 			'content' => 'some errors.retry,please!',
 		],
 		'failure' => [
-			'title' => 'Failure',
+			'title' => 'Failure!',
 			'content' => 'some mistakes.retry,please!',
 		],
 		'success_login' => [
@@ -31,19 +31,19 @@ return [
 			'content' => 'logon,back to the referrer!',
 		],
 		'error_param' => [
-			'title' => 'paramters error',
+			'title' => 'Paramters Error!',
 			'content' => 'please visit the website with broswer!',
 		],
 		'error_referrer' => [
-			'title' => 'referrer error',
+			'title' => 'Referrer Error!',
 			'content' => 'your referrer:[:referrer] is not allow!',
 		],
 		'error_server' => [
-			'title' => 'server error',
+			'title' => 'Server Error!',
 			'content' => 'server error,please retry later!',
 		],
 		'error_database' => [
-			'title' => 'database error',
+			'title' => 'Database Error!',
 			'content' => 'database error,please retry later！',
 		],
 		'failure_validate' => [
@@ -52,8 +52,8 @@ return [
 			'list' => '<li>:message</li>'.PHP_EOL,
 		],
 		'failure_auth' => [
-			'title' => 'Pe Failure',
-			'content' => 'out of permi,<a href="'.url('auth').'" target="_self">Click it</a> to change the user!',
+			'title' => 'Permission Failure',
+			'content' => 'permission failure,<a href="'.url('auth').'" target="_self">Click it</a> to change the user!',
 		],
 		'failure_login' => [
 			'title' => 'Login Failure!',
@@ -78,12 +78,12 @@ return [
 	],
 	'attachment' => [
 		'failure_noexists' => [
-			'title' => '附件不存在',
-			'content' => '该附件不存在，或者已被删除！',
+			'title' => 'Attachment is not exists',
+			'content' => 'the attachment isnot exists, or deleted!',
 		],
 		'success_upload' => [
-			'title' => '上传成功',
-			'content' => '您的文件已经上传成功！',
+			'title' => 'Upload successful',
+			'content' => 'your file upload successful!',
 		],
 		'success_download' => [
 			'title' => '下载成功',
