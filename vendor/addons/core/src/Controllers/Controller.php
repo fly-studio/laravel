@@ -89,6 +89,16 @@ class Controller extends BaseController {
 		return $this->_make_output('failure', $message_name, $url, $data, $export_data);
 	}
 
+	protected function warning($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
+	{
+		return $this->_make_output('warning', $message_name, $url, $data, $export_data);
+	}
+
+	protected function notice($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
+	{
+		return $this->_make_output('notice', $message_name, $url, $data, $export_data);
+	}
+
 	protected function error_param($url = FALSE)
 	{
 		return $this->error('default.error_param',$url);

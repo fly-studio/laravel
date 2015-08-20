@@ -9,7 +9,7 @@
 <body>
 <div style="margin:100px auto 0 auto;">
 	<div class="container">
-		<div class="panel <{if $_data.result == 'success'}>panel-success<{elseif $_data.result == 'failure'}>panel-warning<{else}>panel-danger<{/if}>">
+		<div class="panel <{if $_data.result == 'failure'}>panel-warning<{elseif $_data.result == 'error'}>panel-danger<{elseif $_data.result == 'notice'}>panel-info<{else}>panel-<{$_data.result}><{/if}>">
 			<div class="panel-heading">
 				<h3 class="panel-title"><span class="glyphicon glyphicon-comment"></span> <strong>提示</strong> <{$_data.result|escape}></h3>
 			</div>

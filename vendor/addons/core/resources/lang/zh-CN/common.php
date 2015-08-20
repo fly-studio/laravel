@@ -26,6 +26,14 @@ return [
 			'title' => '操作失败',
 			'content' => '您的操作失败，请重试！',
 		],
+		'warning' => [
+			'title' => '操作警告',
+			'content' => '您的操作不正确，请重试！',
+		],
+		'notice' => [
+			'title' => '提示',
+			'content' => '请阅读并理解提示信息！',
+		],
 		'error_param' => [
 			'title' => '参数错误',
 			'content' => '您传递的参数错误，请检查您的来路是否正确！',

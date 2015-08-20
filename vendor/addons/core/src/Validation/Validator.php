@@ -134,14 +134,14 @@ class Validator extends BaseValidator {
 	private function isNumeric($rule_list)
 	{
 		foreach ($rule_list as $rule => $value) 
-			return in_array(strtolower($rule), ['digits', 'digits_between', 'numeric', 'integer']);
+			return in_array(strtolower($rule), ['digits', 'digitsbetween', 'numeric', 'integer']);
 		return false;
 	}
 
 	public function getjQueryRules()
 	{
 		$jqueryRules = [];
-		$rules = $this->getParsedRules();print_r($rules);
+		$rules = $this->getParsedRules();
 		foreach($rules as $attribute => $_list)
 		{ //3
 			$jqueryRules[$attribute] = [];
@@ -153,7 +153,7 @@ class Validator extends BaseValidator {
 						$rule = 'regex';
 						$parameters = '/^[\pL\pM]+$/u';
 						break;
-					case 'alpha_dash':
+					case 'alphadash':
 						$rule = 'regex';
 						$parameters = '/^[\pL\pM\pN_-]+$/u';
 						break;
@@ -164,7 +164,7 @@ class Validator extends BaseValidator {
 					case 'ansi':
 						$parameters = $parameters === true ? 2 : $parameters;
 						break;
-					case 'not_in':
+					case 'notin':
 						$rule = 'regex';
 						$parameters = '(?!('.implode('|', array_map('preg_quote', $parameters)).'))';
 						break;
@@ -179,7 +179,7 @@ class Validator extends BaseValidator {
 							$parameters = true;
 						}
 						break;
-					case 'digits_between':
+					case 'digitsbetween':
 						$jqueryRules[$attribute] += ['rangelength' => [$parameters[0], $parameters[1]]];
 						$rule = 'digits';
 						$parameters = true;
@@ -196,11 +196,11 @@ class Validator extends BaseValidator {
 						$rule = $this->isNumeric($_list) ? 'range' : 'rangelength';
 						$parameters = [$parameters, $parameters];
 						break;
-					case 'required_without_all': //任意一个有值
+					case 'requiredwithoutall': //任意一个有值
 						$rule = 'require_from_group';
 						$attribute =  [1, implode(',', array_map(function($v) {return '[name="'.$v.'"]';}, $parameters))];
 						break;
-					case 'required_without': //任意一个有值
+					case 'requiredwithout': //任意一个有值
 						$rule = 'require_from_group';
 						$attribute =  [count($parameters) > 1 ? count($parameters) - 1 : 1, implode(',', array_map(function($v) {return '[name="'.$v.'"]';}, $parameters))];
 						break;
@@ -227,10 +227,10 @@ class Validator extends BaseValidator {
 					case 'accepted':
 						$rule = 'required';
 						break;
-					case 'active_url':
+					case 'activeurl':
 						$rule = 'url';
 						break;
-					case 'date_format':
+					case 'dateformat':
 						$rule = 'date';
 						break;
 					case 'integer':
@@ -247,15 +247,14 @@ class Validator extends BaseValidator {
 					case 'exists':
 					case 'image':
 					case 'array':
-					case 'required_if':
-					case 'required_with':
-					case 'required_with_all':
-					case 'required_without':
+					case 'requiredif':
+					case 'requiredwith':
+					case 'requiredwithall':
 					case 'string':
 					case 'timezone':
 					case 'unique':
 						continue 2;
-					default: //email url regex required ansi phone idcard zero
+					default: //email url regex required ansi phone idcard notzero
 						
 						break;
 				}
