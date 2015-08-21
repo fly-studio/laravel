@@ -1,10 +1,15 @@
 <?php
 namespace Addons\Core\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
+use Addons\Core\Models\Model;
+use Cache;
 class Field extends Model {
+
 	//不能批量赋值
+	public $auto_cache = true;
+	public $fire_caches = ['fields'];
+
+
 	protected $guarded = [];
 
 	public function exists($id, $field_class)
@@ -14,12 +19,13 @@ class Field extends Model {
 
 	public function getFields()
 	{
-		$result = [];
-		$all = $this->orderBy('order_index','ASC')->get();
-		foreach($all as $v)
-			$result[$v['field_class']][$v['id']] = array_keyfilter($v->toArray(), 'id,text,extra');
-
-		return $result;
+		return $this->rememberCache('fields', function(){
+			$result = [];
+			$all = $this->orderBy('order_index','ASC')->get();
+			foreach($all as $v)
+				$result[$v['field_class']][$v['id']] = array_keyfilter($v->toArray(), 'id,text,extra');
+			return $result;
+		});
 	}
 }
 

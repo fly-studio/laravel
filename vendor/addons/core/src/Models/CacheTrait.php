@@ -1,25 +1,132 @@
 <?php
 namespace Addons\Core\Models;
-
+use Illuminate\Support\Str;
+use Cache;
 trait CacheTrait{
 
+	/**
+	 * Cache enabled
+	 *
+	 * @var boolean
+	 */
+	public $auto_cache = false;
+	/**
+	 * Cache live in minutes
+	 *
+	 * @var integer
+	 */
+	public $cache_ttl = 15;
+	/**
+	 * Precedent Caches
+	 *
+	 * @var array
+	 */
+	public $object_cached = array();
+	/**
+	 * forget these keys when fire
+	 * 
+	 * @var array
+	 */
+	public $fire_caches = [];
 
-	protected function setCache($hashkey, $value, $expiredMinutes = 1440)
+	/**
+	 * Fire the given event for the model.
+	 *
+	 * @param  string  $event
+	 * @param  bool    $halt
+	 * @return mixed
+	 */
+	protected function fireModelEvent($event, $halt = true)
 	{
-		return Cache::put($hashkey, $value, $expiredMinutes);
+		$result = parent::fireModelEvent($event, $halt);
+		if (in_array($event, ['created', 'updated', 'deleted', 'saved',]))
+		{
+			if ($this->$auto_cache === true)
+				$this->forgetCache($this->id);
+			//clear the other fire
+			$this->forgetCache($this->fire_caches);
+		}
+		return $result;
 	}
 
-	protected function getCache($hashkey, $default = NULL)
+	/**
+	 * Call static method.
+	 *
+	 * Embeded cache with find method.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return Object
+	 */
+	public static function __callStatic($method, $parameters)
 	{
-		return Cache::get($hashkey, $default);
+		$instance = new static();
+		switch ($method) {
+			case 'find':
+				if (!isset($parameters[1]))
+				{
+					$key = $parameters[0];			
+					if ($instance->auto_cache === true) {
+						if (! $result = $instance->getCache($key)) {
+							$result = parent::__callStatic('find', $parameters);
+							! is_null($result) && $instance->putCache($key, $result);
+						}
+					} else
+						$result = parent::__callStatic('find', $parameters); 
+					return $result;
+				}
+				break;
+			case 'putCache':
+			case 'rememberCache':
+			case 'getCache':
+			case 'forgetCache':
+				return call_user_func_array([$instance, $method], $parameters);
+				break;
+		}
+		unset($instance);
+		return parent::__callStatic($method, $parameters); 
 	}
 
-	protected function deleteCache($hashkey)
+	/**
+	 * Get uniqe key
+	 *
+	 * @param  integer $key
+	 * @param  string  $array
+	 */
+	public static function cache_key($key)
 	{
-		$hashkeys = func_get_args();
-		foreach ($hashkeys as $hashkey) {
-			Cache::forget($hashkey);
+		return Str::lower(get_called_class()).'_'.$key;
+	}
+
+	protected function rememberCache($key, $callback, $expiredMinutes = NULL)
+	{
+		$key = $this->cache_key($key);
+		empty($expiredMinutes) && $expiredMinutes = $this->cache_ttl;
+		return Cache::remember($key, $expiredMinutes, $callback);
+	}
+
+	protected function putCache($key, $value, $expiredMinutes = NULL)
+	{
+		$key = $this->cache_key($key);
+		empty($expiredMinutes) && $expiredMinutes = $this->cache_ttl;
+		return Cache::put($key, $value, $expiredMinutes);
+	}
+
+	protected function getCache($key, $default = NULL)
+	{
+		$key = $this->cache_key($key);
+		return Cache::get($key, $default);
+	}
+
+	protected function forgetCache($key)
+	{
+		$keys = (array)$key + func_get_args();
+		foreach ($keys as $key) {
+			$key = $this->cache_key($key);
+			Cache::forget($key);
 		}
 		return TRUE;
 	}
+
 }
+

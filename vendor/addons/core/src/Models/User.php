@@ -2,7 +2,7 @@
 
 namespace Addons\Core\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Addons\Core\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Auth\Authenticatable;
@@ -16,7 +16,13 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 {
 	use Authenticatable/*, CanResetPassword*/;
 	use SoftDeletes, EntrustUserTrait;
-	use CacheTrait;
+
+	/**
+	 * Cache enabled
+	 *
+	 * @var boolean
+	 */
+	public $auto_cache = true;
 
 	//protected $dates = ['deleted_at'];
 	//表名
