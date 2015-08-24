@@ -41,8 +41,9 @@ trait CacheTrait{
 		$result = parent::fireModelEvent($event, $halt);
 		if (in_array($event, ['created', 'updated', 'deleted', 'saved',]))
 		{
-			if ($this->$auto_cache === true)
-				$this->forgetCache($this->id);
+			$primaryKey = $this->primaryKey;
+			if ($this->auto_cache === true)
+				$this->forgetCache($this->$primaryKey);
 			//clear the other fire
 			$this->forgetCache($this->fire_caches);
 		}
@@ -120,7 +121,7 @@ trait CacheTrait{
 
 	protected function forgetCache($key)
 	{
-		$keys = (array)$key + func_get_args();
+		$keys = empty($key) ? [] : (array)$key + func_get_args();
 		foreach ($keys as $key) {
 			$key = $this->cache_key($key);
 			Cache::forget($key);

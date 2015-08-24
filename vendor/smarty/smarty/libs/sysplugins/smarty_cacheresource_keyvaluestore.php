@@ -123,7 +123,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     {
         $this->addMetaTimestamp($content);
 
-        return $this->write(array($_template->cached->filepath => $content), $_template->properties['cache_lifetime']);
+        return $this->write(array($_template->cached->filepath => $content), $_template->cache_lifetime);
     }
 
     /**
@@ -165,9 +165,11 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
             $this->invalidate(null);
         }
         // remove from template cache
-        foreach ($smarty->template_objects as $key => $tpl) {
-            if (isset($tpl->cached)) {
-                unset($smarty->template_objects[$key]);
+        if (isset($smarty->_cache['template_objects'])) {
+            foreach ($smarty->_cache['template_objects'] as $key => $tpl) {
+                if (isset($tpl->cached)) {
+                    unset($smarty->_cache['template_objects'][$key]);
+                }
             }
         }
         return - 1;
@@ -196,9 +198,13 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         $this->delete(array($cid));
         $this->invalidate($cid, $resource_name, $cache_id, $compile_id, $uid);
         // remove from template cache
-        foreach ($smarty->template_objects as $key => $tpl) {
-            if ($tpl->source->uid == $uid && isset($tpl->cached)) {
-                unset($smarty->template_objects[$key]);
+        if (isset($resource_name) && isset($smarty->_cache['template_objects'])) {
+            if (isset($smarty->_cache['template_objects'])) {
+                foreach ($smarty->_cache['template_objects'] as $key => $tpl) {
+                    if ($tpl->source->uid == $uid && isset($tpl->cached)) {
+                        unset($smarty->_cache['template_objects'][$key]);
+                    }
+                }
             }
         }
         return - 1;

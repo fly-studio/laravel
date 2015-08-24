@@ -4,7 +4,7 @@ namespace Curl;
 
 class Curl
 {
-    const VERSION = '4.6.8';
+    const VERSION = '4.6.9';
     const DEFAULT_TIMEOUT = 30;
 
     public $curl;
@@ -37,6 +37,7 @@ class Curl
     private $completeFunction = null;
 
     private $cookies = array();
+    private $responseCookies = array();
     private $headers = array();
     private $options = array();
 
@@ -297,6 +298,7 @@ class Curl
      */
     public function exec($ch = null)
     {
+        $this->responseCookies = array();
         if (!($ch === null)) {
             $this->rawResponse = curl_multi_getcontent($ch);
         } else {
@@ -304,7 +306,6 @@ class Curl
             $this->rawResponse = curl_exec($this->curl);
             $this->curlErrorCode = curl_errno($this->curl);
         }
-
         $this->curlErrorMessage = curl_error($this->curl);
         $this->curlError = !($this->curlErrorCode === 0);
         $this->httpStatusCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
@@ -401,6 +402,9 @@ class Curl
      */
     public function headerCallback($ch, $header)
     {
+        if (preg_match('/^Set-Cookie:\s*([^=]+)=([^;]+)/mi', $header, $cookie) == 1) {
+            $this->responseCookies[$cookie[1]] = $cookie[2];
+        }
         $this->rawResponseHeaders .= $header;
         return strlen($header);
     }
@@ -441,10 +445,14 @@ class Curl
             $data = $url;
             $url = $this->baseUrl;
         }
+
+        if (is_array($data) && empty($data)) {
+            $this->unsetHeader('Content-Length');
+        }
+
         $this->setURL($url);
-        $this->unsetHeader('Content-Length');
         $this->setOpt(CURLOPT_CUSTOMREQUEST, 'PATCH');
-        $this->setOpt(CURLOPT_POSTFIELDS, $data);
+        $this->setOpt(CURLOPT_POSTFIELDS, $this->buildPostData($data));
         return $this->exec();
     }
 
@@ -462,10 +470,6 @@ class Curl
         if (is_array($url)) {
             $data = $url;
             $url = $this->baseUrl;
-        }
-
-        if (is_array($data) && empty($data)) {
-            $this->unsetHeader('Content-Length');
         }
 
         $this->setURL($url);
@@ -537,6 +541,28 @@ class Curl
     {
         $this->cookies[$key] = $value;
         $this->setOpt(CURLOPT_COOKIE, str_replace(' ', '%20', urldecode(http_build_query($this->cookies, '', '; '))));
+    }
+
+    /**
+     * Get cookie.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function getCookie($key)
+    {
+        return $this->getResponseCookie($key);
+    }
+
+    /**
+     * Get response cookie.
+     *
+     * @access public
+     * @param  $key
+     */
+    public function getResponseCookie($key)
+    {
+        return isset($this->responseCookies[$key]) ? $this->responseCookies[$key] : null;
     }
 
     /**

@@ -35,11 +35,11 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
             return is_file($file) ? $file : false;
         }
         // go relative to a given template?
-        if ($file[0] == '.' && $_template && $_template->parent instanceof Smarty_Internal_Template &&
+        if ($file[0] == '.' && $_template && isset($_template->parent) && $_template->parent->_objType == 2 &&
             preg_match('#^[.]{1,2}[\\\/]#', $file)
         ) {
             if ($_template->parent->source->type != 'file' && $_template->parent->source->type != 'extends' &&
-                !$_template->parent->allow_relative_path
+                !isset($_template->parent->_cache['allow_relative_path'])
             ) {
                 throw new SmartyException("Template '{$file}' cannot be relative to template of resource type '{$_template->parent->source->type}'");
             }
@@ -102,21 +102,6 @@ class Smarty_Internal_Resource_File extends Smarty_Resource
             return Smarty_Internal_Get_Include_Path::getIncludePath($_directories, $file, $source->smarty);
         }
         return false;
-    }
-
-    /**
-     * test is file exists and save timestamp
-     *
-     * @param  Smarty_Template_Source $source source object
-     * @param  string                 $file   file name
-     *
-     * @return bool                   true if file exists
-     */
-    protected function fileExists(Smarty_Template_Source $source, $file)
-    {
-        $source->timestamp = $source->exists = is_file($file);
-        $source->timestamp = $source->exists ? filemtime($file) : false;
-        return $source->exists;
     }
 
     /**

@@ -139,7 +139,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
              */
             $_smarty_tpl = $_template;
             eval("?>" . $content);
-
+            $cached->content = null;
             return true;
         }
 
@@ -156,7 +156,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      */
     public function writeCachedContent(Smarty_Internal_Template $_template, $content)
     {
-        return $this->save($_template->cached->filepath, $_template->source->name, $_template->cache_id, $_template->compile_id, $_template->properties['cache_lifetime'], $content);
+        return $this->save($_template->cached->filepath, $_template->source->name, $_template->cache_id, $_template->compile_id, $_template->cache_lifetime, $content);
     }
 
     /**
@@ -190,7 +190,7 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
      */
     public function clearAll(Smarty $smarty, $exp_time = null)
     {
-         return $this->delete(null, null, null, $exp_time);
+        return $this->delete(null, null, null, $exp_time);
     }
 
     /**
@@ -209,20 +209,18 @@ abstract class Smarty_CacheResource_Custom extends Smarty_CacheResource
         $cache_name = null;
 
         if (isset($resource_name)) {
-            $_save_stat = $smarty->caching;
-            $smarty->caching = true;
-            $tpl = new $smarty->template_class($resource_name, $smarty);
-            $smarty->caching = $_save_stat;
-
-            if ($tpl->source->exists) {
-                $cache_name = $tpl->source->name;
+            $source = Smarty_Template_Source::load(null, $smarty, $resource_name);
+            if ($source->exists) {
+                $cache_name = $source->name;
             } else {
                 return 0;
             }
             // remove from template cache
-            foreach ($smarty->template_objects as $key => $_tpl) {
-                if (isset($_tpl->cached) && $_tpl->source->uid == $tpl->source->uid) {
-                    unset($smarty->template_objects[$key]);
+            if (isset($smarty->_cache['template_objects'])) {
+                foreach ($smarty->_cache['template_objects'] as $key => $_tpl) {
+                    if (isset($_tpl->cached) && $_tpl->source->uid == $source->uid) {
+                        unset($smarty->_cache['template_objects'][$key]);
+                    }
                 }
             }
         }

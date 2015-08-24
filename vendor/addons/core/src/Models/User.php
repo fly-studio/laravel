@@ -61,4 +61,9 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 		$username = strtolower($username);
 		return md5($username.env('APP_KEY').md5($username));
 	}
+
+	public function gender()
+	{
+		return $this->hasOne('Addons\\Core\\Models\\Field', 'id', 'gender');
+	}
 }

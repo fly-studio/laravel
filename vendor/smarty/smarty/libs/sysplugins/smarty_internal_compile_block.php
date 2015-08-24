@@ -98,7 +98,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
             $compiler->inheritance = true;
             $compiler->parser->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBLOCK);
             $compiler->has_code = false;
-            return;
+            return null;
         }
         // must merge includes
         if ($_attr['nocache'] == true) {
@@ -135,7 +135,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
             }
             $compiler->parser->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBLOCK);
             $compiler->has_code = false;
-            return;
+            return null;
         }
         // if called by {$smarty.block.child} we must search the name of enclosing {block}
         if ($_name == null) {
@@ -160,19 +160,22 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         $_tpl = new Smarty_Internal_template('string:' .
                                              $compiler->template->block_data[$_name]['source'], $compiler->smarty, $compiler->template, $compiler->template->cache_id, $compiler->template->compile_id, $compiler->template->caching, $compiler->template->cache_lifetime);
         if ($compiler->smarty->debugging) {
-            Smarty_Internal_Debug::ignore($_tpl);
+            $compiler->smarty->_debug->ignore($_tpl);
         }
         $_tpl->tpl_vars = $compiler->template->tpl_vars;
-        $_tpl->variable_filters = $compiler->template->variable_filters;
-        $_tpl->properties['nocache_hash'] = $compiler->template->properties['nocache_hash'];
-        $_tpl->allow_relative_path = true;
+        $_tpl->compiled = new Smarty_Template_Compiled();
+        $_tpl->compiled->nocache_hash = $compiler->template->compiled->nocache_hash;
+        $_tpl->_cache['allow_relative_path'] = true;
         $_tpl->loadCompiler();
+        $_tpl->compiler->variable_filters = $compiler->variable_filters;
+        $_tpl->compiler->parent_compiler = $compiler;
         $_tpl->compiler->_tag_objects = $compiler->_tag_objects;
         $_tpl->compiler->inheritance = true;
         $_tpl->compiler->suppressHeader = true;
         $_tpl->compiler->suppressFilter = true;
         $_tpl->compiler->suppressTemplatePropertyHeader = true;
         $nocache = $compiler->nocache || $compiler->tag_nocache;
+        $_output = '';
         if (strpos($compiler->template->block_data[$_name]['source'], self::parent) !== false) {
             $_output = str_replace(self::parent, $compiler->parser->current_buffer->to_smarty_php($compiler->parser), $_tpl->compiler->compileTemplate($_tpl, $nocache, $compiler->parent_compiler));
         } elseif ($compiler->template->block_data[$_name]['mode'] == 'prepend') {
@@ -184,14 +187,14 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
         } elseif (!empty($compiler->template->block_data[$_name])) {
             $_output = $_tpl->compiler->compileTemplate($_tpl, $nocache, $compiler->parent_compiler);
         }
-        $compiler->template->properties['file_dependency'] = array_merge($compiler->template->properties['file_dependency'], $_tpl->properties['file_dependency']);
-        unset($compiler->template->properties['file_dependency'][$_tpl->source->uid]);
-        $compiler->template->properties['tpl_function'] = array_merge($compiler->template->properties['tpl_function'], $_tpl->properties['tpl_function']);
-        $compiler->template->variable_filters = $_tpl->variable_filters;
-        if ($_tpl->has_nocache_code) {
-            $compiler->template->has_nocache_code = true;
+        $compiler->template->compiled->file_dependency = array_merge($compiler->template->compiled->file_dependency, $_tpl->compiled->file_dependency);
+        unset($compiler->template->compiled->file_dependency[$_tpl->source->uid]);
+        $compiler->template->tpl_function = array_merge($compiler->template->tpl_function, $_tpl->tpl_function);
+        $compiler->variable_filters = $_tpl->compiler->variable_filters;
+        if ($_tpl->compiled->has_nocache_code) {
+            $compiler->template->compiled->has_nocache_code = true;
         }
-        foreach ($_tpl->required_plugins as $key => $tmp1) {
+        foreach ($_tpl->compiled->required_plugins as $key => $tmp1) {
             if ($compiler->nocache && $compiler->template->caching) {
                 $code = 'nocache';
             } else {
@@ -199,7 +202,7 @@ class Smarty_Internal_Compile_Block extends Smarty_Internal_CompileBase
             }
             foreach ($tmp1 as $name => $tmp) {
                 foreach ($tmp as $type => $data) {
-                    $compiler->template->required_plugins[$code][$name][$type] = $data;
+                    $compiler->parent_compiler->template->compiled->required_plugins[$code][$name][$type] = $data;
                 }
             }
         }
@@ -273,8 +276,6 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_CompileBase
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler)
     {
         $compiler->has_code = true;
-        // check and get attributes
-        $_attr = $this->getAttributes($compiler, $args);
         $saved_data = $this->closeTag($compiler, array('block'));
         $_name = trim($saved_data[0]['name'], "\"'");
         // reset flag for {block} tag
@@ -335,7 +336,7 @@ class Smarty_Internal_Compile_Blockclose extends Smarty_Internal_CompileBase
                 $compiler->parser->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBODY);
             }
             $compiler->has_code = false;
-            return;
+            return null;
         }
         if (isset($compiler->template->block_data[$_name]) &&
             !isset($compiler->template->block_data[$_name]['compiled'])
@@ -435,10 +436,7 @@ class Smarty_Internal_Compile_Private_Child_Blockclose extends Smarty_Internal_C
      */
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler)
     {
-        // check and get attributes
-        $_attr = $this->getAttributes($compiler, $args);
-
-        $saved_data = $this->closeTag($compiler, array('private_child_block'));
+         $saved_data = $this->closeTag($compiler, array('private_child_block'));
 
         // end of child block
         $compiler->popTrace();

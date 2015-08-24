@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8d36e8c141f9682b65e72a8870e923ac",
+    "hash": "b7494ec943d5074a9e381cf21955ed3f",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -447,12 +447,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "3661cd8bc5152598dbe6772e98b78d1fa8281a67"
+                "reference": "aacbad222c7daaf94b8e40285b66f1e315065937"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/doctrine/collections/3661cd8bc5152598dbe6772e98b78d1fa8281a67.zip",
-                "reference": "3661cd8bc5152598dbe6772e98b78d1fa8281a67",
+                "url": "http://packagist.phpcomposer.com/files/doctrine/collections/aacbad222c7daaf94b8e40285b66f1e315065937.zip",
+                "reference": "aacbad222c7daaf94b8e40285b66f1e315065937",
                 "shasum": ""
             },
             "require": {
@@ -505,7 +505,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2015-08-05 11:14:49"
+            "time": "2015-08-19 10:02:04"
         },
         {
             "name": "doctrine/common",
@@ -586,16 +586,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "3a698bd6fedbf684675ec0ecc471d07f77feea63"
+                "reference": "c8f73292bec7ab45dd6805d31b31ea9dfdf9cfa1"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/doctrine/dbal/3a698bd6fedbf684675ec0ecc471d07f77feea63.zip",
-                "reference": "3a698bd6fedbf684675ec0ecc471d07f77feea63",
+                "url": "http://packagist.phpcomposer.com/files/doctrine/dbal/c8f73292bec7ab45dd6805d31b31ea9dfdf9cfa1.zip",
+                "reference": "c8f73292bec7ab45dd6805d31b31ea9dfdf9cfa1",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": ">=2.4,<2.6-dev",
+                "doctrine/common": "~2.4",
                 "php": ">=5.3.2"
             },
             "require-dev": {
@@ -649,7 +649,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2015-08-10 16:07:25"
+            "time": "2015-08-21 17:47:38"
         },
         {
             "name": "doctrine/inflector",
@@ -1144,12 +1144,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "8b0534aaeb80aa11de4f33e279d4fe6ce9eacb2c"
+                "reference": "e2209823ea352ed5edbbaec6f3bc3c281de8262c"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/laravel/framework/8b0534aaeb80aa11de4f33e279d4fe6ce9eacb2c.zip",
-                "reference": "8b0534aaeb80aa11de4f33e279d4fe6ce9eacb2c",
+                "url": "http://packagist.phpcomposer.com/files/laravel/framework/e2209823ea352ed5edbbaec6f3bc3c281de8262c.zip",
+                "reference": "e2209823ea352ed5edbbaec6f3bc3c281de8262c",
                 "shasum": ""
             },
             "require": {
@@ -1264,7 +1264,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-08-18 00:40:00"
+            "time": "2015-08-21 17:56:39"
         },
         {
             "name": "league/flysystem",
@@ -1353,12 +1353,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Maatwebsite/Laravel-Excel.git",
-                "reference": "91b6b44c4fdd0840538ad41b859a84f0b2a24716"
+                "reference": "6935e8e1809277eab2e35e3d470f8a8da96204c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/Maatwebsite/Laravel-Excel/91b6b44c4fdd0840538ad41b859a84f0b2a24716.zip",
-                "reference": "91b6b44c4fdd0840538ad41b859a84f0b2a24716",
+                "url": "http://packagist.phpcomposer.com/files/Maatwebsite/Laravel-Excel/6935e8e1809277eab2e35e3d470f8a8da96204c6.zip",
+                "reference": "6935e8e1809277eab2e35e3d470f8a8da96204c6",
                 "shasum": ""
             },
             "require": {
@@ -1412,7 +1412,7 @@
                 "import",
                 "laravel"
             ],
-            "time": "2015-07-27 09:15:54"
+            "time": "2015-08-22 10:00:16"
         },
         {
             "name": "maximebf/debugbar",
@@ -1839,12 +1839,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-curl-class/php-curl-class.git",
-                "reference": "473f080a12322365a4dac1e1a414590ea9fc1839"
+                "reference": "bf861695f8678c0e5dc215131b5b3f8c77d7f94c"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/php-curl-class/php-curl-class/473f080a12322365a4dac1e1a414590ea9fc1839.zip",
-                "reference": "473f080a12322365a4dac1e1a414590ea9fc1839",
+                "url": "http://packagist.phpcomposer.com/files/php-curl-class/php-curl-class/bf861695f8678c0e5dc215131b5b3f8c77d7f94c.zip",
+                "reference": "bf861695f8678c0e5dc215131b5b3f8c77d7f94c",
                 "shasum": ""
             },
             "require": {
@@ -1887,7 +1887,7 @@
                 "web service",
                 "xml"
             ],
-            "time": "2015-08-13 15:50:05"
+            "time": "2015-08-21 22:50:06"
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
@@ -2246,12 +2246,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "643e6784e8d07154e88eff1ea43b2cd66a6051ae"
+                "reference": "3ba86e8d913583ea59d9b5980d2f08dae2a778a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/smarty-php/smarty/643e6784e8d07154e88eff1ea43b2cd66a6051ae.zip",
-                "reference": "643e6784e8d07154e88eff1ea43b2cd66a6051ae",
+                "url": "http://packagist.phpcomposer.com/files/smarty-php/smarty/3ba86e8d913583ea59d9b5980d2f08dae2a778a5.zip",
+                "reference": "3ba86e8d913583ea59d9b5980d2f08dae2a778a5",
                 "shasum": ""
             },
             "require": {
@@ -2293,7 +2293,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-08-06 19:42:20"
+            "time": "2015-08-23 17:58:27"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2464,12 +2464,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Debug.git",
-                "reference": "aea19edb4a3bffb0cc6b1980d770d97724e228be"
+                "reference": "22b295edff4114adf752a4b919f4355e744104f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/symfony/Debug/aea19edb4a3bffb0cc6b1980d770d97724e228be.zip",
-                "reference": "aea19edb4a3bffb0cc6b1980d770d97724e228be",
+                "url": "http://packagist.phpcomposer.com/files/symfony/Debug/22b295edff4114adf752a4b919f4355e744104f5.zip",
+                "reference": "22b295edff4114adf752a4b919f4355e744104f5",
                 "shasum": ""
             },
             "require": {
@@ -2511,7 +2511,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-31 15:18:52"
+            "time": "2015-08-17 08:58:33"
         },
         {
             "name": "symfony/dom-crawler",
@@ -3317,12 +3317,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "5015592f93c764c48f440511f56a6c83ce744137"
+                "reference": "feeb4e80d4e652540f35dcd7abb8f63214801e54"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/fzaninotto/Faker/5015592f93c764c48f440511f56a6c83ce744137.zip",
-                "reference": "5015592f93c764c48f440511f56a6c83ce744137",
+                "url": "http://packagist.phpcomposer.com/files/fzaninotto/Faker/feeb4e80d4e652540f35dcd7abb8f63214801e54.zip",
+                "reference": "feeb4e80d4e652540f35dcd7abb8f63214801e54",
                 "shasum": ""
             },
             "require": {
@@ -3361,7 +3361,7 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2015-08-06 15:02:52"
+            "time": "2015-08-22 20:34:36"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -3890,12 +3890,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b"
+                "reference": "92d472f7ac0cd45b7f6d66cb807646432cf89f5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/php-token-stream/3ab72c62e550370a6cd5dc873e1a04ab57562f5b.zip",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b",
+                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/php-token-stream/92d472f7ac0cd45b7f6d66cb807646432cf89f5d.zip",
+                "reference": "92d472f7ac0cd45b7f6d66cb807646432cf89f5d",
                 "shasum": ""
             },
             "require": {
@@ -3931,7 +3931,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-08-16 08:51:00"
+            "time": "2015-08-18 15:47:59"
         },
         {
             "name": "phpunit/phpunit",
@@ -3939,12 +3939,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "650f482841ac845c165e47758617e773e471bbe0"
+                "reference": "a7df5a5b2d68fcf5ba36a223bde077157ef88fc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/phpunit/650f482841ac845c165e47758617e773e471bbe0.zip",
-                "reference": "650f482841ac845c165e47758617e773e471bbe0",
+                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/phpunit/a7df5a5b2d68fcf5ba36a223bde077157ef88fc7.zip",
+                "reference": "a7df5a5b2d68fcf5ba36a223bde077157ef88fc7",
                 "shasum": ""
             },
             "require": {
@@ -4003,7 +4003,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-08-18 03:58:29"
+            "time": "2015-08-20 05:16:08"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4011,12 +4011,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "dccd8011934fba6fb77c7182c74926ad58c9ecd1"
+                "reference": "5e2645ad49d196e020b85598d7c97e482725786a"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/phpunit-mock-objects/dccd8011934fba6fb77c7182c74926ad58c9ecd1.zip",
-                "reference": "dccd8011934fba6fb77c7182c74926ad58c9ecd1",
+                "url": "http://packagist.phpcomposer.com/files/sebastianbergmann/phpunit-mock-objects/5e2645ad49d196e020b85598d7c97e482725786a.zip",
+                "reference": "5e2645ad49d196e020b85598d7c97e482725786a",
                 "shasum": ""
             },
             "require": {
@@ -4059,7 +4059,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2015-08-09 04:15:55"
+            "time": "2015-08-19 09:14:08"
         },
         {
             "name": "sebastian/comparator",
@@ -4439,12 +4439,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6eef1477f3c4451b6024fadb1254009be4602908"
+                "reference": "212832b4f30acc4d4f6c5484ec127fc013e3e5ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packagist.phpcomposer.com/files/symfony/Yaml/6eef1477f3c4451b6024fadb1254009be4602908.zip",
-                "reference": "6eef1477f3c4451b6024fadb1254009be4602908",
+                "url": "http://packagist.phpcomposer.com/files/symfony/Yaml/212832b4f30acc4d4f6c5484ec127fc013e3e5ce.zip",
+                "reference": "212832b4f30acc4d4f6c5484ec127fc013e3e5ce",
                 "shasum": ""
             },
             "require": {
@@ -4480,7 +4480,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2015-07-29 07:12:56"
+            "time": "2015-08-22 07:42:07"
         }
     ],
     "aliases": [],
@@ -4494,7 +4494,7 @@
         "maatwebsite/excel": 20,
         "aferrandini/phpqrcode": 20,
         "php-ffmpeg/php-ffmpeg": 20,
-	"predis/predis": 20
+        "predis/predis": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

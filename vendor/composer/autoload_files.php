@@ -14,8 +14,8 @@ return array(
     $vendorDir . '/danielstjules/stringy/src/Create.php',
     $vendorDir . '/psy/psysh/src/Psy/functions.php',
     $vendorDir . '/mews/captcha/src/helpers.php',
+    $vendorDir . '/barryvdh/laravel-debugbar/src/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
-    $vendorDir . '/barryvdh/laravel-debugbar/src/helpers.php',
     $vendorDir . '/addons/func/src/func/helper.php',
 );
