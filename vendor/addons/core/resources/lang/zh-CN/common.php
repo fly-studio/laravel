@@ -34,6 +34,8 @@ return [
 			'title' => '提示',
 			'content' => '请阅读并理解提示信息！',
 		],
+	],
+	'server' => [
 		'error_param' => [
 			'title' => '参数错误',
 			'content' => '您传递的参数错误，请检查您的来路是否正确！',

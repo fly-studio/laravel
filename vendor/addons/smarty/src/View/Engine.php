@@ -57,7 +57,7 @@ class Engine implements Engines\EngineInterface
 		$smarty->left_delimiter = $left_delimiter;
 		$smarty->right_delimiter = $right_delimiter;
 
-		$smarty->error_reporting = error_reporting();
+		$smarty->error_reporting = error_reporting() & ~E_NOTICE;
 	}
 
 	/**

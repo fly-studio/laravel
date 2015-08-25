@@ -8,7 +8,7 @@ return [
 	'cache_lifetime' => 60,
 
 	// 相关路径配置。
-	'template_path' => [base_path('resources/views'), __DIR__.'/../../../core/resources/views'],
+	'template_path' => [base_path('resources/views'), __DIR__.'/../../core/resources/views'],
 	'cache_path' => storage_path('smarty/cache'),
 	'compile_path' => storage_path('smarty/compile'),
 	'plugins_paths' => [

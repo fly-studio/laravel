@@ -50,6 +50,11 @@ class Controller extends BaseController {
 		view()->share($key, $value);
 	}
 
+	public function __get($key)
+	{
+		return view()->shared($key);
+	}
+
 	protected function view($filename, $data = [])
 	{
 		$_user = array_delete_selector($this->user, 'password');
@@ -101,7 +106,7 @@ class Controller extends BaseController {
 
 	protected function error_param($url = FALSE)
 	{
-		return $this->error('default.error_param',$url);
+		return $this->error('server.error_param',$url);
 	}
 
 	protected function success_login($url = TRUE, array $data = [], $export_data = TRUE)
@@ -135,6 +140,11 @@ class Controller extends BaseController {
 	{
 		$_config = config('attachment');
 		return $this->failure('attachment.'.$error_no, $url, ['maxsize' => format_bytes($_config['maxsize']), 'ext' => implode(',', $_config['ext'])]);
+	}
+
+	protected function failure_noexists($url = FALSE, array $data = [], $export_data = FALSE)
+	{
+		return $this->failure('document.failure_noexist', $url, $data, $export_data);
 	}
 
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)

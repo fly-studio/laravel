@@ -21,7 +21,7 @@ class ServiceProvider extends BaseServiceProvider
 	public function boot()
 	{
 		$this->publishes([
-			__DIR__ . '/../config/smarty.php' => config_path('smarty.php')
+			__DIR__ . '/../../config/smarty.php' => config_path('smarty.php')
 		]);
 	}
 
@@ -32,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-		$this->mergeConfigFrom(__DIR__ . '/../config/smarty.php', 'smarty');
+		$this->mergeConfigFrom(__DIR__ . '/../../config/smarty.php', 'smarty');
 
 		$this->app['view']->addExtension($this->app['config']->get('smarty.extension', 'tpl'), 'smarty', function ()
 		{
