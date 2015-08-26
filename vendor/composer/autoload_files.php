@@ -18,4 +18,5 @@ return array(
     $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
     $vendorDir . '/addons/func/src/func/helper.php',
+    $vendorDir . '/addons/core/src/helper.php',
 );

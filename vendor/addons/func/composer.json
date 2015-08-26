@@ -14,7 +14,7 @@
     },
     "autoload": {
         "files": [
-            "src/func/helper.php",
+            "src/func/helper.php"
         ]
     },
      "extra": {

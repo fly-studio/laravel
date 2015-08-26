@@ -4674,7 +4674,8 @@
                 "Addons\\Smarty\\": "smarty/src/"
             },
             "files": [
-                "func/src/func/helper.php"
+                "func/src/func/helper.php",
+                "core/src/helper.php"
             ]
         },
         "notification-url": "",
