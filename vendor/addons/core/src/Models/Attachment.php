@@ -41,7 +41,7 @@ class Attachment extends Model{
 			return $_FILES[$field_name]['error'];
 		}
 
-		ignore_user_abort(TRUE);
+		//ignore_user_abort(TRUE);
 		set_time_limit(0);
 
 		//$ext = strtolower(pathinfo($_FILES[$field_name]['name'],PATHINFO_EXTENSION));
