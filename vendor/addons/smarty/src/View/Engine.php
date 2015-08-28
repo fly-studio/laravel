@@ -17,6 +17,7 @@ class Engine implements Engines\EngineInterface
 
 		$caching = $this->config('caching');
 		$cache_lifetime = $this->config('cache_lifetime');
+		$compile_check = $this->config('compile_check', true);
 		$debugging = $this->config('debugging');
 
 		$template_path = $this->config('template_path');
@@ -48,7 +49,7 @@ class Engine implements Engines\EngineInterface
 		$smarty->debugging = $debugging;
 		$smarty->caching = $caching;
 		$smarty->cache_lifetime = $cache_lifetime;
-		$smarty->compile_check = true;
+		$smarty->compile_check = $compile_check;
 
 		// set the escape_html flag from the configuration value
 		//

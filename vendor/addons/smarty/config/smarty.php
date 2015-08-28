@@ -6,6 +6,7 @@ return [
 	'debugging' => false,
 	'caching' => false,
 	'cache_lifetime' => 60,
+	'compile_check' => true,
 
 	// 相关路径配置。
 	'template_path' => [base_path('resources/views'), __DIR__.'/../../core/resources/views'],
