@@ -39,7 +39,7 @@ trait AdminTrait {
 	private function _getFilters(Request $request, Builder $builder)
 	{
 		$filters = [];
-		$inputs = $request->input('filter') ?: $request->except('base','draw','columns','order','pagesize', 'length', 'start', 'page', 'search');
+		$inputs = $request->input('filter') ?: $request->except('of', 'base','draw','columns','order','pagesize', 'length', 'start', 'page', 'search');
 		foreach ($inputs as $k => $v)
 			$filters[$k] = is_array($v) ? array_change_key_case($v) : ['equal' => $v];
 
