@@ -63,7 +63,7 @@ trait AdminTrait {
 				!empty($columns[$v['column']]['data']) && $orders[$columns[$v['column']]['data']] = strtolower($v['dir']); 
 		else
 			$orders = $inputs;
-
+		empty($orders) && $orders = [$builder->getModel()->getKeyName() => 'desc'];
 		return $orders;
 	}
 
