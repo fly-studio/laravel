@@ -25,8 +25,8 @@ function model_autohook($value, $model_name)
 	$v = model_hook($value, $model_name);
 	if ($v instanceOf Illuminate\Database\Eloquent\Model){
 		if (isset($v['name'])) $data[$model_name][$value] = $v['name'];
-		else if (isset($v['text']))  $data[$model_name][$value] = $v['text'];
 		else if (isset($v['title']))  $data[$model_name][$value] = $v['title'];
+		else if (isset($v['text']))  $data[$model_name][$value] = $v['text'];
 		else if (isset($v['username'])) $data[$model_name][$value] = $v['username'];
 		else $data[$model_name][$value] = $v->getKey();
 	} else $data[$model_name][$value] = $v;
