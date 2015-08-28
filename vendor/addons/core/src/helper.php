@@ -14,7 +14,7 @@ function model_hook($value, $model_name, $where_key = NULL)
 	$_data = empty($where_key) ? $class->find($value) : $class->where($where_key, $value)->first();
 	return $data[$model_name][$where_key][$value] = (empty($_data) ? $value : $_data);
 }
-function model_og($value, $key_name)
+function model_get($value, $key_name)
 {
 	return ! ($value instanceOf Illuminate\Database\Eloquent\Model) ? $value : $value->$key_name;
 }

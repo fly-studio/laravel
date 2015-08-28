@@ -1,10 +1,16 @@
 <?php
 namespace Addons\Core\Controllers;
 
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 trait AdminTrait {
+
+	private function _getColumns(Builder $builder)
+	{
+		//$builder->getConnection()->getDoctrineSchemaManager()->listTableColumns('table')
+	}
 
 	private function _doFilter(Request $request, Builder $builder)
 	{
@@ -79,7 +85,7 @@ trait AdminTrait {
 		return $paginate;
 	}
 
-	private function _getData(Request $request, Builder $builder, $callback = NULL, array $columns = ['*'])
+	private function _getData(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*'])
 	{
 		$data = $this->_getPaginate($request, $builder)->toArray();
 
@@ -89,7 +95,7 @@ trait AdminTrait {
 	}
 
 
-	private function _getExport(Request $request, Builder $builder, $callback = NULL, array $columns = ['*']) {
+	private function _getExport(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*']) {
 		set_time_limit(600); //10min
 
 		$pagesize = $request->input('pagesize') ?: config('site.pagesize.export', 1000);

@@ -1,6 +1,4 @@
 <?php
-
-use Illuminate\Database\Eloquent\Model;
 /**
  * Smarty plugin
  * @package Smarty
@@ -24,9 +22,4 @@ use Illuminate\Database\Eloquent\Model;
 function smarty_modifier_hook($value, $model_name, $where_key = NULL)
 {
 	return model_hook($value, $model_name, $where_key);
-}
-
-function smarty_modifier_og($value, $key_name)
-{
-	return model_og($value, $key_name);
 }

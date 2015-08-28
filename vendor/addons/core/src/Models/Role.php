@@ -51,12 +51,10 @@ class Role extends Model implements EntrustRoleInterface
 	public function getRoles()
 	{
 		$roles = [];
-		$_roles = $this->rememberCache('roles', function() {return $this->orderBy('id', 'ASC')->get();});
-		foreach ($_roles as $role) {
-			$roles[$role['name']] = $role->toArray() + ['perms' =>[]];
-			$perms = $role->perms;
-			foreach($perms as $perm)
-				$roles[($role['name'])]['perms'][] = $perm['name'];
+		$_roles = $this->rememberCache('roles', function() {return $this->with('perms')->orderBy('id', 'ASC')->get();});
+		foreach ($_roles->toArray() as $role) {
+			$role['prems'] = array_map(function($v) { return $v['name'];}, $role['perms']);
+			$roles[$role['name']] = $role;
 		}
 		return $roles;
 	}
