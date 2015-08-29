@@ -2,14 +2,12 @@
 
 namespace Addons\Core\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Addons\Core\Models\Model;
 
 use \Curl\Curl;
 use Addons\Core\SSH;
 use Addons\Core\Models\CacheTrait;
 class Attachment extends Model{
-
-	use CacheTrait;
 	
 	protected $guarded = ['id'];
 

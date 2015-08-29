@@ -2,12 +2,11 @@
 
 namespace Addons\Core\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Addons\Core\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AttachmentFile extends Model{
 	use SoftDeletes;
-	use CacheTrait;
 
 	protected $guarded = ['id'];
 	
