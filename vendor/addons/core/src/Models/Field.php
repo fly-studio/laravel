@@ -23,7 +23,7 @@ class Field extends Model {
 			$result = [];
 			$all = $this->orderBy('order_index','ASC')->get();
 			foreach($all as $v)
-				$result[$v['field_class']][$v['id']] = array_keyfilter($v->toArray(), 'id,text,extra');
+				$result[$v['field_class']][$v['id']] = array_keyfilter($v->toArray(), 'id,title,extra');
 			return $result;
 		});
 	}
