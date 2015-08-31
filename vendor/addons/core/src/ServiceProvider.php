@@ -26,8 +26,6 @@ class ServiceProvider extends SP
 		{
 			return new Core();
 		});
-		$this->app->bind('response', '') ;
-
 
 		$this->app->singleton('Illuminate\Contracts\Routing\ResponseFactory', function ($app) {
 			return new ResponseFactory($app['Illuminate\Contracts\View\Factory'], $app['redirect']);

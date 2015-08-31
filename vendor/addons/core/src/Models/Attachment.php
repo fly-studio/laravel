@@ -6,7 +6,6 @@ use Addons\Core\Models\Model;
 
 use \Curl\Curl;
 use Addons\Core\SSH;
-use Addons\Core\Models\CacheTrait;
 class Attachment extends Model{
 	
 	protected $guarded = ['id'];

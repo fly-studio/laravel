@@ -46,6 +46,7 @@ namespace Addons\Core\Models\Wechat;
 use Addons\Core\Models\Wechat\WechatTrait;
 class Wechat
 {
+	use WechatTrait;
 	const MSGTYPE_TEXT = 'text';
 	const MSGTYPE_IMAGE = 'image';
 	const MSGTYPE_LOCATION = 'location';
@@ -957,9 +958,9 @@ class Wechat
 	 * 回复微信服务器, 此函数支持链式操作
 	 * @example: $this->text('msg tips')->reply();
 	 * @param string $msg 要发送的信息, 默认取$this->_msg
-	 * @param bool $return 是否返回信息而不抛出到浏览器 默认:否
+	 * @param bool $return 是否返回信息而不抛出到浏览器 默认:是
 	 */
-	public function reply($msg=array(),$return = false)
+	public function reply($msg=array(),$return = true)
 	{
 		if (empty($msg)) {
 			if (empty($this->_msg))   //防止不先设置回复内容，直接调用reply方法导致异常

@@ -26,6 +26,7 @@ class Role extends Model implements EntrustRoleInterface
 	const OWNER = 'owner';
 	const LEADER = 'leader';
 	const VIEWER = 'viewer';
+	const WECHATER = 'wechater';
 
 	//不能批量赋值
 	protected $guarded = [];

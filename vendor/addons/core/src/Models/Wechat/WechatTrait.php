@@ -3,13 +3,6 @@ namespace Addons\Core\Models\Wechat;
 use Cache;
 trait WechatTrait {
 
-	const OAUTH_PREFIX = 'https://open.weixin.qq.com/connect/oauth2';
-	const OAUTH_AUTHORIZE_URL = '/authorize?';
-
-	const API_BASE_URL_PREFIX = 'https://api.weixin.qq.com'; //以下API接口URL需要使用此前缀
-	const OAUTH_TOKEN_URL = '/sns/oauth2/access_token?';
-	const OAUTH_REFRESH_URL = '/sns/oauth2/refresh_token?';
-
 	/**
 	 * 日志记录，可被重载。
 	 * @param mixed $log 输入日志
@@ -248,6 +241,6 @@ trait WechatTrait {
 	protected function getCurrentURL()
 	{
 		$url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-		return 
+		return url()->current();
 	}
 }

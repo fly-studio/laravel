@@ -87,11 +87,11 @@ trait AdminTrait {
 
 	private function _getData(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*'])
 	{
-		$data = $this->_getPaginate($request, $builder)->toArray();
+		$data = $this->_getPaginate($request, $builder);
 
-		!empty($callback) && is_callable($callback) && array_walk($data['data'], $callback);
+		!empty($callback) && is_callable($callback) && array_walk($data, $callback);
 
-		return $data;
+		return $data->toArray();
 	}
 
 

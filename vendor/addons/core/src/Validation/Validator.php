@@ -261,7 +261,10 @@ class Validator extends BaseValidator {
 				$jqueryRules[$attribute] +=  [$rule => $parameters];
 			}
 		}
-	return $jqueryRules;
+		foreach ($jqueryRules as $key => $value)
+			if (empty($value)) unset($jqueryRules[$key]);
+
+		return $jqueryRules;
 	}
  
 }   //end of class

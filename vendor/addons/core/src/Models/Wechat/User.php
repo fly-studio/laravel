@@ -3,6 +3,7 @@ namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Attachment;
 use Addons\Core\Models\User as UserModel;
+use Addons\Core\Models\Role as RoleModel;
 use Addons\Core\Models\Wechat\Wechat;
 use Cache;
 class User {
@@ -48,21 +49,21 @@ class User {
 	 * 
 	 * @param  string $openid      	OPENID
 	 * @param  string $access_token     如果是通过OAuth2授权，则需要传递此参数
+	 * @param  string $role_name        组名，只在添加用户时有效
 	 * @param  integer $update_expire 	多久更新一次?
 	 * @return integer                  返回UID
 	 */
-	public function updateUser($openid, $access_token = NULL, $rid = NULL, $update_expired = 86400)
+	public function updateUser($openid, $access_token = NULL, $role_name = NULL, $update_expired = 86400)
 	{
 		if (empty($openid))
 			return FALSE;
 
 		$user = $this->user->get($openid);
-		is_null($rid) && $rid = Model_Group::GROUP_USER;
 		$uid = empty($user) ? $this->user->add([
 			'username' => $openid,
 			'password' => $this->user->auto_password($openid),
 			'nickname' => '',
-		])->id : $user['id'];
+		], $role_name ?: RoleModel::WECHATER)->id : $user['id'];
 
 		$hashkey = 'update-wechat-'.$uid;
 		$last = Cache::get($hashkey, NULL);
