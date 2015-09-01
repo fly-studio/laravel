@@ -9,6 +9,8 @@ class ManualController extends Controller
 {
 	public function index()
 	{
+
+		var_dump(Manual::find(17)->getTree());
 		return $this->view('manual.index');
 	}
 

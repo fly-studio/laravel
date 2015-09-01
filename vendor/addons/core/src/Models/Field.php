@@ -2,12 +2,17 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
+use Addons\Core\Models\FieldTrait;
 use Cache;
 class Field extends Model {
-
+	use FieldTrait;
 	//不能批量赋值
 	public $auto_cache = true;
 	public $fire_caches = ['fields'];
+
+	public $casts = [
+		'extra' => 'array',
+	];
 
 
 	protected $guarded = [];
@@ -28,9 +33,3 @@ class Field extends Model {
 		});
 	}
 }
-
-//order_index自动加1
-Field::creating(function($field){
-	$_field = Field::where('field_class', $field->field_class)->orderBy('order_index','DESC')->first();
-	$field->order_index  = empty($_field) ? 1 : $_field->order_index + 1;
-});

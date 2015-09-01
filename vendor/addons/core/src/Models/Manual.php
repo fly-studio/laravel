@@ -1,16 +1,9 @@
 <?php
 namespace Addons\Core\Models;
 
-use Addons\Core\Models\Model;
-use Addons\Core\Models\ManualHistories;
-class Manual extends Model {
-
-	//不能批量赋值
-	public $auto_cache = true;
-	public $fire_caches = [];
-
-
-	protected $guarded = ['id'];
+use Addons\Core\Models\Tree;
+use Addons\Core\Models\ManualHistory;
+class Manual extends Tree {
 
 	function histories()
 	{
@@ -19,9 +12,11 @@ class Manual extends Model {
 }
 
 Manual::updating(function($manual){
-	$data = Manual::find($manual->id)->toArray();
-	$data['mid'] = $data['id'];
-	$data = array_keyfilter($data, 'title,content,mid'); 
-	ManualHistories::create($data);
-	return true;
-})
+	if ($manual->isDirty('title', 'content'))
+	{
+		$data = Manual::find($manual->id)->toArray();
+		$data['mid'] = $data['id'];
+		$data = array_keyfilter($data, 'title,content,mid'); 
+		ManualHistory::create($data);
+	}
+});

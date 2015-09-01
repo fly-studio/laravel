@@ -24,16 +24,12 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 	 */
 	public $auto_cache = true;
 
-	//protected $dates = ['deleted_at'];
-	//表名
-	//protected $table = 'users';
-	//主键名称
-	//protected $primaryKey = 'id';
 
 	//能批量赋值
 	//protected $fillable = ['username', 'password'];
 	//不能批量赋值
 	protected $guarded = ['id'];
+	protected $dates = ['created_at', 'updated_at', 'deleted_at', 'lastlogin_at'];
 	/**
 	 * The attributes excluded from the model's JSON form.
 	 *
