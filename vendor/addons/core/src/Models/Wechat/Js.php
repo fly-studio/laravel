@@ -5,9 +5,9 @@ use Addons\Core\Models\Wechat\Wechat;
 class Js {
 	private $wechat;
 
-	public function __construct($options)
+	public function __construct($options, $waid = NULL)
 	{
-		$this->wechat = $options instanceof Wechat ? $options new Wechat($options);
+		$this->wechat = $options instanceof Wechat ? $options new Wechat($options, $waid);
 	}
 
 	public function getWechat()

@@ -2,17 +2,17 @@
 namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Wechat\Wechat;
-use Addons\Core\Models\Wechat\User;
+use Addons\Core\Models\Wechat\User as  WechatUserModel;
 use Session;
 class OAuth2 {
 	private $wechat;
 
-	public function __construct($options)
+	public function __construct($options, $waid = NULL)
 	{
-		$this->wechat = $options instanceof Wechat ? $options new Wechat($options);
+		$this->wechat = $options instanceof Wechat ? $options new Wechat($options, $waid);
 	}
 
-	public function authenticate($url = NULL, $scope = 'snsapi_base', $updateUser = false)
+	public function authenticate($url = NULL, $scope = 'snsapi_base', $bindUser = false)
 	{	
 		$openid = $this->getOpenID();
 		if (!empty($openid)) return true;
@@ -28,9 +28,11 @@ class OAuth2 {
 		else
 		{
 			$this->setOpenID($json['openid']);
+			$wechatUserModel = new WechatUserModel($this->wechat);
+			$this->wechatUser = $wechatUserModel->updateWechatUser($json['openid'], $json['access_token']);
 
-			if ($updateUser)
-				(new User($this->wechat))->updateUser($json['openid'], $json['access_token']);
+			if ($bindUser)
+				$user = $wechatUserModel->bindToUser($this->wechatUser);
 		}
 
 		return true;

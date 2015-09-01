@@ -147,6 +147,7 @@ class Validator extends BaseValidator {
 			$jqueryRules[$attribute] = [];
 			foreach($_list as $rule => $parameters)
 			{ //2
+				if (empty($rule)) continue;
 				$rule = strtolower($rule);
 				switch ($rule) { // 1
 					case 'alpha':

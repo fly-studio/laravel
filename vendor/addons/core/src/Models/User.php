@@ -51,8 +51,7 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 		$data['password'] = bcrypt($data['password']);
 		$user = $this->create($data);
 		//加入view组
-		$role = Role::where('name', $role_name)->first();
-		!empty($role) && $user->attachRole($role);
+		$user->attachRole(Role::where('name', $role_name)->firstOrFail());
 		return $user;
 	}
 
@@ -67,3 +66,10 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 		return $this->hasOne('Addons\\Core\\Models\\Field', 'id', 'gender');
 	}
 }
+
+//自动创建extra等数据
+User::creating(function($user){
+	/*UserExtra::create([
+		'id' => $user->id,
+	]);*/
+});
