@@ -43,7 +43,7 @@ namespace Addons\Core\Models\Wechat;
  *   $result = $weObj->createMenu($newmenu);
  */
 use Cache;
-class Wechat
+class API
 {
 	const MSGTYPE_TEXT = 'text';
 	const MSGTYPE_IMAGE = 'image';

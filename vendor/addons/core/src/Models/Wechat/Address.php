@@ -1,15 +1,15 @@
 <?php
 namespace Addons\Core\Models\Wechat;
 
-use Addons\Core\Models\Wechat\Wechat;
+use Addons\Core\Models\Wechat\API;
 use Cache;
 class Address {
 
-	private $wechat;
+	private $api;
 
 	public function __construct($options, $waid = NULL)
 	{
-		$this->wechat = $options instanceof Wechat ? $options new Wechat($options, $waid);
+		$this->api = $options instanceof API ? $options : new API($options, $waid);
 	}
 
 	public function authenticate()
@@ -18,10 +18,10 @@ class Address {
 		if (!empty($access_token)) return true;
 
 		$url = app('url')->current();
-		$json = $this->wechat->getOauthAccessToken();
+		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
-			$oauth_url =$this->wechat->getOauthRedirect($url,"jsapi_addr","snsapi_base");
+			$oauth_url =$this->api->getOauthRedirect($url,"jsapi_addr","snsapi_base");
 			redirect($oauth_url);
 			return false;
 		} else
@@ -32,7 +32,7 @@ class Address {
 
 	public function getAccessToken()
 	{
-		$hashkey = 'wechat-address-token-'. $this->wechat->appid;
+		$hashkey = 'wechat-address-token-'. $this->api->appid;
 
 		$access_token = Cache::get($hashkey, NULL);
 		return $access_token;
@@ -40,13 +40,13 @@ class Address {
 
 	public function setAccessToken($access_token)
 	{
-		$hashkey = 'wechat-address-token-'. $this->wechat->appid;
+		$hashkey = 'wechat-address-token-'. $this->api->appid;
 		Cache::put($hashkey, $access_token, 60);
 	}
 
 	public function getWechat()
 	{
-		return $this->wechat;
+		return $this->api;
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Address {
 		//$this->parameters = json_encode($AddrParameters);
 		empty($url) && $url = app('url')->current();
 		return [
-			'appId' => $this->wechat->appid;
+			'appId' => $this->api->appid;
 			'scope' => 'jsapi_address',
 			'signType' => 'sha1',
 			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->access_token),
@@ -76,7 +76,7 @@ class Address {
 	public function getAddrSign($url, $timeStamp, $nonceStr, $accesstoken = ''){
 		$arrdata = array(
 			'accesstoken' => $accesstoken,
-			'appid' => $this->wechat->appid,
+			'appid' => $this->api->appid,
 			'noncestr' => $nonceStr,
 			'timestamp' => $timeStamp,
 			'url' => $url,

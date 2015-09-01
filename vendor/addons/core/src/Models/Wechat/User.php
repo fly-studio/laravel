@@ -9,17 +9,17 @@ use Addons\Core\Models\Wechat\WechatUser;
 use Cache;
 class User {
 
-	private $wechat, $user;
+	private $api, $user;
 
 	public function __construct($options, $waid = NULL)
 	{
-		$this->wechat = $options instanceof Wechat ? $options new Wechat($options, $waid);
+		$this->api = $options instanceof API ? $options : new API($options, $waid);
 		$this->user = new UserModel();
 	}
 
 	public function getWechat()
 	{
-		return $this->wechat;
+		return $this->api;
 	}
 	/**
 	 * 根据OPENID查询用户资料
@@ -33,10 +33,10 @@ class User {
 			return FALSE;
 
 		$result = array();
-		$hashkey = 'wechat-userinfo-' . $openid. '/'.$this->wechat->appid;
+		$hashkey = 'wechat-userinfo-' . $openid. '/'.$this->api->appid;
 
 		if (!$cache || is_null($result = Cache::get($hashkey, null))) {
-			$result = empty($access_token) ? $this->wechat->getUserInfo($openid) : $this->wechat->getOauthUserinfo($access_token, $openid);;
+			$result = empty($access_token) ? $this->api->getUserInfo($openid) : $this->api->getOauthUserinfo($access_token, $openid);;
 			if (isset($result['nickname'])) { //订阅号 无法获取昵称，则不加入缓存
 				$attachment =(new Attachment)->download(0, $result['headimgurl'], 'wechat-avatar-'.$openid, 'jpg');
 				$result['avatar_aid'] = $attachment['aid'];
@@ -60,15 +60,15 @@ class User {
 		if (empty($openid))
 			return FALSE;
 
-		$hashkey = 'update-wechatuser-'.$openid. '/'.$this->wechat->appid;
+		$hashkey = 'update-wechatuser-'.$openid. '/'.$this->api->appid;
 		return Cache::remember($hashkey, $update_expired, function() use ($access_token){
 			$wechatUser = WechatUser::firstOrCreate([
 				'openid' => $openid,
-				'waid' => $this->wechat->waid,
+				'waid' => $this->api->waid,
 			]);
 			$wechat = $this->getUserInfo($wechatUser->openid, $access_token);
 			//公众号绑定开放平台,可获取唯一ID
-			$wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->wechat->appid]);
+			$wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->api->appid]);
 			if (isset($wechat['nickname']))
 			{
 				//将所有唯一ID匹配的资料都更新

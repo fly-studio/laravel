@@ -68,7 +68,7 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 }
 
 //自动创建extra等数据
-User::creating(function($user){
+User::created(function($user){
 	/*UserExtra::create([
 		'id' => $user->id,
 	]);*/

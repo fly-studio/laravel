@@ -1,16 +1,15 @@
 <?php
-namespace Addons\Core\Models\Wechat;
+namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
 
 class WechatUser extends Model{
+	public $auto_cache = true;
 	protected $guarded = ['id'];
 
 	public function account()
 	{
-		return $this->hasOne('Addons\\Core\\Models\\Wechat\\WechatAccount', 'id', 'aid');
+		return $this->hasOne('Addons\\Core\\Models\\WechatAccount', 'id', 'waid');
 	}
-
-	
 
 }
