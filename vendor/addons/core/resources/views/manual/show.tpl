@@ -1,7 +1,9 @@
 <{extends file="extends/main.block.tpl"}>
 
 <{block "head-styles-plus"}>
+<link rel="stylesheet" href="<{'static/css/bootstrap-sidebar/sb-admin-2.css'|url}>" />
 <link rel="stylesheet" href="<{'static/js/editor.md/css/editormd.preview.css'|url}>" />
+<link rel="stylesheet" href="<{'static/css/font-awesome.min.css'|url}>" />
 <style>
 body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;}
 .nav>li>a {position: relative;display: block;padding: 10px 15px;}
@@ -29,27 +31,42 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 <{/block}>
 
 <{block "body-container"}>
-<div class="container">
-	<h1 class="text-center">
-	<{$_data.title}>
-	<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
-
-	</h1>
-	<div class="row">
-		<div class="col-md-9 col-xs-12" >
-			<div id="editormd-view"></div>
-		</div>
-		<div class="col-md-3 col-xs-hidden">
-			<div data-spy="affix" data-offset-top="0" id="affix-side">
-				<h4>Table of Contents</h4>
-				<ul class="nav" id="navbar"></ul>
+<div id="wrapper">
+	<{include file="manual/nav.inc.tpl"}>
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">
+				<{$_data.title}>
+				<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
+				</h1>
+				<ol class="breadcrumb">
+					<{foreach $_parents->reverse() as $item}>
+					<li>
+						<a href="<{'manual'|url}>/<{$item.id}>"><{$item->title}></a>
+					</li>
+					<{/foreach}>
+					<li class="active">
+						 <{$_data.title}>
+					</li>
+				</ol>
 			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-9 col-xs-12" >
+				<div id="editormd-view"></div>
+			</div>
+			<div class="col-md-3 col-xs-hidden">
+				<div data-spy="affix" data-offset-top="0" id="affix-side">
+					<h4>Table of Contents</h4>
+					<ul class="nav" id="navbar"></ul>
+				</div>
 
+			</div>
 		</div>
 	</div>
-	
-	<textarea id="markdown" class="hidden"><{$_data.content}></textarea>
 </div>
+<textarea id="markdown" class="hidden"><{$_data.content}></textarea>
 <{/block}>
 
 <{block "body-scripts"}>
@@ -84,7 +101,9 @@ $('h1[id]', '#editormd-view').each(function(){
 	});
 });
 //滚动监听
-$('body').scrollspy({ target: '#navbar' })
+$('body').scrollspy({ target: '#navbar' });
+//侧边栏
+//$('#side-menu').metisMenu();
 
 })(jQuery);
 </script>

@@ -19,6 +19,8 @@ class Controller extends BaseController {
 	public $user;
 	public $roles;
 
+	private $viewData = [];
+
 	public function __construct()
 	{
 		$this->beforeFilter('csrf', ['on' => 'post']);
@@ -29,15 +31,21 @@ class Controller extends BaseController {
 
 	private function initCommon()
 	{
-		$this->site = app('config')->get('site');
-		$this->fields = (new Field)->getFields();
+		$this->viewData['_site'] = app('config')->get('site');
+		$this->viewData['_fields'] = (new Field)->getFields();
+
+		$this->site = & $this->viewData['_site'];
+		$this->fields = & $this->viewData['_fields'];
 		$this->site['titles'][] = ['title' => $this->site['title'], 'url' => '', 'target' => '_self'];
 	}
 
 	private function initMember()
 	{
-		$this->user = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['id' => 0, 'rid' => 0];
-		$this->roles = (new Role)->getRoles();
+		$this->viewData['_user'] = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['id' => 0, 'rid' => 0];
+		$this->viewData['_roles'] = (new Role)->getRoles();
+
+		$this->user = & $this->viewData['_user'];
+		$this->roles = & $this->viewData['_roles'];
 	}
 
 	protected function subtitle($title, $url = NULL, $target = '_self')
@@ -47,12 +55,23 @@ class Controller extends BaseController {
 
 	public function __set($key, $value)
 	{
+		$this->viewData[$key] = $value;
 		view()->share($key, $value);
 	}
 
 	public function __get($key)
 	{
-		return view()->shared($key);
+		return $this->viewData[$key];
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->viewData[$key]);
+	}
+
+	public function __unset($key)
+	{
+		unset($this->viewData[$key]);
 	}
 
 	protected function view($filename, $data = [])
@@ -60,7 +79,7 @@ class Controller extends BaseController {
 		$_user = array_delete_selector($this->user, 'password,remember_token');
 		$this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
 		
-		return view($filename, $data)->with('_site', $this->site)->with('_user', $_user)->with('_roles', $this->roles)->with('_fields', $this->fields);
+		return view($filename, $data)->with($this->viewData);
 	}
 
 	protected function response($content, $status = 200, array $headers = [])
