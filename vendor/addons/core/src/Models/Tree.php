@@ -55,14 +55,14 @@ class Tree extends Model {
 	public function getRoot($columns = ['*'])
 	{
 		$node = $this;
-		if (!empty($this->pathKey))
+		if (empty($this->pathKey))
 		{
 			$columns = $this->formatColumns($columns);
 			while(!empty($node->getParentKey()))
 				$node = $this->getNode($node->getParentKey(), $columns);
 			return $node;
 		} else {
-			list(,,$rootid) = explode('/', $node->getParentKey()); // [/0/1/2/3/] => 1
+			list(,,$rootid) = explode('/', $node->getPathKey()); // [/0/1/2/3/] => 1
 			return $this->getNode($rootid, $columns);			
 		}
 	}

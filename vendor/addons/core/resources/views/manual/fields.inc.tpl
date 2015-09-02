@@ -17,4 +17,6 @@
 		<textarea name="content" id="content" class="form-control" style="display:none;"><{$_data.content|default:old('content')}></textarea>
 	</div>
 </div>
-<button type="submit" class="btn btn-default">保存</button>
+<div class="form-group text-center">
+	<button type="submit" class="btn btn-info">保存</button>
+</div>

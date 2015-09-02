@@ -70,6 +70,7 @@
 		}
 
 	});
+<{call validate selector='#form'}>
 })(jQuery);
 </script>
 <{/block}>

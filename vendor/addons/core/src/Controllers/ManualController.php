@@ -26,7 +26,8 @@ class ManualController extends Controller
 	public function show(Request $request, $id)
 	{
 		$this->_data = Manual::findOrFail($id);
-		$this->_tree = (new Manual)->getNode(0)->getDescendant(['title', 'level']);
+		$this->_root = (new Manual)->getNode($id)->getRoot();
+		$this->_tree = $this->_root->getTree(['title']);
 		return $this->view('manual.show');
 	}
 

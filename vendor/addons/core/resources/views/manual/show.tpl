@@ -40,8 +40,8 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 			<div id="editormd-view"></div>
 		</div>
 		<div class="col-md-3 col-xs-hidden">
-			<h4>Table of Contents</h4>
 			<div data-spy="affix" data-offset-top="0" id="affix-side">
+				<h4>Table of Contents</h4>
 				<ul class="nav" id="navbar"></ul>
 			</div>
 
