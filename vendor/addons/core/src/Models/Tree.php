@@ -117,11 +117,11 @@ class Tree extends Model {
 	{
 		$columns = $this->formatColumns($columns);
 		$node = $this;
-		if (!empty($this->pathKey))
+		if (!empty($this->pathKey)) //使用Path搜索出来的节点，无法通过order进行良好的排序
 		{
 			$builder = static::where($this->getPathKeyName(), 'LIKE', $node->getPathKey().'%');
 			!empty($this->orderKey) && $builder->orderBy($this->getOrderKeyName());
-			!empty($this->levelKey) && $builder->orderBy($this->levelKey);
+			!empty($this->pathKey) && $builder->orderBy($this->getPathKeyName());
 			return $builder->get($columns);
 		} else {
 			$result = $this->newCollection();

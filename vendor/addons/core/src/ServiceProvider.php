@@ -33,6 +33,7 @@ class ServiceProvider extends SP
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/attachment.php', 'attachment');
 		$this->mergeConfigFrom(__DIR__ . '/../config/mimes.php', 'mimes');
+		$this->mergeConfigFrom(__DIR__ . '/../config/validation.php', 'validation');
 		
 	}
 	/**
@@ -44,6 +45,7 @@ class ServiceProvider extends SP
 	{
 		$this->publishes([__DIR__ . '/../config/attachment.php' => config_path('attachment.php')], 'config');
 		$this->publishes([__DIR__ . '/../config/mimes.php' => config_path('mimes.php')], 'config');
+		$this->publishes([__DIR__ . '/../config/validation.php' => config_path('validation.php')], 'config');
 
 		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));

@@ -1,3 +1,91 @@
 <{extends file="extends/main.block.tpl"}>
 
-<{block "head-scripts-plus"}><{/block}>
+<{block "head-styles-plus"}>
+<link rel="stylesheet" href="<{'static/js/editor.md/css/editormd.preview.css'|url}>" />
+<style>
+body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;}
+.nav>li>a {position: relative;display: block;padding: 10px 15px;}
+#affix-side .nav>li>a {display: block;padding: 4px 20px;font-size: 13px;font-weight: 500;color: #999;}
+#affix-side .nav>.active>a, #affix-side .nav>.active:hover>a, #affix-side .nav>.active:focus>a {padding-left: 18px;font-weight: 700;color: #563d7c;background-color: transparent;border-left: 2px solid #563d7c;}
+#affix-side .nav .nav>li>a {padding-top: 1px;padding-bottom: 1px;padding-left: 30px;font-size: 12px;font-weight: 400;}
+#affix-side .nav .nav>.active>a, #affix-side .nav .nav>.active:hover>a, #affix-side .nav .nav>.active:focus>a {padding-left: 28px;font-weight: 500;}
+#affix-side .nav li ul {display: none; }
+#affix-side .nav li.active ul {display: block;}
+
+#affix-side {overflow: auto}
+</style>
+<{/block}>
+
+<{block "head-scripts-plus"}>
+<script>var $ = jQuery;</script>
+<script src="<{'static/js/editor.md/lib/marked.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/prettify.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/raphael.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/underscore.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/sequence-diagram.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/flowchart.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/lib/jquery.flowchart.min.js'|url}>"></script>
+<script src="<{'static/js/editor.md/editormd.min.js'|url}>"></script>
+<{/block}>
+
+<{block "body-container"}>
+<div class="container">
+	<h1 class="text-center">
+	<{$_data.title}>
+	<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
+
+	</h1>
+	<div class="row">
+		<div class="col-md-9 col-xs-12" >
+			<div id="editormd-view"></div>
+		</div>
+		<div class="col-md-3 col-xs-hidden">
+			<h4>Table of Contents</h4>
+			<div data-spy="affix" data-offset-top="0" id="affix-side">
+				<ul class="nav" id="navbar"></ul>
+			</div>
+
+		</div>
+	</div>
+	
+	<textarea id="markdown" class="hidden"><{$_data.content}></textarea>
+</div>
+<{/block}>
+
+<{block "body-scripts"}>
+<script>
+(function($){
+// You can custom @link base url.
+editormd.urls.atLinkBase = $.baseuri + 'member/';
+editormd.markdownToHTML("editormd-view", {
+	markdown        : "\r\n" + $("#markdown").text(),
+	htmlDecode      : "style,script,iframe",  // you can filter tags decode
+	atLink    : true,    // enable @link
+	emailLink : true,    // enable email address auto link
+	toc             : false,
+	tocm            : true,    // Using [TOCM]
+	//tocContainer    : "#affix-side", // 自定义 ToC 容器层
+	//gfm             : false,
+	//tocDropdown     : true,
+	// markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+	emoji           : true,
+	taskList        : true,
+	tex             : true,  // 默认不解析
+	flowChart       : true,  // 默认不解析
+	sequenceDiagram : true  // 默认不解析
+});
+//添加导航
+$('h1[id]', '#editormd-view').each(function(){
+	var $this = $(this);
+	var $obj = $('<li><a href="#'+this.id+'">'+$this.text()+'</a><ul class="nav"></ul></li>').appendTo("#navbar");
+	$obj = $('ul', $obj);
+	$this.nextUntil("h1",'h2').each(function(){
+		$obj.append('<li><a href="#'+this.id+'">'+$(this).text()+'</a></li>');
+	});
+});
+//滚动监听
+$('body').scrollspy({ target: '#navbar' })
+
+})(jQuery);
+</script>
+<{/block}>

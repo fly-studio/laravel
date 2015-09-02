@@ -217,23 +217,30 @@ class AttachmentController extends Controller {
 		return $this->success('', FALSE, $result);
 	}
 
+	public function editormd_uploader_query()
+	{
+		$data = array('success' => 1, 'message' => '');
+		$result = $this->model->upload($this->user['id'], 'editormd-image-file');
+		if (!is_array($result))
+		{
+			$data = array('success' => 0, 'message' => $this->read_message($result));
+		} else {
+			$data['url'] = $this->model->get_url($result['id'], $result['original_basename']);
+		}
+		return $this->output($data);
+	}
+
 	public function kindeditor_upload_query()
 	{
 		$data = array('error' => 0, 'url' => '');
-		if (empty($this->user['id'])) //检查是否登录
-			$data = array('error' => 1, 'message' => Kohana::message('common', 'default.failure_unlogin'));
-		else
+		
+		$result = $this->model->upload($this->user['id'], 'Filedata');
+		if (!is_array($result))
 		{
-			$result = $this->model->upload($this->user['id'], 'Filedata');
-			if (!is_array($result))
-			{
-				$_config = Kohana::$config->load('attachment');
-				$msg = Kohana::message('common','attachment.'.$result.'.content');
-				$msg = __($msg, array(':maxsize' => Text::bytes($_config['maxsize']),':ext' => implode(',', $_config['ext'])));
-				$data = array('error' => 1, 'message' => $msg);
-			} else
-				$data['url'] = $this->model->get_url($result['id'], TRUE, $result['original_basename']);
-		}
+			$data = array('error' => 1, 'message' => $this->read_message($result));
+		} else
+			$data['url'] = $this->model->get_url($result['id'], $result['original_basename']);
+		
 		return $this->output($data);
 	}
 
@@ -298,7 +305,7 @@ class AttachmentController extends Controller {
 				$result = $this->model->upload($this->user['id'], 'Filedata');
 				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
 					'state' => 'SUCCESS',
-					'url' => $this->model->get_url($result['id'], TRUE, $result['original_basename']),
+					'url' => $this->model->get_url($result['id'], $result['original_basename']),
 					'title' => $result['src_basename'],
 					'original' => $result['src_basename'],
 					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
@@ -314,7 +321,7 @@ class AttachmentController extends Controller {
 				$result = $this->model->save($this->user['id'], $file_path, 'scrawl_'.$this->user['id'].'_'.date('Ymdhis').'.png');
 				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
 					'state' => 'SUCCESS',
-					'url' => $this->model->get_url($result['id'], TRUE, $result['original_basename']),
+					'url' => $this->model->get_url($result['id'], $result['original_basename']),
 					'title' => $result['src_basename'],
 					'original' => $result['src_basename'],
 					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
@@ -329,7 +336,7 @@ class AttachmentController extends Controller {
 					$result = $this->model->download($this->user['id'], $value);
 					$list[] = !is_array($result) ? array('state' => $this->read_message($result), 'source' => $value) : array (
 						'state' => 'SUCCESS',
-						'url' => $this->model->get_url($result['id'], TRUE, $result['original_basename']),
+						'url' => $this->model->get_url($result['id'], $result['original_basename']),
 						'title' => $result['src_basename'],
 						'original' => $result['src_basename'],
 						'size' => $result['size'],
@@ -349,7 +356,7 @@ class AttachmentController extends Controller {
 				
 				$data = array(
 					'state' => 'SUCCESS',
-					'list' => array_values(array_map(function($v) {return array('url' => $this->model->get_url($v['id'], TRUE, $v['original_basename']));}, $list['data'])),
+					'list' => array_values(array_map(function($v) {return array('url' => $this->model->get_url($v['id'], $v['original_basename']));}, $list['data'])),
 					'start' => $list['page'] * $list['pagesize'],
 					'total' => $list['count'],
 				);
@@ -373,7 +380,7 @@ class AttachmentController extends Controller {
 		fclose($fp);
 
 		$attachment = $this->model->save($this->user['id'], $file_path, 'avatar_'.$this->user['id'].'_'.date('Ymdhis').'.jpg');
-		$url = $this->model->get_url($attachment['id'], TRUE, $attachment['original_basename']);
+		$url = $this->model->get_url($attachment['id'], $attachment['original_basename']);
 		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
 	}
 
@@ -391,7 +398,7 @@ class AttachmentController extends Controller {
 		unset($dataurl, $data, $part);
 
 		$attachment = $this->model->save($this->user['id'], $file_path, 'datauri_'.$this->user['id'].'_'.date('Ymdhis').'.'.$ext);
-		$url = $this->model->get_url($attachment['id'], TRUE, $attachment['original_basename']);
+		$url = $this->model->get_url($attachment['id'], $attachment['original_basename']);
 		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
 	}
 
@@ -400,6 +407,6 @@ class AttachmentController extends Controller {
 	{
 		$_config = config('attachment');
 		$_data =  ['maxsize' => $_config['maxsize'], 'ext' => implode(',', $_config['ext'])];
-		return Lang::has($message = 'attachment.'.$message_field.'.content') ? trans($message, $_data) : trans('core::common.'.$message, $_data);
+		return Lang::has($message = 'attachment.'.$message_field.'.content') ? trans($message, $_data) : trans('core::common.'.$message.'.content', $_data);
 	}
 }

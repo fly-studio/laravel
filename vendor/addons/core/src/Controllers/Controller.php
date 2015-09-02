@@ -57,7 +57,7 @@ class Controller extends BaseController {
 
 	protected function view($filename, $data = [])
 	{
-		$_user = array_delete_selector($this->user, 'password');
+		$_user = array_delete_selector($this->user, 'password,remember_token');
 		$this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
 		
 		return view($filename, $data)->with('_site', $this->site)->with('_user', $_user)->with('_roles', $this->roles)->with('_fields', $this->fields);
