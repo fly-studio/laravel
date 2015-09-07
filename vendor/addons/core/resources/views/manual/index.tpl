@@ -3,13 +3,11 @@
 <{block "head-styles-plus"}>
 <link rel="stylesheet" href="<{'static/css/font-awesome.min.css'|url}>" />
 <style>
-	.media-body-container {position: relative;}
-	.media-body-container pre {height:250px; overflow: hidden; margin-bottom: 20px;}
-	.media-body-expand-btn {display: none; position: absolute; bottom: 5px; height:20px; left : 10px; right: 10px;line-height: 15px;}
+	.media-body-container{position: relative;}
+	.media-body-container pre {height:250px; overflow: hidden; }
+	.media-body-expand-btn {display: none; height:20px; width:100%; line-height: 15px; position: absolute; left: 0; right: 0; bottom: 5px;}
 </style>
 <{/block}>
-
-
 
 <{block "body-container"}>
 <div class="container">
@@ -28,6 +26,7 @@
 			<div class="media-body-container">
 				<pre><code><{$v.content}></code></pre>
 				<button class="btn btn-link btn-default btn-block btn-sm media-body-expand-btn"><i class="glyphicon glyphicon-menu-down"></i></button>
+
 			</div>
 			
 			</div>
