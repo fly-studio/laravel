@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="<{'static/css/font-awesome.min.css'|url}>" />
 <style>
 	.media-body-container {position: relative;}
-	.media-body-container pre {height:250px; overflow: hidden;}
+	.media-body-container pre {height:250px; overflow: hidden; margin-bottom: 20px;}
 	.media-body-expand-btn {display: none; position: absolute; bottom: 5px; height:20px; left : 10px; right: 10px;line-height: 15px;}
 </style>
 <{/block}>
