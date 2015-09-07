@@ -9,7 +9,7 @@ class WechatArticle extends Model{
 
 	public function depot()
 	{
-		return $this->belongsToMany('Addons\\Core\\Models\\WechatDepot', 'wechat_depot_relation', 'wdid', 'wrid');
+		return $this->belongsToMany('App\\WechatDepot', 'wechat_depot_relation', 'wdid', 'wrid');
 	}
 
 }

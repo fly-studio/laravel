@@ -9,7 +9,7 @@ class WechatMessage extends Model{
 
 	public function account()
 	{
-		return $this->hasOne('Addons\\Core\\Models\\WechatAccount', 'id', 'aid');
+		return $this->hasOne('App\\WechatAccount', 'id', 'aid');
 	}
 
 	

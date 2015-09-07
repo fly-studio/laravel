@@ -9,6 +9,6 @@ class WechatMedia extends Model{
 
 	public function depot()
 	{
-		return $this->belongsTo('Addons\\Core\\Models\\WechatDepot', 'wdid', 'id');
+		return $this->belongsTo('App\\WechatDepot', 'wdid', 'id');
 	}
 }

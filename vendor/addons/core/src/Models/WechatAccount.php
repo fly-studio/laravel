@@ -9,17 +9,17 @@ class WechatAccount extends Model{
 
 	public function users()
 	{
-		return $this->hasMany('Addons\\Core\\Models\\WechatUser', 'waid', 'id');
+		return $this->hasMany('App\\WechatUser', 'waid', 'id');
 	}
 
 	public function messages()
 	{
-		return $this->hasMany('Addons\\Core\\Models\\WechatMessage', 'waid', 'id');
+		return $this->hasMany('App\\WechatMessage', 'waid', 'id');
 	}
 
 	public function depots()
 	{
-		return $this->hasMany('Addons\\Core\\Models\\WechatDepot', 'waid', 'id');
+		return $this->hasMany('App\\WechatDepot', 'waid', 'id');
 	}
 
 }

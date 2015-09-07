@@ -17,7 +17,20 @@ class ToolsController extends Controller {
 
 	public function clear_cache_query()
 	{
+		//Cache
 		Cache::flush();
+		//smarty
+		$smarty = (new \Addons\Smarty\View\Engine(app('config')))->getSmarty();
+		$smarty->clearAllCache();
+		$smarty->clearCompiledTemplate();
+		//other files
+		foreach([storage_path('attachments'), storage_path('debugbar'), storage_path('placeholders'), storage_path('utils'), ] as $value)
+		{
+			rename($value.'/.gitignore', $newfile = storage_path('.gitignore,'.rand());
+			rmdir_recursive($value, TRUE);
+			rename($newfile, $value.'/.gitignore');
+		}
+
 		return $this->success(array('title' => '操作成功', 'content' => '缓存清理成功'), FALSE);
 	}
 

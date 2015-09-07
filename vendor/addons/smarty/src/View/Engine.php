@@ -9,7 +9,7 @@ class Engine implements Engines\EngineInterface
 {
 
 	protected $_config;
-	protected $smary;
+	protected $smarty;
 
 	public function __construct($config)
 	{
@@ -88,6 +88,11 @@ class Engine implements Engines\EngineInterface
 		}
 
 		return $this->smarty->fetch($path);
+	}
+
+	public function getSmarty()
+	{
+		return $this->smarty;
 	}
 
 	/**

@@ -9,7 +9,7 @@ class WechatDepot extends Model{
 
 	public function account()
 	{
-		return $this->hasOne('Addons\\Core\\Models\\WechatAccount', 'id', 'waid');
+		return $this->hasOne('App\\WechatAccount', 'id', 'waid');
 	}
 
 	public function relation()
@@ -20,27 +20,27 @@ class WechatDepot extends Model{
 
 	public function articles()
 	{
-		return $this->belongsToMany('Addons\\Core\\Models\\WechatArticle', 'wechat_depot_relation', 'wrid', 'wdid');
+		return $this->belongsToMany('App\\WechatArticle', 'wechat_depot_relation', 'wrid', 'wdid');
 	}
 
 	public function text()
 	{
-		return $this->belongsTo('Addons\\Core\\Models\\WechatText', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatText', 'id', 'wdid');
 	}
 
 	public function picture()
 	{
-		return $this->belongsTo('Addons\\Core\\Models\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
 	}
 
 	public function video()
 	{
-		return $this->belongsTo('Addons\\Core\\Models\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
 	}
 
 	public function audio()
 	{
-		return $this->belongsTo('Addons\\Core\\Models\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
 	}
 
 }
