@@ -11,7 +11,7 @@ class Tree extends Model {
 	public $fire_caches = [];
 
 
-	protected $guarded = ['id'];
+	protected $guarded = ['id', 'level', 'path', 'order']; //这些字段禁止维护
 
 	public $parentKey = 'pid'; //必要字段                MySQL需加索引
 	public $orderKey = 'order'; //无需此字段请设置NULL   MySQL需加索引
@@ -38,8 +38,8 @@ class Tree extends Model {
 	public function getNode($id, $columns = ['*'])
 	{
 
-		return empty($id) ? new static([
-				$this->getKeyName() => NULL,
+		return empty($id) ? (new static)->newFromBuilder([
+				$this->getKeyName() => 0,
 				$this->parentKey => 0,
 				$this->pathKey => '/0/',
 				$this->orderKey => 0,
@@ -103,7 +103,7 @@ class Tree extends Model {
 	public function getChildren($columns = ['*'])
 	{
 		$columns = $this->formatColumns($columns);
-		$builder = static::where($this->parentKey, $this->id);
+		$builder = static::where($this->parentKey, $this->getKey());
 		!empty($this->orderKey) && $builder->orderBy($this->orderKey);
 		return $builder->get();
 	}

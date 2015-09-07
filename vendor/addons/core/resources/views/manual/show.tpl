@@ -73,12 +73,12 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 <script>
 (function($){
 // You can custom @link base url.
-editormd.urls.atLinkBase = $.baseuri + 'member/';
+//editormd.urls.atLinkBase = $.baseuri + 'member/';
 editormd.markdownToHTML("editormd-view", {
 	markdown        : "\r\n" + $("#markdown").text(),
 	htmlDecode      : "style,script,iframe",  // you can filter tags decode
-	atLink    : true,    // enable @link
-	emailLink : true,    // enable email address auto link
+	//atLink    : true,    // enable @link
+	//emailLink : true,    // enable email address auto link
 	toc             : false,
 	tocm            : true,    // Using [TOCM]
 	//tocContainer    : "#affix-side", // 自定义 ToC 容器层

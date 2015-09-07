@@ -31,7 +31,7 @@ class ToolsController extends Controller {
 			rename($newfile, $value.'/.gitignore');
 		}
 
-		return $this->success(array('title' => '操作成功', 'content' => '缓存清理成功'), FALSE);
+		return $this->success(array('title' => '清理成功', 'content' => '缓存清理成功'), FALSE);
 	}
 
 	public function create_static_folder_query()

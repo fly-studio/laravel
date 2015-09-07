@@ -11,6 +11,7 @@ class ManualController extends Controller
 	use DispatchesJobs, ValidatesRequests;
 	public function index()
 	{
+		$this->_menu = (new Manual)->getNode(0)->getChildren();
 		return $this->view('manual.index');
 	}
 
