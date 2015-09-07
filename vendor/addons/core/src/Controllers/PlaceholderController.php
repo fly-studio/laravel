@@ -6,10 +6,6 @@ use Illuminate\Routing\Controller;
 
 class PlaceholderController extends Controller {
 
-	public function __construct()
-	{
-		
-	}
 	/**
 	 * 输出图片
 	 * 

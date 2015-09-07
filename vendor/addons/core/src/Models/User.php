@@ -29,13 +29,13 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 	//protected $fillable = ['username', 'password'];
 	//不能批量赋值
 	protected $guarded = ['id'];
-	protected $dates = ['created_at', 'updated_at', 'deleted_at', 'lastlogin_at'];
+	protected $dates = ['lastlogin_at'];
 	/**
 	 * The attributes excluded from the model's JSON form.
 	 *
 	 * @var array
 	 */
-	protected $hidden = ['password', 'remember_token'];
+	protected $hidden = ['password', 'remember_token', 'deleted_at'];
 
 	public function get($username)
 	{
