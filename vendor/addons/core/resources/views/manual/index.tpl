@@ -21,7 +21,7 @@
 			<div class="media-body">
 			<h4 class="media-heading text-info">
 				<{$v.title}>
-				<a href="<{'manual'}>/<{$v.id}>" class="pull-right">查看手册</a>
+				<a href="<{'manual'|url}>/<{$v.id}>" class="pull-right">查看手册</a>
 			</h4>
 			<div class="media-body-container">
 				<pre><code><{$v.content}></code></pre>
