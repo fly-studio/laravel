@@ -48,7 +48,7 @@
 			for(var i in items){
 				var v = items[i];
 				html += '<li>';
-				html += '<a href="'+$.baseuri+'/manual/'+v['id']+'">' + v['title'] + (v['children'] ? '<span class="fa fa-sort-desc arrow"></span>' : '') +'</a>';
+				html += '<a href="'+$.baseuri+'manual/'+v['id']+'">' + v['title'] + (v['children'] ? '<span class="fa fa-sort-desc arrow"></span>' : '') +'</a>';
 				if (v['children']) {
 					html += '<ul class="nav nav-second-level">';
 					html += recursive(v['children']);

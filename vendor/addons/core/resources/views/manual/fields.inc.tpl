@@ -2,9 +2,6 @@
 	<label for="title">父级</label>
 	<select name="pid" id="pid" class="form-control">
 		<option value="0">总分类</option>
-		<{foreach $_tree as $item}>
-		<option value="<{$item->getKey()}>" <{if $item->getKey() == $_data.id}>disabled="disabled" style="color:gray"<{/if}><{if $item->getKey() == $_data.pid}>selected="selected"<{/if}> ><{$item.title|indent:$item.level:'├'}></option>
-		<{/foreach}>
 	</select>
 </div>
 <div class="form-group">
@@ -20,3 +17,26 @@
 <div class="form-group text-center">
 	<button type="submit" class="btn btn-info">保存</button>
 </div>
+<script>
+(function($){
+$().ready(function(){
+	var tree = <{$_tree|json_encode nofilter}>;
+	var recursive = function(items) {
+		var html = '';
+		for(var i in items) {
+			var v = items[i];
+			html += '<option value="'+ v.id +'" '+ (parseInt('<{$_data.id}>') == parseInt(v.id) ? 'disabled="disabled" style="color:gray"' : '') + (parseInt('<{$_data.pid}>') == parseInt(v.id) ? 'selected="selected"' : '') + '>' + ('│'.repeat(v.level - 1)) + '├' + v.title + '</option>';
+			if (v['children'])
+				html += recursive(v['children']);
+		}
+		return html;
+	}
+
+	if (tree[0])
+	{
+		var html = recursive(tree[0]['children']);
+		$('#pid').append(html);
+	}
+});
+})(jQuery);
+</script>

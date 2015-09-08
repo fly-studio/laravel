@@ -37,10 +37,10 @@ class Tree extends Model {
 	 */
 	public function getNode($id, $columns = ['*'])
 	{
-
+		$columns = $this->formatColumns($columns);
 		return empty($id) ? (new static)->newFromBuilder([
 				$this->getKeyName() => 0,
-				$this->parentKey => 0,
+				$this->parentKey => NULL,
 				$this->pathKey => '/0/',
 				$this->orderKey => 0,
 				$this->levelKey => 0,
@@ -54,10 +54,10 @@ class Tree extends Model {
 	 */
 	public function getRoot($columns = ['*'])
 	{
+		$columns = $this->formatColumns($columns);
 		$node = $this;
 		if (empty($this->pathKey))
 		{
-			$columns = $this->formatColumns($columns);
 			while(!empty($node->getParentKey()))
 				$node = $this->getNode($node->getParentKey(), $columns);
 			return $node;
@@ -74,6 +74,7 @@ class Tree extends Model {
 	 */
 	public function getParent($columns = ['*'])
 	{
+		$columns = $this->formatColumns($columns);
 		return $this->getNode($this->getParentKey(), $columns);
 	}
 
@@ -119,7 +120,7 @@ class Tree extends Model {
 		$node = $this;
 		if (!empty($this->pathKey)) //使用Path搜索出来的节点，无法通过order进行良好的排序
 		{
-			$builder = static::where($this->getPathKeyName(), 'LIKE', $node->getPathKey().'%');
+			$builder = static::where($this->getPathKeyName(), 'LIKE', $node->getPathKey().'%')->where($node->getKeyName(), '!=', $node->getKey());
 			!empty($this->orderKey) && $builder->orderBy($this->getOrderKeyName());
 			!empty($this->pathKey) && $builder->orderBy($this->getPathKeyName());
 			return $builder->get($columns);
@@ -141,9 +142,8 @@ class Tree extends Model {
 	 */
 	public function getTree($columns = ['*'])
 	{
-		$nodes = $this->getDescendant($columns)->keyBy($this->getKeyName())->toArray();
+		$nodes = $this->getDescendant($columns)->add($this)->keyBy($this->getKeyName())->toArray();
 		return $this->_data_to_tree($nodes, $this->getParentKey());
-
 	}
 
 	/**
@@ -154,11 +154,9 @@ class Tree extends Model {
 	 */
 	protected function _data_to_tree($items, $topid = 0)
 	{
-		foreach ($items as $item){
+		foreach ($items as $item)
 			$items[ ($item[$this->getParentKeyName()]) ][ 'children' ][ ($item[$this->getKeyName()]) ] = &$items[ ($item[$this->getKeyName()]) ];
-		}
-
-	 	return isset($items[ $topid ][ 'children' ]) ? $items[ $topid ][ 'children' ] : array();
+	 	return isset($items[ $topid ][ 'children' ]) ? $items[ $topid ][ 'children' ] : [];
 	}
 
 	private function formatColumns($columns)

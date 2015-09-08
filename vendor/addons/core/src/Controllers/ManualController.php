@@ -19,7 +19,7 @@ class ManualController extends Controller
 	{
 		$keys = 'title,content,pid';
 		$this->_data = [];
-		$this->_tree = (new Manual)->getNode(0)->getDescendant(['title', 'level']);
+		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level']);
 		$this->_validates = $this->getScriptValidate('manual.store', $keys);
 		return $this->view('manual.create');
 	}
@@ -49,7 +49,7 @@ class ManualController extends Controller
 	{
 		$keys = 'title,content,pid';
 		$this->_data = Manual::findOrFail($id);
-		$this->_tree = (new Manual)->getNode(0)->getDescendant(['title', 'level']);
+		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level']);
 		$this->_validates = $this->getScriptValidate('manual.store', $keys);
 		return $this->view('manual.edit');
 	}
