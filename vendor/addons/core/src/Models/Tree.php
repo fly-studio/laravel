@@ -118,7 +118,7 @@ class Tree extends Model {
 	{
 		$columns = $this->formatColumns($columns);
 		$node = $this;
-		if (!empty($this->pathKey)) //使用Path搜索出来的节点，无法通过order进行良好的排序
+		if (!empty($this->getPathKeyName())) //使用Path搜索出来的节点，无法通过order进行良好的排序
 		{
 			$builder = static::where($this->getPathKeyName(), 'LIKE', $node->getPathKey().'%')->where($node->getKeyName(), '!=', $node->getKey());
 			!empty($this->getOrderKeyName()) && $builder->orderBy($this->getOrderKeyName());
@@ -168,7 +168,8 @@ class Tree extends Model {
 	{
 		if (in_array('*', $columns)) return $columns;
 		!in_array($this->getKeyName(), $columns) && $columns[] = $this->getKeyName();
-		!in_array($this->parentKey, $columns) && $columns[] = $this->parentKey;
+		!in_array($this->getParentKeyName(), $columns) && $columns[] = $this->getParentKeyName();
+		!in_array($this->getPathKeyName(), $columns) && $columns[] = $this->getPathKeyName();
 
 		return $columns;
 	}
