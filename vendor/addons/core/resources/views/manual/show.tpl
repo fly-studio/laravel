@@ -54,7 +54,19 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 		</div>
 		<div class="row">
 			<div class="col-md-9 col-xs-12" >
+				<{if empty($_data.content)}>
+				<h3 class="page-header">请查看分类内容</h3>
+				<ul>
+					<{foreach $_data->getChildren() as $item}>
+					<li>
+						<h4><a href="<{'manual'}>/<{$item.id}>"><{$item.title}></a></h4>
+						<pre><code><{$item.content|truncate:250}></code></pre>
+					</li>
+					<{/foreach}>
+				</ul>
+				<{/if}>
 				<div id="editormd-view"></div>
+
 			</div>
 			<div class="col-md-3 col-xs-hidden">
 				<div data-spy="affix" data-offset-top="0" id="affix-side">
