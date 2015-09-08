@@ -3,7 +3,7 @@ namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
 use Addons\Core\Models\TreeTrait;
-use DB;
+
 class Tree extends Model {
 	use TreeTrait;
 	//不能批量赋值
@@ -105,7 +105,7 @@ class Tree extends Model {
 	{
 		$columns = $this->formatColumns($columns);
 		$builder = static::where($this->parentKey, $this->getKey());
-		!empty($this->orderKey) && $builder->orderBy($this->orderKey);
+		!empty($this->getOrderKeyName()) && $builder->orderBy($this->getOrderKeyName());
 		return $builder->get();
 	}
 
@@ -121,8 +121,8 @@ class Tree extends Model {
 		if (!empty($this->pathKey)) //使用Path搜索出来的节点，无法通过order进行良好的排序
 		{
 			$builder = static::where($this->getPathKeyName(), 'LIKE', $node->getPathKey().'%')->where($node->getKeyName(), '!=', $node->getKey());
-			!empty($this->orderKey) && $builder->orderBy($this->getOrderKeyName());
-			!empty($this->pathKey) && $builder->orderBy($this->getPathKeyName());
+			!empty($this->getOrderKeyName()) && $builder->orderBy($this->getOrderKeyName());
+			!empty($this->getPathKeyName()) && $builder->orderBy($this->getPathKeyName());
 			return $builder->get($columns);
 		} else {
 			$result = $this->newCollection();
@@ -140,10 +140,10 @@ class Tree extends Model {
 	 *
 	 * @return array 返回数据
 	 */
-	public function getTree($columns = ['*'])
+	public function getTree($columns = ['*'], $with_id = TRUE)
 	{
 		$nodes = $this->getDescendant($columns)->add($this)->keyBy($this->getKeyName())->toArray();
-		return $this->_data_to_tree($nodes, $this->getParentKey());
+		return $this->_data_to_tree($nodes, $this->getParentKey(), $with_id);
 	}
 
 	/**
@@ -152,10 +152,15 @@ class Tree extends Model {
 	 * @param mixed $items 通过getData获得的二维数组(with_id)
 	 * @param integer $topid 提供此二维数组中的顶级节点topid
 	 */
-	protected function _data_to_tree($items, $topid = 0)
+	protected function _data_to_tree($items, $topid = 0, $with_id = TRUE)
 	{
 		foreach ($items as $item)
-			$items[ ($item[$this->getParentKeyName()]) ][ 'children' ][ ($item[$this->getKeyName()]) ] = &$items[ ($item[$this->getKeyName()]) ];
+		{
+			if ($with_id)
+				$items[ ($item[$this->getParentKeyName()]) ][ 'children' ][ ($item[$this->getKeyName()]) ] = &$items[ ($item[$this->getKeyName()]) ];
+			else
+				$items[ ($item[$this->getParentKeyName()]) ][ 'children' ][] = &$items[ ($item[$this->getKeyName()]) ];
+		}
 	 	return isset($items[ $topid ][ 'children' ]) ? $items[ $topid ][ 'children' ] : [];
 	}
 
@@ -171,21 +176,17 @@ class Tree extends Model {
 
 	public function newOrder()
 	{
-		$parentKey = $this->parentKey;
-		$orderKey = $this->orderKey;
-		if (empty($orderKey)) return null;
+		if (empty($this->getOrderKeyName())) return null;
 
-		$node = static::where($parentKey, $this->$parentKey)->orderBy($this->orderKey, 'DESC')->first();
-		return empty($node) ? 1 : intval($node->$orderKey) + 1;
+		$node = static::where($this->getParentKeyName(), $this->getParentKey())->where($this->getKeyName(), '!=', $this->getKey())->orderBy($this->getOrderKeyName(), 'DESC')->first([$this->getOrderKeyName()]);
+		return empty($node) ? 1 : intval($node->getOrderKey()) + 1;
 	}
 
 	public function moveToLast()
 	{
-		$orderKey = $this->orderKey;
-		if (empty($orderKey)) return null;
+		if (empty($this->getOrderKeyName())) return null;
 
-		$this->$orderKey = $this->newOrder();
-		return $this->save();
+		return static::where($this->getKeyName(), $this->getKey())->update([$this->getOrderKeyName() => $this->newOrder()]);
 	}
 
 	public function movePrev($target_id)
@@ -202,34 +203,7 @@ class Tree extends Model {
 	{
 		return $this->move($target_id, 'inner');
 	}
-	/**
-	 * 改变父级，本函数不可再任何情况下调用
-	 * $tree->update(['pid' => 'xxx']) 会自动调用本函数
-	 * 
-	 * @return [type]          [description]
-	 */
-	protected function changeParent()
-	{
-		$newParent = $this->getNode($this->getParentKey());
-		if(empty($newParent) || $this->getParentKey() == $this->getOriginal($this->getParentKeyName())) return NULL;
-
-		if (!empty($this->pathKey))
-		{
-			$newPath = $newParent->getPathKey() . $this->getKey() . '/';
-			static::where($this->pathKey, 'LIKE', '%'.$this->getPathKey().'%')->update([$this->getPathKeyName() => DB::raw('REPLACE(`'.$this->getPathKeyName().'`, \''.$this->getPathKey().'\', \''.$newPath.'\')')]);
-		}
-
-		if (!empty($this->levelKey))
-		{
-			$newPath = intval($this->{$this->levelKey}) - intval($newParent->{$this->levelKey}) - 1;
-			$ids = $this->getDescendant([])->add($this)->fetch($this->getKeyName()); //get id pid
-			static::where($this->getKeyName(), 'IN', $ids)->decrement($this->levelKey, $delta);
-		}
-		
-
-		return $this;
-	}
-
+	
 	/**
 	 * 移动节点
 	 * @param  integer $target_id   目标CID
@@ -242,20 +216,20 @@ class Tree extends Model {
 		if (empty($target_id) || empty($targetNode)) return NULL;
 
 		if ($move_type == 'inner') //成为别人子集，则直接调用,放入子集
-		{
 			return $this->update([$this->getParentKeyName() => $target_id]); //自动调取changeParent
-		}
-		//父级不相同
-		if ($targetNode->getParentKey() != $this->getParentKey())
-			$this->update([$this->getParentKeyName() => $targetNode->getParentKey()]); //自动调取changeParent
-
-		if (!empty($this->orderKey))
+		
+		if ($targetNode->getParentKey() != $this->getParentKey()) //父级不相同
 		{
-			$order = intval($targetNode->getOrderKey()) + ($move_type == 'prev' ? 0 : 1);
-			//更新同父级下所有的顺序
-			static::where($this->getParentKeyName(), $targetNode->getParentKey())->where($this->getOrderKeyName(), '>=', $order)->increment($this->getOrderKeyName());
-			$this->update([$this->getOrderKeyName() => $order]); //更新自己的顺序
+			$this->update([$this->getParentKeyName() => $targetNode->getParentKey()]); //自动调取changeParent
+			if (!empty($this->getOrderKeyName()))
+			{
+				$order = intval($targetNode->getOrderKey()) + ($move_type == 'prev' ? 0 : 1);
+				//更新同父级下所有的顺序
+				static::where($this->getParentKeyName(), $targetNode->getParentKey())->where($this->getOrderKeyName(), '>=', $order)->increment($this->getOrderKeyName());
+				$this->update([$this->getOrderKeyName() => $order]); //更新自己的顺序
+			}
 		}
+		return $this;
 	}
 
 	public function getParentKey()

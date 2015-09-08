@@ -45,7 +45,7 @@
 		var recursive = function(items)
 		{
 			var html = '';
-			for(var i in items){
+			for(var i = 0; i < items.length; ++i) {
 				var v = items[i];
 				html += '<li>';
 				html += '<a href="'+$.baseuri+'manual/'+v['id']+'">' + v['title'] + (v['children'] ? '<span class="fa fa-sort-desc arrow"></span>' : '') +'</a>';

@@ -22,14 +22,13 @@
 $().ready(function(){
 	var tree = <{$_tree|json_encode nofilter}>;
 	var recursive = function(items, prefix) {
-		var _items = [];prefix = typeof prefix == 'undefined' ? '' : prefix;
-		for ( var i in items ) { _items[_items.length] = items[i]; }
+		prefix = typeof prefix == 'undefined' ? '' : prefix;
 		var html = '';
-		for(var i = 0; i < _items.length; ++i) {
-			var v = _items[i];
-			html += '<option value="'+ v.id +'" '+ (parseInt('<{$_data.id}>') == parseInt(v.id) ? 'disabled="disabled" style="color:gray"' : '') + (parseInt('<{$_data.pid}>') == parseInt(v.id) ? 'selected="selected"' : '') + '>' + prefix + ( i == _items.length - 1 ? '└' : '├') + v.title + '</option>';
+		for(var i = 0; i < items.length; ++i) {
+			var v = items[i];
+			html += '<option value="'+ v.id +'" '+ (parseInt('<{$_data.id}>') == parseInt(v.id) ? 'disabled="disabled" style="color:gray"' : '') + (parseInt('<{$_data.pid}>') == parseInt(v.id) ? 'selected="selected"' : '') + '>' + prefix + ( i == items.length - 1 ? '└' : '├') + v.title + '</option>';
 			if (v['children'])
-				html += recursive(v['children'], prefix + (i == _items.length - 1 ? '&nbsp;&nbsp;' : '│'));
+				html += recursive(v['children'], prefix + (i == items.length - 1 ? '&nbsp;&nbsp;' : '│'));
 		}
 		return html;
 	}

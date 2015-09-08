@@ -19,7 +19,7 @@ class ManualController extends Controller
 	{
 		$keys = 'title,content,pid';
 		$this->_data = [];
-		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level']);
+		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level'], false);
 		$this->_validates = $this->getScriptValidate('manual.store', $keys);
 		return $this->view('manual.create');
 	}
@@ -32,7 +32,7 @@ class ManualController extends Controller
 		$this->_data = $data;
 		$this->_parents = $this->_data->getParents(['id','pid','title']);
 		$this->_root = $this->_data->getRoot(['id','pid','title']);
-		$this->_tree = $this->_root->getTree(['id','pid','title']);
+		$this->_tree = $this->_root->getTree(['id','pid','title'], false);
 		return $this->view('manual.show');
 	}
 
@@ -49,7 +49,7 @@ class ManualController extends Controller
 	{
 		$keys = 'title,content,pid';
 		$this->_data = Manual::findOrFail($id);
-		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level']);
+		$this->_tree = (new Manual)->getNode(0)->getTree(['id','pid', 'title', 'level'], false);
 		$this->_validates = $this->getScriptValidate('manual.store', $keys);
 		return $this->view('manual.edit');
 	}
@@ -61,7 +61,7 @@ class ManualController extends Controller
 		$data = $this->autoValidate($request, 'manual.store', $keys);
 
 		$manual->update($data);
-		return $this->success('', url('manual/' . $manual->getKey()));
+		return $this->success('', false); //url('manual/' . $manual->getKey())
 	}
 
 	
