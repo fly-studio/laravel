@@ -179,7 +179,7 @@ class Tree extends Model {
 	{
 		if (empty($this->getOrderKeyName())) return null;
 
-		$node = static::where($this->getParentKeyName(), $this->getParentKey())->where($this->getKeyName(), '!=', $this->getKey())->orderBy($this->getOrderKeyName(), 'DESC')->first([$this->getOrderKeyName()]);
+		$node = static::where($this->getParentKeyName(), $this->getParentKey())->where($this->getKeyName(), '!=', $this->getKey() ?: 0)->orderBy($this->getOrderKeyName(), 'DESC')->first([$this->getOrderKeyName()]);
 		return empty($node) ? 1 : intval($node->getOrderKey()) + 1;
 	}
 
