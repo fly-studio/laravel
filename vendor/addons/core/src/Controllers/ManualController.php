@@ -61,7 +61,7 @@ class ManualController extends Controller
 		$data = $this->autoValidate($request, 'manual.store', $keys);
 
 		$manual->update($data);
-		return $this->success('', false); //url('manual/' . $manual->getKey())
+		return $this->success('', url('manual/' . $manual->getKey())); 
 	}
 
 	
