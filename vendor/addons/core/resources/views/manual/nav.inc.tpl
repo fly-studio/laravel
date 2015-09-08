@@ -58,9 +58,9 @@
 			};
 			return html;
 		}
-		if (tree[<{$_root.id}>])
+		if (tree[0])
 		{
-			var html = recursive(tree[<{$_root.id}>]['children']);
+			var html = recursive(tree[0]['children']);
 			$('#side-menu').append(html);
 		}
 		
