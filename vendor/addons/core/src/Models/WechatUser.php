@@ -9,7 +9,7 @@ class WechatUser extends Model{
 
 	public function account()
 	{
-		return $this->hasOne('App\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
 	}
 
 }

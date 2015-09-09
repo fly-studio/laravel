@@ -9,7 +9,7 @@ class WechatDepot extends Model{
 
 	public function account()
 	{
-		return $this->hasOne('App\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
 	}
 
 	public function relation()
@@ -20,32 +20,37 @@ class WechatDepot extends Model{
 
 	public function news()
 	{
-		return $this->belongsToMany('App\\WechatDepotNews', 'wechat_depot_news_relation', 'wdnid', 'wdid');
+		return $this->belongsToMany(dirname(get_class($this)).'\\WechatDepotNews', 'wechat_depot_news_relation', 'wdnid', 'wdid');
 	}
 
 	public function text()
 	{
-		return $this->belongsTo('App\\WechatDepotText', 'id', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotText', 'id', 'id');
 	}
 
 	public function image()
 	{
-		return $this->belongsTo('App\\WechatDepotImage', 'id', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotImage', 'id', 'id');
 	}
 
 	public function video()
 	{
-		return $this->belongsTo('App\\WechatDepotVideo', 'id', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotVideo', 'id', 'id');
 	}
 
 	public function audio()
 	{
-		return $this->belongsTo('App\\WechatDepotVoice', 'id', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotVoice', 'id', 'id');
 	}
 
 	public function music()
 	{
-		return $this->belongsTo('App\\WechatDepotMusic', 'id', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotMusic', 'id', 'id');
+	}
+
+	public function callback()
+	{
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepotCallback', 'id', 'id');
 	}
 
 }

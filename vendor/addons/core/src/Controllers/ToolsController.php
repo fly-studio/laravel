@@ -26,7 +26,7 @@ class ToolsController extends Controller {
 		//other files
 		foreach([storage_path('attachments'), storage_path('debugbar'), storage_path('placeholders'), storage_path('utils'), ] as $value)
 		{
-			rename($value.'/.gitignore', $newfile = storage_path('.gitignore,'.rand());
+			rename($value.'/.gitignore', $newfile = storage_path('.gitignore,'.rand()));
 			rmdir_recursive($value, TRUE);
 			rename($newfile, $value.'/.gitignore');
 		}

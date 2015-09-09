@@ -17,12 +17,6 @@ trait CacheTrait{
 	 */
 	public $cache_ttl = 15;
 	/**
-	 * Precedent Caches
-	 *
-	 * @var array
-	 */
-	public $object_cached = array();
-	/**
 	 * forget these keys when fire
 	 * 
 	 * @var array

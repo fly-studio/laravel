@@ -3,7 +3,7 @@ namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
 
-class WechatDepotVideo extends Model{
+class WechatDepotCallback extends Model{
 	public $auto_cache = true;
 	protected $guarded = [];
 

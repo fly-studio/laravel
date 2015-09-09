@@ -9,6 +9,6 @@ class WechatDepotText extends Model{
 
 	public function depot()
 	{
-		return $this->belongsTo('App\\WechatDepot', 'wdid', 'id');
+		return $this->belongsTo(dirname(get_class($this)).'\\WechatDepot', 'wdid', 'id');
 	}
 }

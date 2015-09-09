@@ -9,7 +9,7 @@ class WechatMessageText extends Model{
 
 	public function message()
 	{
-		return $this->hasOne('App\\WechatMessage', 'id', 'id');
+		return $this->hasOne(dirname(get_class($this)).'\\WechatMessage', 'id', 'id');
 	}
 
 	

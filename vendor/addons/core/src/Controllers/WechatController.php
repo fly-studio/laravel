@@ -35,7 +35,7 @@ abstract class WechatController extends Controller {
 			if ($api->valid(true, false) && $to = @$api->getRev()->getRevTo())
 			{
 				$account = WechatAccount::where('account', $to)->firstOrFail();
-				$api->setConfig($account);
+				$api->setConfig($account->toArray(), $account->getKey());
 			}
 			else
 				return null;
@@ -63,7 +63,7 @@ abstract class WechatController extends Controller {
 				return $this->text($api, $message);
 			case API::MSGTYPE_IMAGE: //图片消息
 				$data = $rev->getRevPic();
-				$image = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid']]); //auto download
+				$image = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'format' => 'jpg']); //auto download
 				return $this->image($api, $message, $image);
 			case API::MSGTYPE_VOICE: //音频消息
 				$data = $rev->getRevVoice();
@@ -71,7 +71,7 @@ abstract class WechatController extends Controller {
 				return $this->voice($api, $message, $voice);
 			case API::MSGTYPE_VIDEO: //视频消息
 				$data = $rev->getRevVideo();
-				$video = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'thumb_media_id' => $data['thumbmediaid']]); //auto download
+				$video = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'thumb_media_id' => $data['thumbmediaid'], 'format' => 'mp4']); //auto download
 				return $this->video($api, $message, $video);
 			case API::MSGTYPE_LOCATION: //地址消息
 				$data = $rev->getRevGeo();
@@ -130,7 +130,8 @@ abstract class WechatController extends Controller {
 	 */
 	protected function text(API $api, WechatMessage $message, WechatMessageText $text)
 	{
-		return (new WechatReply)->autoReply($content);
+		$result = (new WechatReply)->autoReply($message);
+		return null;
 	}
 
 	/**
@@ -207,15 +208,7 @@ abstract class WechatController extends Controller {
 	 */
 	protected function subscribe(API $api, WechatUser $user, WechatAccount $account)
 	{
-		/*$api->news(array( 0 =>
-		 array(
-			'Title'=>'欢迎收听',
-			'Description'=>$this->user['nickname'].'，欢迎收听微信！',
-			'PicUrl'=>'',
-			'Url'=>''
-			)
-			))->reply();*/
-
+		$result = (new WechatReply)->subscribeReply();
 		return null;
 	}
 
@@ -242,6 +235,7 @@ abstract class WechatController extends Controller {
 	 */
 	protected function scan_subscribe(API $api, WechatUser $user, WechatAccount $account, $scene_id, $ticket)
 	{
+		$result = (new WechatReply)->subscribeReply();
 		return null;
 	}
 

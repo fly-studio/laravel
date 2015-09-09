@@ -28,7 +28,7 @@ class Attachment extends Model{
 
 	public function file()
 	{
-		return $this->hasOne('Addons\\Core\\Models\\AttachmentFile', 'id', 'afid');
+		return $this->hasOne(dirname(get_class($this)).'\\AttachmentFile', 'id', 'afid');
 	}
 
 

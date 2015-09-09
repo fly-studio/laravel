@@ -9,22 +9,22 @@ class WechatAccount extends Model{
 
 	public function users()
 	{
-		return $this->hasMany('App\\WechatUser', 'waid', 'id');
+		return $this->hasMany(dirname(get_class($this)).'\\WechatUser', 'waid', 'id');
 	}
 
 	public function messages()
 	{
-		return $this->hasMany('App\\WechatMessage', 'waid', 'id');
+		return $this->hasMany(dirname(get_class($this)).'\\WechatMessage', 'waid', 'id');
 	}
 
 	public function menus()
 	{
-		return $this->hasMany('App\\WechatMenu', 'waid', 'id');
+		return $this->hasMany(dirname(get_class($this)).'\\WechatMenu', 'waid', 'id');
 	}
 
 	public function depots()
 	{
-		return $this->hasMany('App\\WechatDepot', 'waid', 'id');
+		return $this->hasMany(dirname(get_class($this)).'\\WechatDepot', 'waid', 'id');
 	}
 
 }

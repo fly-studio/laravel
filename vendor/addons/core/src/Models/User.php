@@ -59,7 +59,7 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 
 	public function gender()
 	{
-		return $this->hasOne('Addons\\Core\\Models\\Field', 'id', 'gender');
+		return $this->hasOne(dirname(get_class($this)).'\\Field', 'id', 'gender');
 	}
 }
 
