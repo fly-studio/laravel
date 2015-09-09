@@ -1,0 +1,387 @@
+<?php
+
+namespace Addons\Core\Controllers;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Routing\Controller;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+
+use Addons\Core\Models\Wechat\API;
+use Addons\Core\Models\Wechat\User as WechatUserModel;
+use Addons\Core\Models\WechatUser;
+use Addons\Core\Models\WechatReply;
+use Addons\Core\Models\WechatMessage;
+use Addons\Core\Models\WechatMessageText;
+use Addons\Core\Models\WechatMessageMedia;
+use Addons\Core\Models\WechatMessageLink;
+use Addons\Core\Models\WechatMessageLocation;
+use Addons\Core\Models\Attachment;
+
+abstract class WechatController extends Controller {
+	use DispatchesJobs;
+
+	/**
+	 * 微信推送接口，自动添加用户
+	 * 
+	 * @return string|response
+	 */
+	public function push($id = 0)
+	{
+		$api = $account = null;
+		if (empty($id)) //没有id，则尝试去数据库找
+		{
+			$api = new API(NULL, 0);
+			if ($api->valid(true, false) && $to = @$api->getRev()->getRevTo())
+			{
+				$account = WechatAccount::where('account', $to)->firstOrFail();
+				$api->setConfig($account);
+			}
+			else
+				return null;
+		} else {
+			$account = WechatAccount::findOrFail($id);
+			$api = new API($account->toArray(), $account->getKey());
+		}
+		
+		$wechatUserModel = new WechatUserModel($api);
+
+		$api->valid();
+		$rev = $api->getRev();
+		$type = $rev->getRevType();
+		$from = $rev->getRevFrom();
+		$to = $rev->getRevTo();
+
+		$user = $wechatUserModel->updateWechatUser($from);
+		$this->user($user);
+
+		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $user->getKey(), 'message_id' => $msg_id, 'type' => $type, 'tranport_type' => 'receive']);
+
+		switch($type) {
+			case API::MSGTYPE_TEXT: //文字消息
+				$text = WechatMessageText::create(['id' => $message->getKey(), 'content' => $rev->getRevContent()]);
+				return $this->text($api, $message);
+			case API::MSGTYPE_IMAGE: //图片消息
+				$data = $rev->getRevPic();
+				$image = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid']]); //auto download
+				return $this->image($api, $message, $image);
+			case API::MSGTYPE_VOICE: //音频消息
+				$data = $rev->getRevVoice();
+				$voice = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'format' => $data['format']]); //auto download
+				return $this->voice($api, $message, $voice);
+			case API::MSGTYPE_VIDEO: //视频消息
+				$data = $rev->getRevVideo();
+				$video = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'thumb_media_id' => $data['thumbmediaid']]); //auto download
+				return $this->video($api, $message, $video);
+			case API::MSGTYPE_LOCATION: //地址消息
+				$data = $rev->getRevGeo();
+				$location = WechatMessageLocation::create(['id' => $message->getKey(), 'x' => $data['x'], 'y' => $data['y'], 'scale' => $data['scale'], 'label' => $data['label']]);
+				return $this->location($api, $message, $location);
+			case API::MSGTYPE_LINK: //链接消息
+				$data = $rev->getRevLink();
+				$link = WechatMessageLink::create(['id' => $message->getKey(), 'title' => $data['title'], 'description' => $data['description'], 'url' => $data['url']]);
+				return $this->link($api, $message, $link);
+			case API::MSGTYPE_EVENT: //事件
+				$event = $rev->getRevEvent();
+				switch ($event['event']) { 
+					case 'subscribe':
+						if (empty($event['key']))//关注微信
+							return $this->subscribe($api, $user, $account);
+						else //扫描关注
+							return $this->scan_subscribe($api, $user, $account, $rev->getRevSceneId(), $rev->getRevTicket());
+					case 'unsubscribe': //取消关注
+						return $this->unsubscribe($api, $user, $account);
+					case 'SCAN': //扫描二维码
+						return $this->scan($api, $user, $account, $event['key'], $rev->getRevTicket());
+					case 'LOCATION': //地址推送
+						return $this->location_event($api, $user, $account, $rev->getRevEventGeo());
+					case 'CLICK': //点击
+						return $this->click($api, $user, $account, $event['key']);
+					case 'VIEW': //跳转
+						return $this->view($api, $user, $account, $event['key']);
+					case 'scancode_push': //扫码推事件的事件推送
+						return $this->scancode_push($api, $user, $account, $event['key'], $rev->getRevScanInfo());
+					case 'scancode_waitmsg': //扫码推事件且弹出“消息接收中”提示框的事件推送
+						return $this->scancode_waitmsg($api, $user, $account, $event['key'], $rev->getRevScanInfo());
+					case 'pic_sysphoto': //弹出系统拍照发图的事件推送
+						return $this->pic_sysphoto($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+					case 'pic_photo_or_album': //弹出拍照或者相册发图的事件推送
+						return $this->pic_photo_or_album($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+					case 'pic_weixin': //弹出微信相册发图器的事件推送
+						return $this->pic_weixin($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+					case 'location_select': //弹出微信地址选择的事件推送
+						return $this->location_select($api, $user, $account, $event['key'], $rev->getRevSendGeoInfo());
+					
+				}
+				break;
+		}
+	}
+
+	abstract protected function user(API $api, WechatUser $user);
+
+
+	/**
+	 * 文字消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageText $text 文本  
+	 * @return string|response
+	 */
+	protected function text(API $api, WechatMessage $message, WechatMessageText $text)
+	{
+		return (new WechatReply)->autoReply($content);
+	}
+
+	/**
+	 * 图片消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageMedia $images  图片
+	 * @return string|response
+	 */
+	protected function image(API $api, WechatMessage $message, WechatMessageMedia $image)
+	{
+		return null;
+	}
+
+	/**
+	 * 音频消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageMedia $voice 音频  
+	 * @return string|response
+	 */
+	protected function voice(API $api, WechatMessage $message, WechatMessageMedia $voice)
+	{
+		return null;
+	}
+
+	/**
+	 * 视频消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageMedia $video 视频  
+	 * @return string|response
+	 */
+	protected function video(API $api, WechatMessage $message, WechatMessageMedia $video)
+	{
+		return null;
+	}
+
+	/**
+	 * 地址消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageLocation $location  地址
+	 * @return string|response
+	 */
+	protected function location(API $api, WechatMessage $message, WechatMessageLocation $location)
+	{
+		return null;
+	}
+
+	/**
+	 * 链接消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageLink $link  链接
+	 * @return string|response
+	 */
+	protected function link(API $api, WechatMessage $message, WechatMessageLink $link)
+	{
+		return null;
+	}
+
+	/**
+	 * 关注
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @return string|response
+	 */
+	protected function subscribe(API $api, WechatUser $user, WechatAccount $account)
+	{
+		/*$api->news(array( 0 =>
+		 array(
+			'Title'=>'欢迎收听',
+			'Description'=>$this->user['nickname'].'，欢迎收听微信！',
+			'PicUrl'=>'',
+			'Url'=>''
+			)
+			))->reply();*/
+
+		return null;
+	}
+
+	/**
+	 * 取消关注
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @return string|response
+	 */
+	protected function unsubscribe(API $api, WechatUser $user, WechatAccount $account)
+	{
+		return null;
+	}
+
+	/**
+	 * 扫描关注
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $scene_id 二维码的参数值
+	 * @param  string $ticket   二维码的ticket，可用来换取二维码图片
+	 * @return string|response
+	 */
+	protected function scan_subscribe(API $api, WechatUser $user, WechatAccount $account, $scene_id, $ticket)
+	{
+		return null;
+	}
+
+	/**
+	 * 扫描
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $scene_id 二维码的参数值
+	 * @param  string $ticket   二维码的ticket，可用来换取二维码图片
+	 * @return string|response
+	 */
+	protected function scan(API $api, WechatUser $user, WechatAccount $account, $scene_id, $ticket)
+	{
+		return null;
+	}
+
+	/**
+	 * 上报地理位置事件
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  array $data     地理信息 ['x' => '', 'y' => '', 'precision' => '']
+	 * @return string|response
+	 */
+	protected function location_event(API $api, WechatUser $user, WechatAccount $account, $data)
+	{
+		return null;
+	}
+
+	/**
+	 * 自定义菜单事件
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     与自定义菜单接口中KEY值对应
+	 * @return string|response
+	 */
+	protected function click(API $api, WechatUser $user, WechatAccount $account, $key)
+	{
+		return null;
+	}
+
+	/**
+	 * 点击菜单跳转链接时的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $url     设置的跳转URL
+	 * @return string|response
+	 */
+	protected function view(API $api, WechatUser $user, WechatAccount $account, $url)
+	{
+		return null;
+	}
+
+	/**
+	 * 扫码推事件的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $scan_info 扫描信息 [ 'ScanType'=>'qrcode', 'ScanResult'=>'']
+	 * @return string|response
+	 */
+	protected function scancode_push(API $api, WechatUser $user, WechatAccount $account, $key, $scan_info)
+	{
+		return null;
+	}
+
+	/**
+	 * 扫码推事件且弹出“消息接收中”提示框的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $scan_info 扫描信息 [ 'ScanType'=>'qrcode', 'ScanResult'=>'']
+	 * @return string|response
+	 */
+	protected function scancode_waitmsg(API $api, WechatUser $user, WechatAccount $account, $key, $scan_info)
+	{
+		return null;
+	}
+
+	/**
+	 * 弹出系统拍照发图的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
+	 * @return string|response
+	 */
+	protected function pic_sysphoto(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	{
+		return null;
+	}
+
+	/**
+	 * 弹出拍照或者相册发图的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
+	 * @return string|response
+	 */
+	protected function pic_photo_or_album(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	{
+		return null;
+	}
+
+	/**
+	 * 弹出微信相册发图器的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
+	 * @return string|response
+	 */
+	protected function pic_weixin(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	{
+		return null;
+	}
+
+	/**
+	 * 弹出地理位置选择器的事件推送
+	 * 
+	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatAccount $account 接收者
+	 * @param  string $key     由开发者在创建菜单时设定
+	 * @param  array $send_geo_info 发送的位置信息 ['Location_X' => '', 'Location_Y' => '', 'Scale' => '', 'Label' => '', 'Poiname' => '']
+	 * @return string|response
+	 */
+	protected function location_select(API $api, WechatUser $user, WechatAccount $account, $key, $send_geo_info)
+	{
+		return null;
+	}
+
+
+
+}

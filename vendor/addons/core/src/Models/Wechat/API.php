@@ -228,6 +228,11 @@ class API
 	public $logcallback;
 	public function __construct($options, $waid)
 	{
+		!empty($options) && $this->setConfig($options, $waid);
+	}
+
+	public function setConfig($options, $waid)
+	{
 		$this->waid = $waid;
 		$this->token = isset($options['token'])?$options['token']:'';
 		$this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
@@ -247,7 +252,7 @@ class API
 		$timestamp = isset($_GET["timestamp"])?$_GET["timestamp"]:'';
 		$nonce = isset($_GET["nonce"])?$_GET["nonce"]:'';
 		$token = $this->token;
-		$tmpArr = array($token, $timestamp, $nonce,$str);
+		$tmpArr = array($token, $timestamp, $nonce, $str);
 		sort($tmpArr, SORT_STRING);
 		$tmpStr = implode( $tmpArr );
 		$tmpStr = sha1( $tmpStr );
@@ -261,7 +266,7 @@ class API
 	 * For weixin server validation
 	 * @param bool $return 是否返回
 	 */
-	public function valid($return=false)
+	public function valid($return=false, $check = true)
 	{
 		$encryptStr="";
 		if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -300,7 +305,7 @@ class API
 					die('no access');
 			}
 		}
-		if (!$this->checkSignature($encryptStr)) {
+		if ($check && !$this->checkSignature($encryptStr)) {
 			if ($return)
 				return false;
 			else

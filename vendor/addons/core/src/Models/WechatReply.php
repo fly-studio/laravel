@@ -12,8 +12,13 @@ class WechatReply extends Model{
 		return $this->hasOne('App\\WechatAccount', 'id', 'waid');
 	}
 
-	public function content()
+	public function contents()
 	{
-		return $this->belongsToMany('App\\WechatReplyContent', 'wechat_reply_relation', 'wrcid', 'wrid');
+		return $this->hasMany('App\\WechatReplyContent', 'wrid', 'id');
+	}
+
+	public function autoReply()
+	{
+		
 	}
 }

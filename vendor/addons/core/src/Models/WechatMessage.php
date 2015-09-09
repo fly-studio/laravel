@@ -12,15 +12,20 @@ class WechatMessage extends Model{
 		return $this->hasOne('App\\WechatAccount', 'id', 'waid');
 	}
 
+	public function user()
+	{
+		return $this->hasOne('App\\WechatUser', 'id', 'wuid');
+	}
+
 	public function relation()
 	{
 		$method = $this->type;
 		return $this->$method();
 	}
 
-	public function depots()
+	public function depot()
 	{
-		return $this->belongsToMany('App\\WechatDepot', 'wechat_message_depot', 'id', 'wdid');
+		return $this->hasOne('App\\WechatDepot', 'id', 'wdid');
 	}
 
 	public function link()
