@@ -22,13 +22,18 @@ class Field extends Model {
 		return $this->where('id', $id)->where('field_class', $field_class)->count() > 0;
 	}
 
+	public function exists_name($name, $field_class)
+	{
+		return $this->where('name', $name)->where('field_class', $field_class)->count() > 0;
+	}
+
 	public function getFields()
 	{
 		return $this->rememberCache('fields', function(){
 			$result = [];
 			$all = $this->orderBy('order_index','ASC')->get();
 			foreach($all as $v)
-				$result[$v['field_class']][$v['id']] = array_keyfilter($v->toArray(), 'id,title,extra');
+				$result[$v['field_class']][$v['name']] = array_keyfilter($v->toArray(), 'id,name,title,extra');
 			return $result;
 		});
 	}

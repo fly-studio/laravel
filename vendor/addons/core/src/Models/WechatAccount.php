@@ -17,6 +17,11 @@ class WechatAccount extends Model{
 		return $this->hasMany('App\\WechatMessage', 'waid', 'id');
 	}
 
+	public function menus()
+	{
+		return $this->hasMany('App\\WechatMenu', 'waid', 'id');
+	}
+
 	public function depots()
 	{
 		return $this->hasMany('App\\WechatDepot', 'waid', 'id');

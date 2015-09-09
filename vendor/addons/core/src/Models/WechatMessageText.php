@@ -3,12 +3,14 @@ namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
 
-class WechatMedia extends Model{
+class WechatMessageText extends Model{
 	public $auto_cache = true;
 	protected $guarded = ['id'];
 
-	public function depot()
+	public function message()
 	{
-		return $this->belongsTo('App\\WechatDepot', 'wdid', 'id');
+		return $this->hasOne('App\\WechatMessage', 'id', 'id');
 	}
+
+	
 }

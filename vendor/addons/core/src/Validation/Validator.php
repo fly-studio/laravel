@@ -50,7 +50,12 @@ class Validator extends BaseValidator {
 
 	protected function validateField($attribute, $value, $parameters)
 	{
-		return (new Field())->exists($value, empty($parameters) ? $attribute : $parameters[0]);;
+		return (new Field())->exists($value, empty($parameters) ? $attribute : $parameters[0]);
+	}
+
+	protected function validateFieldName($attribute, $value, $parameters)
+	{
+		return (new Field())->exists_name($value, empty($parameters) ? $attribute : $parameters[0]);
 	}
 
 	protected function validateIdCard($attribute, $value, $parameters)
@@ -242,6 +247,10 @@ class Validator extends BaseValidator {
 						break;
 					case 'field':
 						$rule = 'digits';
+						break;
+					case 'fieldname':
+						$rule = 'regex';
+						$parameters = '/^[\pL\pM\pN_-]+$/u';
 						break;
 					case 'before':
 					case 'different':

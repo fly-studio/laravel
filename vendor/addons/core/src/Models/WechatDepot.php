@@ -18,29 +18,34 @@ class WechatDepot extends Model{
 		return $this->$method();
 	}
 
-	public function articles()
+	public function news()
 	{
-		return $this->belongsToMany('App\\WechatArticle', 'wechat_depot_relation', 'wrid', 'wdid');
+		return $this->belongsToMany('App\\WechatDepotNews', 'wechat_depot_news_relation', 'wdnid', 'wdid');
 	}
 
 	public function text()
 	{
-		return $this->belongsTo('App\\WechatText', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatDepotText', 'id', 'id');
 	}
 
-	public function picture()
+	public function image()
 	{
-		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatDepotImage', 'id', 'id');
 	}
 
 	public function video()
 	{
-		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatDepotVideo', 'id', 'id');
 	}
 
 	public function audio()
 	{
-		return $this->belongsTo('App\\WechatMedia', 'id', 'wdid');
+		return $this->belongsTo('App\\WechatDepotVoice', 'id', 'id');
+	}
+
+	public function music()
+	{
+		return $this->belongsTo('App\\WechatDepotMusic', 'id', 'id');
 	}
 
 }
