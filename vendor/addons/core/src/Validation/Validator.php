@@ -29,7 +29,7 @@ class Validator extends BaseValidator {
 
 	protected function validatePhone($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';
+		$patten = '/[0-9\-\s]*/i';empty($parameters) && $parameters = ['cn'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
 				break;
@@ -60,7 +60,7 @@ class Validator extends BaseValidator {
 
 	protected function validateIdCard($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';
+		$patten = '/[0-9\-\s]*/i';empty($parameters) && $parameters = ['cn'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
 				$patten = '/^\d{6}-\d{2}-\d{4}$/';
