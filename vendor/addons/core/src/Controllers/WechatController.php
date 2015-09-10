@@ -117,7 +117,7 @@ abstract class WechatController extends Controller {
 		}
 	}
 
-	abstract protected function user(API $api, WechatUser $user);
+	abstract protected function user(API $api, WechatUser $wechatUser);
 
 
 	/**

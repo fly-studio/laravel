@@ -18,12 +18,6 @@ class Validator extends BaseValidator {
 	 */
 	protected function validateAnsi( $attribute, $value, $parameters )
 	{
-        /*$this->requireParameterCount(1, $parameters, 'ansi');
-
-		if (empty($parameters[1]))
-			$parameters[1] = $parameters[0];
-		$size = strlen_ansi($value, NULL, 2);
-		return $size >= $parameters[0] && $size <= $parameters[1];*/
 		return true;
 	}
 
