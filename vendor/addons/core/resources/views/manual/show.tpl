@@ -107,12 +107,12 @@ editormd.markdownToHTML("editormd-view", {
 $('h1[id]', '#editormd-view').each(function(i){
 	var $this = $(this);
 	$this.attr('id', this.id + i);
-	var $obj = $('<li><a href="#'+this.id+'">'+$this.text()+'</a><ul class="nav"></ul></li>').appendTo("#navbar");
+	var $obj = $('<li><a href="#'+this.id+i+'">'+$this.text()+'</a><ul class="nav"></ul></li>').appendTo("#navbar");
 	$obj = $('ul', $obj);
 	$this.nextUntil("h1",'h2').each(function(m){
 		var $_this = $(this);
-		$this.attr('id', this.id + m);
-		$obj.append('<li><a href="#'+this.id+'">'+$_this.text()+'</a></li>');
+		$_this.attr('id', this.id + m);
+		$obj.append('<li><a href="#'+this.id+m+'">'+$_this.text()+'</a></li>');
 	});
 });
 //滚动监听
