@@ -89,7 +89,9 @@ trait AdminTrait {
 	{
 		$data = $this->_getPaginate($request, $builder);
 
-		!empty($callback) && is_callable($callback) && array_walk($data, $callback);
+		if (!empty($callback) && is_callable($callback))
+			foreach ($data as $key => $value)
+				call_user_func_array($callback, [&$value, $key]);
 
 		return $data->toArray();
 	}

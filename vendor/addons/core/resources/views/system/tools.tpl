@@ -1,6 +1,6 @@
 <{extends file="extends/main.block.tpl"}>
 
-<{block "head-title"}>System Tools<{/block}>
+<{block "head-title"}><title>System Tools</title><{/block}>
 <{block "head-styles-plus"}>
 <style>
 #tools {}

@@ -78,7 +78,7 @@ class User {
 						'nickname' => $wechat['nickname'], 
 						'gender' => $wechat['sex'],
 						'is_subscribe' => $wechat['subscribe'],
-						'subscribe_time' => $wechat['subscribe_time'],
+						'subscribe_at' => $wechat['subscribe_time'],
 						'country' => $wechat['country'],
 						'province' => $wechat['province'],
 						'city' => $wechat['city'],

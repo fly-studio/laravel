@@ -8,7 +8,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 use Addons\Core\Models\Wechat\API;
-use Addons\Core\Models\Wechat\User as WechatUserModel;
+use Addons\Core\Models\Wechat\Account as WechatAccountTool;
+use Addons\Core\Models\Wechat\User as WechatUserTool;
+use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\WechatReply;
 use Addons\Core\Models\WechatMessage;
@@ -44,7 +46,7 @@ abstract class WechatController extends Controller {
 			$api = new API($account->toArray(), $account->getKey());
 		}
 		
-		$wechatUserModel = new WechatUserModel($api);
+		$wechatUserTool = new WechatUserTool($api);
 
 		$api->valid();
 		$rev = $api->getRev();
@@ -52,10 +54,10 @@ abstract class WechatController extends Controller {
 		$from = $rev->getRevFrom();
 		$to = $rev->getRevTo();
 
-		$user = $wechatUserModel->updateWechatUser($from);
-		$this->user($user);
+		$wechatUser = $wechatUserTool->updateWechatUser($from);
+		$this->user($wechatUser);
 
-		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $user->getKey(), 'message_id' => $msg_id, 'type' => $type, 'tranport_type' => 'receive']);
+		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $wechatUser->getKey(), 'message_id' => $msg_id, 'type' => $type, 'tranport_type' => 'receive']);
 
 		switch($type) {
 			case API::MSGTYPE_TEXT: //文字消息
@@ -86,31 +88,31 @@ abstract class WechatController extends Controller {
 				switch ($event['event']) { 
 					case 'subscribe':
 						if (empty($event['key']))//关注微信
-							return $this->subscribe($api, $user, $account);
+							return $this->subscribe($api, $wechatUser, $account);
 						else //扫描关注
-							return $this->scan_subscribe($api, $user, $account, $rev->getRevSceneId(), $rev->getRevTicket());
+							return $this->scan_subscribe($api, $wechatUser, $account, $rev->getRevSceneId(), $rev->getRevTicket());
 					case 'unsubscribe': //取消关注
-						return $this->unsubscribe($api, $user, $account);
+						return $this->unsubscribe($api, $wechatUser, $account);
 					case 'SCAN': //扫描二维码
-						return $this->scan($api, $user, $account, $event['key'], $rev->getRevTicket());
+						return $this->scan($api, $wechatUser, $account, $event['key'], $rev->getRevTicket());
 					case 'LOCATION': //地址推送
-						return $this->location_event($api, $user, $account, $rev->getRevEventGeo());
+						return $this->location_event($api, $wechatUser, $account, $rev->getRevEventGeo());
 					case 'CLICK': //点击
-						return $this->click($api, $user, $account, $event['key']);
+						return $this->click($api, $wechatUser, $account, $event['key']);
 					case 'VIEW': //跳转
-						return $this->view($api, $user, $account, $event['key']);
+						return $this->view($api, $wechatUser, $account, $event['key']);
 					case 'scancode_push': //扫码推事件的事件推送
-						return $this->scancode_push($api, $user, $account, $event['key'], $rev->getRevScanInfo());
+						return $this->scancode_push($api, $wechatUser, $account, $event['key'], $rev->getRevScanInfo());
 					case 'scancode_waitmsg': //扫码推事件且弹出“消息接收中”提示框的事件推送
-						return $this->scancode_waitmsg($api, $user, $account, $event['key'], $rev->getRevScanInfo());
+						return $this->scancode_waitmsg($api, $wechatUser, $account, $event['key'], $rev->getRevScanInfo());
 					case 'pic_sysphoto': //弹出系统拍照发图的事件推送
-						return $this->pic_sysphoto($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+						return $this->pic_sysphoto($api, $wechatUser, $account, $event['key'], $rev->getRevSendPicsInfo());
 					case 'pic_photo_or_album': //弹出拍照或者相册发图的事件推送
-						return $this->pic_photo_or_album($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+						return $this->pic_photo_or_album($api, $wechatUser, $account, $event['key'], $rev->getRevSendPicsInfo());
 					case 'pic_weixin': //弹出微信相册发图器的事件推送
-						return $this->pic_weixin($api, $user, $account, $event['key'], $rev->getRevSendPicsInfo());
+						return $this->pic_weixin($api, $wechatUser, $account, $event['key'], $rev->getRevSendPicsInfo());
 					case 'location_select': //弹出微信地址选择的事件推送
-						return $this->location_select($api, $user, $account, $event['key'], $rev->getRevSendGeoInfo());
+						return $this->location_select($api, $wechatUser, $account, $event['key'], $rev->getRevSendGeoInfo());
 					
 				}
 				break;
@@ -119,6 +121,20 @@ abstract class WechatController extends Controller {
 
 	abstract protected function user(API $api, WechatUser $wechatUser);
 
+	public function chosen($url = NULL)
+	{
+		$accounts = WechatAccount::all();
+
+		return view('wechat/chosen')->with('_accounts', $accounts)->with('_account', WechatAccount::find((new WechatAccountTool)->getAccountID()))->with('_url', $url);
+	}
+
+	public function chosen_query($id, $url)
+	{
+		$account = WechatAccount::findOrFail($id);
+		(new WechatAccountTool)->setAccountID($account->getKey());
+
+		return redirect()->intended($url);
+	}
 
 	/**
 	 * 文字消息
@@ -202,11 +218,11 @@ abstract class WechatController extends Controller {
 	/**
 	 * 关注
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @return string|response
 	 */
-	protected function subscribe(API $api, WechatUser $user, WechatAccount $account)
+	protected function subscribe(API $api, WechatUser $wechatUser, WechatAccount $account)
 	{
 		$result = (new WechatReply)->subscribeReply();
 		return null;
@@ -215,11 +231,11 @@ abstract class WechatController extends Controller {
 	/**
 	 * 取消关注
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @return string|response
 	 */
-	protected function unsubscribe(API $api, WechatUser $user, WechatAccount $account)
+	protected function unsubscribe(API $api, WechatUser $wechatUser, WechatAccount $account)
 	{
 		return null;
 	}
@@ -227,13 +243,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 扫描关注
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $scene_id 二维码的参数值
 	 * @param  string $ticket   二维码的ticket，可用来换取二维码图片
 	 * @return string|response
 	 */
-	protected function scan_subscribe(API $api, WechatUser $user, WechatAccount $account, $scene_id, $ticket)
+	protected function scan_subscribe(API $api, WechatUser $wechatUser, WechatAccount $account, $scene_id, $ticket)
 	{
 		$result = (new WechatReply)->subscribeReply();
 		return null;
@@ -242,13 +258,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 扫描
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $scene_id 二维码的参数值
 	 * @param  string $ticket   二维码的ticket，可用来换取二维码图片
 	 * @return string|response
 	 */
-	protected function scan(API $api, WechatUser $user, WechatAccount $account, $scene_id, $ticket)
+	protected function scan(API $api, WechatUser $wechatUser, WechatAccount $account, $scene_id, $ticket)
 	{
 		return null;
 	}
@@ -256,12 +272,12 @@ abstract class WechatController extends Controller {
 	/**
 	 * 上报地理位置事件
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  array $data     地理信息 ['x' => '', 'y' => '', 'precision' => '']
 	 * @return string|response
 	 */
-	protected function location_event(API $api, WechatUser $user, WechatAccount $account, $data)
+	protected function location_event(API $api, WechatUser $wechatUser, WechatAccount $account, $data)
 	{
 		return null;
 	}
@@ -269,12 +285,12 @@ abstract class WechatController extends Controller {
 	/**
 	 * 自定义菜单事件
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     与自定义菜单接口中KEY值对应
 	 * @return string|response
 	 */
-	protected function click(API $api, WechatUser $user, WechatAccount $account, $key)
+	protected function click(API $api, WechatUser $wechatUser, WechatAccount $account, $key)
 	{
 		return null;
 	}
@@ -282,12 +298,12 @@ abstract class WechatController extends Controller {
 	/**
 	 * 点击菜单跳转链接时的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $url     设置的跳转URL
 	 * @return string|response
 	 */
-	protected function view(API $api, WechatUser $user, WechatAccount $account, $url)
+	protected function view(API $api, WechatUser $wechatUser, WechatAccount $account, $url)
 	{
 		return null;
 	}
@@ -295,13 +311,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 扫码推事件的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $scan_info 扫描信息 [ 'ScanType'=>'qrcode', 'ScanResult'=>'']
 	 * @return string|response
 	 */
-	protected function scancode_push(API $api, WechatUser $user, WechatAccount $account, $key, $scan_info)
+	protected function scancode_push(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $scan_info)
 	{
 		return null;
 	}
@@ -309,13 +325,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 扫码推事件且弹出“消息接收中”提示框的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $scan_info 扫描信息 [ 'ScanType'=>'qrcode', 'ScanResult'=>'']
 	 * @return string|response
 	 */
-	protected function scancode_waitmsg(API $api, WechatUser $user, WechatAccount $account, $key, $scan_info)
+	protected function scancode_waitmsg(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $scan_info)
 	{
 		return null;
 	}
@@ -323,13 +339,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 弹出系统拍照发图的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
 	 * @return string|response
 	 */
-	protected function pic_sysphoto(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	protected function pic_sysphoto(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $send_pics_info)
 	{
 		return null;
 	}
@@ -337,13 +353,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 弹出拍照或者相册发图的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
 	 * @return string|response
 	 */
-	protected function pic_photo_or_album(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	protected function pic_photo_or_album(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $send_pics_info)
 	{
 		return null;
 	}
@@ -351,13 +367,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 弹出微信相册发图器的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $send_pics_info 发送的图片信息 ['Count' => '2', 'PicList' =>['item' => [ ['PicMd5Sum' => 'aaae42617cf2a14342d96005af53624c'], ['PicMd5Sum' => '149bd39e296860a2adc2f1bb81616ff8'] ] ] ]
 	 * @return string|response
 	 */
-	protected function pic_weixin(API $api, WechatUser $user, WechatAccount $account, $key, $send_pics_info)
+	protected function pic_weixin(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $send_pics_info)
 	{
 		return null;
 	}
@@ -365,13 +381,13 @@ abstract class WechatController extends Controller {
 	/**
 	 * 弹出地理位置选择器的事件推送
 	 * 
-	 * @param  Addons\Models\WechatUser $user  发送者
+	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $key     由开发者在创建菜单时设定
 	 * @param  array $send_geo_info 发送的位置信息 ['Location_X' => '', 'Location_Y' => '', 'Scale' => '', 'Label' => '', 'Poiname' => '']
 	 * @return string|response
 	 */
-	protected function location_select(API $api, WechatUser $user, WechatAccount $account, $key, $send_geo_info)
+	protected function location_select(API $api, WechatUser $wechatUser, WechatAccount $account, $key, $send_geo_info)
 	{
 		return null;
 	}

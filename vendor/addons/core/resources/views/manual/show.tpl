@@ -104,12 +104,15 @@ editormd.markdownToHTML("editormd-view", {
 	sequenceDiagram : true  // 默认不解析
 });
 //添加导航
-$('h1[id]', '#editormd-view').each(function(){
+$('h1[id]', '#editormd-view').each(function(i){
 	var $this = $(this);
+	$this.attr('id', this.id + i);
 	var $obj = $('<li><a href="#'+this.id+'">'+$this.text()+'</a><ul class="nav"></ul></li>').appendTo("#navbar");
 	$obj = $('ul', $obj);
-	$this.nextUntil("h1",'h2').each(function(){
-		$obj.append('<li><a href="#'+this.id+'">'+$(this).text()+'</a></li>');
+	$this.nextUntil("h1",'h2').each(function(m){
+		var $_this = $(this);
+		$this.attr('id', this.id + m);
+		$obj.append('<li><a href="#'+this.id+'">'+$_this.text()+'</a></li>');
 	});
 });
 //滚动监听
