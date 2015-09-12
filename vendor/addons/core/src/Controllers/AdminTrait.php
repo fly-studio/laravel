@@ -77,7 +77,7 @@ trait AdminTrait {
 
 		$paginate = $builder->paginate($pagesize, $columns, 'page', $page);
 
-		$query = $filters + $extra_query;
+		$query = compact('filters') + $extra_query;
 		array_walk($query, function($v, $k) use($paginate) {
 			$paginate->addQuery($k, $v);
 		});
