@@ -9,7 +9,7 @@ class WechatDepotNews extends Model{
 
 	public function depot()
 	{
-		return $this->belongsToMany(dirname(get_class($this)).'\\WechatDepot', 'wechat_depot_news', 'wdid', 'wnid');
+		return $this->belongsToMany(get_namespace($this).'\\WechatDepot', 'wechat_depot_news', 'wdid', 'wnid');
 	}
 
 }

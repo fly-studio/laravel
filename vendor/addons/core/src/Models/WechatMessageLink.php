@@ -9,7 +9,7 @@ class WechatMessageLink extends Model{
 
 	public function message()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessage', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessage', 'id', 'id');
 	}
 
 	

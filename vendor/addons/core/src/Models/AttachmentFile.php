@@ -12,7 +12,7 @@ class AttachmentFile extends Model{
 	
 	public function attachments()
 	{
-		return $this->hasMany(dirname(get_class($this)).'\\Attachment', 'afid', 'id');
+		return $this->hasMany(get_namespace($this).'\\Attachment', 'afid', 'id');
 	}
 
 	public function get_byhash($hash, $size)

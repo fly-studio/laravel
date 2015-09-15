@@ -7,7 +7,7 @@ class Manual extends Tree {
 
 	function histories()
 	{
-		return $this->hasMany('Addons\\Core\\Models\\Manual');
+		return $this->hasMany(get_namespace($this).'\\ManualHistory');
 	}
 }
 

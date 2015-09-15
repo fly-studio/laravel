@@ -9,12 +9,12 @@ class WechatMessage extends Model{
 
 	public function account()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
 	}
 
 	public function user()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatUser', 'id', 'wuid');
+		return $this->hasOne(get_namespace($this).'\\WechatUser', 'id', 'wuid');
 	}
 
 	public function relation()
@@ -25,37 +25,37 @@ class WechatMessage extends Model{
 
 	public function depot()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatDepot', 'id', 'wdid');
+		return $this->hasOne(get_namespace($this).'\\WechatDepot', 'id', 'wdid');
 	}
 
 	public function link()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageLink', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageLink', 'id', 'id');
 	}
 
 	public function location()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageLocation', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageLocation', 'id', 'id');
 	}
 
 	public function video()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageMedia', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
 	}
 
 	public function audio()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageMedia', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
 	}
 
 	public function image()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageMedia', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
 	}
 
 	public function text()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatMessageText', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatMessageText', 'id', 'id');
 	}
 
 

@@ -18,13 +18,13 @@ class WechatReply extends Model{
 
 	public function account()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
 	}
 
 
 	public function depots()
 	{
-		return $this->belongsToMany(class_basename(get_class($this)).'WechatDepot', 'wechat_reply_depot', 'wrid', 'wdid');
+		return $this->belongsToMany(get_namespace($this).'\\WechatDepot', 'wechat_reply_depot', 'wrid', 'wdid');
 	}
 
 	public function getDepots()

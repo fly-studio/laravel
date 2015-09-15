@@ -11,12 +11,13 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 //use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use Addons\Core\Models\Role;
+use Addons\Core\Models\UserTrait;
 
 class User extends Model implements AuthenticatableContract/*, CanResetPasswordContract*/
 {
 	use Authenticatable/*, CanResetPassword*/;
 	use SoftDeletes, EntrustUserTrait;
-
+	use UserTrait;
 	/**
 	 * Cache enabled
 	 *
@@ -59,13 +60,7 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 
 	public function gender()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\Field', 'id', 'gender');
+		return $this->hasOne(get_namespace($this).'\\Field', 'id', 'gender');
 	}
 }
 
-//自动创建extra等数据
-User::created(function($user){
-	/*UserExtra::create([
-		'id' => $user->id,
-	]);*/
-});

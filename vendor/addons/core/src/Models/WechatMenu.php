@@ -9,11 +9,11 @@ class WechatMenu extends Model{
 
 	public function account()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
 	}
 
 	public function depot()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatDepot', 'id', 'wdid');
+		return $this->hasOne(get_namespace($this).'\\WechatDepot', 'id', 'wdid');
 	}
 }

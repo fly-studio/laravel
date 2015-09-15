@@ -9,12 +9,12 @@ class WechatUser extends Model{
 
 	public function account()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\WechatAccount', 'id', 'waid');
+		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
 	}
 
 	public function gender()
 	{
-		return $this->hasOne(dirname(get_class($this)).'\\Field', 'id', 'gender');
+		return $this->hasOne(get_namespace($this).'\\Field', 'id', 'gender');
 	}
 
 }
