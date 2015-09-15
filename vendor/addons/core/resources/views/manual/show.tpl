@@ -41,7 +41,7 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 					<{$_data.title}>
 					<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
 					</h1>
-					Updated at <{$_data.updated_at}>, version : <{$_data.histories()->count() / 10}>
+					Updated at <{$_data.updated_at}>, version : <{$_data->histories()->count() / 10}>
 				</div>
 				
 				<ol class="breadcrumb">
