@@ -36,10 +36,14 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header">
-				<{$_data.title}>
-				<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
-				</h1>
+				<div class="page-header">
+					<h1>
+					<{$_data.title}>
+					<small><a href="<{'manual'|url}>/<{$_data.id}>/edit">[编辑]</a></small>
+					</h1>
+					Updated at <{$_data.updated_at}>, version : <{$_data.histories()->count() / 10}>
+				</div>
+				
 				<ol class="breadcrumb">
 					<{foreach $_parents->reverse() as $item}>
 					<li>

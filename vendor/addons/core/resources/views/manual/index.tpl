@@ -5,7 +5,7 @@
 <style>
 	.media-body-container{position: relative;}
 	.media-body-container pre {height:250px; overflow: hidden; }
-	.media-body-expand-btn {display: none; height:20px; width:100%; line-height: 15px; position: absolute; left: 0; right: 0; bottom: 5px;}
+	.media-body-expand-btn {display: none; height:20px; width:100%; text-align: right; line-height: 15px; position: absolute; left: 0; right: 0; bottom: 5px;}
 </style>
 <{/block}>
 
