@@ -7,7 +7,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 
 class RouteServiceProvider extends ServiceProvider {
 
-	protected function setAdminRoute($route_name, $controller_name = NULL)
+	protected function setAdminRoutes($route_name, $controller_name = NULL)
 	{
 		$list = !is_array($route_name) ? [$route_name => $controller_name] : $route_name;
 		foreach($list as $route_name => $controller_name)
@@ -18,20 +18,20 @@ class RouteServiceProvider extends ServiceProvider {
 			$this->app['Illuminate\Routing\Router']->any($route_name.'/{action}/{of}/{jsonp?}', function($action, $of, $jsonp = NULL) use($route_name){
 				app('request')->offsetSet('of', $of);
 				app('request')->offsetSet('jsonp', $jsonp);
-				return $this->undefinedRouter($route_name, $action);
+				return $this->callbackUndefinedRoute($route_name, $action);
 			})->where('action', '(data|print|export)');
 		}
 			
 	}
 
-	protected function setUndefinedRoute()
+	protected function setUndefinedRoutes()
 	{
 		$this->app['Illuminate\Routing\Router']->any('{ctrl?}/{action?}', function($ctrl = 'home', $action = 'index') {
-			return $this->undefinedRouter( $ctrl, $action);
+			return $this->callbackUndefinedRoute( $ctrl, $action);
 		});
 	}
 
-	private function undefinedRouter( $ctrl, $action)
+	private function callbackUndefinedRoute( $ctrl, $action)
 	{
 		$ctrls = explode('/', $ctrl);
 		$ctrls = array_map(function($v){
