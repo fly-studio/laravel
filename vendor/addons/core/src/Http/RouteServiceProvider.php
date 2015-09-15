@@ -1,6 +1,7 @@
 <?php
 namespace Addons\Core\Http;
 
+use Request;
 use Illuminate\Support\Str;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
