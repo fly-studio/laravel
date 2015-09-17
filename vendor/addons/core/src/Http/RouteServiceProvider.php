@@ -13,7 +13,7 @@ class RouteServiceProvider extends ServiceProvider {
 		$list = !is_array($route_name) ? [$route_name => $controller_name] : $route_name;
 		foreach($list as $route_name => $controller_name)
 		{
-			$this->app['Illuminate\Routing\Router']->resources([$route_name => $controller_name]);
+			$this->app['Illuminate\Routing\Router']->resource($route_name, $controller_name);
 
 			//admin/ctrl/data,print,export/json
 			$this->app['Illuminate\Routing\Router']->any($route_name.'/{action}/{of}/{jsonp?}', function($action, $of, $jsonp = NULL) use($route_name){
@@ -42,6 +42,7 @@ class RouteServiceProvider extends ServiceProvider {
 		$namespace = $route->getAction()['namespace'];
 		$className = $namespace.'\\'.implode('\\', $ctrls).'Controller';
 		!class_exists($className) && $className = 'Addons\\Core\\Controllers\\'.implode('\\', $ctrls).'Controller';
+		$action = Str::studly($action);
 		(!class_exists($className) || !method_exists($className, $action)) && abort(404);
 
 		$class = new \ReflectionClass($className);

@@ -41,7 +41,7 @@ class Controller extends BaseController {
 
 	private function initMember()
 	{
-		$this->viewData['_user'] = Auth::viaRemember() || Auth::check() ? Auth::User()->toArray() : ['id' => 0, 'rid' => 0];
+		$this->viewData['_user'] = Auth::check() ? Auth::User()->toArray() : ['id' => 0];
 		$this->viewData['_roles'] = (new Role)->getRoles();
 
 		$this->user = & $this->viewData['_user'];
