@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider {
 		$className = $namespace.'\\'.implode('\\', $ctrls).'Controller';
 		!class_exists($className) && $className = 'Addons\\Core\\Controllers\\'.implode('\\', $ctrls).'Controller';
 		$action = Str::studly($action);
-		(!class_exists($className) || !method_exists($className, $action)) && abort(404);
+		(!class_exists($className) ||  !method_exists($className, $action)) && abort(404);
 
 		$class = new \ReflectionClass($className);
 		$function = $class->getMethod($action); //ReflectionMethod

@@ -194,7 +194,7 @@ class AttachmentController extends Controller {
 		redirect($link_path);
 	}
 
-	public function uploader_query()
+	public function uploaderQuery()
 	{
 		$result = $this->model->upload($this->user['id'], 'Filedata');
 		if (!is_array($result))
@@ -202,7 +202,7 @@ class AttachmentController extends Controller {
 		return $this->success('', FALSE, $result);
 	}
 
-	public function hash_query(Request $request)
+	public function hashQuery(Request $request)
 	{
 		$hash = $request->input('hash');
 		$size = $request->input('size');
@@ -217,7 +217,7 @@ class AttachmentController extends Controller {
 		return $this->success('', FALSE, $result);
 	}
 
-	public function editormd_uploader_query()
+	public function editormdUploadQuery()
 	{
 		$data = array('success' => 1, 'message' => '');
 		$result = $this->model->upload($this->user['id'], 'editormd-image-file');
@@ -230,7 +230,7 @@ class AttachmentController extends Controller {
 		return $this->output($data);
 	}
 
-	public function kindeditor_upload_query()
+	public function kindeditorUploadQuery()
 	{
 		$data = array('error' => 0, 'url' => '');
 		
@@ -244,7 +244,7 @@ class AttachmentController extends Controller {
 		return $this->output($data);
 	}
 
-	public function ueditor_upload_query($action, $start = 0, $size = NULL)
+	public function ueditorUploadQuery($action, $start = 0, $size = NULL)
 	{
 		$data = array();
 		$_config = config('attachment');
@@ -367,7 +367,7 @@ class AttachmentController extends Controller {
 		return $this->output($data);
 	}
 
-	public function upload_avatar_query()
+	public function avatarUploadQuery()
 	{
 		$this->checkauth(); //检查是否登录
 
@@ -384,7 +384,7 @@ class AttachmentController extends Controller {
 		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
 	}
 
-	public function upload_dataurl_query(Request $request)
+	public function DataurlUploadQuery(Request $request)
 	{
 		$dataurl = $request->post('DataURL');
 		
