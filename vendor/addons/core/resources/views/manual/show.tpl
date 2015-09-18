@@ -93,7 +93,7 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 editormd.markdownToHTML("editormd-view", {
 	markdown        : "\r\n" + $("#markdown").text(),
 	htmlDecode      : "style,script,iframe",  // you can filter tags decode
-	//atLink    : true,    // enable @link
+	atLink    : false,    // enable @link
 	//emailLink : true,    // enable email address auto link
 	toc             : false,
 	tocm            : true,    // Using [TOCM]
@@ -115,7 +115,7 @@ $('h1[id]', '#editormd-view').each(function(i){
 	$obj = $('ul', $obj);
 	$this.nextUntil("h1",'h2').each(function(m){
 		var $_this = $(this);
-		$_this.attr('id', this.id + m);
+		$_this.attr('id', this.id + '-' + i + '-' + m);
 		$obj.append('<li><a href="#'+$_this.attr('id')+'">'+$_this.text()+'</a></li>');
 	});
 });

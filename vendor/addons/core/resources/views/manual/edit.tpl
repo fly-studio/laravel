@@ -41,7 +41,7 @@
 		htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
 		//toolbar  : false,             //关闭工具栏
 		//previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
-		//atLink    : true,    // enable @link
+		atLink    : false,    // enable @link
 		//emailLink : true,    // enable email address auto link
 		emoji : true,
 		taskList : true,
