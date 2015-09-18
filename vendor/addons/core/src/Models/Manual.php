@@ -14,7 +14,7 @@ class Manual extends Tree {
 Manual::updating(function($manual){
 	if ($manual->isDirty('title', 'content'))
 	{
-		$data = Manual::find($manual->getKey(), ['title', 'content', 'id AS `mid`'])->toArray();
+		$data = Manual::find($manual->getKey(), ['title', 'content', 'id AS mid'])->toArray();
 		ManualHistory::create($data);
 	}
 });
