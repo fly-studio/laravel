@@ -15,7 +15,7 @@ class ToolsController extends Controller {
 		return $this->view('system.tools');
 	}
 
-	public function clear_cache_query()
+	public function clearCacheQuery()
 	{
 		//Cache
 		Cache::flush();
@@ -34,7 +34,7 @@ class ToolsController extends Controller {
 		return $this->success(array('title' => '清理成功', 'content' => '缓存清理成功'), FALSE);
 	}
 
-	public function create_static_folder_query()
+	public function createStaticFolderQuery()
 	{
 		$target_path = normalize_path(APPPATH.'../static');
 		$link_path = normalize_path(APPPATH . 'static/common');
