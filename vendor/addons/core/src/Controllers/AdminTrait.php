@@ -12,6 +12,14 @@ trait AdminTrait {
 		//$builder->getConnection()->getDoctrineSchemaManager()->listTableColumns('table')
 	}
 
+	/**
+	 * 给Builder绑定where条件
+	 * 注意：参数的值为空字符串，则会忽略该条件
+	 * 
+	 * @param  Request $request 
+	 * @param  Builder $builder 
+	 * @return array           返回筛选(搜索)的参数
+	 */
 	private function _doFilter(Request $request, Builder $builder)
 	{
 		$filters = $this->_getFilters($request, $builder);
@@ -24,7 +32,7 @@ trait AdminTrait {
 
 		array_walk($filters, function($v, $key) use ($builder, $operators) {
 			array_walk($v, function($value, $method) use ($builder, $key, $operators){
-				if (empty($value)) return;
+				if (empty($value) && $value !== '0') return; //''不做匹配
 				else if (in_array($method, ['like', 'like_binary', 'not_like'])) $value = '%'.$value.'%';
 				else if (in_array($method, ['left_like', 'left_like_binary', 'not_left_like'])) $value = $value.'%';
 				else if (in_array($method, ['right_like', 'right_like_binary', 'not_right_like'])) $value = '%'.$value;
@@ -41,7 +49,14 @@ trait AdminTrait {
 			$builder->orderBy($k, $v);
 		return $orders;
 	}
-
+	/**
+	 * 获取筛选(搜索)的参数
+	 * &filters[username][like]=abc&filters[gender][equal]=1
+	 * 
+	 * @param  Request $request 
+	 * @param  Builder $builder 
+	 * @return array           返回参数列表
+	 */
 	private function _getFilters(Request $request, Builder $builder)
 	{
 		$filters = [];
@@ -51,7 +66,16 @@ trait AdminTrait {
 
 		return $filters;
 	}
-
+	/**
+	 * 获取排序的参数
+	 * 1. datatable 的方式
+	 * 2. order[id]=desc&order[created_at]=asc 类似这种方式
+	 * 默认是按主键倒序
+	 *
+	 * @param  Request $request 
+	 * @param  Builder $builder 
+	 * @return array           返回参数列表
+	 */
 	private function _getOrders(Request $request, Builder $builder)
 	{
 		$columns = $request->input('columns') ?: [];
@@ -63,6 +87,7 @@ trait AdminTrait {
 				!empty($columns[$v['column']]['data']) && $orders[$columns[$v['column']]['data']] = strtolower($v['dir']); 
 		else
 			$orders = $inputs;
+		//默认按照主键的倒序
 		empty($orders) && $orders = [$builder->getModel()->getKeyName() => 'desc'];
 		return $orders;
 	}
