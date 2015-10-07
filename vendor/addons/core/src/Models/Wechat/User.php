@@ -71,7 +71,7 @@ class User {
 			{
 				//将所有唯一ID匹配的资料都更新
 				$wechatUsers = WechatUser::where('unionid', $wechatUser->unionid)->get();
-				array_walk($wechatUsers, function($v) use ($wechat) {
+				foreach($wechatUser as $v)
 					$v->update([
 						'nickname' => $wechat['nickname'], 
 						'gender' => $wechat['sex'],
@@ -85,7 +85,7 @@ class User {
 						'groupid' => $wechat['groupid'],
 						'avatar_aid' => $wechat['avatar_aid'],
 					]);
-				});
+				
 			}
 			return $wechatUser;
 		});
