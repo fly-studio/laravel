@@ -94,7 +94,7 @@ class User {
 
 	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $update_expired = 1440)
 	{		
-		$user = !empty($wechatUser->uid) ? UserModel::firstOrFail($wechatUser->uid) : (new UserModel)->get($wechatUser->unionid);
+		$user = !empty($wechatUser->uid) ? UserModel::find($wechatUser->uid) : (new UserModel)->get($wechatUser->unionid);
 		empty($user) && $user = UserModel::create([
 			'username' => $wechatUser->unionid,
 			'password' => (new UserModel)->auto_password($wechatUser->unionid),
