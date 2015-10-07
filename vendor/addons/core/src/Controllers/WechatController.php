@@ -55,7 +55,7 @@ abstract class WechatController extends Controller {
 		$to = $rev->getRevTo();
 
 		$wechatUser = $wechatUserTool->updateWechatUser($from);
-		$this->user($wechatUser);
+		$this->user($api, $wechatUser);
 
 		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $wechatUser->getKey(), 'message_id' => $msg_id, 'type' => $type, 'tranport_type' => 'receive']);
 
