@@ -132,7 +132,7 @@ abstract class WechatController extends Controller {
 		return view('wechat/chosen')->with('_accounts', $accounts)->with('_account', WechatAccount::find((new WechatAccountTool)->getAccountID()))->with('_url', $url);
 	}
 
-	public function chosen_query($id, $url)
+	public function chosenQuery($id, $url)
 	{
 		$account = WechatAccount::findOrFail($id);
 		(new WechatAccountTool)->setAccountID($account->getKey());
