@@ -62,7 +62,7 @@ abstract class WechatController extends Controller {
 		switch($type) {
 			case API::MSGTYPE_TEXT: //文字消息
 				$text = WechatMessageText::create(['id' => $message->getKey(), 'content' => $rev->getRevContent()]);
-				return $this->text($api, $message);
+				return $this->text($api, $message, $text);
 			case API::MSGTYPE_IMAGE: //图片消息
 				$data = $rev->getRevPic();
 				$image = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'format' => 'jpg']); //auto download
