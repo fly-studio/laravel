@@ -9,6 +9,7 @@ return [
 	'aifc' => ['audio/x-aiff'],
 	'aiff' => ['audio/x-aiff'],
 	'amf' => ['application/x-amf'],
+	'amr' => ['audio/x-amr'],
 	'asf' => ['video/x-ms-asf'],
 	'asr' => ['video/x-ms-asf'],
 	'asx' => ['video/x-ms-asf'],
