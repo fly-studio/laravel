@@ -97,7 +97,7 @@ class User {
 		$user = !empty($wechatUser->uid) ? UserModel::firstOrFail($wechatUser->uid) : (new UserModel)->get($wechatUser->unionid);
 		empty($user) && $user = UserModel::create([
 			'username' => $wechatUser->unionid,
-			'password' => $user->auto_password($wechatUser->unionid),
+			'password' => (new UserModel)->auto_password($wechatUser->unionid),
 		])->attachRole(RoleModel::where('name', $role_name)->firstOrFail());
 
 		$wechatUser->update(['uid' => $user->getKey()]);
