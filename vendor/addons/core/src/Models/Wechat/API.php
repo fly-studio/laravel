@@ -344,9 +344,9 @@ class API
 	 * @return mixed
 	 */
 	protected function log($log){
-			if ($this->debug && function_exists($this->logcallback)) {
+			if ($this->debug && is_callable($this->logcallback)) {
 				if (is_array($log)) $log = print_r($log,true);
-				return call_user_func($this->logcallback,$log);
+				return call_user_func_array($this->logcallback, array($log, $this));
 			}
 	}
 	/**

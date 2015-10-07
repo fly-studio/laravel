@@ -18,6 +18,7 @@ use Addons\Core\Models\WechatMessageText;
 use Addons\Core\Models\WechatMessageMedia;
 use Addons\Core\Models\WechatMessageLink;
 use Addons\Core\Models\WechatMessageLocation;
+use Addons\Core\Models\WechatLog;
 use Addons\Core\Models\Attachment;
 
 abstract class WechatController extends Controller {
@@ -31,19 +32,22 @@ abstract class WechatController extends Controller {
 	public function push($id = 0)
 	{
 		$api = $account = null;
+		$_config = ['debug' => true, 'logcallback' => function($log, API $api){
+			WechatLog::create(['log' => $log, 'waid' => $api->waid]);
+		}];
 		if (empty($id)) //没有id，则尝试去数据库找
 		{
 			$api = new API(NULL, 0);
 			if ($api->valid(true, false) && $to = @$api->getRev()->getRevTo())
 			{
 				$account = WechatAccount::where('account', $to)->firstOrFail();
-				$api->setConfig($account->toArray(), $account->getKey());
+				$api->setConfig($account->toArray() + $_config, $account->getKey());
 			}
 			else
 				return null;
 		} else {
 			$account = WechatAccount::findOrFail($id);
-			$api = new API($account->toArray(), $account->getKey());
+			$api = new API($account->toArray() + $_config, $account->getKey());
 		}
 		
 		$wechatUserTool = new WechatUserTool($api);
