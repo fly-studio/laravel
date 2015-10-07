@@ -9,6 +9,7 @@ use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Addons\Core\Models\WechatMessageMedia;
+use Addons\Core\Models\Wechat\API;
 use Addons\Core\Models\Wechat\Attachment;
 class WechatMedia implements SelfHandling, ShouldQueue
 {
@@ -42,7 +43,7 @@ class WechatMedia implements SelfHandling, ShouldQueue
 
         if (empty($media->aid))
         {
-            $a = $attachment->downloadByMediaID($media->media_id, $media->format, $message->type == $message::TYPE_VIDEO);
+            $a = $attachment->downloadByMediaID($media->media_id, $media->format, $message->type == API::TYPE_VIDEO);
             !empty($a) && $media->aid = $a->getKey();
         }
         
