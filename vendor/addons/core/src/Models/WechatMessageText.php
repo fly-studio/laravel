@@ -6,6 +6,7 @@ use Addons\Core\Models\Model;
 class WechatMessageText extends Model{
 	public $auto_cache = true;
 	protected $guarded = [];
+	public $incrementing = false;
 
 	public function message()
 	{
