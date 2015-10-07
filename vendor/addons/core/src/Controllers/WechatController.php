@@ -33,7 +33,7 @@ abstract class WechatController extends Controller {
 	{
 		$api = $account = null;
 		$_config = ['debug' => true, 'logcallback' => function($log, API $api){
-			WechatLog::create(['log' => $log, 'waid' => $api->waid]);
+			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => app('Illuminate\Routing\UrlGenerator')->current()]);
 		}];
 		if (empty($id)) //没有id，则尝试去数据库找
 		{
