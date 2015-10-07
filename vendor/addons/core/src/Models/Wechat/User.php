@@ -8,12 +8,11 @@ use Addons\Core\Models\Wechat\API;
 use Cache;
 class User {
 
-	private $api, $user;
+	private $api;
 
 	public function __construct($options, $waid = NULL)
 	{
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
-		$this->user = new UserModel();
 	}
 
 	public function getWechat()
@@ -60,7 +59,7 @@ class User {
 			return FALSE;
 
 		$hashkey = 'update-wechatuser-'.$openid. '/'.$this->api->appid;
-		return Cache::remember($hashkey, $update_expired, function() use ($access_token){
+		return Cache::remember($hashkey, $update_expired, function() use ($openid, $access_token){
 			$wechatUser = WechatUser::firstOrCreate([
 				'openid' => $openid,
 				'waid' => $this->api->waid,
