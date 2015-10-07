@@ -2,6 +2,7 @@
 namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\User as UserModel;
+use Addons\Core\Models\Role as RoleModel;
 use Addons\Core\Models\Attachment;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\Wechat\API;
@@ -91,7 +92,7 @@ class User {
 		});
 	}
 
-	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHAER, $update_expired = 1440)
+	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $update_expired = 1440)
 	{		
 		$user = !empty($wechatUser->uid) ? UserModel::firstOrFail($wechatUser->uid) : (new UserModel)->get($wechatUser->unionid);
 		empty($user) && $user = UserModel::create([
