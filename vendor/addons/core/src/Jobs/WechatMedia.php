@@ -43,7 +43,7 @@ class WechatMedia implements SelfHandling, ShouldQueue
 
         if (empty($media->aid))
         {
-            $a = $attachment->downloadByMediaID($media->media_id, $media->format, $message->type == API::TYPE_VIDEO);
+            $a = $attachment->downloadByMediaID($media->media_id, $media->format, $message->type == API::MSGTYPE_VIDEO);
             !empty($a) && $media->aid = $a->getKey();
         }
         
