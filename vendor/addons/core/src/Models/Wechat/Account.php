@@ -2,7 +2,7 @@
 namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Wechat\API;
-use Addons\Core\Models\Wechat\User as  WechatUserModel;
+use Addons\Core\Models\Wechat\User as WechatUserTool;
 use Session;
 class Account {
 

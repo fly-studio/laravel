@@ -1,11 +1,10 @@
 <?php
 namespace Addons\Core\Models\Wechat;
 
-use Addons\Core\Models\Attachment;
 use Addons\Core\Models\User as UserModel;
-use Addons\Core\Models\Role as RoleModel;
-use Addons\Core\Models\Wechat\Wechat;
-use Addons\Core\Models\Wechat\WechatUser;
+use Addons\Core\Models\Attachment;
+use Addons\Core\Models\WechatUser;
+use Addons\Core\Models\Wechat\API;
 use Cache;
 class User {
 
@@ -101,9 +100,9 @@ class User {
 			'password' => $user->auto_password($wechatUser->unionid),
 		])->attachRole(RoleModel::where('name', $role_name)->firstOrFail());
 
-		$wechatUser->update(['uid' => $user->id]);
+		$wechatUser->update(['uid' => $user->getKey()]);
 
-		$hashkey = 'update-user-from-wechat-'.$user->id;
+		$hashkey = 'update-user-from-wechat-'.$user->getKey();
 		Cache::remember($hashkey, $update_expired, function() use ($wechatUser, $user) {
 			$user->update([
 				'nickname' => $wechatUser->nickname,
