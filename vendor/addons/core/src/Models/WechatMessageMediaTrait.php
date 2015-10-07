@@ -4,7 +4,7 @@ namespace Addons\Core\Models;
 use Addons\Core\Jobs\WechatMedia;
 trait WechatMessageMediaTrait{
 
-	public static function bootFieldTrait()
+	public static function bootWechatMessageMediaTrait()
 	{
 		//下载附件
 		static::created(function($media){

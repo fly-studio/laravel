@@ -2,7 +2,7 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
-use Addons\Core\Models\Model\WechatMessageMediaTrait;
+use Addons\Core\Models\WechatMessageMediaTrait;
 class WechatMessageMedia extends Model{
 	use WechatMessageMediaTrait;
 
