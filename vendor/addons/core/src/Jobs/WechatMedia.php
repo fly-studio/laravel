@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-use Addons\Core\Models\WechatMedia as WechatMediaModel;
+use Addons\Core\Models\WechatMessageMedia as WechatMessageMediaModel;
 use Addons\Core\Models\Wechat\Attachment;
 class WechatMedia implements SelfHandling, ShouldQueue
 {
@@ -33,7 +33,7 @@ class WechatMedia implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        $media = WechatMediaModel::find($this->mediaID);
+        $media = WechatMessageMediaModel::find($this->mediaID);
         if (empty($media))
             return false;
         $message = $media->message;

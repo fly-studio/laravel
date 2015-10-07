@@ -2,7 +2,7 @@
 namespace Addons\Core\Models\Wechat;
 
 use Addons\Core\Models\Wechat\API;
-use Addons\Core\Models\Attachment;
+use Addons\Core\Models\Attachment as AttachmentModel;
 class Attachment {
 
 	private $api;
@@ -22,7 +22,7 @@ class Attachment {
 			fwrite($fp, $data);
 			fclose($fp);
 
-			return $this->model->save(0, $file_path, 'wechat-media-id-'.$media_id.','.date('Ymdhis').'.'.$ext);
+			return (new AttachmentModel)->save(0, $file_path, 'wechat-media-id-'.$media_id.','.date('Ymdhis').'.'.$ext);
 		}
 		return NULL;
 	}
