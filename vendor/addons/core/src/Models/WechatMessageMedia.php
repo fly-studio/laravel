@@ -7,7 +7,7 @@ class WechatMessageMedia extends Model{
 	use WechatMessageMediaTrait;
 
 	public $auto_cache = true;
-	protected $guarded = ['id'];
+	protected $guarded = [];
 
 	public function message()
 	{

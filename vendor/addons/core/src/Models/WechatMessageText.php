@@ -5,7 +5,7 @@ use Addons\Core\Models\Model;
 
 class WechatMessageText extends Model{
 	public $auto_cache = true;
-	protected $guarded = ['id'];
+	protected $guarded = [];
 
 	public function message()
 	{
