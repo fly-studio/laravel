@@ -57,7 +57,7 @@ abstract class WechatController extends Controller {
 		$wechatUser = $wechatUserTool->updateWechatUser($from);
 		$this->user($api, $wechatUser);
 
-		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $wechatUser->getKey(), 'message_id' => $rev->getRevID(), 'type' => $type, 'tranport_type' => 'receive']);
+		!in_array($type, [API::MSGTYPE_EVENT]) && $message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $wechatUser->getKey(), 'message_id' => $rev->getRevID(), 'type' => $type, 'transport_type' => 'receive']);
 
 		switch($type) {
 			case API::MSGTYPE_TEXT: //文字消息
