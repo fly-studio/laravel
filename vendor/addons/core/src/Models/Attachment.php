@@ -49,7 +49,7 @@ class Attachment extends Model{
 	public function download($uid, $url, $filename = NULL, $ext = NULL)
 	{
 		if (empty($url))
-			return self::DOWNLOAD_ERR_URL;
+			return static::DOWNLOAD_ERR_URL;
 
 		ignore_user_abort(TRUE);
 		set_time_limit(0);
@@ -67,7 +67,7 @@ class Attachment extends Model{
 		fclose($fp);
 
 		if ($curl->error)
-			return self::DOWNLOAD_ERR_FILE;
+			return static::DOWNLOAD_ERR_FILE;
 
 		$download_filename = $curl->responseHeaders['Content-Disposition'];
 
@@ -94,14 +94,14 @@ class Attachment extends Model{
 		is_null($file_name) && $file_name = mb_basename($original_basename, '.'.$file_ext); //支持中文的basename
 		
 		$attachment = $this->create([
-			'afid' => $file->id,
+			'afid' => $file->getKey(),
 			'filename' => $file_name,
 			'ext' => $file_ext,
 			'original_basename' => $original_basename,
 			'description' => $description,
 			'uid' => $uid,
 		]);
-		return $this->get($attachment->id);
+		return $this->get($attachment->getKey());
 	}
 
 	public function savefile($uid, $original_file_path, $original_basename, $file_name = NULL, $file_ext = NULL, $description = NULL)
@@ -115,11 +115,11 @@ class Attachment extends Model{
 		$size = filesize($original_file_path);
 
 		if(!in_array($file_ext, $this->_config['ext']))
-			return self::UPLOAD_ERR_EXT;
+			return static::UPLOAD_ERR_EXT;
 		if ($size > $this->_config['maxsize'])
-			return self::UPLOAD_ERR_MAXSIZE;
+			return static::UPLOAD_ERR_MAXSIZE;
 		if (empty($size))
-			return self::UPLOAD_ERR_EMPTY;
+			return static::UPLOAD_ERR_EMPTY;
 
 		//传文件都耗费了那么多时间,还怕md5?
 		$hash = md5_file($original_file_path);
@@ -131,7 +131,7 @@ class Attachment extends Model{
 			$new_hash_path = $this->get_hash_path($new_basename);
 
 			if (!$this->_save_file($original_file_path, $new_basename))
-				return self::UPLOAD_ERR_SAVE;
+				return static::UPLOAD_ERR_SAVE;
 
 			$file = AttachmentFile::create([
 				'basename' => $new_basename,
@@ -144,21 +144,21 @@ class Attachment extends Model{
 			@unlink($original_file_path);
 
 		$attachment = $this->create([
-			'afid' => $file->id,
+			'afid' => $file->getKey(),
 			'filename' => $file_name,
 			'ext' => $file_ext,
 			'original_basename' => $original_basename,
 			'description' => $description,
 			'uid' => $uid,
 		]);
-		return $this->get($attachment->id);
+		return $this->get($attachment->getKey());
 	}
 
 
 
 	public function get($id)
 	{
-		$attachment = self::find($id);
+		$attachment = static::find($id);
 		$result = [];
 		if (!empty($attachment))
 		{

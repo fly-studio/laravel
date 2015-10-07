@@ -36,8 +36,8 @@ class User {
 		if (!$cache || is_null($result = Cache::get($hashkey, null))) {
 			$result = empty($access_token) ? $this->api->getUserInfo($openid) : $this->api->getOauthUserinfo($access_token, $openid);;
 			if (isset($result['nickname'])) { //订阅号 无法获取昵称，则不加入缓存
-				$attachment =(new Attachment)->download(0, $result['headimgurl'], 'wechat-avatar-'.$openid, 'jpg');
-				$result['avatar_aid'] = $attachment['aid'];
+				$attachment = (new Attachment)->download(0, $result['headimgurl'], 'wechat-avatar-'.$openid, 'jpg');
+				$result['avatar_aid'] = $attachment['id'];
 				Cache::put($hashkey, $result, 12 * 60); //0.5 day
 			}
 		}
