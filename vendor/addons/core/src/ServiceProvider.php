@@ -52,6 +52,7 @@ class ServiceProvider extends SP
 
 		$this->app['view']->share('url', [
 			'current' => app('Illuminate\Routing\UrlGenerator')->current(),
+			'full' => app('Illuminate\Routing\UrlGenerator')->full(),
 			'previous' => app('Illuminate\Routing\UrlGenerator')->previous(),
 		]);
 
