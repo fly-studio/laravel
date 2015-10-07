@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace Addons\Core\Jobs;
 
-use App\Jobs\Job;
+use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
@@ -10,8 +10,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 use Addons\Core\Models\WechatMedia as WechatMediaModel;
 use Addons\Core\Models\Wechat\Attachment;
-class WechatMedia extends Job implements SelfHandling, ShouldQueue
+class WechatMedia implements SelfHandling, ShouldQueue
 {
+    use Queueable;
     use InteractsWithQueue, SerializesModels;
 
     public $mediaID;
