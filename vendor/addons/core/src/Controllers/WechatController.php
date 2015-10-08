@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
-use Addons\Core\Models\Wechat\API;
-use Addons\Core\Models\Wechat\Account as WechatAccountTool;
-use Addons\Core\Models\Wechat\User as WechatUserTool;
+use Addons\Core\Tools\Wechat\API;
+use Addons\Core\Tools\Wechat\Account as WechatAccountTool;
+use Addons\Core\Tools\Wechat\User as WechatUserTool;
 use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\WechatReply;
@@ -147,7 +147,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 文字消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageText $text 文本  
 	 * @return string|response
@@ -161,7 +161,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 图片消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageMedia $images  图片
 	 * @return string|response
@@ -174,7 +174,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 音频消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageMedia $voice 音频  
 	 * @return string|response
@@ -187,7 +187,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 视频消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageMedia $video 视频  
 	 * @return string|response
@@ -200,7 +200,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 小视频消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageMedia $video 视频  
 	 * @return string|response
@@ -213,7 +213,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 地址消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageLocation $location  地址
 	 * @return string|response
@@ -226,7 +226,7 @@ abstract class WechatController extends Controller {
 	/**
 	 * 链接消息
 	 * 
-	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Tools\Wechat\API $api  微信API
 	 * @param  Addons\Core\Models\WechatMessage $message  消息
 	 * @param  Addons\Core\Models\WechatMessageLink $link  链接
 	 * @return string|response

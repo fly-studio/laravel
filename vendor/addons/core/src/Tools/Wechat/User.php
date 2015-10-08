@@ -1,8 +1,8 @@
 <?php
-namespace Addons\Core\Models\Wechat;
+namespace Addons\Core\Tools\Wechat;
 
-use Addons\Core\Models\User as UserModel;
-use Addons\Core\Models\Role as RoleModel;
+use Addons\Core\Tools\User as UserModel;
+use Addons\Core\Tools\Role as RoleModel;
 use Addons\Core\Models\Attachment;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\Wechat\API;

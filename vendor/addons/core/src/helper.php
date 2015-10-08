@@ -33,3 +33,15 @@ function model_autohook($value, $model_name)
 	return $data[$model_name][$value];
 }
 }
+if (!function_exists('delay_unlink'))
+{
+function delay_unlink($path, $delay)
+{
+	if (!file_exists($path)) return FALSE;
+
+	$md5 = !is_dir($path) ? md5_file($path) : NULL;
+	//Queue
+	$job = (new Addons\Core\Jobs\DelayUnlink($path, $md5))->delay($delay);
+	app('Illuminate\Contracts\Bus\Dispatcher')->dispatch($job);
+}
+}

@@ -74,7 +74,6 @@ return [
 			'mp3',
 			'ogg',
 			'wma',
-			'wmv',
 			'amr',
 			'mid','midi',
 		],

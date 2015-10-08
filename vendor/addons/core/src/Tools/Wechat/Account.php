@@ -1,8 +1,8 @@
 <?php
-namespace Addons\Core\Models\Wechat;
+namespace Addons\Core\Tools\Wechat;
 
-use Addons\Core\Models\Wechat\API;
-use Addons\Core\Models\Wechat\User as WechatUserTool;
+use Addons\Core\Tools\Wechat\API;
+use Addons\Core\Tools\Wechat\User as WechatUserTool;
 use Session;
 class Account {
 

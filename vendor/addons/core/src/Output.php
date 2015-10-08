@@ -78,7 +78,7 @@ class Output {
 
 	public static function txt($data)
 	{
-		return $this->text($data);
+		return self::text($data);
 	}
 
 	public static function xml($data)

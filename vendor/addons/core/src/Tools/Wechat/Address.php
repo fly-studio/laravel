@@ -1,7 +1,7 @@
 <?php
-namespace Addons\Core\Models\Wechat;
+namespace Addons\Core\Tools\Wechat;
 
-use Addons\Core\Models\Wechat\API;
+use Addons\Core\Tools\Wechat\API;
 use Cache;
 class Address {
 

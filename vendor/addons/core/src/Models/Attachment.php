@@ -9,6 +9,8 @@ use Addons\Core\SSH;
 class Attachment extends Model{
 	
 	protected $guarded = ['id'];
+	protected $hidden = ['path', 'afid', 'basename'];
+
 
 	const UPLOAD_ERR_MAXSIZE = 100;
 	const UPLOAD_ERR_EMPTY = 101;
@@ -24,6 +26,18 @@ class Attachment extends Model{
 		parent::__construct($attributes);
 		$this->fileModel = new AttachmentFile();
 		$this->_config = config('attachment');
+	}
+
+	public function file_type()
+	{
+		static $file_type;
+		if (!empty($file_type)) return $file_type;
+
+		$ext = $this->ext;
+		foreach ($this->_config['file_type'] as $key => $value)
+			if (in_array($ext, $value)) return $file_type = $key;
+
+		return NULL;
 	}
 
 	public function file()
@@ -151,6 +165,8 @@ class Attachment extends Model{
 			'description' => $description,
 			'uid' => $uid,
 		]);
+		//当前Model更新
+		//$this->setRawAttributes($attachment->getAttributes(), true);
 		return $this->get($attachment->getKey());
 	}
 
@@ -159,36 +175,24 @@ class Attachment extends Model{
 	public function get($id)
 	{
 		$attachment = static::find($id);
-		$result = [];
 		if (!empty($attachment))
 		{
-			$result = $attachment->toArray() + $attachment->file->toArray();
+			$result = $attachment->getAttributes() + $attachment->file->getAttributes();
 			$result['displayname'] = $result['filename'].(!empty($result['ext']) ?  '.'.$result['ext'] : '' );
+			//Model更新
+			$attachment->setRawAttributes($result, true);
 		}
-		return $result;
-	}
-
-	public function get_type($ext)
-	{
-		$ext = strtolower($ext);
-		foreach ($this->_config['file_type'] as $key => $value)
-		{
-			if (in_array($ext, $value))
-				return $key;
-		}
-		return NULL;
+		return $attachment;
 	}
 
 	/**
 	 * 获取软连接的网址
 	 * 
-	 * @param  integer $id     AID
-	 * @param  boolean $protocol 是否有域名部分
 	 * @return string
 	 */
-	public function get_symlink_url($id, $protocol = NULL)
+	public function get_symlink_url()
 	{
-		$path = $this->_create_symlink($id);
+		$path = $this->_create_symlink();
 		if (empty($path))
 			return FALSE;
 
@@ -201,7 +205,7 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中取出的路径
 	 * @return string                绝对路径
 	 */
-	public function get_real_rpath($hash_path)
+	public function get_real_rpath($hash_path = NULL)
 	{
 		return APPPATH.$this->get_relative_rpath($hash_path);
 	}
@@ -212,8 +216,9 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中取出的路径
 	 * @return string                远程绝对路径
 	 */
-	public function get_remote_rpath($hash_path)
+	public function get_remote_rpath($hash_path = NULL)
 	{
+		empty($hash_path) && $hash_path = $this->path;
 		return $this->_config['remote']['path'].$hash_path;
 	}
 
@@ -223,7 +228,7 @@ class Attachment extends Model{
 	 * @param  string $basename 附件文件名
 	 * @return string
 	 */
-	public function get_real_path($basename)
+	public function get_real_path($basename = NULL)
 	{
 		return APPPATH.$this->get_relative_path($basename);
 	}
@@ -234,7 +239,7 @@ class Attachment extends Model{
 	 * @param  string $basename 附件文件名
 	 * @return string           相对路径
 	 */
-	public function get_relative_path($basename)
+	public function get_relative_path($basename = NULL)
 	{
 		return $this->_config['local']['path'].$this->get_hash_path($basename);
 	}
@@ -245,8 +250,9 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中的路径
 	 * @return string            相对路径
 	 */
-	public function get_relative_rpath($hash_path)
+	public function get_relative_rpath($hash_path = NULL)
 	{
+		empty($hash_path) && $hash_path = $this->path;
 		return $this->_config['local']['path'].$hash_path;
 	}
 
@@ -258,9 +264,10 @@ class Attachment extends Model{
 	 * @param  string $filename  需要放在网址结尾的文件名,用以欺骗浏览器
 	 * @return string
 	 */
-	public function get_url($id, $filename = NULL)
+	public function get_url($filename = NULL)
 	{
-		return  url(!empty($filename) ? 'attachment/'.$id.'/'.urlencode($filename) : 'attachment?id='.$id);
+		empty($filename) && $filename = $this->original_basename;
+		return  url('attachment/'.$this->getKey().'/'.urlencode($filename));
 	}
 
 	/**
@@ -269,8 +276,9 @@ class Attachment extends Model{
 	 * @param  string $basename 附件文件名
 	 * @return string           相对路径
 	 */
-	protected function get_hash_path($basename)
+	protected function get_hash_path($basename = NULL)
 	{
+		empty($basename) && $basename = $this->basename;
 		$md5 = md5($basename . md5($basename));
 		return $md5[0].$md5[1].'/'.$md5[2].$md5[3].'/'.$md5[4].$md5[5].','.$basename;
 	}
@@ -296,15 +304,14 @@ class Attachment extends Model{
 	 * @param  integer $id AID
 	 * @return string
 	 */
-	protected function _create_symlink($id, $life_time = Date::DAY)
+	protected function _create_symlink($life_time = Date::DAY)
 	{
-		$data = $this->get($id);
-		if (empty($data))
-			return FALSE;
 		//将云端数据同步到本地
-		$this->remote && $this->sync($id);
-		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($id).'.'.$data['ext']);
-		!file_exists($path) && @symlink($this->get_real_rpath($data['path']), $path);
+		$this->remote && $this->sync();
+		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		!file_exists($path) && @symlink($this->get_real_rpath(), $path);
+
+		!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
@@ -314,12 +321,9 @@ class Attachment extends Model{
 	 * @param  integer $id AID
 	 * @return
 	 */
-	public function unlink_symlink($id)
+	public function unlink_symlink()
 	{
-		$data = $this->get($id);
-		if (empty($data))
-			return FALSE;
-		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($id).'.'.$data['ext']);
+		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
 		@unlink($path);
 	}
 
@@ -377,16 +381,13 @@ class Attachment extends Model{
 		return $result;
 	}
 
-	public function sync($id, $life_time = NULL)
+	public function sync($life_time = NULL)
 	{
 		if ($this->_config['remote']['enabled'])
 		{
-			$data = $this->get($id);
-			if (empty($data))
-				return FALSE;
-
-			$local = $this->get_real_rpath($data['path']);
-			$remote = $this->get_remote_rpath($data['path']);
+			$path = $this->file->path;
+			$local = $this->get_real_rpath($path);
+			$remote = $this->get_remote_rpath($path);
 
 			//如果本地存在，就放弃下载
 			if (file_exists($local)) return TRUE;
@@ -403,10 +404,7 @@ class Attachment extends Model{
 
 			//过期文件 删除
 			is_null($life_time) && !$this->_config['local']['enabled'] && $life_time = $this->_config['local']['life_time'];
-			if ($life_time > 0)
-			{
-				//在生命到期以后，删除本文件
-			}
+			!empty($life_time) && delay_unlink($local, $life_time);
 		}
 		return TRUE;
 	}

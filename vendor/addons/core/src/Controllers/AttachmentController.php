@@ -34,21 +34,21 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
+		$attachment = $this->model->get($id);
 
-		if (empty($data))
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 	
 		//获取远程文件
-		$this->model->sync($id);
+		$attachment->sync();
 
-		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
-		$content_length = $data['size'];
-		$last_modified = $data['created_at'];
-		$etag = $data['hash'];
+		$full_path = $this->model->get_real_rpath($attachment->path);
+		$mime_type = Mimes::getInstance()->mime_by_ext($attachment->ext);
+		$content_length = $attachment->size;
+		$last_modified = $attachment->created_at;
+		$etag = $attachment->hash;
 		$cache = TRUE;
-		return response()->download($full_path, $data['displayname'], [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
+		return response()->download($full_path, $attachment->displayname, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 
 	}
 
@@ -59,13 +59,11 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
-		unset($data['path'], $data['afid'], $data['id'], $data['basename']); //array_delete_selector($data, 'path,afid,id,basename');
-		if (empty($data))
-		{
+		$attachment = $this->model->get($id);
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
-		}
-		return $this->success('',TRUE,$data);
+
+		return $this->success('', TRUE, $attachment->toArray());
 	}
 
 	public function index($id, $width = NULL, $height = NULL)
@@ -74,13 +72,13 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
+		$attachment = $this->model->get($id);
 
-		if (empty($data))
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 		
 
-		if (in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
+		if ($attachment->file_type() == 'image')
 		{
 			if (!empty($width) || !empty($height))
 				return $this->resize($id, $width, $height);
@@ -104,25 +102,25 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
+		$attachment = $this->model->get($id);
 
-		if (empty($data))
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 		
 
-		if (!in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
+		if ($attachment->file_type() == 'image')
 			return $this->failure('attachment.failure_resize');
 
 
 		//获取远程文件
-		$this->model->sync($id);
+		$attachment->sync();
 
-		$full_path = $this->model->get_real_rpath($data['path']);
+		$full_path = $attachment->get_real_rpath();
 		$img = Image::make($full_path);
 		if ((!empty($width) && $img->width() > $width) || (!empty($height) && $img->height() > $height))
 		{
 			$wh = aspect_ratio($img->width(), $img->height(), $width, $height);extract($wh);
-			$new_path = storage_path(str_replace('.','[dot]',$this->model->get_relative_rpath($data['path'])).';'.$width.'x'.$height.'.'.$data['ext']);
+			$new_path = storage_path(str_replace('.','[dot]',$attachment->get_relative_rpath()).';'.$width.'x'.$height.'.'.$attachment->ext);
 			if (!file_exists($new_path))
 			{
 				!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
@@ -131,8 +129,8 @@ class AttachmentController extends Controller {
 		} else
 			$new_path = $full_path;
 		unset($img);		
-		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
-		$content_length = NULL;//$data['size'];
+		$mime_type = Mimes::getInstance()->mime_by_ext($attachment->ext);
+		$content_length = NULL;//$attachment->size;
 		$last_modified = true;
 		$etag = true;
 		$cache = TRUE;
@@ -145,13 +143,13 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
+		$attachment = $this->model->get($id);
 
-		if (empty($data))
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 		
 
-		if (in_array(strtolower($data['ext']), array('jpg','jpeg','gif','png','bmp')))
+		if ($attachment->file_type() == 'image')
  			return $this->resize($id, 640, 960);
 		else
 			return $this->preview($id);
@@ -163,19 +161,19 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$data = $this->model->get($id);
+		$attachment = $this->model->get($id);
 
-		if (empty($data))
+		if (empty($attachment))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 
 		//获取远程文件
-		$this->model->sync($id);
+		$attachment->sync();
 
-		$full_path = $this->model->get_real_rpath($data['path']);
-		$mime_type = Mimes::getInstance()->mime_by_ext($data['ext']);
-		$content_length = $data['size'];
-		$last_modified = $data['created_at'];
-		$etag = $data['hash'];
+		$full_path = $this->model->get_real_rpath($attachment->path);
+		$mime_type = Mimes::getInstance()->mime_by_ext($attachment->ext);
+		$content_length = $attachment->size;
+		$last_modified = $attachment->created_at;
+		$etag = $attachment->hash;
 		$cache = TRUE;
 		return response()->preview($full_path, [], compact('mime_type', 'etag', 'last_modified', 'content_length', 'cache'));
 	}
@@ -186,20 +184,20 @@ class AttachmentController extends Controller {
 		if (empty($id))
 			return $this->error_param()->setStatusCode(404);
 
-		$link_path = $this->model->get_symlink_url($id);
+		$link_path = $this->model->get($id)->get_symlink_url();
 
 		if (empty($link_path))
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 
-		redirect($link_path);
+		return redirect($link_path);
 	}
 
 	public function uploaderQuery()
 	{
-		$result = $this->model->upload($this->user['id'], 'Filedata');
-		if (!is_array($result))
-			return $this->failure_attachment($result);
-		return $this->success('', FALSE, $result);
+		$attachment = $this->model->upload($this->user['id'], 'Filedata');
+		if (!($attachment instanceof Attachment))
+			return $this->failure_attachment($attachment);
+		return $this->success('', FALSE, $attachment->toArray());
 	}
 
 	public function hashQuery(Request $request)
@@ -211,21 +209,21 @@ class AttachmentController extends Controller {
 
 		if (empty($hash) || empty($size) || empty($filename))
 			return $this->error_param()->setStatusCode(404);
-		$result = $this->model->hash($this->user['id'], $hash, $size, $filename);
-		if (!is_array($result))
-			return $this->failure_attachment($result);
-		return $this->success('', FALSE, $result);
+		$attachment = $this->model->hash($this->user['id'], $hash, $size, $filename);
+		if (!($attachment instanceof Attachment))
+			return $this->failure_attachment($attachment);
+		return $this->success('', FALSE, $attachment->toArray());
 	}
 
 	public function editormdUploadQuery()
 	{
 		$data = array('success' => 1, 'message' => '');
-		$result = $this->model->upload($this->user['id'], 'editormd-image-file');
-		if (!is_array($result))
+		$attachment = $this->model->upload($this->user['id'], 'editormd-image-file');
+		if (!($attachment instanceof Attachment))
 		{
-			$data = array('success' => 0, 'message' => $this->read_message($result));
+			$data = array('success' => 0, 'message' => $this->read_message($attachment));
 		} else {
-			$data['url'] = $this->model->get_url($result['id'], $result['original_basename']);
+			$data['url'] = $attachment->get_url();
 		}
 		return $this->output($data);
 	}
@@ -234,12 +232,12 @@ class AttachmentController extends Controller {
 	{
 		$data = array('error' => 0, 'url' => '');
 		
-		$result = $this->model->upload($this->user['id'], 'Filedata');
-		if (!is_array($result))
+		$attachment = $this->model->upload($this->user['id'], 'Filedata');
+		if (!($attachment instanceof Attachment))
 		{
-			$data = array('error' => 1, 'message' => $this->read_message($result));
+			$data = array('error' => 1, 'message' => $this->read_message($attachment));
 		} else
-			$data['url'] = $this->model->get_url($result['id'], $result['original_basename']);
+			$data['url'] = $attachment->get_url();
 		
 		return $this->output($data);
 	}
@@ -302,14 +300,14 @@ class AttachmentController extends Controller {
 			case 'uploadvideo':
 			/* 上传文件 */
 			case 'uploadfile':
-				$result = $this->model->upload($this->user['id'], 'Filedata');
-				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
+				$attachment = $this->model->upload($this->user['id'], 'Filedata');
+				$data = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment)) : array(
 					'state' => 'SUCCESS',
-					'url' => $this->model->get_url($result['id'], $result['original_basename']),
-					'title' => $result['src_basename'],
-					'original' => $result['src_basename'],
-					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
-					'size' => $result['size'],
+					'url' => $attachment->get_url(),
+					'title' => $attachment->original_basename,
+					'original' => $attachment->original_basename,
+					'type' => !empty($attachment->ext) ? '.'.$attachment->ext : '',
+					'size' => $attachment->size,
 				);
 				break;
 			/* 上传涂鸦 */
@@ -318,14 +316,14 @@ class AttachmentController extends Controller {
 				$fp = fopen($file_path,'wb+');
 				fwrite($fp, base64_decode($_POST['Filedata']));
 				fclose($fp);
-				$result = $this->model->save($this->user['id'], $file_path, 'scrawl_'.$this->user['id'].'_'.date('Ymdhis').'.png');
-				$data = !is_array($result) ? array('state' => $this->read_message($result)) : array(
+				$attachment = $this->model->savefile($this->user['id'], $file_path, 'scrawl_'.$this->user['id'].'_'.date('Ymdhis').'.png');
+				$data = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment)) : array(
 					'state' => 'SUCCESS',
-					'url' => $this->model->get_url($result['id'], $result['original_basename']),
-					'title' => $result['src_basename'],
-					'original' => $result['src_basename'],
-					'type' => !empty($result['ext']) ? '.'.$result['ext'] : '',
-					'size' => $result['size'],
+					'url' => $attachment->get_url(),
+					'title' => $attachment->original_basename,
+					'original' => $attachment->original_basename,
+					'type' => !empty($attachment->ext) ? '.'.$attachment->ext : '',
+					'size' => $attachment->size,
 				);
 				break;
 			/* 抓取远程文件 */
@@ -333,13 +331,13 @@ class AttachmentController extends Controller {
 				$url = isset($_POST['Filedata']) ? $_POST['Filedata'] : $_GET['Filedata'];
 				$url = to_array($url);$list = array();
 				foreach ($url as $value) {
-					$result = $this->model->download($this->user['id'], $value);
-					$list[] = !is_array($result) ? array('state' => $this->read_message($result), 'source' => $value) : array (
+					$attachment = $this->model->download($this->user['id'], $value);
+					$list[] = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment), 'source' => $value) : array (
 						'state' => 'SUCCESS',
-						'url' => $this->model->get_url($result['id'], $result['original_basename']),
-						'title' => $result['src_basename'],
-						'original' => $result['src_basename'],
-						'size' => $result['size'],
+						'url' => $attachment->get_url(),
+						'title' => $attachment->original_basename,
+						'original' => $attachment->original_basename,
+						'size' => $attachment->size,
 						'source' => $value,
 					);
 				}
@@ -352,13 +350,17 @@ class AttachmentController extends Controller {
 			case 'listimage':
 			/* 列出文件 */
 			case 'listfile':
-				$list = $this->model->search(array('ext' => $_config['file_type']['image'], 'duplicate' => TRUE), array('a.created_at' => 'DESC'), $page, $pagesize);
+				$list = $this->model->whereIn('ext', $_config['file_type']['image'])->orderBy('created_at', 'DESC')->paginate($pagesize, ['*'], 'page', $page);
 				
+				$url = [];
+				foreach($list as $v)
+					$url[] = [ 'url' => $v->get_url() ];
+
 				$data = array(
 					'state' => 'SUCCESS',
-					'list' => array_values(array_map(function($v) {return array('url' => $this->model->get_url($v['id'], $v['original_basename']));}, $list['data'])),
-					'start' => $list['page'] * $list['pagesize'],
-					'total' => $list['count'],
+					'list' => $url,
+					'start' => $list->firstItem(),
+					'total' => $list->total(),
 				);
 				break;
 			default:
@@ -379,9 +381,8 @@ class AttachmentController extends Controller {
 		fwrite($fp, $data[0]);
 		fclose($fp);
 
-		$attachment = $this->model->save($this->user['id'], $file_path, 'avatar_'.$this->user['id'].'_'.date('Ymdhis').'.jpg');
-		$url = $this->model->get_url($attachment['id'], $attachment['original_basename']);
-		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
+		$attachment = $this->model->savefile($this->user['id'], $file_path, 'avatar_'.$this->user['id'].'_'.date('Ymdhis').'.jpg');
+		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->get_url()));
 	}
 
 	public function DataurlUploadQuery(Request $request)
@@ -397,9 +398,8 @@ class AttachmentController extends Controller {
 		fclose($fp);
 		unset($dataurl, $data, $part);
 
-		$attachment = $this->model->save($this->user['id'], $file_path, 'datauri_'.$this->user['id'].'_'.date('Ymdhis').'.'.$ext);
-		$url = $this->model->get_url($attachment['id'], $attachment['original_basename']);
-		return $this->success('', $url, array('id' => $attachment['id'], 'url' => $url));
+		$attachment = $this->model->savefile($this->user['id'], $file_path, 'datauri_'.$this->user['id'].'_'.date('Ymdhis').'.'.$ext);
+		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->get_url()));
 	}
 
 

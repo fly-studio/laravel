@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\Models\Wechat;
+namespace Addons\Core\Tools\Wechat;
 /**
  *	微信公众平台PHP-SDK, 官方API部分
  *  @author  dodge <dodgepudding@gmail.com>
