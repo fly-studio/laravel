@@ -43,6 +43,11 @@ class WechatMessage extends Model{
 		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
 	}
 
+	public function shortvideo()
+	{
+		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
+	}
+
 	public function voice()
 	{
 		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');

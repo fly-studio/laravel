@@ -79,6 +79,10 @@ abstract class WechatController extends Controller {
 				$data = $rev->getRevVideo();
 				$video = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'thumb_media_id' => $data['thumbmediaid'], 'format' => 'mp4']); //auto download
 				return $this->video($api, $message, $video);
+			case API::MSGTYPE_SHORTVIDEO: //小视频消息
+				$data = $rev->getRevVideo();
+				$shortvideo = WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $data['mediaid'], 'thumb_media_id' => $data['thumbmediaid'], 'format' => 'mp4']); //auto download
+				return $this->shortvideo($api, $message, $shortvideo);
 			case API::MSGTYPE_LOCATION: //地址消息
 				$data = $rev->getRevGeo();
 				$location = WechatMessageLocation::create(['id' => $message->getKey(), 'x' => $data['x'], 'y' => $data['y'], 'scale' => $data['scale'], 'label' => $data['label']]);
@@ -189,6 +193,19 @@ abstract class WechatController extends Controller {
 	 * @return string|response
 	 */
 	protected function video(API $api, WechatMessage $message, WechatMessageMedia $video)
+	{
+		return null;
+	}
+
+	/**
+	 * 小视频消息
+	 * 
+	 * @param  Addons\Core\Models\Wechat\API $api  微信API
+	 * @param  Addons\Core\Models\WechatMessage $message  消息
+	 * @param  Addons\Core\Models\WechatMessageMedia $video 视频  
+	 * @return string|response
+	 */
+	protected function shortvideo(API $api, WechatMessage $message, WechatMessageMedia $shortvideo)
 	{
 		return null;
 	}
