@@ -7,6 +7,7 @@ use Addons\Core\Models\Attachment;
 use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 
+use Addons\Core\Jobs\WechatSend;
 class Send {
 
 	private $account;

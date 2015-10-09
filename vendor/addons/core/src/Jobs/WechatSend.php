@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-use Addons\Core\Tools\API;
+use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\WechatDepot;
