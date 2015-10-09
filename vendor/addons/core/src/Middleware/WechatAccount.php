@@ -3,20 +3,20 @@
 namespace Addons\Core\Middleware;
 
 use Closure;
-use Addons\Core\Models\Wechat\Account;
+use Addons\Core\Tools\Wechat\Account;
 class WechatAccount
 {
 	/**
-	 * The \Addons\Core\Models\Wechat\Account.
+	 * The \Addons\Core\Tools\Wechat\Account.
 	 *
-	 * @var \Addons\Core\Models\Wechat\Account
+	 * @var \Addons\Core\Tools\Wechat\Account
 	 */
 	protected $account;
 
 	/**
 	 * Create a new filter instance.
 	 *
-	 * @param  \Addons\Core\Models\Wechat\Account  $auth
+	 * @param  \Addons\Core\Tools\Wechat\Account  $auth
 	 * @return void
 	 */
 	public function __construct(Account $account)
