@@ -1,11 +1,11 @@
 <?php
 namespace Addons\Core\Tools\Wechat;
 
-use Addons\Core\Tools\User as UserModel;
-use Addons\Core\Tools\Role as RoleModel;
+use Addons\Core\Tools\Wechat\User as UserModel;
+use Addons\Core\Tools\Wechat\Role as RoleModel;
+use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Models\Attachment;
 use Addons\Core\Models\WechatUser;
-use Addons\Core\Models\Wechat\API;
 use Cache;
 class User {
 
