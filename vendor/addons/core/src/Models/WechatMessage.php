@@ -2,8 +2,10 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
-
+use Addons\Core\Models\WechatMessageTrait;
 class WechatMessage extends Model{
+	use WechatMessageTrait;
+
 	public $auto_cache = true;
 	protected $guarded = ['id'];
 

@@ -2,8 +2,10 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Model;
-
+use Addons\Core\Models\WechatDepotTrait;
 class WechatDepot extends Model{
+	use WechatDepotTrait;
+
 	public $auto_cache = true;
 	protected $guarded = ['id'];
 
