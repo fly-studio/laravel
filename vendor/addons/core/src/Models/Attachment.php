@@ -50,6 +50,11 @@ class Attachment extends Model{
 		return $this->get_real_rpath();
 	}
 
+	public function real_path()
+	{
+		return $this->get_real_rpath();
+	}
+
 	public function relative_path()
 	{
 		return $this->get_relative_rpath();
@@ -318,6 +323,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		@unlink($path);
 		symlink($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
@@ -335,6 +341,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		@unlink($path);
 		link($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
@@ -352,6 +359,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		@unlink($path);
 		copy($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
