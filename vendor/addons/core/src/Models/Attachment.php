@@ -311,7 +311,7 @@ class Attachment extends Model{
 		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
 		!file_exists($path) && @symlink($this->get_real_rpath(), $path);
 
-		!empty($life_time) && delay_unlink($path, $life_time);
+		//!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
