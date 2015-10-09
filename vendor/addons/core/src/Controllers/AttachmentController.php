@@ -223,7 +223,7 @@ class AttachmentController extends Controller {
 		{
 			$data = array('success' => 0, 'message' => $this->read_message($attachment));
 		} else {
-			$data['url'] = $attachment->get_url();
+			$data['url'] = $attachment->url();
 		}
 		return $this->output($data);
 	}
@@ -237,7 +237,7 @@ class AttachmentController extends Controller {
 		{
 			$data = array('error' => 1, 'message' => $this->read_message($attachment));
 		} else
-			$data['url'] = $attachment->get_url();
+			$data['url'] = $attachment->url();
 		
 		return $this->output($data);
 	}
@@ -303,7 +303,7 @@ class AttachmentController extends Controller {
 				$attachment = $this->model->upload($this->user['id'], 'Filedata');
 				$data = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment)) : array(
 					'state' => 'SUCCESS',
-					'url' => $attachment->get_url(),
+					'url' => $attachment->url(),
 					'title' => $attachment->original_basename,
 					'original' => $attachment->original_basename,
 					'type' => !empty($attachment->ext) ? '.'.$attachment->ext : '',
@@ -319,7 +319,7 @@ class AttachmentController extends Controller {
 				$attachment = $this->model->savefile($this->user['id'], $file_path, 'scrawl_'.$this->user['id'].'_'.date('Ymdhis').'.png');
 				$data = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment)) : array(
 					'state' => 'SUCCESS',
-					'url' => $attachment->get_url(),
+					'url' => $attachment->url(),
 					'title' => $attachment->original_basename,
 					'original' => $attachment->original_basename,
 					'type' => !empty($attachment->ext) ? '.'.$attachment->ext : '',
@@ -334,7 +334,7 @@ class AttachmentController extends Controller {
 					$attachment = $this->model->download($this->user['id'], $value);
 					$list[] = !($attachment instanceof Attachment) ? array('state' => $this->read_message($attachment), 'source' => $value) : array (
 						'state' => 'SUCCESS',
-						'url' => $attachment->get_url(),
+						'url' => $attachment->url(),
 						'title' => $attachment->original_basename,
 						'original' => $attachment->original_basename,
 						'size' => $attachment->size,
@@ -354,7 +354,7 @@ class AttachmentController extends Controller {
 				
 				$url = [];
 				foreach($list as $v)
-					$url[] = [ 'url' => $v->get_url() ];
+					$url[] = [ 'url' => $v->url() ];
 
 				$data = array(
 					'state' => 'SUCCESS',
@@ -382,7 +382,7 @@ class AttachmentController extends Controller {
 		fclose($fp);
 
 		$attachment = $this->model->savefile($this->user['id'], $file_path, 'avatar_'.$this->user['id'].'_'.date('Ymdhis').'.jpg');
-		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->get_url()));
+		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->url()));
 	}
 
 	public function DataurlUploadQuery(Request $request)
@@ -399,7 +399,7 @@ class AttachmentController extends Controller {
 		unset($dataurl, $data, $part);
 
 		$attachment = $this->model->savefile($this->user['id'], $file_path, 'datauri_'.$this->user['id'].'_'.date('Ymdhis').'.'.$ext);
-		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->get_url()));
+		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->url()));
 	}
 
 

@@ -47,17 +47,45 @@ class Attachment extends Model{
 
 	public function full_path()
 	{
-		return $this->get_real_rpath();
+		return $this->get_real_path();
 	}
 
 	public function real_path()
 	{
-		return $this->get_real_rpath();
+		return $this->get_real_path();
 	}
 
 	public function relative_path()
 	{
-		return $this->get_relative_rpath();
+		return $this->get_relative_path();
+	}
+
+		/**
+	 * 构造一个符合router标准的URL
+	 * 
+	 * @param  integer $id      AID
+	 * @param  boolean $protocol 是否有域名部分
+	 * @param  string $filename  需要放在网址结尾的文件名,用以欺骗浏览器
+	 * @return string
+	 */
+	public function url($filename = NULL)
+	{
+		empty($filename) && $filename = $this->original_basename;
+		return  url('attachment/'.$this->getKey().'/'.urlencode($filename));
+	}
+
+	/**
+	 * 获取软连接的网址
+	 * 
+	 * @return string
+	 */
+	public function symlink_url()
+	{
+		$path = $this->create_symlink(NULL);
+		if (empty($path))
+			return FALSE;
+
+		return url(str_replace(APPPATH, '', $path));
 	}
 
 	public function upload($uid, $field_name, $description = '')
@@ -199,19 +227,6 @@ class Attachment extends Model{
 		return $attachment;
 	}
 
-	/**
-	 * 获取软连接的网址
-	 * 
-	 * @return string
-	 */
-	public function get_symlink_url()
-	{
-		$path = $this->create_symlink(NULL);
-		if (empty($path))
-			return FALSE;
-
-		return url(str_replace(APPPATH, '', $path));
-	}
 
 	/**
 	 * 根据数据库中的路径得到绝对路径
@@ -219,9 +234,9 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中取出的路径
 	 * @return string                绝对路径
 	 */
-	public function get_real_rpath($hash_path = NULL)
+	private function get_real_path($hash_path = NULL)
 	{
-		return APPPATH.$this->get_relative_rpath($hash_path);
+		return APPPATH.$this->get_relative_path($hash_path);
 	}
 
 	/**
@@ -230,32 +245,10 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中取出的路径
 	 * @return string                远程绝对路径
 	 */
-	public function get_remote_rpath($hash_path = NULL)
+	private function get_remote_path($hash_path = NULL)
 	{
-		empty($hash_path) && $hash_path = $this->path;
+		empty($hash_path) && $hash_path = $this->file->path;
 		return $this->_config['remote']['path'].$hash_path;
-	}
-
-	/**
-	 * 根据附件文件名，获取文件的绝对地址
-	 * 
-	 * @param  string $basename 附件文件名
-	 * @return string
-	 */
-	public function get_real_path($basename = NULL)
-	{
-		return APPPATH.$this->get_relative_path($basename);
-	}
-
-	/**
-	 * 根据附件文件名获得文件的相对路径
-	 * 	
-	 * @param  string $basename 附件文件名
-	 * @return string           相对路径
-	 */
-	public function get_relative_path($basename = NULL)
-	{
-		return $this->_config['local']['path'].$this->get_hash_path($basename);
 	}
 
 	/**
@@ -264,24 +257,10 @@ class Attachment extends Model{
 	 * @param  string $hash_path 数据库中的路径
 	 * @return string            相对路径
 	 */
-	public function get_relative_rpath($hash_path = NULL)
+	private function get_relative_path($hash_path = NULL)
 	{
-		empty($hash_path) && $hash_path = $this->path;
+		empty($hash_path) && $hash_path = $this->file->path;
 		return $this->_config['local']['path'].$hash_path;
-	}
-
-	/**
-	 * 构造一个符合router标准的URL
-	 * 
-	 * @param  integer $id      AID
-	 * @param  boolean $protocol 是否有域名部分
-	 * @param  string $filename  需要放在网址结尾的文件名,用以欺骗浏览器
-	 * @return string
-	 */
-	public function get_url($filename = NULL)
-	{
-		empty($filename) && $filename = $this->original_basename;
-		return  url('attachment/'.$this->getKey().'/'.urlencode($filename));
 	}
 
 	/**
@@ -292,7 +271,7 @@ class Attachment extends Model{
 	 */
 	protected function get_hash_path($basename = NULL)
 	{
-		empty($basename) && $basename = $this->basename;
+		empty($basename) && $basename = $this->file->basename;
 		$md5 = md5($basename . md5($basename));
 		return $md5[0].$md5[1].'/'.$md5[2].$md5[3].'/'.$md5[4].$md5[5].','.$basename;
 	}
@@ -375,7 +354,7 @@ class Attachment extends Model{
 		{
 			$ssh = new SSH((array)$this->_config['remote']);
 
-			$newpath = $this->get_remote_rpath($new_hash_path);
+			$newpath = $this->get_remote_path($new_hash_path);
 			$dir = dirname($newpath);
 
 			!$ssh->is_dir($dir) && @$ssh->mkdir($dir, $this->_config['remote']['folder_mod'], TRUE);
@@ -394,7 +373,7 @@ class Attachment extends Model{
 
 		if ($this->_config['local']['enabled']) //本地存储打开
 		{
-			$newpath = $this->get_real_rpath($new_hash_path);
+			$newpath = $this->get_real_path($new_hash_path);
 			$dir = dirname($newpath);
 
 			!is_dir($dir) && @mkdir($dir, $this->_config['local']['folder_mod'], TRUE);
@@ -425,8 +404,8 @@ class Attachment extends Model{
 		if ($this->_config['remote']['enabled'])
 		{
 			$path = $this->file->path;
-			$local = $this->get_real_rpath($path);
-			$remote = $this->get_remote_rpath($path);
+			$local = $this->get_real_path($path);
+			$remote = $this->get_remote_path($path);
 
 			//如果本地存在，就放弃下载
 			if (file_exists($local)) return TRUE;
