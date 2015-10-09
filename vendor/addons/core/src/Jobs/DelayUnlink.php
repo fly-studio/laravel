@@ -11,7 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Addons\Core\Models\WechatMessageMedia;
 use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\Attachment;
-class DelayUnlin implements SelfHandling, ShouldQueue
+class DelayUnlink implements SelfHandling, ShouldQueue
 {
 	use Queueable;
 	use InteractsWithQueue, SerializesModels;
