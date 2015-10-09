@@ -38,6 +38,16 @@ class WechatMessage extends Model{
 		return $this->hasOne(get_namespace($this).'\\WechatMessageLocation', 'id', 'id');
 	}
 
+	public function text()
+	{
+		return $this->hasOne(get_namespace($this).'\\WechatMessageText', 'id', 'id');
+	}
+
+	public function media()
+	{
+		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
+	}
+
 	public function video()
 	{
 		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
@@ -57,11 +67,4 @@ class WechatMessage extends Model{
 	{
 		return $this->hasOne(get_namespace($this).'\\WechatMessageMedia', 'id', 'id');
 	}
-
-	public function text()
-	{
-		return $this->hasOne(get_namespace($this).'\\WechatMessageText', 'id', 'id');
-	}
-
-
 }
