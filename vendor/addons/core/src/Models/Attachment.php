@@ -318,7 +318,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
-		symlink($this->real_path(), $path);
+		symlink($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
@@ -335,7 +335,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
-		link($this->real_path(), $path);
+		link($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
@@ -352,7 +352,7 @@ class Attachment extends Model{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
 		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
-		copy($this->real_path(), $path);
+		copy($this->full_path(), $path);
 
 		!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
