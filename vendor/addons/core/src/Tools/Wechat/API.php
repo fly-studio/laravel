@@ -1068,6 +1068,12 @@ class API
 			}
 			$strPOST =  join("&", $aPOST);
 		}
+		if (class_exists('\CURLFile'))
+			curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, true);
+		else {
+			if (defined('CURLOPT_SAFE_UPLOAD')) 
+				curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, false);
+		}
 		curl_setopt($oCurl, CURLOPT_URL, $url);
 		curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt($oCurl, CURLOPT_POST,true);
@@ -1446,13 +1452,13 @@ class API
 	 * 注意：上传大文件时可能需要先调用 set_time_limit(0) 避免超时
 	 * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义
 	 * 注意：临时素材的media_id是可复用的！
-	 * @param array $data {"media":'@Path\filename.jpg'}
+	 * @param string $data path
 	 * @param type 类型：图片:image 语音:voice 视频:video 缩略图:thumb
 	 * @return boolean|array
 	 */
-	public function uploadMedia($data, $type){
+	public function uploadMedia($path, $type){
 		if (!$this->access_token && !$this->checkAuth()) return false;
-		!is_array($data) && $data = array('media' => '@'.$data);
+		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path) : '@'.$path);
 		//原先的上传多媒体文件接口使用 self::UPLOAD_MEDIA_URL 前缀
 		$result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
 		if ($result)
@@ -1497,12 +1503,13 @@ class API
 	 * 上传图片，本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制。图片仅支持jpg/png格式，大小必须在1MB以下。 (认证后的订阅号可用)
 	 * 注意：上传大文件时可能需要先调用 set_time_limit(0) 避免超时
 	 * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义      
-	 * @param array $data {"media":'@Path\filename.jpg'}
+	 * @param string $data 路径
 	 * 
 	 * @return boolean|array
 	 */
-	public function uploadImg($data){
+	public function uploadImg($path){
 		if (!$this->access_token && !$this->checkAuth()) return false;
+		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path) : '@'.$path);
 		//原先的上传多媒体文件接口使用 self::UPLOAD_MEDIA_URL 前缀
 		$result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_UPLOADIMG_URL.'access_token='.$this->access_token,$data,true);
 		if ($result)
@@ -1522,18 +1529,19 @@ class API
 	 * 新增的永久素材也可以在公众平台官网素材管理模块中看到
 	 * 注意：上传大文件时可能需要先调用 set_time_limit(0) 避免超时
 	 * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义
-	 * @param array $data {"media":'@Path\filename.jpg'}
+	 * @param string $data 路径
 	 * @param type 类型：图片:image 语音:voice 视频:video 缩略图:thumb
 	 * @param boolean $is_video 是否为视频文件，默认为否
 	 * @param array $video_info 视频信息数组，非视频素材不需要提供 array('title'=>'视频标题','introduction'=>'描述')
 	 * @return boolean|array
 	 */
-	public function uploadForeverMedia($data, $type,$is_video=false,$video_info=array()){
+	public function uploadForeverMedia($path, $type,$is_video=false,$video_info=array()){
 		if (!$this->access_token && !$this->checkAuth()) return false;
 		//#TODO 暂不确定此接口是否需要让视频文件走http协议
 		//如果要获取的素材是视频文件时，不能使用https协议，必须更换成http协议
 		//$url_prefix = $is_video?str_replace('https','http',self::API_URL_PREFIX):self::API_URL_PREFIX;
 		//当上传视频文件时，附加视频文件信息
+		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path) : '@'.$path);
 		if ($is_video) $data['description'] = self::json_encode($video_info);
 		$result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_FOREVER_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
 		if ($result)
@@ -3560,7 +3568,7 @@ class API
 	/**
 	 * 上传在摇一摇页面展示的图片素材
 	 * 注意：数组的键值任意，但文件名前必须加@，使用单引号以避免本地路径斜杠被转义
-	 * @param array $data {"media":'@Path\filename.jpg'} 格式限定为：jpg,jpeg,png,gif，图片大小建议120px*120 px，限制不超过200 px *200 px，图片需为正方形。
+	 * @param string $data path 格式限定为：jpg,jpeg,png,gif，图片大小建议120px*120 px，限制不超过200 px *200 px，图片需为正方形。
 	 * @return boolean|array
 	 * {
 	 *	"data": {
@@ -3573,8 +3581,9 @@ class API
 	 * @author binsee<binsee@163.com>
 	 * @version 2015-4-21 00:51:00
 	 */
-	public function uploadShakeAroundMedia($data){
+	public function uploadShakeAroundMedia($path){
 		if (!$this->access_token && !$this->checkAuth()) return false;
+		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path) : '@'.$path);
 		$result = $this->http_post(self::API_URL_PREFIX.self::SHAKEAROUND_MATERIAL_ADD.'access_token='.$this->access_token,$data,true);
 		if ($result)
 		{
