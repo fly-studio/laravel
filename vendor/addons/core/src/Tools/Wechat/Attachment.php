@@ -25,7 +25,7 @@ class Attachment {
 			return (new AttachmentModel)->savefile(0, $file_path, 'wechat-media-id-'.$media_id.','.date('Ymdhis').'.'.$ext);
 		}
 		else 
-			throw new Exception("Wechat [$media_id] download failure: [".$this->api->errCode."]". $this->api->errMsg);
+			throw new \Exception("Wechat [$media_id] download failure: [".$this->api->errCode."]". $this->api->errMsg);
 			
 		return NULL;
 	}
