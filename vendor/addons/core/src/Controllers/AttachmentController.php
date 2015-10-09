@@ -42,7 +42,7 @@ class AttachmentController extends Controller {
 		//获取远程文件
 		$attachment->sync();
 
-		$full_path = $this->model->get_real_rpath($attachment->path);
+		$full_path = $attachment->full_path();
 		$mime_type = Mimes::getInstance()->mime_by_ext($attachment->ext);
 		$content_length = $attachment->size;
 		$last_modified = $attachment->created_at;
@@ -115,12 +115,12 @@ class AttachmentController extends Controller {
 		//获取远程文件
 		$attachment->sync();
 
-		$full_path = $attachment->get_real_rpath();
+		$full_path = $attachment->full_path();
 		$img = Image::make($full_path);
 		if ((!empty($width) && $img->width() > $width) || (!empty($height) && $img->height() > $height))
 		{
 			$wh = aspect_ratio($img->width(), $img->height(), $width, $height);extract($wh);
-			$new_path = storage_path(str_replace('.','[dot]',$attachment->get_relative_rpath()).';'.$width.'x'.$height.'.'.$attachment->ext);
+			$new_path = storage_path(str_replace('.','[dot]',$attachment->relative_path()).';'.$width.'x'.$height.'.'.$attachment->ext);
 			if (!file_exists($new_path))
 			{
 				!is_dir($path = dirname($new_path)) && mkdir($path, 0777, TRUE);
@@ -169,7 +169,7 @@ class AttachmentController extends Controller {
 		//获取远程文件
 		$attachment->sync();
 
-		$full_path = $this->model->get_real_rpath($attachment->path);
+		$full_path = $attachment->full_path();
 		$mime_type = Mimes::getInstance()->mime_by_ext($attachment->ext);
 		$content_length = $attachment->size;
 		$last_modified = $attachment->created_at;

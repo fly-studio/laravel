@@ -45,6 +45,15 @@ class Attachment extends Model{
 		return $this->hasOne(get_namespace($this).'\\AttachmentFile', 'id', 'afid');
 	}
 
+	public function full_path()
+	{
+		return $this->get_real_rpath();
+	}
+
+	public function relative_path()
+	{
+		return $this->get_relative_rpath();
+	}
 
 	public function upload($uid, $field_name, $description = '')
 	{
