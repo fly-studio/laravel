@@ -192,7 +192,7 @@ class Attachment extends Model{
 	 */
 	public function get_symlink_url()
 	{
-		$path = $this->_create_symlink();
+		$path = $this->create_symlink();
 		if (empty($path))
 			return FALSE;
 
@@ -304,7 +304,7 @@ class Attachment extends Model{
 	 * @param  integer $id AID
 	 * @return string
 	 */
-	protected function _create_symlink($life_time = Date::DAY)
+	public function create_symlink($life_time = Date::DAY)
 	{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
