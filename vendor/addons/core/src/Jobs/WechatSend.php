@@ -48,7 +48,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 	public function handle()
 	{
 		$api = new API($this->account->toArray(), $this->account->getKey());
-		$message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $this->user->getKey(), 'message_id' => '', 'type' => NULL, 'transport_type' => 'send']);
+		$message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $this->user->getKey(), 'message_id' => '', 'type' => 'text', 'transport_type' => 'send']);
 		$data = ['touser' => $this->user->openid,];
 		$type = 'text';
 		if ($this->media instanceof Attachment)
