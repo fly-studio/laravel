@@ -201,7 +201,7 @@ class Attachment extends Model{
 	 */
 	public function get_symlink_url()
 	{
-		$path = $this->create_symlink();
+		$path = $this->create_symlink(NULL);
 		if (empty($path))
 			return FALSE;
 
@@ -313,27 +313,49 @@ class Attachment extends Model{
 	 * @param  integer $id AID
 	 * @return string
 	 */
-	public function create_symlink($life_time = 86400)
+	public function create_symlink($path = NULL, $life_time = 86400)
 	{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
-		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
-		!file_exists($path) && @symlink($this->get_real_rpath(), $path);
+		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		symlink($this->real_path(), $path);
 
-		//!empty($life_time) && delay_unlink($path, $life_time);
+		!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
 	/**
-	 * 删除软连接
+	 * 在cache目录下创建一个硬连接
 	 * 
 	 * @param  integer $id AID
-	 * @return
+	 * @return string
 	 */
-	public function unlink_symlink()
+	public function create_link($path = NULL, $life_time = 86400)
 	{
-		$path = storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
-		@unlink($path);
+		//将云端数据同步到本地
+		$this->remote && $this->sync();
+		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		link($this->real_path(), $path);
+
+		!empty($life_time) && delay_unlink($path, $life_time);
+		return $path;
+	}
+
+	/**
+	 * 在cache目录下创建一个副本
+	 * 
+	 * @param  integer $id AID
+	 * @return string
+	 */
+	public function create_backup($path = NULL, $life_time = 86400)
+	{
+		//将云端数据同步到本地
+		$this->remote && $this->sync();
+		$path = !empty($path) ? $path : storage_path($this->_config['local']['path'].'attachment,'.md5($this->getKey()).'.'.$this->ext);
+		copy($this->real_path(), $path);
+
+		!empty($life_time) && delay_unlink($path, $life_time);
+		return $path;
 	}
 
 	protected function _save_file($original_file_path, $new_basename)
