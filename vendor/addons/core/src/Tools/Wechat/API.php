@@ -1068,12 +1068,12 @@ class API
 			}
 			$strPOST =  join("&", $aPOST);
 		}
-		if (class_exists('\CURLFile'))
-			curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, true);
-		else {
-			if (defined('CURLOPT_SAFE_UPLOAD')) 
-				curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, false);
-		}
+		// if (class_exists('\CURLFile'))
+		// 	curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, true);
+		// else {
+		// 	if (defined('CURLOPT_SAFE_UPLOAD')) 
+		// 		curl_setopt($oCurl, CURLOPT_SAFE_UPLOAD, false);
+		// }
 		curl_setopt($oCurl, CURLOPT_URL, $url);
 		curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt($oCurl, CURLOPT_POST,true);
