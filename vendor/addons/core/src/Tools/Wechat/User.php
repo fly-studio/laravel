@@ -1,10 +1,10 @@
 <?php
 namespace Addons\Core\Tools\Wechat;
 
-use Addons\Core\Tools\Wechat\User as UserModel;
-use Addons\Core\Tools\Wechat\Role as RoleModel;
 use Addons\Core\Tools\Wechat\API;
-use Addons\Core\Models\Attachment;
+use Addons\Core\Models\User as UserModel;
+use Addons\Core\Models\Role as RoleModel;
+use Addons\Core\Models\Attachment as AttachmentModel;
 use Addons\Core\Models\WechatUser;
 use Cache;
 class User {
@@ -37,8 +37,8 @@ class User {
 		if (!$cache || is_null($result = Cache::get($hashkey, null))) {
 			$result = empty($access_token) ? $this->api->getUserInfo($openid) : $this->api->getOauthUserinfo($access_token, $openid);;
 			if (isset($result['nickname'])) { //订阅号 无法获取昵称，则不加入缓存
-				$attachment = (new Attachment)->download(0, $result['headimgurl'], 'wechat-avatar-'.$openid, 'jpg');
-				$result['avatar_aid'] = $attachment['id'];
+				$attachment = (new AttachmentModel)->download(0, $result['headimgurl'], 'wechat-avatar-'.$openid, 'jpg');
+				$result['avatar_aid'] = $attachment->getKey();
 				Cache::put($hashkey, $result, 12 * 60); //0.5 day
 			}
 		}
