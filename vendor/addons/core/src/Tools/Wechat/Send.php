@@ -34,7 +34,7 @@ class Send {
 
 	public function send($random = NULL)
 	{
-		$messages = !empty($random) ? array_pick($this->messages) : $messages;
+		$messages = !empty($random) ? array_pick($this->messages) : $this->messages;
 		foreach ($messages as $value)
 		{
 			//Queue
