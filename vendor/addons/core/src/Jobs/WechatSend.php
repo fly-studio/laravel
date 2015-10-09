@@ -86,7 +86,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 				'text' => ['content' => $this->media],
 			];
 			//入库
-			WechatMessageText::create(['id' => $message->getKey(), 'content' => $rev->getRevContent()]);
+			WechatMessageText::create(['id' => $message->getKey(), 'content' => $this->media]);
 		}
 
 		$message->type = $type;
