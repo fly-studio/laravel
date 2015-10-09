@@ -57,12 +57,13 @@ class WechatSend implements SelfHandling, ShouldQueue
 			$type = $this->media->file_type();
 			$type == 'audio' && $type = 'voice';
 			$path = $this->media->create_symlink(NULL, NULL);
-			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext));
+			$media = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext));
 			unlink($path);
 
-			if (empty($media_id)) return;
-			$media_id = $media_id['media_id'];
-			$data += ['msgtype' => $type, $type => ['media_id' => $media_id],];
+			if (empty($media)) return;
+			$type = $media['type'];
+			$data += ['msgtype' => $type, $type => ['media_id' => $media['media_id']],];
+
 			switch ($type) {
 				case 'image':
 				case 'voice':
@@ -76,7 +77,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 					break;
 			}
 			//入库
-			WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $media_id, 'aid' => $this->media->getKey(), 'format' => $this->media->ext]);
+			WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $media['media_id'], 'aid' => $this->media->getKey(), 'format' => $this->media->ext]);
 			
 			//图片、视频、
 		} elseif ($this->media instanceof WechatDepot) { //素材
