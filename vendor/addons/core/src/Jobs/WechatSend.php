@@ -72,7 +72,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 					break;
 			}
 			//入库
-			WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $media_id, 'format' => $this->media->ext]);
+			WechatMessageMedia::create(['id' => $message->getKey(), 'media_id' => $media_id, 'aid' => $this->media->getKey(), 'format' => $this->media->ext]);
 			
 			//图片、视频、
 		} elseif ($this->media instanceof WechatDepot) { //素材
