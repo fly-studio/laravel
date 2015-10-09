@@ -304,7 +304,7 @@ class Attachment extends Model{
 	 * @param  integer $id AID
 	 * @return string
 	 */
-	public function create_symlink($life_time = Date::DAY)
+	public function create_symlink($life_time = 86400)
 	{
 		//将云端数据同步到本地
 		$this->remote && $this->sync();
