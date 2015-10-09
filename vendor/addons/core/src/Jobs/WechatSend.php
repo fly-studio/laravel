@@ -56,7 +56,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 		{
 			$type = $this->media->file_type();
 			$type == 'audio' && $type = 'voice';
-			$path = $this->media->create_link(NULL);
+			$path = $this->media->create_backup(NULL, NULL);
 			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext));
 			unlink($path);
 
