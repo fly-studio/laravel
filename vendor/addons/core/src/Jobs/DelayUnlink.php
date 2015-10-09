@@ -35,7 +35,9 @@ class DelayUnlink implements SelfHandling, ShouldQueue
 	 */
 	public function handle()
 	{
-		if (is_dir($this->path))
+		if (is_link($this->path))
+			unlink($this->path);
+		else if (is_dir($this->path))
 			rmdir_recursive($this->path);
 		else
 		{
