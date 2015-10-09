@@ -42,6 +42,7 @@ namespace Addons\Core\Tools\Wechat;
  *  		);
  *   $result = $weObj->createMenu($newmenu);
  */
+use Addons\Core\File\Mimes;
 use Cache;
 class API
 {
@@ -1458,7 +1459,7 @@ class API
 	 */
 	public function uploadMedia($path, $type){
 		if (!$this->access_token && !$this->checkAuth()) return false;
-		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path) : '@'.$path);
+		$data = array('media' => class_exists('\CURLFile') ? new \CURLFile($path, Mimes::mime_by_ext(fileext($path))) : '@'.$path);
 		//原先的上传多媒体文件接口使用 self::UPLOAD_MEDIA_URL 前缀
 		$result = $this->http_post(self::API_URL_PREFIX.self::MEDIA_UPLOAD_URL.'access_token='.$this->access_token.'&type='.$type,$data,true);
 		if ($result)
