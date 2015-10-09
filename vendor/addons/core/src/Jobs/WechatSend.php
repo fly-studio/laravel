@@ -59,6 +59,9 @@ class WechatSend implements SelfHandling, ShouldQueue
 			$path = $this->media->create_link(NULL);
 			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext));
 			unlink($path);
+
+			if (empty($media_id)) return;
+			$media_id = $media_id['media_id'];
 			$data += ['msgtype' => $type, $type => ['media_id' => $media_id],];
 			switch ($type) {
 				case 'image':
