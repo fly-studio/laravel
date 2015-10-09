@@ -19,6 +19,7 @@ use Addons\Core\Models\WechatMessageText;
 use Addons\Core\Models\WechatMessageMedia;
 use Addons\Core\Models\WechatMessageLink;
 use Addons\Core\Models\WechatMessageLocation;
+use Addons\Core\File\Mimes;
 
 class WechatSend implements SelfHandling, ShouldQueue
 {
@@ -56,7 +57,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 			$type = $this->media->file_type();
 			$type == 'audio' && $type = 'voice';
 			$path = $this->media->full_path();
-			$media_id = $api->uploadMedia($path, $type);
+			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext);
 
 			$data += ['msgtype' => $type, $type => ['media_id' => $media_id],];
 			switch ($type) {
