@@ -57,7 +57,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 			$type = $this->media->file_type();
 			$type == 'audio' && $type = 'voice';
 			$path = $this->media->full_path();
-			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext);
+			$media_id = $api->uploadMedia($path, $type, Mimes::getInstance()->mime_by_ext($this->media->ext));
 
 			$data += ['msgtype' => $type, $type => ['media_id' => $media_id],];
 			switch ($type) {
