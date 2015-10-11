@@ -36,7 +36,12 @@ trait AdminTrait {
 				else if (in_array($method, ['like', 'like_binary', 'not_like'])) $value = '%'.$value.'%';
 				else if (in_array($method, ['left_like', 'left_like_binary', 'not_left_like'])) $value = $value.'%';
 				else if (in_array($method, ['right_like', 'right_like_binary', 'not_right_like'])) $value = '%'.$value;
-				$builder->where($key, $operators[$method] ?: '=' , $value);
+				if ($operators[$method] == 'in')
+					$builder->whereIn($key, $value);
+				else if ($operators[$method] == 'not in')
+					$builder->whereIn($key, $value);
+				else
+					$builder->where($key, $operators[$method] ?: '=' , $value);
 			});
 		});
 		return $filters;
@@ -96,6 +101,7 @@ trait AdminTrait {
 	{
 		$pagesize = $request->input('pagesize') ?: ($request->input('length') ?: config('site.pagesize.admin.'.$builder->getModel()->getTable(), $this->site['pagesize']['common']));
 		$page = $request->input('page') ?: (floor(($request->input('start') ?: 0) / $pagesize) + 1);
+		if ($request->input('all') == 'true') $pagesize = $builder->count(); //为保证数据格式,将pagesize设置为整表数量
 
 		$filters = $this->_doFilter($request, $builder);
 		$orders = $this->_doOrder($request, $builder);
