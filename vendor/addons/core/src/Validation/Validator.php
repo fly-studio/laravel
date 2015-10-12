@@ -246,6 +246,10 @@ class Validator extends BaseValidator {
 						$rule = 'regex';
 						$parameters = '/^[\pL\pM\pN_-]+$/u';
 						break;
+					//case 'date':
+					//	$rule = 'regex';
+					//	$parameters = '(1[1-9]\d{2}|20\d{2}|2100)-([0-1]?[1-9]|1[0-2])-([0-2]?[1-9]|3[0-1]|[1-2]0)(\s([0-1]?\d|2[0-3]):([0-5]?\d)(:([0-5]?\d))?)?';
+					//	break;
 					case 'before':
 					case 'different':
 					case 'exists':

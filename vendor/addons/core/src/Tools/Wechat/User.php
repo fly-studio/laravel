@@ -7,6 +7,7 @@ use Addons\Core\Models\Role as RoleModel;
 use Addons\Core\Models\Attachment as AttachmentModel;
 use Addons\Core\Models\WechatUser;
 use Cache;
+use Carbon\Carbon;
 class User {
 
 	private $api;
@@ -76,8 +77,8 @@ class User {
 					$v->update([
 						'nickname' => $wechat['nickname'], 
 						'gender' => $wechat['sex'],
-						'is_subscribe' => $wechat['subscribe'],
-						'subscribe_at' => $wechat['subscribe_time'],
+						'is_subscribed' => $wechat['subscribe'],
+						'subscribed_at' => Carbon::createFromTimestamp($wechat['subscribe_time']),
 						'country' => $wechat['country'],
 						'province' => $wechat['province'],
 						'city' => $wechat['city'],

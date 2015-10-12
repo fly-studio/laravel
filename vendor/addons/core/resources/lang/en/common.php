@@ -20,11 +20,11 @@ return [
 		],
 		'error' => [
 			'title' => 'Error!',
-			'content' => 'some errors.retry,please!',
+			'content' => 'something errors.retry,please!',
 		],
 		'failure' => [
 			'title' => 'Failure!',
-			'content' => 'some mistakes.retry,please!',
+			'content' => 'something mistakes.retry,please!',
 		],
 		'success_login' => [
 			'title' => 'Login successful!',
