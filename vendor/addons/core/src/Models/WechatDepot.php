@@ -27,32 +27,32 @@ class WechatDepot extends Model{
 
 	public function text()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotText', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotText', 'id', 'id');
 	}
 
 	public function image()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotImage', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotImage', 'id', 'id');
 	}
 
 	public function video()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotVideo', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotVideo', 'id', 'id');
 	}
 
 	public function audio()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotVoice', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotVoice', 'id', 'id');
 	}
 
 	public function music()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotMusic', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotMusic', 'id', 'id');
 	}
 
 	public function callback()
 	{
-		return $this->belongsTo(get_namespace($this).'\\WechatDepotCallback', 'id', 'id');
+		return $this->hasOne(get_namespace($this).'\\WechatDepotCallback', 'id', 'id');
 	}
 
 }
