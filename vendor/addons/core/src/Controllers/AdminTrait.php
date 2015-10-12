@@ -9,7 +9,26 @@ trait AdminTrait {
 
 	private function _getColumns(Builder $builder)
 	{
-		//$builder->getConnection()->getDoctrineSchemaManager()->listTableColumns('table')
+		static $table_columns;
+		
+		$query = $builder->getQuery();
+		$tables = [$query->from];
+		if (!empty($query->joins))
+			foreach ($query->joins as $v)
+				$tables[] = $v->table;
+		
+		$_columns = [];
+		foreach ($tables as &$v)
+		{
+			list($table, $alias) = strpos(strtolower($v), ' as ') !== false ? explode(' as ', $v) : [$v, $v];
+
+			if (!isset($table_columns[$table]))
+				$table_columns[$table] = $query->getConnection()->getDoctrineSchemaManager()->listTableColumns($table);
+			
+			foreach ($table_columns[$table] as $key => $value)
+				$_columns[$key] = isset($_columns[$key]) ? $_columns[$key] : $alias.'.'.$key;
+		}
+		return $_columns;
 	}
 
 	/**
@@ -20,7 +39,7 @@ trait AdminTrait {
 	 * @param  Builder $builder 
 	 * @return array           返回筛选(搜索)的参数
 	 */
-	private function _doFilter(Request $request, Builder $builder)
+	private function _doFilter(Request $request, Builder $builder, $columns = [])
 	{
 		$filters = $this->_getFilters($request, $builder);
 		$operators = [
@@ -30,7 +49,8 @@ trait AdminTrait {
 			'regexp' => 'regexp', 'not_regexp' => 'not regexp', 'similar_to' => 'similar to', 'not_similar_to' => 'not similar to',
 		];
 
-		array_walk($filters, function($v, $key) use ($builder, $operators) {
+		array_walk($filters, function($v, $key) use ($builder, $operators, $columns) {
+			$key = $columns[$key] ?: $key;
 			array_walk($v, function($value, $method) use ($builder, $key, $operators){
 				if (empty($value) && $value !== '0') return; //''不做匹配
 				else if (in_array($method, ['like', 'like_binary', 'not_like'])) $value = '%'.$value.'%';
@@ -47,11 +67,11 @@ trait AdminTrait {
 		return $filters;
 	}
 
-	private function _doOrder(Request $request, Builder $builder)
+	private function _doOrder(Request $request, Builder $builder, $columns = [])
 	{
 		$orders = $this->_getOrders($request, $builder);
 		foreach ($orders as $k => $v)
-			$builder->orderBy($k, $v);
+			$builder->orderBy($columns[$k] ?: $k, $v);
 		return $orders;
 	}
 	/**
@@ -103,8 +123,9 @@ trait AdminTrait {
 		$page = $request->input('page') ?: (floor(($request->input('start') ?: 0) / $pagesize) + 1);
 		if ($request->input('all') == 'true') $pagesize = $builder->count(); //为保证数据格式,将pagesize设置为整表数量
 
-		$filters = $this->_doFilter($request, $builder);
-		$orders = $this->_doOrder($request, $builder);
+		$columns = $this->_getColumns($builder);
+		$filters = $this->_doFilter($request, $builder, $columns);
+		$orders = $this->_doOrder($request, $builder, $columns);
 
 		$paginate = $builder->paginate($pagesize, $columns, 'page', $page);
 
