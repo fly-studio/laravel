@@ -105,7 +105,17 @@ class PHP_Token_ClassTest extends PHPUnit_Framework_TestCase
         $classes = $ts->getClasses();
 
         $this->assertEquals(array('Test'), array_keys($classes));
-        $this->assertEquals(array('bar', 'baz'), array_keys($classes['Test']['methods']));
+        $this->assertEquals(array('methodOne', 'methodTwo'), array_keys($classes['Test']['methods']));
+
+        $this->assertEmpty($ts->getFunctions());
+    }
+
+    /**
+     * @requires PHP 5.6
+     */
+    public function testImportedFunctionsAreHandledCorrectly()
+    {
+        $ts = new PHP_Token_Stream(TEST_FILES_PATH . 'classUsesNamespacedFunction.php');
 
         $this->assertEmpty($ts->getFunctions());
     }

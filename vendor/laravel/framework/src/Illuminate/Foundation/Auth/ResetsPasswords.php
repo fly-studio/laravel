@@ -50,7 +50,7 @@ trait ResetsPasswords
      */
     protected function getEmailSubject()
     {
-        return isset($this->subject) ? $this->subject : 'Your Password Reset Link';
+        return property_exists($this, 'subject') ? $this->subject : 'Your Password Reset Link';
     }
 
     /**
@@ -92,7 +92,7 @@ trait ResetsPasswords
 
         switch ($response) {
             case Password::PASSWORD_RESET:
-                return redirect($this->redirectPath());
+                return redirect($this->redirectPath())->with('status', trans($response));
 
             default:
                 return redirect()->back()

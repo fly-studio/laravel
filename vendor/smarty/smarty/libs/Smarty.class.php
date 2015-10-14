@@ -94,6 +94,7 @@ if (!class_exists('Smarty_Internal_Data', false)) {
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_internal_templatebase.php';
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_internal_template.php';
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_resource.php';
+require_once SMARTY_SYSPLUGINS_DIR . 'smarty_internal_resource_file.php';
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_variable.php';
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_template_source.php';
 require_once SMARTY_SYSPLUGINS_DIR . 'smarty_template_resource_base.php';
@@ -118,7 +119,7 @@ class Smarty extends Smarty_Internal_TemplateBase
     /**
      * smarty version
      */
-    const SMARTY_VERSION = '3.1.28-dev/48';
+    const SMARTY_VERSION = '3.1.28-dev/63';
 
     /**
      * define variable scopes
@@ -207,7 +208,7 @@ class Smarty extends Smarty_Internal_TemplateBase
 
     const RESOURCE_CACHE_TEMPLATE = 2; // cache all template objects
 
-    const RESOURCE_CACHE_ON = 4;    // cache source nad compiled resources
+    const RESOURCE_CACHE_ON = 4;    // cache source and compiled resources
 
     /**#@-*/
 
@@ -381,13 +382,6 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @var boolean
      */
     public $merge_compiled_includes = false;
-
-    /**
-     * template inheritance merge compiled includes
-     *
-     * @var boolean
-     */
-    public $inheritance_merge_compiled_includes = true;
 
     /**
      * force cache file creation
@@ -646,7 +640,7 @@ class Smarty extends Smarty_Internal_TemplateBase
      * @var int
      */
     public $start_time = 0;
-    
+
     /**
      * required by the compiler for BC
      *
@@ -680,14 +674,13 @@ class Smarty extends Smarty_Internal_TemplateBase
      *
      * @var array
      */
-    public $obsoleteProperties = array('resource_caching', 'template_resource_caching', 'direct_access_security' , '_dir_perms', '_file_perms', 'plugin_search_order');
+    private static $obsoleteProperties = array('resource_caching', 'template_resource_caching',
+                                               'direct_access_security', '_dir_perms', '_file_perms',
+                                               'plugin_search_order', 'inheritance_merge_compiled_includes');
 
-    /**
-     * Extension object cache
-     *
-     * @var array
-     */
-    public static $extObjCache = array();
+    private static $accessMap = array('template_dir' => 'getTemplateDir', 'config_dir' => 'getConfigDir',
+                                      'plugins_dir'  => 'getPluginsDir', 'compile_dir' => 'getCompileDir',
+                                      'cache_dir'    => 'getCacheDir',);
 
     /**#@-*/
 
@@ -1072,15 +1065,14 @@ class Smarty extends Smarty_Internal_TemplateBase
         } else {
             $data = null;
         }
-        $_templateId = $this->_getTemplateId($template, $cache_id, $compile_id);
-        if (isset($this->_cache['isCached'][$_templateId])) {
-            $tpl = $do_clone  ? clone $this->_cache['isCached'][$_templateId] : $this->_cache['isCached'][$_templateId];
+        if ($this->caching && isset($this->_cache['isCached'][$_templateId = $this->_getTemplateId($template, $cache_id, $compile_id)])) {
+            $tpl = $do_clone ? clone $this->_cache['isCached'][$_templateId] : $this->_cache['isCached'][$_templateId];
             $tpl->parent = $parent;
             $tpl->tpl_vars = array();
             $tpl->config_vars = array();
         } else {
             /* @var Smarty_Internal_Template $tpl */
-            $tpl = new $this->template_class($template, $this, $parent, $cache_id, $compile_id, null, null, $_templateId);
+            $tpl = new $this->template_class($template, $this, $parent, $cache_id, $compile_id, null, null);
         }
         if ($do_clone) {
             $tpl->smarty = clone $tpl->smarty;
@@ -1329,13 +1321,10 @@ class Smarty extends Smarty_Internal_TemplateBase
      */
     public function __get($name)
     {
-        $allowed = array('template_dir' => 'getTemplateDir', 'config_dir' => 'getConfigDir',
-                         'plugins_dir'  => 'getPluginsDir', 'compile_dir' => 'getCompileDir',
-                         'cache_dir'    => 'getCacheDir',);
 
-        if (isset($allowed[$name])) {
-            return $this->{$allowed[$name]}();
-        } elseif (in_array($name, $this->obsoleteProperties)) {
+        if (isset(self::$accessMap[$name])) {
+            return $this->{self::$accessMap[$name]}();
+        } elseif (in_array($name, self::$obsoleteProperties)) {
             return null;
         } else {
             trigger_error('Undefined property: ' . get_class($this) . '::$' . $name, E_USER_NOTICE);
@@ -1352,13 +1341,9 @@ class Smarty extends Smarty_Internal_TemplateBase
      */
     public function __set($name, $value)
     {
-        $allowed = array('template_dir' => 'setTemplateDir', 'config_dir' => 'setConfigDir',
-                         'plugins_dir'  => 'setPluginsDir', 'compile_dir' => 'setCompileDir',
-                         'cache_dir'    => 'setCacheDir',);
-
-        if (isset($allowed[$name])) {
-            $this->{$allowed[$name]}($value);
-        } elseif (in_array($name, $this->obsoleteProperties)) {
+        if (isset(self::$accessMap[$name])) {
+            $this->{self::$accessMap[$name]}($value);
+        } elseif (in_array($name, self::$obsoleteProperties)) {
             return;
         } else {
             if (is_object($value) && method_exists($value, $name)) {

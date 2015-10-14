@@ -108,7 +108,7 @@ trait EntrustUserTrait
             foreach ($this->roles as $role) {
                 // Validate against the Permission table
                 foreach ($role->perms as $perm) {
-                    if ($perm->name == $permission) {
+                    if (str_is( $permission, $perm->name) ) {
                         return true;
                     }
                 }
@@ -241,8 +241,10 @@ trait EntrustUserTrait
      *
      * @param mixed $roles
      */
-    public function detachRoles($roles)
+    public function detachRoles($roles=null)
     {
+        if (!$roles) $roles = $this->roles()->get();
+        
         foreach ($roles as $role) {
             $this->detachRole($role);
         }

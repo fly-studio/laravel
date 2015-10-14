@@ -175,8 +175,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
                 if ($_content != '') {
                     // run pre filter if required
                     if ((isset($nextCompiler->smarty->autoload_filters['pre']) ||
-                            isset($nextCompiler->smarty->registered_filters['pre'])) && !$nextCompiler->suppressFilter
-                    ) {
+                            isset($nextCompiler->smarty->registered_filters['pre']))) {
                         $_content = Smarty_Internal_Filter_Handler::runFilter('pre', $_content, $nextCompiler->template);
                     }
                     $this->matchProperty($_content);
@@ -192,20 +191,7 @@ class Smarty_Internal_Compile_Private_ForeachSection extends Smarty_Internal_Com
      */
     public function matchBlockSource(Smarty_Internal_TemplateCompilerBase $compiler)
     {
-        foreach ($compiler->template->block_data as $b) {
-            if (isset($b['source'])) {
-                $this->matchProperty($b['source']);
-            }
-        }
-        if (class_exists('Smarty_Internal_Compile_Block', false)) {
-            foreach (Smarty_Internal_Compile_Block::$block_data as $b) {
-                if (isset($b['source'])) {
-                    $this->matchProperty($b['source']);
-                }
-            }
-        }
 
-        $this->matchProperty($compiler->parser->lex->data);
     }
 
     /**

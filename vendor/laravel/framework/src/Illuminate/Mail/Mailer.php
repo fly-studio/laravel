@@ -83,13 +83,6 @@ class Mailer implements MailerContract, MailQueueContract
     protected $failedRecipients = [];
 
     /**
-     * Array of parsed views containing html and text view name.
-     *
-     * @var array
-     */
-    protected $parsedViews = [];
-
-    /**
      * Create a new Mailer instance.
      *
      * @param  \Illuminate\Contracts\View\Factory  $views
@@ -339,11 +332,15 @@ class Mailer implements MailerContract, MailQueueContract
         }
 
         if (isset($plain)) {
-            $message->addPart($this->getView($plain, $data), 'text/plain');
+            $method = isset($view) ? 'addPart' : 'setBody';
+
+            $message->$method($this->getView($plain, $data), 'text/plain');
         }
 
         if (isset($raw)) {
-            $message->addPart($raw, 'text/plain');
+            $method = (isset($view) || isset($plain)) ? 'addPart' : 'setBody';
+
+            $message->$method($raw, 'text/plain');
         }
     }
 

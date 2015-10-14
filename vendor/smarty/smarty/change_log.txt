@@ -1,4 +1,30 @@
 ﻿ ===== 3.1.28-dev===== (xx.xx.2015)
+ 18.09.2015
+  - bugfix {if $foo instanceof $bar} failed to compile if 2nd value is a variable https://github.com/smarty-php/smarty/issues/92
+  
+ 17.09.2015
+  - bugfix {foreach} first attribute was not correctly reset since commit 05a8fa2 of 02.08.2015 https://github.com/smarty-php/smarty/issues/90
+
+ 16.09.2015
+  - update compiler by moving no longer needed properties, code optimizations and other
+
+ 14.09.2015
+  - optimize autoloader
+  - optimize subtemplate handling
+  - update template inheritance processing
+  - move code of {call} processing back into Smarty_Internal_Template class
+  - improvement invalidate OPCACHE for cleared compiled and cached template files (forum topic 25557)
+  - bugfix unintended multiple debug windows (forum topic 25699)
+  
+ 30.08.2015
+  - size optimization move some runtime functions into extension
+  - optimize inline template processing
+  - optimization merge inheritance child and parent templates into one compiled template file
+
+ 29.08.2015
+  - improvement convert template inheritance into runtime processing
+  - bugfix {$smarty.block.parent} did always reference the root parent block https://github.com/smarty-php/smarty/issues/68
+
  23.08.2015
   - introduce Smarty::$resource_cache_mode and cache template object of {include} inside loop
   - load seldom used Smarty API methods dynamically to reduce memory footprint
@@ -315,8 +341,8 @@
  - bugfix Debug Console did not include all data from merged compiled subtemplates
 
  04.11.2014
- - new feature $smarty->debug = true; => overwrite existing Debug Console window (old behaviour)
-               $smarty->debug = 2; => individual Debug Console window by template name
+ - new feature $smarty->debugging = true; => overwrite existing Debug Console window (old behaviour)
+               $smarty->debugging = 2; => individual Debug Console window by template name
  
  03.11.2014
  - bugfix Debug Console did not show included subtemplates since 3.1.17 (forum 25301)

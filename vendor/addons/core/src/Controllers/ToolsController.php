@@ -31,6 +31,17 @@ class ToolsController extends Controller {
 			rename($newfile, $value.'/.gitignore');
 		}
 
+		$compiledPath = app()->getCachedCompilePath();
+        $servicesPath = app()->getCachedServicesPath();
+
+        if (file_exists($compiledPath)) {
+            @unlink($compiledPath);
+        }
+
+        if (file_exists($servicesPath)) {
+            @unlink($servicesPath);
+        }
+
 		return $this->success(array('title' => '清理成功', 'content' => '缓存清理成功'), FALSE);
 	}
 

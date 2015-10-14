@@ -17,7 +17,7 @@ class Controller extends BaseController {
 	public $site;
 	public $fields;
 	public $user;
-	public $roles;
+	//public $roles;
 
 	private $viewData = [];
 
@@ -41,11 +41,11 @@ class Controller extends BaseController {
 
 	private function initMember()
 	{
-		$this->viewData['_user'] = Auth::check() ? Auth::User()->toArray() : ['id' => 0];
-		$this->viewData['_roles'] = (new Role)->getRoles();
+		$this->viewData['_user'] = Auth::check() ? Auth::User() : new \App\User;
+		//$this->viewData['_roles'] = (new Role)->getRoles();
 
 		$this->user = & $this->viewData['_user'];
-		$this->roles = & $this->viewData['_roles'];
+		//$this->roles = & $this->viewData['_roles'];
 	}
 
 	protected function subtitle($title, $url = NULL, $target = '_self')
@@ -76,7 +76,6 @@ class Controller extends BaseController {
 
 	protected function view($filename, $data = [])
 	{
-		$_user = array_delete_selector($this->user, 'password,remember_token');
 		$this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
 		
 		return view($filename, $data)->with($this->viewData);
@@ -98,27 +97,27 @@ class Controller extends BaseController {
 		return $response;
 	}
 
-	protected function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
+	public function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
 		return $this->_make_output('error', $message_name, $url, $data, $export_data);
 	}
 
-	protected function success($message_name = NULL, $url = TRUE, array $data = [], $export_data = TRUE)
+	public function success($message_name = NULL, $url = TRUE, array $data = [], $export_data = TRUE)
 	{
 		return $this->_make_output('success', $message_name, $url, $data, $export_data);
 	}
 
-	protected function failure($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
+	public function failure($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
 	{
 		return $this->_make_output('failure', $message_name, $url, $data, $export_data);
 	}
 
-	protected function warning($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
+	public function warning($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
 	{
 		return $this->_make_output('warning', $message_name, $url, $data, $export_data);
 	}
 
-	protected function notice($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
+	public function notice($message_name = NULL, $url = FALSE, array $data = [],$export_data = FALSE)
 	{
 		return $this->_make_output('notice', $message_name, $url, $data, $export_data);
 	}
