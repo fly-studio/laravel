@@ -151,15 +151,15 @@ class Validator extends BaseValidator {
 				switch ($rule) { // 1
 					case 'alpha':
 						$rule = 'regex';
-						$parameters = '/^[\pL\pM]+$/u';
+						$parameters = '/^[\w]+$/i';
 						break;
 					case 'alphadash':
 						$rule = 'regex';
-						$parameters = '/^[\pL\pM\pN_-]+$/u';
+						$parameters = '/^[\w_-]+$/i';
 						break;
 					case 'alpha_num':
 						$rule = 'regex';
-						$parameters = '/^[\pL\pM\pN]+$/u';
+						$parameters = '/^[\w\d]+$/i';
 						break;
 					case 'ansi':
 						$parameters = $parameters === true ? 2 : $parameters;

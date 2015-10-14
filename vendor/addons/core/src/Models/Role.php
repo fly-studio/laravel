@@ -29,7 +29,7 @@ class Role extends Model implements EntrustRoleInterface
 	const WECHATER = 'wechater';
 
 	//不能批量赋值
-	protected $guarded = [];
+	public $guarded = [];
 
 	 /**
      * The database table used by the model.
