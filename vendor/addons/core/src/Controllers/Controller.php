@@ -54,19 +54,20 @@ class Controller extends BaseController {
 		foreach($this->permissions as $k => $v)
 		{
 			foreach(explode(',', $k) as $key)
-				$_permissions[$key] = $v;
+				$_permissions[strtolower($key)] = $v;
 		}
-		if (!empty($RESTful_permission))
+		$rest = $this->RESTful_permission;
+		if (!empty($rest))
 		{
 			$_permissions += [
-				'index' => $RESTful_permission.'.view',
-				'show' => $RESTful_permission.'.view',
-				'export' => $RESTful_permission.'.export',
-				'edit' => $RESTful_permission.'.edit',
-				'update' => $RESTful_permission.'.edit',
-				'create' => $RESTful_permission.'.create',
-				'store' => $RESTful_permission.'.create',
-				'destory' => $RESTful_permission.'.destory',
+				'index' => $rest.'.view',
+				'show' => $rest.'.view',
+				'export' => $rest.'.export',
+				'edit' => $rest.'.edit',
+				'update' => $rest.'.edit',
+				'create' => $rest.'.create',
+				'store' => $rest.'.create',
+				'destory' => $rest.'.destory',
 			];
 		}
 		$this->permissions = $_permissions;
@@ -245,12 +246,12 @@ class Controller extends BaseController {
 		
 		if (!in_array($of, ['js', 'json', 'jsonp', 'xml', 'txt', 'text', 'csv', 'xls', 'xlsx', 'yaml', 'html', 'pdf' ]))
 		{
-			if ($request->ajax()) //自动切换ajax提交为json数据
+			if ($request->ajax()) //自动切换ajax状态下of为json
 				$of = empty($jsonp) ? 'json' : 'jsonp';
 			else
 				$of = 'html';
 		}
-		if (in_array($of, ['yaml', 'csv', 'xls', 'xlsx', 'pdf']))
+		if (in_array($of, ['csv', 'xls', 'xlsx', 'pdf']))
 		{
 			$filename = Output::$of($data['data']);
 			return response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
@@ -262,12 +263,18 @@ class Controller extends BaseController {
 
 	private function checkPermission($method)
 	{
+		$method = strtolower($method);
 		!isset($this->permissions[$method]) && $method = '*';
 		return array_key_exists($method, $this->permissions) ? $this->user->can($this->permissions[$method], true) : true;
 	}
 
 	public function callAction($method, $parameters)
 	{
-		return !$this->checkPermission($method) ? $this->failure('auth.failure_permission') : call_user_func_array([$this, $method], $parameters);
+		if( !$this->checkPermission($method) )
+		{
+			in_array(app('request')->input('of'), ['csv', 'xls', 'xlsx', 'pdf']) && app('request')->offsetSet('of', '');
+			return $this->failure('auth.failure_permission');
+		}
+		return call_user_func_array([$this, $method], $parameters);
 	}
 }
