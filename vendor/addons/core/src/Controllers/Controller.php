@@ -6,13 +6,11 @@ use Addons\Core\Models\Role;
 use Addons\Core\Models\Field;
 use Addons\Core\Output;
 use Addons\Core\File\Mimes;
-//Trait
-use Addons\Core\Controllers\OutputTrait;
+
 //Facades
 use Auth, Lang;
 
 class Controller extends BaseController {
-	use OutputTrait;
 
 	/**
 	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
