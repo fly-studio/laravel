@@ -16,13 +16,20 @@ class Controller extends BaseController {
 
 	/**
 	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
-	 * @example  ['index,show,data' => 'view_member', 'edit,update,create,store' => 'edit_member', 'destory' => 'delete_member']
-	 * @example  ['*' => 'view_member', 'edit,update,create,store' => 'edit_member', 'destory' => 'delete_member'] 此配置同上，* 代表所有未配置的函数名
-	 * @example  ['*' => ['view_admin', 'view_dashborad']] * 代表所有未配置的函数名，此例也就是代表所有函数，权限可为数组
+	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete']
+	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete'] 此配置同上，* 代表所有未配置的函数名
+	 * @example  ['*' => ['member.view', 'dashborad.view']] * 代表所有未配置的函数名，此例也就是代表所有函数，其中权限可为数组
 	 *  
 	 * @var array
 	 */
 	public $permissions = [];
+	/**
+	 * 设置本名称后，将自动为本名称加上一个通用的权限
+	 * 查看 initPermissions
+	 * 
+	 * @var string
+	 */
+	public $RESTful_permission = NULL;
 
 	public $site;
 	public $fields;
@@ -48,6 +55,19 @@ class Controller extends BaseController {
 		{
 			foreach(explode(',', $k) as $key)
 				$_permissions[$key] = $v;
+		}
+		if (!empty($RESTful_permission))
+		{
+			$_permissions += [
+				'index' => $RESTful_permission.'.view',
+				'show' => $RESTful_permission.'.view',
+				'export' => $RESTful_permission.'.export',
+				'edit' => $RESTful_permission.'.edit',
+				'update' => $RESTful_permission.'.edit',
+				'create' => $RESTful_permission.'.create',
+				'store' => $RESTful_permission.'.create',
+				'destory' => $RESTful_permission.'.destory',
+			];
 		}
 		$this->permissions = $_permissions;
 	}
