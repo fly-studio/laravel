@@ -14,6 +14,16 @@ use Auth, Lang;
 class Controller extends BaseController {
 	use OutputTrait;
 
+	/**
+	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
+	 * @example  ['index,show,data' => 'view_member', 'edit,update,create,store' => 'edit_member', 'destory' => 'delete_member']
+	 * @example  ['*' => 'view_member', 'edit,update,create,store' => 'edit_member', 'destory' => 'delete_member'] 此配置同上，* 代表所有未配置的函数名
+	 * @example  ['*' => ['view_admin', 'view_dashborad']] * 代表所有未配置的函数名，此例也就是代表所有函数，权限可为数组
+	 *  
+	 * @var array
+	 */
+	public $permissions = [];
+
 	public $site;
 	public $fields;
 	public $user;
@@ -23,10 +33,23 @@ class Controller extends BaseController {
 
 	public function __construct()
 	{
-		$this->beforeFilter('csrf', ['on' => 'post']);
+		//$this->beforeFilter('csrf', ['on' => 'post']);
 		/*Init*/
 		$this->initCommon();
 		$this->initMember();
+		$this->initPermissions();
+
+	}
+
+	private function initPermissions()
+	{
+		$_permissions = [];
+		foreach($this->permissions as $k => $v)
+		{
+			foreach(explode(',', $k) as $key)
+				$_permissions[$key] = $v;
+		}
+		$this->permissions = $_permissions;
 	}
 
 	private function initCommon()
@@ -215,5 +238,16 @@ class Controller extends BaseController {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
 			return $this->response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
+	}
+
+	private function checkPermission($method)
+	{
+		!isset($this->permissions[$method]) && $method = '*';
+		return array_key_exists($method, $this->permissions) ? $this->user->can($this->permissions[$method], true) : true;
+	}
+
+	public function callAction($method, $parameters)
+	{
+		return !$this->checkPermission($method) ? $this->failure('auth.failure_permission') : call_user_func_array([$this, $method], $parameters);
 	}
 }

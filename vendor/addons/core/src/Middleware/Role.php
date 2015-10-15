@@ -12,7 +12,7 @@ namespace Addons\Core\Middleware;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class EntrustRole
+class Role
 {
 	protected $auth;
 
