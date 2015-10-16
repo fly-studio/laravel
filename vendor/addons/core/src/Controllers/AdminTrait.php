@@ -121,11 +121,11 @@ trait AdminTrait {
 	{
 		$pagesize = $request->input('pagesize') ?: ($request->input('length') ?: config('site.pagesize.admin.'.$builder->getModel()->getTable(), $this->site['pagesize']['common']));
 		$page = $request->input('page') ?: (floor(($request->input('start') ?: 0) / $pagesize) + 1);
-		if ($request->input('all') == 'true') $pagesize = $builder->count(); //为保证数据格式,将pagesize设置为整表数量
+		if ($request->input('all') == 'true') $pagesize = $builder->count(); //为统一使用paginate输出数据格式,这里需要将pagesize设置为整表数量
 
-		$columns = $this->_getColumns($builder);
-		$filters = $this->_doFilter($request, $builder, $columns);
-		$orders = $this->_doOrder($request, $builder, $columns);
+		$tables_columns = $this->_getColumns($builder);
+		$filters = $this->_doFilter($request, $builder, $tables_columns);
+		$orders = $this->_doOrder($request, $builder, $tables_columns);
 
 		$paginate = $builder->paginate($pagesize, $columns, 'page', $page);
 
@@ -139,7 +139,7 @@ trait AdminTrait {
 
 	private function _getData(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*'])
 	{
-		$data = $this->_getPaginate($request, $builder);
+		$data = $this->_getPaginate($request, $builder, $columns);
 
 		if (!empty($callback) && is_callable($callback))
 			foreach ($data as $key => $value)
@@ -153,7 +153,7 @@ trait AdminTrait {
 		set_time_limit(600); //10min
 
 		$pagesize = $request->input('pagesize') ?: config('site.pagesize.export', 1000);
-		$data = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($pagesize)->toArray();
+		$data = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($pagesize, $columns)->toArray();
 		!empty($callback) && is_callable($callback) && array_walk($data['data'], $callback);
 		!empty($data['data']) && is_assoc($data['data'][0]) && array_unshift($data['data'], array_keys($data['data'][0]));
 		array_unshift($data['data'], [$builder->getModel()->getTable(), $data['from']. '-'. $data['to'].'/'. $data['total'], date('Y-m-d h:i:s')]);
