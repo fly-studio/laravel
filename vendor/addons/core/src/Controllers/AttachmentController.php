@@ -108,7 +108,7 @@ class AttachmentController extends Controller {
 			return $this->failure('attachment.failure_noexists')->setStatusCode(404);
 		
 
-		if ($attachment->file_type() == 'image')
+		if ($attachment->file_type() != 'image')
 			return $this->failure('attachment.failure_resize');
 
 

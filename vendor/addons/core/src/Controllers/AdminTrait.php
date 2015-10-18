@@ -121,7 +121,7 @@ trait AdminTrait {
 	{
 		$pagesize = $request->input('pagesize') ?: ($request->input('length') ?: config('site.pagesize.admin.'.$builder->getModel()->getTable(), $this->site['pagesize']['common']));
 		$page = $request->input('page') ?: (floor(($request->input('start') ?: 0) / $pagesize) + 1);
-		if ($request->input('all') == 'true') $pagesize = $builder->count(); //为统一使用paginate输出数据格式,这里需要将pagesize设置为整表数量
+		if ($request->input('all') == 'true') $pagesize = 10000;//$builder->count(); //为统一使用paginate输出数据格式,这里需要将pagesize设置为整表数量
 
 		$tables_columns = $this->_getColumns($builder);
 		$filters = $this->_doFilter($request, $builder, $tables_columns);

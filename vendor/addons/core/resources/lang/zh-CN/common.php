@@ -87,13 +87,9 @@ return [
 			'title' => '资料不存在',
 			'content' => '您要查找的资料不存在！',
 		],
-		'failure_edit_other' => [
-			'title' => '修改越权',
-			'content' => '您要修改的资料不属于您，请勿越权！',
-		],
-		'failure_view_other' => [
-			'title' => '查看越权',
-			'content' => '您无法查看别人的资料！',
+		'failure_owner' => [
+			'title' => '越权',
+			'content' => '您无法查看或修改他人的资料！',
 		],
 	],
 	'attachment' => [

@@ -34,7 +34,7 @@ class Controller extends BaseController {
 	public $user;
 	//public $roles;
 
-	private $viewData = [];
+	protected $viewData = [];
 
 	public function __construct()
 	{
@@ -205,6 +205,11 @@ class Controller extends BaseController {
 	protected function failure_noexists($url = FALSE, array $data = [], $export_data = FALSE)
 	{
 		return $this->failure('document.failure_noexist', $url, $data, $export_data);
+	}
+
+	protected function failure_owner($url = FALSE, array $data = [], $export_data = FALSE)
+	{
+		return $this->failure('document.failure_owner', $url, $data, $export_data);
 	}
 
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
