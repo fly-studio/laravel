@@ -242,11 +242,11 @@ class AttachmentController extends Controller {
 		return $this->output($data);
 	}
 
-	public function ueditorUploadQuery($action, $start = 0, $size = NULL)
+	public function ueditorUploadQuery(Request $request, $start = 0, $size = NULL)
 	{
 		$data = array();
 		$_config = config('attachment');
-
+		$action = $request->input('action');
 		$page = !empty($size) ? ceil($start / $size) : 1;
 		$pagesize = $size;
 		switch ($action) {
