@@ -207,11 +207,16 @@ class API
 	const SHAKEAROUND_STATISTICS_DEVICE = '/shakearound/statistics/device?';//以设备为维度的数据统计接口
 	const SHAKEAROUND_STATISTICS_PAGE = '/shakearound/statistics/page?';//以页面为维度的数据统计接口
 	public $waid;
-	private $token;
-	private $encodingAesKey;
+	public $token;
+	public $encodingAesKey;
 	private $encrypt_type;
 	public $appid;
-	private $appsecret;
+	public $appsecret; //公众帐号secert（仅JSAPI支付的时候需要配置， 登录公众平台，进入开发者中心可设置） 获取地址：https://mp.weixin.qq.com/advanced/advanced?action=dev&t=advanced/dev&token=2005451881&lang=zh_CN
+	public $mchid; //商户ID
+	public $mchkey; //商户支付密钥，参考开户邮件设置（必须配置，登录商户平台自行设置） 设置地址：https://pay.weixin.qq.com/index.php/account/api_cert
+	public $sub_mch_id; //子商户号 受理机构必须提供子商户号
+	public $sslcert_path; //证书路径,注意应该填写绝对路径（仅退款、撤销订单时需要，可登录商户平台下载，
+	public $sslkey_path; //API证书下载地址：https://pay.weixin.qq.com/index.php/account/api_cert，下载之前需要安装商户操作证书
 	private $access_token;
 	private $jsapi_ticket;
 	//private $user_token;
@@ -235,12 +240,18 @@ class API
 	public function setConfig($options, $waid)
 	{
 		$this->waid = $waid;
-		$this->token = isset($options['token'])?$options['token']:'';
-		$this->encodingAesKey = isset($options['encodingaeskey'])?$options['encodingaeskey']:'';
-		$this->appid = isset($options['appid'])?$options['appid']:'';
-		$this->appsecret = isset($options['appsecret'])?$options['appsecret']:'';
-		$this->debug = isset($options['debug'])?$options['debug']:false;
-		$this->logcallback = isset($options['logcallback'])?$options['logcallback']:false;
+		$this->token = $options['token'] ?: '';
+		$this->encodingAesKey = $options['encodingaeskey'] ?: '';
+		$this->appid = $options['appid'] ?: '';
+		$this->appsecret = $options['appsecret'] ?: '';
+		$this->debug = @$options['debug'] ?: false;
+		$this->logcallback = @$options['logcallback'] ?: false;
+		//支付信息
+		$this->mchid = $options['mchid'] ?: '';
+		$this->mchkey = $options['mchkey'] ?: '';
+		$this->sub_mch_id = $options['sub_mch_id'] ?: '';
+		$this->sslcert_path = @$options['sslcert_path'] ?: app_path('certs/'.$this->appid.'/apiclient_cert.pem');
+		$this->sslkey_path = @$options['sslkey_path'] ?: app_path('certs/'.$this->appid.'/apiclient_key.pem');
 	}
 
 	/**
