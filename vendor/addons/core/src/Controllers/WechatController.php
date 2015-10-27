@@ -158,13 +158,13 @@ abstract class WechatController extends Controller {
 
 		$pay = new WechatPayTool($api);
 		$result = $pay->notify(function($result, &$message) use ($account){
-			if ($result['reture_code'] == 'SUCCESS')
+			if ($result['return_code'] == 'SUCCESS')
 			{
 				$wechatUser = WechatUser::where('openid', $result['openid'])->firstOrFail();
 				$result = array_only($result, ['return_code','return_msg','mch_id','device_info','result_code','err_code','err_code_des','trade_type','bank_type','total_fee','fee_type','cash_fee','cash_fee_type','coupon_fee','coupon_count','transaction_id','out_trade_no','attach','time_end']);
 				WechatBill::create($result + ['waid' => $account->getKey(), 'wuid' => $wechatUser->getKey()]);
 			} else
-				WechatBill::create(['reture_code' => $result['reture_code'], 'return_msg' => $result['return_msg'], 'waid' => $account->getKey()]);
+				WechatBill::create(['return_code' => $result['return_code'], 'return_msg' => $result['return_msg'], 'waid' => $account->getKey()]);
 			return true;
 		});
 		return $result;
