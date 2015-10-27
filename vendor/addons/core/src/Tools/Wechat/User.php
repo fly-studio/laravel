@@ -86,8 +86,8 @@ class User {
 						'province' => $wechat['province'],
 						'city' => $wechat['city'],
 						'language' => $wechat['language'],
-						'remark' => $wechat['remark'],
-						'groupid' => $wechat['groupid'],
+						'remark' => !empty($wechat['remark']) ? $wechat['remark'] : NULL,//没有打开开发者模式 无此字段
+						'groupid' => !empty($wechat['groupid']) ? $wechat['groupid'] : NULL,//没有打开开发者模式 无此字段
 						'avatar_aid' => $wechat['avatar_aid'],
 					]);
 				
