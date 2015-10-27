@@ -17,7 +17,7 @@ class User {
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
 	}
 
-	public function getWechat()
+	public function getAPI()
 	{
 		return $this->api;
 	}
@@ -96,10 +96,10 @@ class User {
 	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $update_expired = 1440)
 	{		
 		$user = !empty($wechatUser->uid) ? UserModel::find($wechatUser->uid) : (new UserModel)->get($wechatUser->unionid);
-		empty($user) && $user = UserModel::create([
+		empty($user) && $user = (new UserModel)->add([
 			'username' => $wechatUser->unionid,
 			'password' => (new UserModel)->auto_password($wechatUser->unionid),
-		])->attachRole(RoleModel::where('name', $role_name)->firstOrFail());
+		], $role_name);
 
 		$wechatUser->update(['uid' => $user->getKey()]);
 

@@ -12,14 +12,14 @@ class Js {
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
 	}
 
-	public function getWechat()
+	public function getAPI()
 	{
 		return $this->api;
 	}
 
 	public function getConfig($url = NULL)
 	{
-		empty($url) && $url = app('url')->current();
+		empty($url) && $url = app('url')->full();
 		return $this->api->getJsSign($url, NULL, NULL, $this->api->appid);
 	}
 

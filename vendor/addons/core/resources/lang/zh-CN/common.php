@@ -162,4 +162,10 @@ return [
 			'content' => '服务器无响应，无法下载此URL。',
 		],
 	],
+	'wechat' => [
+		'failure_ajax_oauth2' => [
+			'title' => '微信授权失败',
+			'content' => '微信授权失败，请刷新页面再试试？'
+		],
+	],
 ];

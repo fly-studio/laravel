@@ -14,6 +14,8 @@ class Controller extends BaseController {
 
 	/**
 	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
+	 * '函数名' => '权限名'
+	 * '函数名,函数名' => ['权限名', '权限名']
 	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete']
 	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete'] 此配置同上，* 代表所有未配置的函数名
 	 * @example  ['*' => ['member.view', 'dashborad.view']] * 代表所有未配置的函数名，此例也就是代表所有函数，其中权限可为数组
@@ -24,6 +26,7 @@ class Controller extends BaseController {
 	/**
 	 * 设置本名称后，将自动为本名称加上一个通用的权限
 	 * 查看 initPermissions
+	 * $permissions中的函数会优先于RESTful
 	 * 
 	 * @var string
 	 */
@@ -32,7 +35,6 @@ class Controller extends BaseController {
 	public $site;
 	public $fields;
 	public $user;
-	//public $roles;
 
 	protected $viewData = [];
 
@@ -84,10 +86,7 @@ class Controller extends BaseController {
 	private function initMember()
 	{
 		$this->viewData['_user'] = Auth::check() ? Auth::User() : new \App\User;
-		//$this->viewData['_roles'] = (new Role)->getRoles();
-
 		$this->user = & $this->viewData['_user'];
-		//$this->roles = & $this->viewData['_roles'];
 	}
 
 	protected function subtitle($title, $url = NULL, $target = '_self')

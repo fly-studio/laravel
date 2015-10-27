@@ -3,6 +3,7 @@ namespace Addons\Core\Tools\Wechat;
 
 use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\User as  WechatUserTool;
+use Addons\Core\Models\WechatUser;
 use Session;
 class OAuth2 {
 	private $api;
@@ -14,43 +15,44 @@ class OAuth2 {
 
 	public function authenticate($url = NULL, $scope = 'snsapi_base', $bindUser = false)
 	{	
-		$openid = $this->getOpenID();
-		if (!empty($openid)) return true;
+		$wechatUser = $this->getUser();
+		if (!empty($wechatUser)) return $wechatUser;
 
-		empty($url) && $url = app('url')->current();
-		$json = $this->getOauthAccessToken();
+		empty($url) && $url = app('url')->full();
+		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
 			$oauth_url =$this->api->getOauthRedirect($url, 'wxbase', $scope);
-			redirect($oauth_url);
+			abort(302, '', ['Location' => $oauth_url]);
 			return false;
 		}
 		else
 		{
-			$this->setOpenID($json['openid']);
 			$wechatUserTool = new WechatUserTool($this->api);
-			$this->wechatUser = $wechatUserTool->updateWechatUser($json['openid'], $json['access_token']);
+			$wechatUser = $wechatUserTool->updateWechatUser($json['openid'], $json['access_token']);
+			$this->setUser($wechatUser);
 
 			if ($bindUser)
-				$user = $wechatUserTool->bindToUser($this->wechatUser);
+				$user = $wechatUserTool->bindToUser($wechatUser);
 		}
 
-		return true;
+		return $this->getUser();
 	}
 
-	public function getWechat()
+	public function getAPI()
 	{
 		return $this->api;
 	}
 
-	protected function getOpenID()
+	public function getUser()
 	{
-		return Session::get('wechat-oauth2-openid', NULL);
+		$wuid = Session::get('wechat-oauth2-'.$this->api->appid.'-user', NULL);
+		return empty($wuid) ? false : WechatUser::find($wuid);
 	}
 
-	protected function setOpenID($openid)
+	protected function setUser(WechatUser $wechatUser)
 	{
-		return Session::put('wechat-oauth2-openid', $openid);
+		return !empty($wechatUser) ? Session::put('wechat-oauth2-'.$this->api->appid.'-user', $wechatUser->getKey()) : false;
 
 	}
 }

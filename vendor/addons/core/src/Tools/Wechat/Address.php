@@ -17,7 +17,7 @@ class Address {
 		$access_token = $this->getAccessToken();
 		if (!empty($access_token)) return true;
 
-		$url = app('url')->current();
+		$url = app('url')->full();
 		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
@@ -44,7 +44,7 @@ class Address {
 		Cache::put($hashkey, $access_token, 60);
 	}
 
-	public function getWechat()
+	public function getAPI()
 	{
 		return $this->api;
 	}
@@ -59,7 +59,7 @@ class Address {
 		$timeStamp = time();
 		$nonceStr = $this->generateNonceStr();
 		//$this->parameters = json_encode($AddrParameters);
-		empty($url) && $url = app('url')->current();
+		empty($url) && $url = app('url')->full();
 		return [
 			'appId' => $this->api->appid;
 			'scope' => 'jsapi_address',
