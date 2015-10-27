@@ -31,7 +31,7 @@ abstract class WechatController extends Controller {
 	 * 
 	 * @return string|response
 	 */
-	public function push($id = 0)
+	public function push(Request $request, $id = 0)
 	{
 		$api = $account = null;
 		$_config = ['debug' => true, 'logcallback' => function($log, API $api){
@@ -131,14 +131,14 @@ abstract class WechatController extends Controller {
 
 	abstract protected function user(API $api, WechatUser $wechatUser);
 
-	public function chosen($url = NULL)
+	public function chosen(Request $request, $url = NULL)
 	{
 		$accounts = WechatAccount::all();
 
 		return view('wechat/chosen')->with('_accounts', $accounts)->with('_account', WechatAccount::find((new WechatAccountTool)->getAccountID()))->with('_url', $url);
 	}
 
-	public function chosenQuery($id, $url)
+	public function chosenQuery(Request $request, $id, $url)
 	{
 		$account = WechatAccount::findOrFail($id);
 		(new WechatAccountTool)->setAccountID($account->getKey());
@@ -150,8 +150,9 @@ abstract class WechatController extends Controller {
 	 * 支付回调
 	 * @return [type] [description]
 	 */
-	public function feedback($id)
+	public function feedback(Request $request, $id)
 	{
+		$id = $request->input('id') ?: 0;
 		$account = WechatAccount::findOrFail($id);
 		$api = new API($account->toArray(), $account->getKey());
 
