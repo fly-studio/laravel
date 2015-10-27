@@ -73,7 +73,7 @@ class Results extends Base
 	 */
 	public static function Init($xml, API $api)
 	{
-		WechatLog::create(['log' => $xml, 'waid' => $api->waid, 'url' => url()->full()]);
+		WechatLog::create(['log' => $xml, 'waid' => $api->waid, 'url' => app('url')->full()]);
 		$obj = new self();
 		$obj->fromXml($xml);
 		//fix bug 2015-06-29
