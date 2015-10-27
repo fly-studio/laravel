@@ -26,7 +26,7 @@ class WechatOAuth2Controller extends Controller {
 			if (empty($this->wechatUser) && app('request')->ajax())
 				return $this->failure('wechat.failure_ajax_oauth2');
 			empty($this->wechatUser) && $this->wechatUser = $oauth2->authenticate(NULL, $this->wechat_oauth2_type, $this->wechat_oauth2_bindUser);
-dd($this->wechatUser);
+
 			$this->wechat_oauth2_bindUser && $this->user = User::find($this->wechatUser->uid);
 		}
 
