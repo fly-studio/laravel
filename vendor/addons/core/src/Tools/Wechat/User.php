@@ -67,6 +67,9 @@ class User {
 				'waid' => $this->api->waid,
 			]);
 			$wechat = $this->getUserInfo($wechatUser->openid, $access_token);
+			if (empty($wechat))
+				throw new \Exception("Get wechat'suser failure");
+		
 			//公众号绑定开放平台,可获取唯一ID
 			empty($wechatUser->unionid) && $wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->api->appid]);
 			if (isset($wechat['nickname']))
@@ -77,8 +80,8 @@ class User {
 					$v->update([
 						'nickname' => $wechat['nickname'], 
 						'gender' => $wechat['sex'],
-						'is_subscribed' => $wechat['subscribe'],
-						'subscribed_at' => Carbon::createFromTimestamp($wechat['subscribe_time']),
+						'is_subscribed' => !empty($wechat['subscribe']) , //没有打开开发者模式 无此字段
+						'subscribed_at' => !empty($wechat['subscribe_time']) ? Carbon::createFromTimestamp($wechat['subscribe_time']) : NULL,
 						'country' => $wechat['country'],
 						'province' => $wechat['province'],
 						'city' => $wechat['city'],
