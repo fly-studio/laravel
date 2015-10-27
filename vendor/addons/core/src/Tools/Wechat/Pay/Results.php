@@ -1,6 +1,8 @@
 <?php
 namespace Addons\Core\Tools\Wechat\Pay;
 
+use Addons\Core\Models\WechatLog;
+use Addons\Core\Tools\Wechat\API;
 /**
  *
  * 接口调用结果类
@@ -69,15 +71,14 @@ class Results extends Base
 	 * @param string $xml
 	 * @throws Exception
 	 */
-	public static function Init($xml, $key)
+	public static function Init($xml, API $api)
 	{
+		WechatLog::create(['log' => $xml, 'waid' => $api->waid, 'url' => url()->full()]);
 		$obj = new self();
 		$obj->fromXml($xml);
 		//fix bug 2015-06-29
-		if ($obj->values['return_code'] != 'SUCCESS') {
-			return $obj->getValues();
-		}
-		$obj->CheckSign($key);
+		if ($obj->values['return_code'] == 'SUCCESS')
+			$obj->CheckSign($api->mchkey);
 		return $obj->getValues();
 	}
 }

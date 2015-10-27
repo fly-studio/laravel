@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\Account as WechatAccountTool;
 use Addons\Core\Tools\Wechat\User as WechatUserTool;
+use Addons\Core\Tools\Wechat\Pay as WechatPayTool;
 use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\WechatReply;
@@ -19,6 +20,7 @@ use Addons\Core\Models\WechatMessageMedia;
 use Addons\Core\Models\WechatMessageLink;
 use Addons\Core\Models\WechatMessageLocation;
 use Addons\Core\Models\WechatLog;
+use Addons\Core\Models\WechatBill;
 use Addons\Core\Models\Attachment;
 
 abstract class WechatController extends Controller {
@@ -33,7 +35,7 @@ abstract class WechatController extends Controller {
 	{
 		$api = $account = null;
 		$_config = ['debug' => true, 'logcallback' => function($log, API $api){
-			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => app('Illuminate\Routing\UrlGenerator')->full()]);
+			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => url()->full()]);
 		}];
 		if (empty($id)) //没有id，则尝试去数据库找
 		{
@@ -142,6 +144,29 @@ abstract class WechatController extends Controller {
 		(new WechatAccountTool)->setAccountID($account->getKey());
 
 		return redirect()->intended($url);
+	}
+
+	/**
+	 * 支付回调
+	 * @return [type] [description]
+	 */
+	public function feedback($id)
+	{
+		$account = WechatAccount::findOrFail($id);
+		$api = new API($account->toArray(), $account->getKey());
+
+		$pay = new WechatPayTool($api);
+		$result = $pay->notify(function($result, &$message) use ($account){
+			if ($result['reture_code'] == 'SUCCESS')
+			{
+				$wechatUser = WechatUser::where('openid', $result['openid'])->firstOrFail();
+				$result = array_only($result, ['return_code','return_msg','mch_id','device_info','result_code','err_code','err_code_des','trade_type','bank_type','total_fee','fee_type','cash_fee','cash_fee_type','coupon_fee','coupon_count','transaction_id','out_trade_no','attach','time_end']);
+				WechatBill::create($result + ['waid' => $account->getKey(), 'wuid' => $wechatUser->getKey()]);
+			} else
+				WechatBill::create(['reture_code' => $result['reture_code'], 'return_msg' => $result['return_msg'], 'waid' => $account->getKey()]);
+			return true;
+		});
+		return $result;
 	}
 
 	/**

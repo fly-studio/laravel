@@ -17,7 +17,7 @@ use Addons\Core\Tools\Wechat\Pay\ShortUrl;
 use Addons\Core\Tools\Wechat\Pay\UnifiedOrder;
 
 use Exception;
-
+use Closure;
 /**
  *
  * 接口访问类，包含所有微信支付API列表的封装，类中方法为static方法，
@@ -27,7 +27,6 @@ use Exception;
 class Pay
 {
 
-	protected $config;
 	private $api;
 
 	public function __construct($options, $waid = NULL)
@@ -85,7 +84,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -119,7 +118,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -153,7 +152,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -195,7 +194,7 @@ class Pay
 		$xml = $input->toXml();
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, true, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -232,7 +231,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -304,7 +303,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -338,7 +337,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, true, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -447,7 +446,7 @@ class Pay
 
 		$start_time_stamp = $this->getMillisecond(); //请求开始时间
 		$response = $this->postXmlCurl($xml, $url, false, $time_out);
-		$result = Results::Init($response, $this->api->mchkey);
+		$result = Results::Init($response, $this->api);
 		$this->reportCostTime($url, $start_time_stamp, $result); //上报请求花费时间
 
 
@@ -460,30 +459,30 @@ class Pay
 	 * @param function $callback
 	 * 直接回调函数使用方法: notify(you_function);
 	 * 回调类成员函数方法:notify(array($this, you_function));
-	 * $callback  原型为：function function_name($data){}
+	 * $callback  原型为：function ($data){}
 	 */
-	public function notify($callback, &$msg)
+	public function notify(Closure $callback)
 	{
 		//获取通知的数据
 		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+		$msg = '';
 		//如果返回成功则验证签名
 		try {
-			$result = Results::Init($xml, $this->api->mchkey);
+			$result = Results::Init($xml, $this->api);
 		} catch (Exception $e) {
 			$msg = $e->errorMessage();
 			return false;
 		}
-
-		return call_user_func($callback, $result);
-	}
-
-	/**
-	 * 直接输出xml
-	 * @param string $xml
-	 */
-	public function replyNotify($xml)
-	{
-		echo $xml;
+		
+		$notifyReply = new NotifyReply();
+		if (call_user_func_array($callback, [$result, &$msg]) === false)
+			$notifyReply->setReturnCode('FAIL')->setReturnMsg($msg);
+		else
+		{
+			$notifyReply->setReturnCode('SUCCESS')->setReturnMsg('OK');
+			$notifyReply->setSign($this->api->mchkey);
+		}
+		return $notifyReply->toXml();	
 	}
 
 	/**
