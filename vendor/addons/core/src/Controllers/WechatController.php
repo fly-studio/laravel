@@ -152,7 +152,7 @@ abstract class WechatController extends Controller {
 	 */
 	public function feedback(Request $request, $id)
 	{
-		$id = $request->input('id') ?: 0;
+		$id = $request->input('id') ?: $id;
 		$account = WechatAccount::findOrFail($id);
 		$api = new API($account->toArray(), $account->getKey());
 
