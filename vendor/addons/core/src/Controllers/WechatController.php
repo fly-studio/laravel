@@ -150,10 +150,11 @@ abstract class WechatController extends Controller {
 	 * 支付回调
 	 * @return [type] [description]
 	 */
-	public function feedback(Request $request, $id)
+	public function feedback(Request $request, $aid, $oid = NULL)
 	{
-		$id = $request->input('id') ?: $id;
-		$account = WechatAccount::findOrFail($id);
+		$aid = $request->input('aid') ?: $aid;
+		$oid = $request->input('oid') ?: $oid;
+		$account = WechatAccount::findOrFail($aid);
 		$api = new API($account->toArray(), $account->getKey());
 
 		$pay = new WechatPayTool($api);

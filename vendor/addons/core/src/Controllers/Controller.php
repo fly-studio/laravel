@@ -220,11 +220,17 @@ class Controller extends BaseController {
 			is_string($msg) && $msg = ['content' => $msg];
 			$default = trans('core::common.default.'.$type );
 			$msg = _extends($msg, $default); //填充
-
-			foreach ($msg as $key => $value) 
-				$msg[$key] = empty($data) ?  $value : __($value, $data); //转化成有意义的文字
 		}
-		
+
+		$default = trans('core::common.default.'.$type );
+		$msg = _extends($msg, $default);
+
+		if (!empty($data))
+		{
+			foreach ($msg as &$value) 
+				$value = __($value, $data); //转化成有意义的文字
+		}
+
 		$msg = array_keyfilter($msg, 'title,content');
 		$result = array(
 			'result' => $type,
