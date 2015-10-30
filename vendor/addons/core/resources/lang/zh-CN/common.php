@@ -59,6 +59,10 @@ return [
 			'content' => '<ul class="post_faiure">:messages</ul>',
 			'list' => '<li>:message</li>'.PHP_EOL,
 		],
+		'failure_csrf' => [
+			'title' => 'CSRF检测无法通过',
+			'content' => '您可能停留页面时间过长，请使用其它方式保存关键数据后，刷新当前页面后再重试！',
+		],
 	],
 	'auth' => [
 		'success_login' => [
@@ -90,6 +94,10 @@ return [
 		'failure_owner' => [
 			'title' => '越权',
 			'content' => '您无法查看或修改他人的资料！',
+		],
+		'failure_model_noexist' => [
+			'title' => '数据不存在',
+			'content' => '无法在数据库:model中查询到该条数据！',
 		],
 	],
 	'attachment' => [
