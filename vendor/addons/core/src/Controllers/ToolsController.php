@@ -24,7 +24,7 @@ class ToolsController extends Controller {
 		$smarty->clearAllCache();
 		$smarty->clearCompiledTemplate();
 		//other files
-		foreach([storage_path('attachments'), storage_path('debugbar'), storage_path('placeholders'), storage_path('utils'), ] as $value)
+		foreach([storage_path('attachments'), storage_path('debugbar'), storage_path('placeholders'), storage_path('utils'), storage_path('framework/cache'), storage_path('framework/views'), storage_path('smarty/compile'), ] as $value)
 		{
 			rename($value.'/.gitignore', $newfile = storage_path('.gitignore,'.rand()));
 			rmdir_recursive($value, TRUE);
