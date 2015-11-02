@@ -229,7 +229,7 @@ class API
 	private $_receive;
 	private $_text_filter = true;
 	public $debug =  false;
-	public $errCode = 40001;
+	public $errCode = 0;//40001;
 	public $errMsg = "no access";
 	public $logcallback;
 	public function __construct($options, $waid)
