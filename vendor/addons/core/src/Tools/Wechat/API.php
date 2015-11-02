@@ -2248,7 +2248,7 @@ class API
 				$this->errCode = $json['errcode'];
 				$this->errMsg = $json['errmsg'];
 				return false;
-			}
+			}unset($_GET['code']);
 			$this->user_token = $json['access_token'];
 			return $json;
 		}
