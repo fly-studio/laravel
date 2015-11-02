@@ -14,7 +14,7 @@ class Account {
 
 	public function setAccountID($accountid)
 	{
-		return Session::put('wechat-account-id', $accountid);
-
+		Session::put('wechat-account-id', $accountid);
+		Session::save();
 	}
 }
