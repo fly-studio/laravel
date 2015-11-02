@@ -53,7 +53,7 @@ class OAuth2 {
 
 	protected function setUser(WechatUser $wechatUser)
 	{
-		return !empty($wechatUser) ? Session::put('wechat-oauth2-'.$this->api->appid.'-user', $wechatUser->getKey()) : false;
-
+		Session::put('wechat-oauth2-'.$this->api->appid.'-user', $wechatUser->getKey());
+		Session::save();
 	}
 }
