@@ -1,7 +1,7 @@
 <?php
 namespace Addons\Core\Controllers;
 
-use Closure;
+use Closure, Schema;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,9 +23,10 @@ trait AdminTrait {
 			list($table, $alias) = strpos(strtolower($v), ' as ') !== false ? explode(' as ', $v) : [$v, $v];
 
 			if (!isset($table_columns[$table]))
-				$table_columns[$table] = $query->getConnection()->getDoctrineSchemaManager()->listTableColumns($table);
+				$table_columns[$table] = Schema::getColumnListing($table);
+				//$table_columns[$table] = $query->getConnection()->getDoctrineSchemaManager()->listTableColumns($table);
 			
-			foreach ($table_columns[$table] as $key => $value)
+			foreach ($table_columns[$table] as $key/* => $value*/)
 				$_columns[$key] = isset($_columns[$key]) ? $_columns[$key] : $alias.'.'.$key;
 		}
 		return $_columns;
