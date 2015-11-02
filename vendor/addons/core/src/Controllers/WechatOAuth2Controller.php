@@ -6,6 +6,7 @@ use Addons\Core\Models\WechatAccount;
 use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\OAuth2;
 use Addons\Core\Models\User;
+use Illuminate\Database\Eloquent\Model;
 class WechatOAuth2Controller extends Controller {
 
 	public $wechat_oauth2_account = NULL;
@@ -22,10 +23,16 @@ class WechatOAuth2Controller extends Controller {
 			$oauth2 = new OAuth2($account->toArray(), $account->getKey());
 
 			$this->wechatUser = $oauth2->getUser();
-			//ajax 请求则报错
-			if (empty($this->wechatUser) && app('request')->ajax())
-				return $this->failure('wechat.failure_ajax_oauth2');
-			empty($this->wechatUser) && $this->wechatUser = $oauth2->authenticate(NULL, $this->wechat_oauth2_type, $this->wechat_oauth2_bindUser);
+			if (empty($this->wechatUser))
+			{
+				//ajax 请求则报错
+				if (app('request')->ajax()) 
+					return $this->failure('wechat.failure_ajax_oauth2');
+
+				$this->wechatUser = $oauth2->authenticate(NULL, $this->wechat_oauth2_type, $this->wechat_oauth2_bindUser);
+				if (! ($this->wechatUser instanceOf Model) )
+					return $this->wechatUser; //\Illuminate\Http\RedirectResponse
+			}
 
 			$this->wechat_oauth2_bindUser && $this->user = User::find($this->wechatUser->uid);
 		}

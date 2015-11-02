@@ -24,8 +24,8 @@ class OAuth2 {
 		{
 			!empty($_GET['code']) && dd(app('url')->full(), $this->api->errCode, $this->getUser());
 			$oauth_url =$this->api->getOauthRedirect($url, 'wxbase', $scope);
-			abort(302, '', ['Location' => $oauth_url]);
-			return false;
+			//abort(302, '', ['Location' => $oauth_url]);
+			return redirect($oauth_url);
 		}
 		else
 		{
