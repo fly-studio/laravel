@@ -22,7 +22,7 @@ class OAuth2 {
 		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
-			isset($_GET['code']) && dd(app('url')->full(), $this->api->errCode);
+			!empty($_GET['code']) && dd(app('url')->full(), $this->api->errCode);
 			$oauth_url =$this->api->getOauthRedirect($url, 'wxbase', $scope);
 			abort(302, '', ['Location' => $oauth_url]);
 			return false;
