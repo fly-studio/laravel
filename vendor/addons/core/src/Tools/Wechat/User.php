@@ -67,8 +67,10 @@ class User {
 				'waid' => $this->api->waid,
 			]);
 			$wechat = $this->getUserInfo($wechatUser->openid, $access_token);
+			/*
+			无授权的OAuth2是无法获取资料的
 			if (empty($wechat))
-				throw new \Exception("Get wechat's user failure:" .$this->api->errCode .' '.$this->api->errMsg);
+				throw new \Exception("Get wechat's user failure:" .$this->api->errCode .' '.$this->api->errMsg);*/
 		
 			//公众号绑定开放平台,可获取唯一ID
 			empty($wechatUser->unionid) && $wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->api->appid]);
