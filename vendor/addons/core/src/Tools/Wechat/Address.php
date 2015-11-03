@@ -61,7 +61,7 @@ class Address {
 		//$this->parameters = json_encode($AddrParameters);
 		empty($url) && $url = app('url')->full();
 		return [
-			'appId' => $this->api->appid;
+			'appId' => $this->api->appid,
 			'scope' => 'jsapi_address',
 			'signType' => 'sha1',
 			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->access_token),

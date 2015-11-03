@@ -23,14 +23,19 @@ class OAuth2 {
 		if (empty($json))
 		{
 			!empty($_GET['code']) && dd(app('url')->full(), $this->api->errCode, $this->getUser());
-			$oauth_url =$this->api->getOauthRedirect($url, 'wxbase', $scope);
-			//abort(302, '', ['Location' => $oauth_url]);
+			$scope == 'hybrid' && $scope = 'snsapi_base'; //混杂模式下，第一次访问静默授权
+			$oauth_url = $this->api->getOauthRedirect($url, $scope, $scope);
 			return redirect($oauth_url);
 		}
 		else
 		{
 			$wechatUserTool = new WechatUserTool($this->api);
-			$wechatUser = $wechatUserTool->updateWechatUser($json['openid'], $json['access_token']);
+			$wechatUser = $wechatUserTool->updateWechatUser($json['openid'], $json['access_token'], $scope != 'hybrid');
+			if ($scope == 'hybrid' && $_GET['state'] == 'snsapi_base' && empty($wechatUser['nickname']) ) //混杂模式下，静默授权没有取到用户的资料（也就是未关注），重新访问普通授权页面
+			{
+				$oauth_url =$this->api->getOauthRedirect($url, 'snsapi_userinfo', 'snsapi_userinfo');
+				return redirect($oauth_url);
+			}
 			$this->setUser($wechatUser);
 
 			if ($bindUser)

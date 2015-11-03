@@ -55,18 +55,19 @@ class User {
 	 * @param  integer $update_expire 	多少分钟更新一次?
 	 * @return integer                  返回UID
 	 */
-	public function updateWechatUser($openid, $access_token = NULL, $update_expired = 1440)
+	public function updateWechatUser($openid, $access_token = NULL, $cache = TRUE)
 	{
 		if (empty($openid))
 			return FALSE;
-
+		$wechatUser = FALSE;
 		$hashkey = 'update-wechatuser-'.$openid. '/'.$this->api->appid;
-		return Cache::remember($hashkey, $update_expired, function() use ($openid, $access_token){
+		if (!$cache || is_null($wechatUser = Cache::get($hashkey, null)))
+		{
 			$wechatUser = WechatUser::firstOrCreate([
 				'openid' => $openid,
 				'waid' => $this->api->waid,
 			]);
-			$wechat = $this->getUserInfo($wechatUser->openid, $access_token);
+			$wechat = $this->getUserInfo($wechatUser->openid, $access_token, $cache);
 			/*
 			无授权的OAuth2是无法获取资料的
 			if (empty($wechat))
@@ -94,8 +95,10 @@ class User {
 					]);
 				
 			}
-			return $wechatUser;
-		});
+			$wechatUser = WechatUser::where('openid', $openid)->where('waid', $this->api->waid)->get()->first();
+			Cache::put($hashkey, $wechatUser, 12 * 60); //0.5 day
+		}
+		return $wechatUser;
 	}
 
 	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $update_expired = 1440)
