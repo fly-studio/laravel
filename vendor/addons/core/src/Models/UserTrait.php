@@ -1,15 +1,16 @@
 <?php
 namespace Addons\Core\Models;
 use DB;
+use Addons\Core\Models\UserFinance;
 trait UserTrait{
 
 	public static function bootUserTrait()
 	{
 		//自动创建extra等数据
 		User::created(function($user){
-			/*UserExtra::create([
-				'id' => $user->id,
-			]);*/
+			UserFinance::create([
+				'id' => $user->getKey(),
+			]);
 		});
 	}
 }

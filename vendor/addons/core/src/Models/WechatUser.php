@@ -12,7 +12,7 @@ class WechatUser extends Model{
 		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
 	}
 
-	public function gender()
+	public function _gender()
 	{
 		return $this->hasOne(get_namespace($this).'\\Field', 'id', 'gender');
 	}
