@@ -27,6 +27,11 @@ class Field extends Model {
 		return $this->where('name', $name)->where('field_class', $field_class)->count() > 0;
 	}
 
+	public function get($name, $field_class)
+	{
+		return $this->where('name', $name)->where('field_class', $field_class)->first();
+	}
+
 	public function getFields()
 	{
 		return $this->rememberCache('fields', function(){

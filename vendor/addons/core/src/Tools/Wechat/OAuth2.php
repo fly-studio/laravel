@@ -4,6 +4,7 @@ namespace Addons\Core\Tools\Wechat;
 use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\User as  WechatUserTool;
 use Addons\Core\Models\WechatUser;
+use Illuminate\Http\Exception\HttpResponseException;
 use Session;
 class OAuth2 {
 	private $api;
@@ -25,7 +26,7 @@ class OAuth2 {
 			!empty($_GET['code']) && dd(app('url')->full(), $this->api->errCode, $this->getUser());
 			$scope == 'hybrid' && $scope = 'snsapi_base'; //混杂模式下，第一次访问静默授权
 			$oauth_url = $this->api->getOauthRedirect($url, $scope, $scope);
-			return redirect($oauth_url);
+			throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 		}
 		else
 		{
@@ -34,7 +35,7 @@ class OAuth2 {
 			if ($scope == 'hybrid' && $_GET['state'] == 'snsapi_base' && empty($wechatUser['nickname']) ) //混杂模式下，静默授权没有取到用户的资料（也就是未关注），重新访问普通授权页面
 			{
 				$oauth_url =$this->api->getOauthRedirect($url, 'snsapi_userinfo', 'snsapi_userinfo');
-				return redirect($oauth_url);
+				throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 			}
 			$this->setUser($wechatUser);
 

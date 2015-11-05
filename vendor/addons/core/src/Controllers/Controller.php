@@ -6,7 +6,7 @@ use Addons\Core\Models\Role;
 use Addons\Core\Models\Field;
 use Addons\Core\Output;
 use Addons\Core\File\Mimes;
-
+use Illuminate\Http\Exception\HttpResponseException;
 //Facades
 use Auth, Lang;
 
@@ -244,7 +244,7 @@ class Controller extends BaseController {
 		return $this->output($result);
 	}
 
-	protected function output(array $data, $filename = NULL)
+	protected function output(array $data, $filename = NULL, $abort = FALSE)
 	{
 		$request = app('request');
 		$charset = app('config')['app']['charset'];
@@ -259,14 +259,17 @@ class Controller extends BaseController {
 			else
 				$of = 'html';
 		}
+		$response = null;
 		if (in_array($of, ['csv', 'xls', 'xlsx', 'pdf']))
 		{
 			$filename = Output::$of($data['data']);
-			return response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
+			$response = response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
 		} else {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
-			return $this->response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
+			$response = $this->response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
+		if ($abort) throw new HttpResponseException($response);
+		return $response;
 	}
 
 	private function checkPermission($method)
