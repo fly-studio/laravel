@@ -101,7 +101,7 @@ class Validator extends BaseValidator {
 		// is the size. If it is a file, we take kilobytes, and for a string the
 		// entire length of the string will be considered the attribute size.
 		if (is_numeric($value) && $hasNumeric) {
-			return Arr::get($this->data, $attribute);
+			return array_get($this->data, $attribute);
 		} elseif (is_array($value)) {
 			return count($value);
 		} elseif ($value instanceof File) {
