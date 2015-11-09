@@ -464,7 +464,7 @@ class Pay
 	public function notify(Closure $callback)
 	{
 		//获取通知的数据
-		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+		$xml = isset($GLOBALS['HTTP_RAW_POST_DATA']) ? $GLOBALS['HTTP_RAW_POST_DATA'] : file_get_contents('php://input');
 		$msg = '';
 		//如果返回成功则验证签名
 		try {

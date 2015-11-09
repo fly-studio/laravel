@@ -2,7 +2,7 @@
 namespace Addons\Core\Tools\Wechat;
 
 use Addons\Core\Tools\Wechat\API;
-use Cache;
+use Cache,Session;
 class Address {
 
 	private $api;
@@ -15,33 +15,30 @@ class Address {
 	public function authenticate()
 	{	
 		$access_token = $this->getAccessToken();
-		if (!empty($access_token)) return true;
+		if (!empty($access_token)) return $access_token;
 
 		$url = app('url')->full();
 		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
 			$oauth_url =$this->api->getOauthRedirect($url,"jsapi_addr","snsapi_base");
-			redirect($oauth_url);
+			throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 			return false;
 		} else
 			$this->setAccessToken($json['access_token']);
 
-		return true;
+		return $json['access_token'];
 	}
 
 	public function getAccessToken()
 	{
-		$hashkey = 'wechat-address-token-'. $this->api->appid;
-
-		$access_token = Cache::get($hashkey, NULL);
-		return $access_token;
+		return Session::get('wechat-oauth2-access_token-'.$this->api->appid, NULL);
 	}
 
 	public function setAccessToken($access_token)
 	{
-		$hashkey = 'wechat-address-token-'. $this->api->appid;
-		Cache::put($hashkey, $access_token, 60);
+		Session::put('wechat-oauth2-access_token-'.$this->api->appid, $access_token);
+		Session::save();
 	}
 
 	public function getAPI()
@@ -81,7 +78,7 @@ class Address {
 			'timestamp' => $timeStamp,
 			'url' => $url,
 		);
-		return $this->getSignature($arrdata);
+		return $this->api->getSignature($arrdata);
 	}
 
 }

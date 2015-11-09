@@ -30,6 +30,7 @@ class OAuth2 {
 		}
 		else
 		{
+			$this->setAccessToken($json['access_token']);
 			$wechatUserTool = new WechatUserTool($this->api);
 			$wechatUser = $wechatUserTool->updateWechatUser($json['openid'], $json['access_token'], $scope != 'hybrid');
 			if ($scope == 'hybrid' && $_GET['state'] == 'snsapi_base' && empty($wechatUser['nickname']) ) //混杂模式下，静默授权没有取到用户的资料（也就是未关注），重新访问普通授权页面
@@ -49,6 +50,17 @@ class OAuth2 {
 	public function getAPI()
 	{
 		return $this->api;
+	}
+
+	public function getAccessToken()
+	{
+		return Session::get('wechat-oauth2-access_token-'.$this->api->appid, NULL);
+	}
+
+	public function setAccessToken($access_token)
+	{
+		Session::put('wechat-oauth2-access_token-'.$this->api->appid, $access_token);
+		Session::save();
 	}
 
 	public function getUser()
