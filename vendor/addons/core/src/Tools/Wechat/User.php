@@ -74,7 +74,8 @@ class User {
 				throw new \Exception("Get wechat's user failure:" .$this->api->errCode .' '.$this->api->errMsg);*/
 		
 			//公众号绑定开放平台,可获取唯一ID
-			empty($wechatUser->unionid) && $wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->api->appid]);
+			if (empty($wechatUser->unionid) || !empty($wechat['unionid']))
+				$wechatUser->update(['unionid' => $wechat['unionid'] ?: $wechatUser->openid.'/'.$this->api->appid]);
 			if (isset($wechat['nickname']))
 			{
 				//将所有唯一ID匹配的资料都更新
