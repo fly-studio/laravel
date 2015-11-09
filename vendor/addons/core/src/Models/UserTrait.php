@@ -7,7 +7,7 @@ trait UserTrait{
 	public static function bootUserTrait()
 	{
 		//自动创建extra等数据
-		User::created(function($user){
+		static::created(function($user){
 			UserFinance::create([
 				'id' => $user->getKey(),
 			]);
