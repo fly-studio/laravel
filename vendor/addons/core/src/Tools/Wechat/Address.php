@@ -53,7 +53,7 @@ class Address {
 	 */
 	public function getConfig($url = NULL)
 	{
-		if (!$this->authenticate()) return false;
+		//if (!$this->authenticate()) return false;
 
 		$timeStamp = time();
 		$nonceStr = $this->api->generateNonceStr();
@@ -63,7 +63,7 @@ class Address {
 			'appId' => $this->api->appid,
 			'scope' => 'jsapi_address',
 			'signType' => 'sha1',
-			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->access_token),
+			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->getAccessToken()),
 			'timeStamp' => $timeStamp,
 			'nonceStr' => $nonceStr,
 		];
