@@ -3,6 +3,8 @@ namespace Addons\Core\Tools\Wechat;
 
 use Addons\Core\Tools\Wechat\API;
 use Cache,Session;
+use Illuminate\Http\Exception\HttpResponseException;
+
 class Address {
 
 	private $api;
