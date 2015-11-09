@@ -56,7 +56,7 @@ class Address {
 		if (!$this->authenticate()) return false;
 
 		$timeStamp = time();
-		$nonceStr = $this->generateNonceStr();
+		$nonceStr = $this->api->generateNonceStr();
 		//$this->parameters = json_encode($AddrParameters);
 		empty($url) && $url = app('url')->full();
 		return [
