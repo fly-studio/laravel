@@ -14,7 +14,7 @@ class Address {
 	public function __construct($options, $waid = NULL, WechatUser $wechatUser = NULL)
 	{
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
-		$this->setWechatUser($wechatUser);
+		!empty($wechatUser) && $this->setWechatUser($wechatUser);
 	}
 
 	public function setWechatUser(WechatUser $wechatUser)
