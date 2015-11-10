@@ -3,6 +3,7 @@ namespace Addons\Core\Tools\Wechat;
 
 use Addons\Core\Tools\Wechat\API;
 use Cache,Session;
+use Addons\Core\Models\WechatUser;
 use Illuminate\Http\Exception\HttpResponseException;
 
 class Address {
@@ -14,9 +15,9 @@ class Address {
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
 	}
 
-	public function authenticate()
+	public function authenticate(WechatUser $wechatUser)
 	{	
-		$access_token = $this->getAccessToken();
+		$access_token = $this->getAccessToken($wechatUser);
 		if (!empty($access_token)) return $access_token;
 
 		$url = app('url')->full();
@@ -27,20 +28,19 @@ class Address {
 			throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 			return false;
 		} else
-			$this->setAccessToken($json['access_token']);
+			$this->setAccessToken($wechatUser, $json['access_token'], $json['expires_in']);
 
 		return $json['access_token'];
 	}
 
-	public function getAccessToken()
+	public function getAccessToken(WechatUser $wechatUser)
 	{
-		return Session::get('wechat-oauth2-access_token-'.$this->api->appid, NULL);
+		return Cache::get('wechat-oauth2-access_token-'.$wechatUser->getKey(), NULL);
 	}
 
-	public function setAccessToken($access_token)
+	private function setAccessToken(WechatUser $wechatUser, $access_token, $expires)
 	{
-		Session::put('wechat-oauth2-access_token-'.$this->api->appid, $access_token);
-		Session::save();
+		Cache::put('wechat-oauth2-access_token-'.$wechatUser->getKey(), $access_token, $expires / 60);
 	}
 
 	public function getAPI()
@@ -51,19 +51,17 @@ class Address {
 	/**
 	 * 设置jsapi_address参数
 	 */
-	public function getConfig($url = NULL)
+	public function getConfig(WechatUser $wechatUser, $url = NULL)
 	{
-		//if (!$this->authenticate()) return false;
 
 		$timeStamp = time();
 		$nonceStr = $this->api->generateNonceStr();
-		//$this->parameters = json_encode($AddrParameters);
 		empty($url) && $url = app('url')->full();
 		return [
 			'appId' => $this->api->appid,
 			'scope' => 'jsapi_address',
 			'signType' => 'sha1',
-			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->getAccessToken()),
+			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->getAccessToken($wechatUser)),
 			'timeStamp' => $timeStamp,
 			'nonceStr' => $nonceStr,
 		];
