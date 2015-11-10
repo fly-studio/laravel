@@ -122,10 +122,10 @@ class Controller extends BaseController {
 		return view($filename, $data)->with($this->viewData);
 	}
 
-	protected function response($content, $status = 200, array $headers = [])
+	protected function response($content, $status = 200, array $headers = [], $nocache = false)
 	{
 		$response = response($content, $status, $headers)->header('P3P','CP="CAO PSA OUR"');
-		if (in_array(app('request')->method(), array( 'POST', 'PUT', 'DELETE' )))
+		if ($nocache || in_array(app('request')->method(), array( 'POST', 'PUT', 'DELETE' )))
 		{
 			//header no cache when post
 			foreach([
