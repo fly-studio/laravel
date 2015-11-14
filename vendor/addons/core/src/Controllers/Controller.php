@@ -16,8 +16,8 @@ class Controller extends BaseController {
 	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
 	 * '函数名' => '权限名'
 	 * '函数名,函数名' => ['权限名', '权限名']
-	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete']
-	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destory' => 'member.delete'] 此配置同上，* 代表所有未配置的函数名
+	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.delete']
+	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.delete'] 此配置同上，* 代表所有未配置的函数名
 	 * @example  ['*' => ['member.view', 'dashborad.view']] * 代表所有未配置的函数名，此例也就是代表所有函数，其中权限可为数组
 	 *  
 	 * @var array
@@ -67,7 +67,7 @@ class Controller extends BaseController {
 				'update' => $rest.'.edit',
 				'create' => $rest.'.create',
 				'store' => $rest.'.create',
-				'destory' => $rest.'.destory',
+				'destroy' => $rest.'.destroy',
 			];
 		}
 		$this->permissions = $_permissions;

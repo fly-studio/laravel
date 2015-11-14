@@ -38,7 +38,7 @@ class WechatAccount
 			if ($request->ajax()) {
 				return response('Unauthorized.', 401);
 			} else {
-				return redirect()->guest('wechat/chosen');
+				return redirect()->guest('wechat/choose');
 			}
 		}
 

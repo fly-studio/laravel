@@ -16,7 +16,7 @@
 	</div>
 	<ul id="tools">
 	<{foreach $_accounts as $v}>
-		<li><a href="<{'wechat/chosen_query'|url}>?id=<{$v->getKey()}>&url=<{$_url}>"><i class="glyphicon glyphicon-list"> </i> <{$v->name}> (<small><{$v->account}></small>) </a></li>
+		<li><a href="<{'wechat/choose_query'|url}>?id=<{$v->getKey()}>&url=<{$_url}>"><i class="glyphicon glyphicon-list"> </i> <{$v->name}> (<small><{$v->account}></small>) </a></li>
 	<{/foreach}>
 	</ul>
 </div>
