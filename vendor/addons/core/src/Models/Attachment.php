@@ -110,17 +110,14 @@ class Attachment extends Model{
 		ignore_user_abort(TRUE);
 		set_time_limit(0);
 
-		$file_path = tempnam('','');
-		$fp = fopen($file_path,'wb+');
+		$file_path = tempnam(storage_path('utils'),'download-');
 
 		$curl = new Curl();
-		$curl->setOpt(CURLOPT_FILE, $fp);
 		$curl->setOpt(CURLOPT_BINARYTRANSFER, TRUE);
 		$curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
 		$curl->setOpt(CURLOPT_SSL_VERIFYHOST, false);
 		//$curl->setOpt(CURLOPT_NOSIGNAL, 1); //cURL毫秒就报错的BUG http://www.laruence.com/2014/01/21/2939.html
-		$curl->get($url);
-		fclose($fp);
+		$curl->download($url, $file_path);
 
 		if ($curl->error)
 			return static::DOWNLOAD_ERR_FILE;
