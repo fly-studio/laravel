@@ -29,4 +29,10 @@ class Attachment {
 			
 		return NULL;
 	}
+
+	public function downloadByTicket($ticket)
+	{
+		$url = $this->api->getQRUrl($ticket);
+		return (new AttachmentModel)->download(0, $url, 'wechat-qr-'.$ticket.','.date('Ymdhis').'.jpg');
+	}
 }

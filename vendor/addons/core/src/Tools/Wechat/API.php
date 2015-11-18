@@ -1918,7 +1918,7 @@ class API
 	 */
 	public function getQRCode($scene_id,$type=0,$expire=1800){
 		if (!$this->access_token && !$this->checkAuth()) return false;
-		$type = (!empty($type) && !is_numeric($scene_id)) ? 2 : $type;
+		//$type = (!empty($type) && !is_numeric($scene_id)) ? 2 : $type;
 		$data = array(
 			'action_name'=>$type?($type == 2?"QR_LIMIT_STR_SCENE":"QR_LIMIT_SCENE"):"QR_SCENE",
 			'expire_seconds'=>$expire,
