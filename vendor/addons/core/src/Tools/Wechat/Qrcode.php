@@ -27,7 +27,7 @@ class Qrcode {
 		]);
 		//没有或者已超时
 		if (empty($qr->ticket) || (!empty($qr->expire_seconds) && $qr->created_at->getTimestamp() + $qr->expire_seconds < time()))
-			$this->save($qr, $id, $type)->update(['expire_seconds' => $expire_seconds]);
+			$this->save($qr, $id, empty($expire_seconds))->update(['expire_seconds' => $expire_seconds]);
 		return $qr;
 	}
 
