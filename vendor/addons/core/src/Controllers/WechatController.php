@@ -299,7 +299,7 @@ abstract class WechatController extends Controller {
 	 */
 	protected function scan_subscribe(API $api, WechatUser $wechatUser, WechatAccount $account, $scene_id, $ticket)
 	{
-		$result = (new WechatReply)->subscribeReply();
+		$result = (new WechatQrcode)->subscribeReply($scene_id, $ticket) ?: (new WechatReply)->subscribeReply();
 		return null;
 	}
 
@@ -314,6 +314,7 @@ abstract class WechatController extends Controller {
 	 */
 	protected function scan(API $api, WechatUser $wechatUser, WechatAccount $account, $scene_id, $ticket)
 	{
+		$result = (new WechatQrcode)->reply($scene_id, $ticket);
 		return null;
 	}
 

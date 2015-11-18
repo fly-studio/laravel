@@ -78,6 +78,6 @@ class WechatReply extends Model{
 	public function subscribeReply()
 	{
 		$replies = $this->getReplies();
-		return isset($replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]) ? $replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]->getDepots() : $this->newCollection();
+		return isset($replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]) ? $replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]->getDepots() : false;//$this->newCollection();
 	}
 }
