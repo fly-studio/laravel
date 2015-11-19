@@ -1,7 +1,7 @@
 Agent
 =====
 
-[![Latest Stable Version](http://img.shields.io/github/release/jenssegers/agent.svg)](https://packagist.org/packages/jenssegers/agent) [![Total Downloads](http://img.shields.io/packagist/dm/jenssegers/agent.svg)](https://packagist.org/packages/jenssegers/agent) [![Build Status](http://img.shields.io/travis/jenssegers/agent.svg)](https://travis-ci.org/jenssegers/agent) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/agent.svg)](https://coveralls.io/r/jenssegers/agent)
+[![Latest Stable Version](http://img.shields.io/packagist/v/jenssegers/agent.svg)](https://packagist.org/packages/jenssegers/agent) [![Total Downloads](http://img.shields.io/packagist/dm/jenssegers/agent.svg)](https://packagist.org/packages/jenssegers/agent) [![Build Status](http://img.shields.io/travis/jenssegers/agent.svg)](https://travis-ci.org/jenssegers/agent) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/agent.svg)](https://coveralls.io/r/jenssegers/agent) [![Donate](https://img.shields.io/badge/donate-paypal-blue.svg)](https://www.paypal.me/jenssegers)
 
 A PHP desktop/mobile user agent parser with support for Laravel, based on [Mobile Detect](https://github.com/serbanghita/Mobile-Detect) with desktop support and additional functionality.
 
@@ -129,13 +129,21 @@ $browser = $agent->browser();
 
 ### Desktop detection
 
-Check if the user is a desktop.
+Check if the user is using a desktop device.
 
 ```php
 $agent->isDesktop();
 ```
 
 *This checks if a user is not a mobile device, tablet or robot.*
+
+### Phone detection
+
+Check if the user is using a phone device.
+
+```php
+$agent->isPhone();
+```
 
 ### Robot detection
 

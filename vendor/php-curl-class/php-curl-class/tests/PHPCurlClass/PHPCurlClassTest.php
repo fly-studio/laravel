@@ -1,6 +1,4 @@
 <?php
-require '../src/Curl/Curl.php';
-require 'Helper.php';
 
 use \Curl\Curl;
 use \Curl\CaseInsensitiveArray;
@@ -387,6 +385,17 @@ class CurlTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testPostNonFilePathUpload()
+    {
+        $test = new Test();
+        $test->server('post', 'POST', array(
+            'foo' => 'bar',
+            'file' => '@not-a-file',
+        ));
+        $this->assertFalse($test->curl->error);
+        $this->assertEquals('foo=bar&file=%40not-a-file', $test->curl->response);
+    }
+
     public function testPutRequestMethod()
     {
         $test = new Test();
@@ -662,6 +671,19 @@ class CurlTest extends PHPUnit_Framework_TestCase
         $reflectionProperty->setAccessible(true);
         $options = $reflectionProperty->getValue($curl);
         $this->assertEquals('cookie=Om%20nom%20nom%20nom', $options[CURLOPT_COOKIE]);
+    }
+
+    public function testMultipleCookies()
+    {
+        $curl = new Curl();
+        $curl->setCookie('cookie', 'Om nom nom nom');
+        $curl->setCookie('foo', 'bar');
+
+        $reflectionClass = new ReflectionClass('\Curl\Curl');
+        $reflectionProperty = $reflectionClass->getProperty('options');
+        $reflectionProperty->setAccessible(true);
+        $options = $reflectionProperty->getValue($curl);
+        $this->assertEquals('cookie=Om%20nom%20nom%20nom; foo=bar', $options[CURLOPT_COOKIE]);
     }
 
     public function testCookieEncodingColon()
@@ -2514,16 +2536,35 @@ class CurlTest extends PHPUnit_Framework_TestCase
 
         // Ensure memory does not leak excessively after instantiating a new
         // Curl instance and cleaning up. Memory diffs in the 2000-6000+ range
-        // have indicated a memory leak.
+        // indicate a memory leak.
         $max_memory_diff = 1000;
         foreach ($results as $i => $result) {
             $memory_diff = $result['after'] - $result['before'];;
-            echo 'diff:   ' . $memory_diff . "\n";
 
             // Skip the first test to allow memory usage to settle.
             if ($i >= 1) {
                 $this->assertLessThan($max_memory_diff, $memory_diff);
             }
         }
+    }
+
+    public function testAlternativeStandardErrorOutput()
+    {
+        // Skip test on HHVM due to "Segmentation fault".
+        if (defined('HHVM_VERSION')) {
+            return;
+        }
+
+        $buffer = fopen('php://memory', 'w+');
+
+        $curl = new Curl();
+        $curl->verbose(true, $buffer);
+        $curl->post(Test::TEST_URL);
+
+        rewind($buffer);
+        $stderr = stream_get_contents($buffer);
+        fclose($buffer);
+
+        $this->assertNotEmpty($stderr);
     }
 }

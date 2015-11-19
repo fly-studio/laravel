@@ -29,11 +29,12 @@ class Smarty_Internal_ParseTree_Tag extends Smarty_Internal_ParseTree
     /**
      * Create parse tree buffer for Smarty tag
      *
-     * @param \Smarty_Internal_Templateparser $parser parser object
-     * @param string                          $data   content
+     * @param object $parser parser object
+     * @param string $data   content
      */
-    public function __construct(Smarty_Internal_Templateparser $parser, $data)
+    public function __construct($parser, $data)
     {
+        $this->parser = $parser;
         $this->data = $data;
         $this->saved_block_nesting = $parser->block_nesting_level;
     }
@@ -41,11 +42,9 @@ class Smarty_Internal_ParseTree_Tag extends Smarty_Internal_ParseTree
     /**
      * Return buffer content
      *
-     * @param \Smarty_Internal_Templateparser $parser
-     *
      * @return string content
      */
-    public function to_smarty_php(Smarty_Internal_Templateparser $parser)
+    public function to_smarty_php()
     {
         return $this->data;
     }
@@ -53,16 +52,14 @@ class Smarty_Internal_ParseTree_Tag extends Smarty_Internal_ParseTree
     /**
      * Return complied code that loads the evaluated output of buffer content into a temporary variable
      *
-     * @param \Smarty_Internal_Templateparser $parser
-     *
      * @return string template code
      */
-    public function assign_to_var(Smarty_Internal_Templateparser $parser)
+    public function assign_to_var()
     {
         $var = sprintf('$_tmp%d', ++ Smarty_Internal_Templateparser::$prefix_number);
-        $tmp = $parser->compiler->appendCode('<?php ob_start();?>', $this->data);
-        $tmp = $parser->compiler->appendCode($tmp, "<?php {$var}=ob_get_clean();?>");
-        $parser->compiler->prefix_code[] = sprintf("%s", $tmp);
+        $tmp = $this->parser->compiler->appendCode('<?php ob_start();?>', $this->data);
+        $tmp = $this->parser->compiler->appendCode($tmp, "<?php {$var}=ob_get_clean();?>");
+        $this->parser->compiler->prefix_code[] = sprintf("%s", $tmp);
 
         return $var;
     }

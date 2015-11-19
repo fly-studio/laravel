@@ -7,6 +7,16 @@
 
 PHP Curl Class is an object-oriented wrapper of the PHP cURL extension that makes it easy to send HTTP requests and integrate with web APIs.
 
+---
+
+- [Installation](#installation)
+- [Requirements](#requirements)
+- [Quick Start and Examples](#quick-start-and-examples)
+- [Available Methods](#available-methods)
+- [Contribute](#contribute)
+
+---
+
 ### Installation
 
 To install PHP Curl Class, simply:
@@ -20,7 +30,7 @@ PHP Curl Class works with PHP 5.3, 5.4, 5.5, 5.6, and HHVM.
 ### Quick Start and Examples
 
 ```php
-require 'Curl.php';
+require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
@@ -124,6 +134,10 @@ curl_close($curl->curl);
 ```
 
 ```php
+require __DIR__ . '/vendor/autoload.php';
+
+use \Curl\MultiCurl;
+
 // Requests in parallel with callback functions.
 $multi_curl = new MultiCurl();
 
@@ -198,7 +212,7 @@ Curl::setURL($url, $data = array())
 Curl::setUserAgent($user_agent)
 Curl::success($callback)
 Curl::unsetHeader($key)
-Curl::verbose($on = true)
+Curl::verbose($on = true, $output=STDERR)
 Curl::http_build_multi_query($data, $key = null)
 Curl::is_array_assoc($array)
 Curl::is_array_multidim($array)

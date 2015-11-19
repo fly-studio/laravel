@@ -10,7 +10,7 @@ use Symfony\Component\CssSelector\Exception\ExceptionInterface;
  * @author         Tijs Verkoyen <php-css-to-inline-styles@verkoyen.eu>
  * @version        1.5.4
  * @copyright      Copyright (c), Tijs Verkoyen. All rights reserved.
- * @license        Revised BSD License
+ * @license        BSD License
  */
 class CssToInlineStyles
 {
@@ -89,18 +89,21 @@ class CssToInlineStyles
     }
 
     /**
-     * Remove id and class attributes.
+     * Cleanup the generated HTML
      *
      * @return string
-     * @param  \DOMXPath $xPath The DOMXPath for the entire document.
+     * @param  string $html The HTML to cleanup.
      */
-    private function cleanupHTML(\DOMXPath $xPath)
+    private function cleanupHTML($html)
     {
-        $nodes = $xPath->query('//@class | //@id');
+        // remove classes
+        $html = preg_replace('/(\s)+class="(.*)"(\s)*/U', ' ', $html);
 
-        foreach ($nodes as $node) {
-            $node->ownerElement->removeAttributeNode($node);
-        }
+        // remove IDs
+        $html = preg_replace('/(\s)+id="(.*)"(\s)*/U', ' ', $html);
+
+        // return
+        return $html;
     }
 
     /**
@@ -365,11 +368,6 @@ class CssToInlineStyles
             $this->stripOriginalStyleTags($xPath);
         }
 
-        // cleanup the HTML if we need to
-        if ($this->cleanup) {
-            $this->cleanupHTML($xPath);
-        }
-
         // should we output XHTML?
         if ($outputXHTML) {
             // set formating
@@ -384,6 +382,11 @@ class CssToInlineStyles
         else {
             // get the HTML
             $html = $document->saveHTML();
+        }
+
+        // cleanup the HTML if we need to
+        if ($this->cleanup) {
+            $html = $this->cleanupHTML($html);
         }
 
         // return

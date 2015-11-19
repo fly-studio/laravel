@@ -9,6 +9,11 @@
  */
 
 /**
+ * @ignore
+ */
+//include 'smarty_internal_parsetree.php';
+
+/**
  * Class SmartyTemplateCompiler
  *
  * @package    Smarty
@@ -29,6 +34,20 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      * @var string
      */
     public $parser_class;
+
+    /**
+     * Lexer object
+     *
+     * @var object
+     */
+    public $lex;
+
+    /**
+     * Parser object
+     *
+     * @var object
+     */
+    public $parser;
 
     /**
      * array of vars which can be compiled in local scope
@@ -57,10 +76,8 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
      * method to compile a Smarty template
      *
      * @param  mixed $_content template source
-     * @param bool   $isTemplateSource
      *
-     * @return bool true if compiling succeeded, false if it failed
-     * @throws \SmartyCompilerException
+     * @return bool  true if compiling succeeded, false if it failed
      */
     protected function doCompile($_content, $isTemplateSource = false)
     {
@@ -68,10 +85,14 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
           tags in the templates are replaces with PHP code,
           then written to compiled files. */
         // init the lexer/parser to compile the template
-        $this->parser = new $this->parser_class(new $this->lexer_class(str_replace(array("\r\n",
-                                                                                         "\r"), "\n", $_content), $this), $this);
-        if ($isTemplateSource && $this->template->caching) {
-            $this->parser->insertPhpCode("<?php\n\$_smarty_tpl->compiled->nocache_hash = '{$this->nocache_hash}';\n?>\n");
+        $this->lex = new $this->lexer_class(str_replace(array("\r\n", "\r"), "\n", $_content), $this);
+        $this->parser = new $this->parser_class($this->lex, $this);
+        if ($isTemplateSource) {
+            $this->parser->insertPhpCode("<?php\n\$_smarty_tpl->properties['nocache_hash'] = '{$this->nocache_hash}';\n?>\n");
+        }
+        if ($this->inheritance_child) {
+            // start state on child templates
+            $this->lex->yypushstate(Smarty_Internal_Templatelexer::CHILDBODY);
         }
         if (function_exists('mb_internal_encoding') && ((int) ini_get('mbstring.func_overload')) & 2) {
             $mbEncoding = mb_internal_encoding();
@@ -82,17 +103,21 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
 
         if ($this->smarty->_parserdebug) {
             $this->parser->PrintTrace();
-            $this->parser->lex->PrintTrace();
+            $this->lex->PrintTrace();
         }
         // get tokens from lexer and parse them
-        while ($this->parser->lex->yylex()) {
+        while ($this->lex->yylex() && !$this->abort_and_recompile) {
             if ($this->smarty->_parserdebug) {
-                echo "<pre>Line {$this->parser->lex->line} Parsing  {$this->parser->yyTokenName[$this->parser->lex->token]} Token " .
-                    htmlentities($this->parser->lex->value) . "</pre>";
+                echo "<pre>Line {$this->lex->line} Parsing  {$this->parser->yyTokenName[$this->lex->token]} Token " .
+                    htmlentities($this->lex->value) . "</pre>";
             }
-            $this->parser->doParse($this->parser->lex->token, $this->parser->lex->value);
+            $this->parser->doParse($this->lex->token, $this->lex->value);
         }
 
+        if ($this->abort_and_recompile) {
+            // exit here on abort
+            return false;
+        }
         // finish parsing process
         $this->parser->doParse(0, 0);
         if ($mbEncoding) {
@@ -102,10 +127,10 @@ class Smarty_Internal_SmartyTemplateCompiler extends Smarty_Internal_TemplateCom
         if (count($this->_tag_stack) > 0) {
             // get stacked info
             list($openTag, $_data) = array_pop($this->_tag_stack);
-            $this->trigger_template_error("unclosed {$this->smarty->left_delimiter}" . $openTag .
-                                          "{$this->smarty->right_delimiter} tag");
+            $this->trigger_template_error("unclosed {$this->smarty->left_delimiter}" . $openTag . "{$this->smarty->right_delimiter} tag");
         }
         // return compiled code
+        // return str_replace(array("? >\n<?php","? ><?php"), array('',''), $this->parser->retvalue);
         return $this->parser->retvalue;
     }
 }

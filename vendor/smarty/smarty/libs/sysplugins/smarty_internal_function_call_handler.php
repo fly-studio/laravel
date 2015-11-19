@@ -25,12 +25,14 @@ class Smarty_Internal_Function_Call_Handler
      * @param string                   $_name     template function name
      * @param Smarty_Internal_Template $_smarty_tpl
      * @param string                   $_function PHP function name
+     * @param array                    $_params   Smarty variables passed as call parameter
+     * @param bool                     $_nocache  nocache flag
      *
      * @return bool
      */
-    public static function call($_name, Smarty_Internal_Template $_smarty_tpl, $_function)
+    public static function call($_name, Smarty_Internal_Template $_smarty_tpl, $_function, $_params, $_nocache)
     {
-        $funcParam = $_smarty_tpl->tpl_function[$_name];
+        $funcParam = $_smarty_tpl->properties['tpl_function'][$_name];
         if (is_file($funcParam['compiled_filepath'])) {
             // read compiled file
             $code = file_get_contents($funcParam['compiled_filepath']);
@@ -39,6 +41,7 @@ class Smarty_Internal_Function_Call_Handler
                 // grab source info from file dependency
                 preg_match("/\s*'{$funcParam['uid']}'([\S\s]*?)\),/", $code, $match1);
                 unset($code);
+                $output = '';
                 // make PHP function known
                 eval($match[0]);
                 if (function_exists($_function)) {

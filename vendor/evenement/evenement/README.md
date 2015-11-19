@@ -22,7 +22,7 @@ Just create a composer.json file for your project:
 ```JSON
 {
     "require": {
-        "evenement/evenement": "1.0.*"
+        "evenement/evenement": "dev-master"
     }
 }
 ```

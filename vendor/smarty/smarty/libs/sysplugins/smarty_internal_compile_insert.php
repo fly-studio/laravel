@@ -24,7 +24,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $required_attributes = array('name');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -32,7 +31,6 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $shorttag_order = array('name');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -44,13 +42,12 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
     /**
      * Compiles code for the {insert} tag
      *
-     * @param  array                                $args     array with attributes from parser
-     * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
+     * @param  array  $args     array with attributes from parser
+     * @param  object $compiler compiler object
      *
      * @return string compiled code
-     * @throws \SmartyCompilerException
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler)
+    public function compile($args, $compiler)
     {
         // check and get attributes
         $_attr = $this->getAttributes($compiler, $args);
@@ -66,7 +63,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
 
         $_output = '<?php ';
         // save possible attributes
-        eval('$_name = @' . $_attr['name'] . ';');
+        eval('$_name = ' . $_attr['name'] . ';');
         if (isset($_attr['assign'])) {
             // output will be stored in a smarty variable instead of being displayed
             $_assign = $_attr['assign'];
@@ -83,7 +80,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             $_function = "smarty_insert_{$_name}";
             $_smarty_tpl = $compiler->template;
             $_filepath = false;
-            eval('$_script = @' . $_attr['script'] . ';');
+            eval('$_script = ' . $_attr['script'] . ';');
             if (!isset($compiler->smarty->security_policy) && file_exists($_script)) {
                 $_filepath = $_script;
             } else {
@@ -103,13 +100,13 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
                 }
             }
             if ($_filepath == false) {
-                $compiler->trigger_template_error("{insert} missing script file '{$_script}'", null, true);
+                $compiler->trigger_template_error("{insert} missing script file '{$_script}'", $compiler->lex->taglineno);
             }
             // code for script file loading
             $_output .= "require_once '{$_filepath}' ;";
             require_once $_filepath;
             if (!is_callable($_function)) {
-                $compiler->trigger_template_error(" {insert} function '{$_function}' is not callable in script file '{$_script}'", null, true);
+                $compiler->trigger_template_error(" {insert} function '{$_function}' is not callable in script file '{$_script}'", $compiler->lex->taglineno);
             }
         } else {
             $_filepath = 'null';
@@ -118,7 +115,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
             if (!is_callable($_function)) {
                 // try plugin
                 if (!$_function = $compiler->getPlugin($_name, 'insert')) {
-                    $compiler->trigger_template_error("{insert} no function or plugin found for '{$_name}'", null, true);
+                    $compiler->trigger_template_error("{insert} no function or plugin found for '{$_name}'", $compiler->lex->taglineno);
                 }
             }
         }
@@ -127,7 +124,7 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase
         // convert attributes into parameter array string
         $_paramsArray = array();
         foreach ($_attr as $_key => $_value) {
-            $_paramsArray[] = "'$_key' => $_value";
+                $_paramsArray[] = "'$_key' => $_value";
         }
         $_params = 'array(' . implode(", ", $_paramsArray) . ')';
         // call insert

@@ -23,7 +23,6 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $required_attributes = array('file');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -31,7 +30,6 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
      * @see Smarty_Internal_CompileBase
      */
     public $shorttag_order = array('file');
-
     /**
      * Attribute definition: Overwrites base class.
      *
@@ -43,14 +41,13 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
     /**
      * Compiles code for the {include_php} tag
      *
-     * @param  array                                       $args     array with attributes from parser
-     * @param \Smarty_Internal_TemplateCompilerBase $compiler compiler object
+     * @param  array  $args     array with attributes from parser
+     * @param  object $compiler compiler object
      *
-     * @return string
-     * @throws \SmartyCompilerException
-     * @throws \SmartyException
+     * @throws SmartyException
+     * @return string compiled code
      */
-    public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler)
+    public function compile($args, $compiler)
     {
         if (!($compiler->smarty instanceof SmartyBC)) {
             throw new SmartyException("{include_php} is deprecated, use SmartyBC class to enable");
@@ -63,10 +60,9 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
          */
         $_smarty_tpl = $compiler->template;
         $_filepath = false;
-        $_file = null;
-        eval('$_file = @' . $_attr['file'] . ';');
+        eval('$_file = ' . $_attr['file'] . ';');
         if (!isset($compiler->smarty->security_policy) && file_exists($_file)) {
-            $_filepath = $compiler->smarty->_realpath($_file, true);
+            $_filepath = $_file;
         } else {
             if (isset($compiler->smarty->security_policy)) {
                 $_dir = $compiler->smarty->security_policy->trusted_dir;
@@ -75,16 +71,16 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase
             }
             if (!empty($_dir)) {
                 foreach ((array) $_dir as $_script_dir) {
-                    $_path = $compiler->smarty->_realpath($_script_dir . DS . $_file, true);
-                    if (file_exists($_path)) {
-                        $_filepath = $_path;
+                    $_script_dir = rtrim($_script_dir, '/\\') . DS;
+                    if (file_exists($_script_dir . $_file)) {
+                        $_filepath = $_script_dir . $_file;
                         break;
                     }
                 }
             }
         }
         if ($_filepath == false) {
-            $compiler->trigger_template_error("{include_php} file '{$_file}' is not readable", null, true);
+            $compiler->trigger_template_error("{include_php} file '{$_file}' is not readable", $compiler->lex->taglineno);
         }
 
         if (isset($compiler->smarty->security_policy)) {

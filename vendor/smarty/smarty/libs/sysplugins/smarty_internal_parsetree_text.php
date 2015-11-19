@@ -19,21 +19,21 @@ class Smarty_Internal_ParseTree_Text extends Smarty_Internal_ParseTree
     /**
      * Create template text buffer
      *
-     * @param string $data text
+     * @param object $parser parser object
+     * @param string $data   text
      */
-    public function __construct($data)
+    public function __construct($parser, $data)
     {
+        $this->parser = $parser;
         $this->data = $data;
     }
 
     /**
      * Return buffer content
      *
-     * @param \Smarty_Internal_Templateparser $parser
-     *
      * @return string text
      */
-    public function to_smarty_php(Smarty_Internal_Templateparser $parser)
+    public function to_smarty_php()
     {
         return $this->data;
     }
