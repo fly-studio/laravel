@@ -37,7 +37,7 @@ class WechatQrcode implements SelfHandling, ShouldQueue
 		$qr = WechatQrcodeModel::find($this->qrcodeID);
 		if (empty($qr))
 			return false;
-		$account = $message->account;
+		$account = $qr->account;
 		$attachment = new Attachment($account->toArray(), $account->getKey());
 
 		if (empty($qr->aid))
