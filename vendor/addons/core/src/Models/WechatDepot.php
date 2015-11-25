@@ -22,7 +22,7 @@ class WechatDepot extends Model{
 
 	public function news()
 	{
-		return $this->belongsToMany(get_namespace($this).'\\WechatDepotNews', 'wechat_depot_news_relation', 'wdid', 'wdnid');
+		return $this->belongsToMany(get_namespace($this).'\\WechatDepotNews', 'wechat_depot_news_relation', 'wdid', 'wdnid')->orderBy('wechat_depot_news_relation.id');
 	}
 
 	public function text()
