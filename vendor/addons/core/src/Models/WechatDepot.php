@@ -40,7 +40,7 @@ class WechatDepot extends Model{
 		return $this->hasOne(get_namespace($this).'\\WechatDepotVideo', 'id', 'id');
 	}
 
-	public function audio()
+	public function voice()
 	{
 		return $this->hasOne(get_namespace($this).'\\WechatDepotVoice', 'id', 'id');
 	}

@@ -134,7 +134,8 @@ trait AdminTrait {
 		array_walk($query, function($v, $k) use($paginate) {
 			$paginate->addQuery($k, $v);
 		});
-
+		$paginate->filters = $filters;
+		$paginate->orders = $orders;
 		return $paginate;
 	}
 
@@ -146,7 +147,7 @@ trait AdminTrait {
 			foreach ($data as $key => $value)
 				call_user_func_array($callback, [&$value, $key]);
 
-		return $data->toArray();
+		return $data->toArray() + ['filters' => $data->filters, 'orders' => $data->orders];
 	}
 
 
