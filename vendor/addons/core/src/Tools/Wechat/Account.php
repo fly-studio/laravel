@@ -6,7 +6,6 @@ use Addons\Core\Tools\Wechat\User as WechatUserTool;
 use Session;
 class Account {
 
-
 	public function getAccountID()
 	{
 		return Session::get('wechat-account-id', NULL);

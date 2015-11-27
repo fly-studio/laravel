@@ -6,7 +6,11 @@ use Addons\Core\Models\Model;
 class WechatDepotNews extends Model{
 	public $auto_cache = true;
 	protected $guarded = ['id'];
-	public $incrementing = false;
+
+	public function account()
+	{
+		return $this->hasOne(get_namespace($this).'\\WechatAccount', 'id', 'waid');
+	}
 
 	public function depots()
 	{
