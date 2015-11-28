@@ -12,7 +12,7 @@ class Output {
 
 	public static function jsonp($data, $callback = 'callback')
 	{
-		return 'if (typeof '.$jsonp.' == "Function") {'.$jsonp.'.call(this,'.self::json($data).');}';
+		return 'if (typeof '.$jsonp.' == "Function") {'.htmlspecialchars($jsonp).'.call(this,'.self::json($data).');}';
 	}
 
 	public static function js($data)

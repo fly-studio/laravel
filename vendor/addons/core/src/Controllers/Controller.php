@@ -249,8 +249,8 @@ class Controller extends BaseController {
 		$request = app('request');
 		$charset = app('config')['app']['charset'];
 		$of = strtolower($request->input('of'));
-		$jsonp = $request->input('jsonp'); 
-		empty($jsonp) && $jsonp = $request->input('callback');
+		$jsonp = isset($_GET['jsonp']) ? $_GET['jsonp'] : null; 
+		empty($jsonp) && $jsonp = isset($_GET['callback']) ? $_GET['callback'] : null;
 		
 		if (!in_array($of, ['js', 'json', 'jsonp', 'xml', 'txt', 'text', 'csv', 'xls', 'xlsx', 'yaml', 'html', 'pdf' ]))
 		{
