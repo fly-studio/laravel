@@ -43,7 +43,7 @@ class WechatQrcode implements SelfHandling, ShouldQueue
 		if (empty($qr->aid))
 		{
 			$a = $attachment->downloadByTicket($qr->ticket);
-			!empty($a) && $qr->aid = $a->getKey();
+			!empty($a) && $qr->aid = $a['id'];
 		}
 		
 		$qr->save();
