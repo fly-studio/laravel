@@ -22,7 +22,7 @@ class Attachment {
 			fwrite($fp, $data);
 			fclose($fp);
 
-			return (new AttachmentModel)->savefile(0, $file_path, 'wechat-media-id-'.$media_id.','.date('Ymdhis').'.'.$ext);
+			return (new AttachmentModel)->savefile(0, $file_path, 'wechat-media-id-'.$media_id.','.date('Ymdhis').'.'.$ext, $ext);
 		}
 		else 
 			throw new \Exception("Wechat [$media_id] download failure: [".$this->api->errCode."]". $this->api->errMsg);
@@ -33,6 +33,6 @@ class Attachment {
 	public function downloadByTicket($ticket)
 	{
 		$url = $this->api->getQRUrl($ticket);
-		return (new AttachmentModel)->download(0, $url, 'wechat-qr-'.$ticket.','.date('Ymdhis').'.jpg');
+		return (new AttachmentModel)->download(0, $url, 'wechat-qr-'.$ticket.','.date('Ymdhis').'.jpg', 'jpg');
 	}
 }
