@@ -19,6 +19,7 @@ use Addons\Core\Models\WechatMessageText;
 use Addons\Core\Models\WechatMessageMedia;
 use Addons\Core\Models\WechatMessageLink;
 use Addons\Core\Models\WechatMessageLocation;
+use Addons\Core\Models\WechatQrcode;
 use Addons\Core\Models\WechatLog;
 use Addons\Core\Models\WechatBill;
 use Addons\Core\Models\Attachment;
