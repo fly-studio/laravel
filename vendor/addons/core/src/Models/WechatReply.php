@@ -73,9 +73,11 @@ class WechatReply extends Model{
 	/**
 	 * 关注自动回复
 	 * 
+	 * @param  \Addons\Core\Models\WechatMessage $message
+	 * 
 	 * @return Illuminate\Support\Collection [\Addons\Core\Models\WechatDepots, ...]
 	 */
-	public function subscribeReply()
+	public function subscribeReply(WechatMessage $message)
 	{
 		$replies = $this->getReplies();
 		return isset($replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]) ? $replies[$message->waid][static::MATCH_TYPE_SUBSCRIBE]->getDepots() : false;//$this->newCollection();
