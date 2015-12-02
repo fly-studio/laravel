@@ -43,6 +43,7 @@ namespace Addons\Core\Tools\Wechat;
  *   $result = $weObj->createMenu($newmenu);
  */
 use Cache;
+use Addons\Core\Models\WechatLog;
 class API
 {
 	const MSGTYPE_TEXT = 'text';
@@ -244,8 +245,10 @@ class API
 		$this->encodingAesKey = $options['encodingaeskey'] ?: '';
 		$this->appid = $options['appid'] ?: '';
 		$this->appsecret = $options['appsecret'] ?: '';
-		$this->debug = @$options['debug'] ?: false;
-		$this->logcallback = @$options['logcallback'] ?: false;
+		$this->debug = @$options['debug'] ?: true;
+		$this->logcallback = @$options['logcallback'] ?: function($log, $api){
+			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => app('url')->full()]);
+		};
 		//支付信息
 		$this->mchid = $options['mchid'] ?: '';
 		$this->mchkey = $options['mchkey'] ?: '';
@@ -1051,6 +1054,7 @@ class API
 		$aStatus = curl_getinfo($oCurl);
 		curl_close($oCurl);
 		if(intval($aStatus["http_code"])==200){
+			$this->log($sContent);
 			return $sContent;
 		}else{
 			return false;
@@ -1093,6 +1097,7 @@ class API
 		$aStatus = curl_getinfo($oCurl);
 		curl_close($oCurl);
 		if(intval($aStatus["http_code"])==200){
+			$this->log($sContent);
 			return $sContent;
 		}else{
 			return false;
