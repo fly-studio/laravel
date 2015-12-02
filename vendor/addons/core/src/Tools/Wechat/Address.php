@@ -66,7 +66,7 @@ class Address {
 		$nonceStr = $this->api->generateNonceStr();
 		list($access_token, $code, $state) = $this->getAccessToken();
 		empty($url) && $url = app('url')->full();
-		$url .= (strpos($url, '?') !== false ? '&' : '?') . 'code='.$code.'&state='.$state;
+		strpos($url, 'code=') === false && $url .= (strpos($url, '?') !== false ? '&' : '?') . 'code='.$code.'&state='.$state;
 		return [
 			'appId' => $this->api->appid,
 			'scope' => 'jsapi_address',

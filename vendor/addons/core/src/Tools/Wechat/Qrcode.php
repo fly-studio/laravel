@@ -53,7 +53,7 @@ class Qrcode {
 				'url' => $result['url'],
 			]);
 			//异步下载
-			$job = (new WechatQrcodeJob($qr->getKey()))->onQueue('wechat')/*->delay(1)*/;
+			$job = (new WechatQrcodeJob($qr->getKey()))->onQueue('wechat');
 			app('Illuminate\Contracts\Bus\Dispatcher')->dispatch($job);
 		}
 		return $qr;
