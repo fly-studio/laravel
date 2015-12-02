@@ -246,8 +246,8 @@ class API
 		$this->appid = $options['appid'] ?: '';
 		$this->appsecret = $options['appsecret'] ?: '';
 		$this->debug = @$options['debug'] ?: true;
-		$this->logcallback = @$options['logcallback'] ?: function($log, $api){
-			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => app('url')->full()]);
+		$this->logcallback = @$options['logcallback'] ?: function($api, $log, $url = NULL){
+			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => $url ?: app('url')->full()]);
 		};
 		//支付信息
 		$this->mchid = $options['mchid'] ?: '';
@@ -358,10 +358,10 @@ class API
 	 * @param mixed $log 输入日志
 	 * @return mixed
 	 */
-	protected function log($log){
+	protected function log($log, $url = NULL){
 			if ($this->debug && is_callable($this->logcallback)) {
 				if (is_array($log)) $log = print_r($log,true);
-				return call_user_func_array($this->logcallback, array($log, $this));
+				return call_user_func_array($this->logcallback, array($this, $log, $url));
 			}
 	}
 	/**
@@ -1054,7 +1054,7 @@ class API
 		$aStatus = curl_getinfo($oCurl);
 		curl_close($oCurl);
 		if(intval($aStatus["http_code"])==200){
-			$this->log($sContent);
+			$this->log($sContent, $url);
 			return $sContent;
 		}else{
 			return false;
@@ -1097,7 +1097,7 @@ class API
 		$aStatus = curl_getinfo($oCurl);
 		curl_close($oCurl);
 		if(intval($aStatus["http_code"])==200){
-			$this->log($sContent);
+			$this->log($sContent, $url);
 			return $sContent;
 		}else{
 			return false;
