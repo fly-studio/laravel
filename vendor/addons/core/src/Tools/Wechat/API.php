@@ -2245,7 +2245,7 @@ class API
 	public function getOauthAccessToken(){
 		$code = isset($_GET['code'])?$_GET['code']:'';
 		if (!$code) return false;
-		$this->log($this, $code);
+		$this->log($code);
 		$result = $this->http_get(self::API_BASE_URL_PREFIX.self::OAUTH_TOKEN_URL.'appid='.$this->appid.'&secret='.$this->appsecret.'&code='.$code.'&grant_type=authorization_code');
 		if ($result)
 		{
