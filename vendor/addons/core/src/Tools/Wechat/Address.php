@@ -25,20 +25,20 @@ class Address {
 
 	public function authenticate()
 	{	
-		$access_token = $this->getAccessToken();
-		if (!empty($access_token)) return $access_token;
+		$result = $this->getAccessToken();
+		if (!empty($result)) return TRUE;
 
 		$url = app('url')->full();
 		$json = $this->api->getOauthAccessToken();
 		if (empty($json))
 		{
-			$oauth_url =$this->api->getOauthRedirect($url,"jsapi_addr","snsapi_base");
+			$oauth_url =$this->api->getOauthRedirect($url,"jsapi_address","snsapi_base");
 			throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 			return false;
 		} else
-			$this->setAccessToken($json['access_token'], $json['expires_in']);
+			$this->setAccessToken([$json['access_token'], $_GET['code'], $_GET['state']], $json['expires_in']);
 
-		return $json['access_token'];
+		return TRUE;
 	}
 
 	public function getAccessToken()
@@ -46,9 +46,9 @@ class Address {
 		return Cache::get('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), NULL);
 	}
 
-	private function setAccessToken($access_token, $expires)
+	private function setAccessToken($data, $expires)
 	{
-		Cache::put('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), $access_token, $expires / 60);
+		Cache::put('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), $data, $expires / 60);
 	}
 
 	public function getAPI()
@@ -64,12 +64,14 @@ class Address {
 
 		$timeStamp = time();
 		$nonceStr = $this->api->generateNonceStr();
+		list($access_token, $code, $state) = $this->getAccessToken();
 		empty($url) && $url = app('url')->full();
+		$url .= (strpos($url, '?') !== false ? '&' : '?') . 'code='.$code.'&state='.$state;
 		return [
 			'appId' => $this->api->appid,
 			'scope' => 'jsapi_address',
 			'signType' => 'sha1',
-			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->getAccessToken()),
+			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$access_token),
 			'timeStamp' => $timeStamp,
 			'nonceStr' => $nonceStr,
 		];
@@ -83,7 +85,7 @@ class Address {
 			'accesstoken' => $accesstoken,
 			'appid' => $this->api->appid,
 			'noncestr' => $nonceStr,
-			'timestamp' => $timeStamp,
+			'timestamp' => strval($timeStamp),
 			'url' => $url,
 		);
 		return $this->api->getSignature($arrdata);
