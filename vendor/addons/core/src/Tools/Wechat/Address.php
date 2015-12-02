@@ -10,6 +10,7 @@ class Address {
 
 	private $api;
 	private $wechatUser;
+	private $accesstoken;
 
 	public function __construct($options, $waid = NULL, WechatUser $wechatUser = NULL)
 	{
@@ -35,20 +36,22 @@ class Address {
 			$oauth_url =$this->api->getOauthRedirect($url,"jsapi_address","snsapi_base");
 			throw new HttpResponseException(redirect($oauth_url));//\Illuminate\Http\RedirectResponse
 			return false;
-		} else
+		} else{
+			$this->accesstoken = $json['access_token'];
 			$this->setAccessToken([$json['access_token'], $_GET['code'], $_GET['state']], $json['expires_in']);
+		}
 
 		return TRUE;
 	}
 
 	public function getAccessToken()
 	{
-		return Cache::get('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), NULL);
+		//return Cache::get('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), NULL);
 	}
 
 	private function setAccessToken($data, $expires)
 	{
-		Cache::put('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), $data, $expires / 60);
+		//Cache::put('wechat-oauth2-access_token-'.$this->wechatUser->getKey(), $data, $expires / 60);
 	}
 
 	public function getAPI()
@@ -66,13 +69,12 @@ class Address {
 		$nonceStr = $this->api->generateNonceStr();
 		list($access_token, $code, $state) = $this->getAccessToken();
 		empty($url) && $url = app('url')->full();
-		strpos($url, 'code=') === false && $url .= (strpos($url, '?') !== false ? '&' : '?') . 'code='.$code.'&state='.$state;
 		return [
-			'appId' => $this->api->appid,
-			'scope' => 'jsapi_address',
+			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$this->accesstoken),
 			'signType' => 'sha1',
-			'addrSign' => $this->getAddrSign($url,$timeStamp,$nonceStr,$access_token),
-			'timeStamp' => $timeStamp,
+			'scope' => 'jsapi_address',
+			'appId' => $this->api->appid,
+			'timeStamp' => strval($timeStamp),
 			'nonceStr' => $nonceStr,
 		];
 	}
