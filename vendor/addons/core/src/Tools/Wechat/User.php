@@ -104,7 +104,7 @@ class User {
 		return $wechatUser;
 	}
 
-	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $update_expired = 1440)
+	public function bindToUser(WechatUser $wechatUser, $role_name = RoleModel::WECHATER, $cache = TRUE)
 	{	
 		$userModel = config('auth.model');
 		$user = !empty($wechatUser->uid) ? (new $userModel)->find($wechatUser->uid) : (new $userModel)->get($wechatUser->unionid);
@@ -116,14 +116,15 @@ class User {
 		$wechatUser->update(['uid' => $user->getKey()]);
 
 		$hashkey = 'update-user-from-wechat-'.$user->getKey();
-		Cache::remember($hashkey, $update_expired, function() use ($wechatUser, $user) {
+		if (!$cache || is_null(Cache::get($hashkey, null)))
+		{
 			$user->update([
 				'nickname' => $wechatUser->nickname,
 				'gender' => $wechatUser->gender,
 				'avatar_aid' => $wechatUser->avatar_aid,
 			]);
-			return time();
-		});
+			Cache::put($hashkey, time(), 1440); //0.5 day
+		}
 		return $user;
 	}
 

@@ -5,6 +5,7 @@ use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\User as  WechatUserTool;
 use Addons\Core\Models\WechatUser;
 use Illuminate\Http\Exception\HttpResponseException;
+use Addons\Core\Models\Role as RoleModel;
 use Session;
 class OAuth2 {
 	private $api;
@@ -14,7 +15,7 @@ class OAuth2 {
 		$this->api = $options instanceof API ? $options : new API($options, $waid);
 	}
 
-	public function authenticate($url = NULL, $scope = 'snsapi_base', $bindUser = false)
+	public function authenticate($url = NULL, $scope = 'snsapi_base', $bindUserRole = NULL)
 	{	
 		$wechatUser = $this->getUser();
 		if (!empty($wechatUser)) return $wechatUser;
@@ -39,8 +40,8 @@ class OAuth2 {
 			}
 			$this->setUser($wechatUser);
 
-			if ($bindUser)
-				$user = $wechatUserTool->bindToUser($wechatUser);
+			if (!empty($bindUserRole))
+				$user = $wechatUserTool->bindToUser($wechatUser, $bindUserRole, $scope != 'hybrid');
 		}
 
 		return $this->getUser();
