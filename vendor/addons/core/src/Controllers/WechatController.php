@@ -35,9 +35,9 @@ abstract class WechatController extends Controller {
 	public function push(Request $request, $id = 0)
 	{
 		$api = $account = null;
-		$_config = ['debug' => true, 'logcallback' => function($log, API $api){
+		$_config = [/*'debug' => true, 'logcallback' => function(API $api, $log, $url = NULL){
 			WechatLog::create(['log' => $log, 'waid' => $api->waid, 'url' => app('url')->full()]);
-		}];
+		}*/];
 		if (empty($id)) //没有id，则尝试去数据库找
 		{
 			$api = new API(NULL, 0);
