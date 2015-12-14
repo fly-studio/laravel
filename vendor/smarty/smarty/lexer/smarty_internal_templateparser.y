@@ -1,24 +1,21 @@
-/**
-* Smarty Internal Plugin Templateparser
-*
-* This is the template parser
-* 
-* 
-* @package Smarty
-* @subpackage Compiler
-* @author Uwe Tews
-*/
+/*
+ * This file is part of Smarty.
+ *
+ * (c) 2015 Uwe Tews
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 %stack_size 500
 %name TP_
 %declare_class {
 /**
-* Smarty Internal Plugin Templateparser
+* Smarty Template Parser Class
 *
 * This is the template parser.
 * It is generated from the smarty_internal_templateparser.y file
-* @package Smarty
-* @subpackage Compiler
-* @author Uwe Tews
+* 
+* @author Uwe Tews <uwe.tews@googlemail.com>
 */
 class Smarty_Internal_Templateparser
 }
@@ -34,58 +31,68 @@ class Smarty_Internal_Templateparser
      * @var bool
      */
     public $successful = true;
+
     /**
      * return value
      *
      * @var mixed
      */
     public $retvalue = 0;
+
     /**
      * counter for prefix code
      *
      * @var int
      */
     public static $prefix_number = 0;
+
     /**
      * @var
      */
     public $yymajor;
+
     /**
      * last index of array variable
      *
      * @var mixed
      */
     public $last_index;
+
     /**
      * last variable name
      *
      * @var string
      */
     public $last_variable;
+
     /**
      * root parse tree buffer
      *
      * @var Smarty_Internal_ParseTree
      */
     public $root_buffer;
+
     /**
      * current parse tree object
      *
      * @var Smarty_Internal_ParseTree
      */
     public $current_buffer;
+
     /**
      * lexer object
      *
      * @var Smarty_Internal_Templatelexer
      */
-    private $lex;
+    public $lex;
+
     /**
      * internal error flag
      *
      * @var bool
      */
     private $internalError = false;
+
     /**
      * {strip} status
      *
@@ -98,18 +105,21 @@ class Smarty_Internal_Templateparser
      * @var Smarty_Internal_TemplateCompilerBase
      */
     public $compiler = null;
+
     /**
      * smarty object
      *
      * @var Smarty
      */
     public $smarty = null;
+
     /**
      * template object
      *
      * @var Smarty_Internal_Template
      */
     public $template = null;
+
     /**
      * block nesting level
      *
@@ -122,7 +132,21 @@ class Smarty_Internal_Templateparser
      *
      * @var Smarty_Security
      */
-    private $security = null;
+    public $security = null;
+
+    /**
+     * template prefix array
+     *
+     * @var \Smarty_Internal_ParseTree[]
+     */
+    public $template_prefix = array();
+
+    /**
+     * security object
+     *
+     * @var \Smarty_Internal_ParseTree[]
+     */
+    public $template_postfix = array();
 
     /**
      * constructor
@@ -137,7 +161,7 @@ class Smarty_Internal_Templateparser
         $this->template = $this->compiler->template;
         $this->smarty = $this->template->smarty;
         $this->security = isset($this->smarty->security_policy) ? $this->smarty->security_policy : false;
-        $this->current_buffer = $this->root_buffer = new Smarty_Internal_ParseTree_Template($this);
+        $this->current_buffer = $this->root_buffer = new Smarty_Internal_ParseTree_Template();
     }
 
     /**
@@ -147,7 +171,7 @@ class Smarty_Internal_Templateparser
      */
     public function insertPhpCode($code)
     {
-        $this->current_buffer->append_subtree(new Smarty_Internal_ParseTree_Tag($this, $code));
+        $this->current_buffer->append_subtree($this, new Smarty_Internal_ParseTree_Tag($this, $code));
     }
 
    /**
@@ -161,10 +185,10 @@ class Smarty_Internal_Templateparser
     {
         $tmp ='';
         foreach ($this->compiler->prefix_code as $preCode) {
-            $tmp = empty($tmp) ? $preCode : $this->compiler->appendCode($tmp, $preCode);
+            $tmp .= $preCode;
         }
         $this->compiler->prefix_code=array();
-        $tmp = empty($tmp) ? $code : $this->compiler->appendCode($tmp, $code);
+        $tmp .= $code;
         return new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode($tmp,true));
     }
 
@@ -199,7 +223,9 @@ class Smarty_Internal_Templateparser
     // complete template
     //
 start(res)       ::= template. {
-    res = $this->root_buffer->to_smarty_php();
+    $this->root_buffer->prepend_array($this, $this->template_prefix);
+    $this->root_buffer->append_array($this, $this->template_postfix);
+    res = $this->root_buffer->to_smarty_php($this);
 }
 
     //
@@ -208,7 +234,7 @@ start(res)       ::= template. {
                       // single template element
 template       ::= template_element(e). {
     if (e != null) {
-        $this->current_buffer->append_subtree(e);
+        $this->current_buffer->append_subtree($this, e);
     }
 }
 
@@ -216,7 +242,7 @@ template       ::= template_element(e). {
 template       ::= template template_element(e). {
     if (e != null) {
         // because of possible code injection
-        $this->current_buffer->append_subtree(e);
+        $this->current_buffer->append_subtree($this, e);
     }
 }
 
@@ -239,7 +265,7 @@ template_element(res)::= smartytag(st). {
 
                       // Literal
 template_element(res) ::= literal(l). {
-    res = new Smarty_Internal_ParseTree_Text($this, l);
+    res = new Smarty_Internal_ParseTree_Text(l);
 }
                       // php tags
 template_element(res)::= PHP(o). {
@@ -255,9 +281,9 @@ template_element(res)::= PHP(o). {
                       // nocache code
 template_element(res)::= NOCACHE(c). {
         $this->compiler->tag_nocache = true;
-        $save = $this->template->has_nocache_code;
+        $save = $this->template->compiled->has_nocache_code;
         res = new Smarty_Internal_ParseTree_Tag($this, $this->compiler->processNocacheCode("<?php echo '{c}';?>\n", $this->compiler, true));
-        $this->template->has_nocache_code = $save;
+        $this->template->compiled->has_nocache_code = $save;
 }
                       // template text
 template_element(res)::= text_content(t). {
@@ -279,14 +305,6 @@ template_element ::= STRIPON(d). {
                       // strip off
 template_element ::= STRIPOFF(d). {
     $this->strip = false;
-}
-                      // process source of inheritance child block
-template_element ::= BLOCKSOURCE(s). {
-        if ($this->strip) {
-            SMARTY_INTERNAL_COMPILE_BLOCK::blockSource($this->compiler, preg_replace('![\t ]*[\r\n]+[\t ]*!', '', s));
-        } else {
-            SMARTY_INTERNAL_COMPILE_BLOCK::blockSource($this->compiler, s);
-        }
 }
 
                     // Litteral
@@ -320,7 +338,7 @@ smartytag(res)   ::= tag(t) RDEL. {
 //
 // output tags start here
 //
-smartytag(res)   ::= SIMPLEOUTPUT(i). {
+smartytag(res)   ::= SIMPELOUTPUT(i). {
     $var = trim(substr(i, $this->lex->ldel_length, -$this->lex->rdel_length), ' $');
     if (preg_match('/^(.*)(\s+nocache)$/', $var, $match)) {
         res = $this->compiler->compileTag('private_print_expression',array('nocache'),array('value'=>$this->compiler->compileVariable('\''.$match[1].'\'')));
@@ -334,18 +352,26 @@ tag(res)   ::= LDEL variable(e). {
     res = $this->compiler->compileTag('private_print_expression',array(),array('value'=>e));
 }
 
+tag(res)   ::= LDEL variable(e) modifierlist(l) attributes(a). {
+    res = $this->compiler->compileTag('private_print_expression',a,array('value'=>e, 'modifierlist'=>l));
+}
+
 tag(res)   ::= LDEL variable(e) attributes(a). {
     res = $this->compiler->compileTag('private_print_expression',a,array('value'=>e));
 }
 tag(res)   ::= LDEL value(e). {
     res = $this->compiler->compileTag('private_print_expression',array(),array('value'=>e));
 }
+tag(res)   ::= LDEL value(e) modifierlist(l) attributes(a). {
+    res = $this->compiler->compileTag('private_print_expression',a,array('value'=>e, 'modifierlist'=>l));
+}
+
 tag(res)   ::= LDEL value(e) attributes(a). {
     res = $this->compiler->compileTag('private_print_expression',a,array('value'=>e));
 }
 
-tag(res)   ::= LDEL expr(e). {
-    res = $this->compiler->compileTag('private_print_expression',array(),array('value'=>e));
+tag(res)   ::= LDEL expr(e) modifierlist(l) attributes(a). {
+    res = $this->compiler->compileTag('private_print_expression',a,array('value'=>e,'modifierlist'=>l));
 }
 
 tag(res)   ::= LDEL expr(e) attributes(a). {
@@ -699,6 +725,10 @@ expr(res)        ::= variable(v1) INSTANCEOF(i) ns1(v2). {
       res = v1.i.v2;
 }
 
+expr(res)        ::= variable(v1) INSTANCEOF(i) variable(v2). {
+      res = v1.i.v2;
+}
+
 
 //
 // ternary
@@ -792,7 +822,7 @@ value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
     self::$prefix_number++;
     if (vi['var'] == '\'smarty\'') {
         $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compiler->compileTag('private_special_variable',array(),vi['smarty_internal_index']).';?>';
-    } else {
+     } else {
         $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.' = '. $this->compiler->compileVariable(vi['var']).vi['smarty_internal_index'].';?>';
     }
     res = '$_tmp'.self::$prefix_number.'::'.r[0].r[1];
@@ -800,7 +830,7 @@ value(res)    ::= varindexed(vi) DOUBLECOLON static_class_access(r). {
 
                   // Smarty tag
 value(res)       ::= smartytag(st). {
-    self::$prefix_number++;
+   self::$prefix_number++;
     $tmp = $this->compiler->appendCode('<?php ob_start();?>', st);
     $this->compiler->prefix_code[] = $this->compiler->appendCode($tmp, '<?php $_tmp'.self::$prefix_number.'=ob_get_clean();?>');
     res = '$_tmp'.self::$prefix_number;
@@ -837,11 +867,7 @@ ns1(res)           ::= ID(i). {
 
 ns1(res)           ::= NAMESPACE(i). {
     res = i;
-}
-
-//ns1(res)           ::= variable(v). {
-//    res = v;
-//}
+    }
 
 
 
@@ -877,19 +903,19 @@ variable(res)    ::= object(o). {
 
                   // config variable
 variable(res)    ::= HATCH ID(i) HATCH. {
-    res = '$_smarty_tpl->getConfigVariable( \''. i .'\')';
+    res = $this->compiler->compileConfigVariable("'" . i . "'");
 }
 
 variable(res)    ::= HATCH ID(i) HATCH arrayindex(a). {
-    res = '(is_array($tmp = $_smarty_tpl->getConfigVariable( \''. i .'\')) ? $tmp'.a.' :null)';
+    res = '(is_array($tmp = ' . $this->compiler->compileConfigVariable("'" . i . "'") . ') ? $tmp'.a.' :null)';
 }
 
 variable(res)    ::= HATCH variable(v) HATCH. {
-    res = '$_smarty_tpl->getConfigVariable( '. v .')';
+    res = $this->compiler->compileConfigVariable(v);
 }
 
 variable(res)    ::= HATCH variable(v) HATCH arrayindex(a). {
-    res = '(is_array($tmp = $_smarty_tpl->getConfigVariable( '. v .')) ? $tmp'.a.' : null)';
+    res = '(is_array($tmp = ' . $this->compiler->compileConfigVariable(v) . ') ? $tmp'.a.' : null)';
 }
 
 varindexed(res)  ::= DOLLARID(i) arrayindex(a). {
@@ -939,6 +965,7 @@ indexdef(res)   ::= DOT ID(i). {
 indexdef(res)   ::= DOT INTEGER(n). {
     res = '['. n .']';
 }
+
 
 indexdef(res)   ::= DOT LDEL expr(e) RDEL. {
     res = '['. e .']';
@@ -1000,6 +1027,10 @@ varvar(res)      ::= varvar(v1) varvarele(v2). {
                     // fix sections of element
 varvarele(res)   ::= ID(s). {
     res = '\''.s.'\'';
+}
+varvarele(res)   ::= SIMPELOUTPUT(i). {
+    $var = trim(substr(i, $this->lex->ldel_length, -$this->lex->rdel_length), ' $');
+    res = $this->compiler->compileVariable('\''.$var.'\'');
 }
 
                     // variable sections of element
@@ -1075,7 +1106,7 @@ function(res)     ::= ns1(f) OPENP params(p) CLOSEP. {
                     $this->compiler->trigger_template_error ('Illegal number of paramer in "isset()"');
                 }
                 $par = implode(',',p);
-                if (strncasecmp($par,'$_smarty_tpl->getConfigVariable',strlen('$_smarty_tpl->getConfigVariable')) === 0) {
+                if (strncasecmp($par,'$_smarty_tpl->smarty->ext->_config->_getConfigVariable',strlen('$_smarty_tpl->smarty->ext->_config->_getConfigVariable')) === 0) {
                     self::$prefix_number++;
                     $this->compiler->prefix_code[] = '<?php $_tmp'.self::$prefix_number.'='.str_replace(')',', false)',$par).';?>';
                     $isset_par = '$_tmp'.self::$prefix_number;
@@ -1286,12 +1317,12 @@ doublequoted_with_quotes(res) ::= QUOTE QUOTE. {
 }
 
 doublequoted_with_quotes(res) ::= QUOTE doublequoted(s) QUOTE. {
-    res = s->to_smarty_php();
+    res = s->to_smarty_php($this);
 }
 
 
 doublequoted(res)          ::= doublequoted(o1) doublequotedcontent(o2). {
-    o1->append_subtree(o2);
+    o1->append_subtree($this, o2);
     res = o1;
 }
 
@@ -1300,23 +1331,23 @@ doublequoted(res)          ::= doublequotedcontent(o). {
 }
 
 doublequotedcontent(res)           ::=  BACKTICK variable(v) BACKTICK. {
-    res = new Smarty_Internal_ParseTree_Code($this, '(string)'.v);
+    res = new Smarty_Internal_ParseTree_Code('(string)'.v);
 }
 
 doublequotedcontent(res)           ::=  BACKTICK expr(e) BACKTICK. {
-    res = new Smarty_Internal_ParseTree_Code($this, '(string)'.e);
+    res = new Smarty_Internal_ParseTree_Code('(string)'.e);
 }
 
 doublequotedcontent(res)           ::=  DOLLARID(i). {
-    res = new Smarty_Internal_ParseTree_Code($this, '(string)$_smarty_tpl->tpl_vars[\''. substr(i,1) .'\']->value');
+    res = new Smarty_Internal_ParseTree_Code('(string)$_smarty_tpl->tpl_vars[\''. substr(i,1) .'\']->value');
 }
 
 doublequotedcontent(res)           ::=  LDEL variable(v) RDEL. {
-    res = new Smarty_Internal_ParseTree_Code($this, '(string)'.v);
+    res = new Smarty_Internal_ParseTree_Code('(string)'.v);
 }
 
 doublequotedcontent(res)           ::=  LDEL expr(e) RDEL. {
-    res = new Smarty_Internal_ParseTree_Code($this, '(string)('.e.')');
+    res = new Smarty_Internal_ParseTree_Code('(string)('.e.')');
 }
 
 doublequotedcontent(res)     ::=  smartytag(st). {
@@ -1324,6 +1355,6 @@ doublequotedcontent(res)     ::=  smartytag(st). {
 }
 
 doublequotedcontent(res)           ::=  TEXT(o). {
-    res = new Smarty_Internal_ParseTree_DqContent($this, o);
+    res = new Smarty_Internal_ParseTree_DqContent(o);
 }
 
