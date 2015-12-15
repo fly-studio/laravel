@@ -23,20 +23,20 @@ trait EntrustUserTrait
             return $this->roles()->get();
         });
     }
-    public function save(array $options = [])
-    {   //both inserts and updates
-        parent::save($options);
-        Cache::tags(Config::get('entrust.role_user_table'))->flush();
-    }
-    public function delete(array $options = [])
-    {   //soft or hard
-        parent::delete($options);
-        Cache::tags(Config::get('entrust.role_user_table'))->flush();
-    }
-    public function restore()
-    {   //soft delete undo's
-        parent::restore();
-        Cache::tags(Config::get('entrust.role_user_table'))->flush();
+
+
+    public static function bootEntrustUserTrait()
+    {
+        static::saved(function(){
+            Cache::tags(Config::get('entrust.role_user_table'))->flush();
+        });
+        static::deleted(function(){
+            Cache::tags(Config::get('entrust.role_user_table'))->flush();
+        });
+        if (method_exists(static::class, 'restored'))
+            static::restored(function(){
+                Cache::tags(Config::get('entrust.role_user_table'))->flush();
+            });
     }
     
     /**
