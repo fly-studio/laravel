@@ -6,8 +6,10 @@ use Addons\Core\Models\AttachmentFile;
 use Addons\Core\Controllers\Controller;
 use Illuminate\Http\Request;
 use Addons\Core\File\Mimes;
-use Lang,Crypt,Agent,Image;
+use Lang,Crypt,Agent,Image,Session;
 class AttachmentController extends Controller {
+
+	public $permissions = ['uploaderQuery,avatarUploadQuery,avatarUploadQuery,kindeditorUploadQuery,ueditorUploadQuery,dataurlUploadQuery,editormdUploadQuery,hashQuery' => 'attachment.create'];
 
 	private $model;
 	public function __construct()
@@ -16,14 +18,15 @@ class AttachmentController extends Controller {
 		if (isset($_POST['PHPSESSIONID']))
 		{
 			$session_id = Crypt::decrypt(trim($_POST['PHPSESSIONID']));
-			if (!empty($session_id)) session_id($session_id);
+			if (!empty($session_id))
+			{
+				session_id($session_id);
+				Session::setId($session_id);
+			}
 		}
 		
 		parent::__construct();
 
-		//$id = $this->request->param('do');
-		//empty($_GET['id']) && !empty($id) && $this->request->query('id', $_GET['id'] = $id);
-		
 		$this->model = new Attachment();
 	}
 
@@ -371,7 +374,6 @@ class AttachmentController extends Controller {
 
 	public function avatarUploadQuery()
 	{
-		$this->checkauth(); //检查是否登录
 
 		$input = file_get_contents('php://input');
 		$data = explode('--------------------', $input);
@@ -385,7 +387,7 @@ class AttachmentController extends Controller {
 		return $this->success('', $url, array('id' => $attachment->getKey(), 'url' => $attachment->url()));
 	}
 
-	public function DataurlUploadQuery(Request $request)
+	public function dataurlUploadQuery(Request $request)
 	{
 		$dataurl = $request->post('DataURL');
 		

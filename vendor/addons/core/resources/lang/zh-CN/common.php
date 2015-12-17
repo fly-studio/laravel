@@ -75,7 +75,7 @@ return [
 		],
 		'failure_permission' => [
 			'title' => '权限不够',
-			'content' => '您的权限不够，无法访问本页面，切换用户请<a href="'.url('auth').'" target="_self">点击这里</a>！',
+			'content' => '您的权限不够，无法执行该操作，或无法访问本页面，切换用户请<a href="'.url('auth').'" target="_self">点击这里</a>！',
 		],
 		'failure_login' => [
 			'title' => '登录失败',

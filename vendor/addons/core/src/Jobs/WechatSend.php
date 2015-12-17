@@ -27,7 +27,6 @@ class WechatSend implements SelfHandling, ShouldQueue
 	use Queueable;
 	use InteractsWithQueue, SerializesModels;
 
-	public $account;
 	public $user;
 	public $media;
 	/**
@@ -35,9 +34,8 @@ class WechatSend implements SelfHandling, ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function __construct(WechatAccount $account, WechatUser $user, $media)
+	public function __construct(WechatUser $user, $media)
 	{
-		$this->account = $account;
 		$this->user = $user;
 		$this->media = $media;
 	}
@@ -52,7 +50,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 		//启动SocketLog
 		slog(['error_handler' => true], 'config');
 
-		$api = new API($this->account->toArray(), $this->account->getKey());
+		$api = new API($this->user->account->toArray(), $this->user->account->getKey());
 		$message = WechatMessage::create(['waid' => $api->waid, 'wuid' => $this->user->getKey(), 'type' => 'text', 'transport_type' => 'send', 'message_id' => '']);
 		$data = ['touser' => $this->user->openid,];
 		$type = 'text';
@@ -61,23 +59,19 @@ class WechatSend implements SelfHandling, ShouldQueue
 			$attachment = $this->media;
 			$type = $attachment->file_type();
 			$type == 'audio' && $type = 'voice';
-			$media = $this->uploadToWechat($this->media, $type);
+			$media = $this->uploadToWechat($api, $this->media, $type);
 
 			if (empty($media)) return;
 			$type = $media['type']; //多余的步骤
 			$data += ['msgtype' => $type, $type => ['media_id' => $media['media_id']],];
 
-			switch ($type) {
-				case 'image':
-				case 'voice':
-					break;
-				case 'video':
-					$data[$type] += [
-						'thumb_media_id' => '',
-						'title' => $attachment->filename,
-						'description' => $attachment->description,
-					];
-					break;
+			if ($type == 'video')
+			{
+				$data[$type] += [
+					'thumb_media_id' => '',
+					'title' => $attachment->filename,
+					'description' => $attachment->description,
+				];
 			}
 			slog('发送微信消息(来自附件)');
 			slog($this->media->toArray());
@@ -106,13 +100,18 @@ class WechatSend implements SelfHandling, ShouldQueue
 				$data[$type] = ['text' => $depot->text->content];
 			} else if ($type == 'callback') {
 				//
+			} else if ($type == 'music') {
+				$url = Attachment::findOrFail($depot->$type->thumb_aid)->url();
+				$data[$type] = ['title' => $depot->$type->title, 'description' => $depot->$type->description, 'musicurl' => $url, 'hqmusicurl' => $url];
+				!empty($depot->$type->thumb_aid) && $media = $this->uploadToWechat($api, Attachment::find($depot->$type->thumb_aid), 'image');
+				$data[$type] += ['thumb_media_id' => !empty($media) ? $media['thumb_media_id'] : ''];
 			} else {
-				$media = $this->uploadToWechat(Attachment::find($depot->$type->aid), $type);
+				$media = $this->uploadToWechat($api, Attachment::find($depot->$type->aid), $type);
 				$data[$type] = ['media_id' => $media['media_id']];
 
 				if ($type == 'video')
 				{
-					!empty($depot->$type->thumb_aid) && $media = $this->uploadToWechat(Attachment::find($depot->$type->thumb_aid), 'image');
+					!empty($depot->$type->thumb_aid) && $media = $this->uploadToWechat($api, Attachment::find($depot->$type->thumb_aid), 'image');
 					$data[$type] += ['title' => $depot->$type->title, 'description' => $depot->$type->description, 'thumb_media_id' => !empty($media) ? $media['thumb_media_id'] : ''];
 				}
 			}
@@ -122,6 +121,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 			//入库
 			$message->wdid = $this->media->getKey();
 		} else { //String
+
 			$data += [
 				'msgtype' => 'text',
 				'text' => ['content' => $this->media],

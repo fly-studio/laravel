@@ -123,10 +123,10 @@ abstract class WechatController extends Controller {
 						return $this->scan($api, $wechatUser, $account, $event['key'], $rev->getRevTicket());
 					case 'LOCATION': //地址推送
 						return $this->location_event($api, $wechatUser, $account, $rev->getRevEventGeo());
-					case 'CLICK': //点击
+					case 'CLICK': //点击触发事件
 						return $this->click($api, $wechatUser, $account, $event['key']);
-					case 'VIEW': //跳转
-						return $this->view($api, $wechatUser, $account, $event['key']);
+					case 'VIEW': //浏览器打开
+						return $this->browser($api, $wechatUser, $account, $event['key']);
 					case 'scancode_push': //扫码推事件的事件推送
 						return $this->scancode_push($api, $wechatUser, $account, $event['key'], $rev->getRevScanInfo());
 					case 'scancode_waitmsg': //扫码推事件且弹出“消息接收中”提示框的事件推送
@@ -366,14 +366,14 @@ abstract class WechatController extends Controller {
 	}
 
 	/**
-	 * 点击菜单跳转链接时的事件推送
+	 * 点击菜单跳转链接时的事件推送，由于父Controller有view函数，此处改为browser
 	 * 
 	 * @param  Addons\Models\WechatUser $wechatUser  发送者
 	 * @param  Addons\Models\WechatAccount $account 接收者
 	 * @param  string $url     设置的跳转URL
 	 * @return string|response
 	 */
-	protected function view(API $api, WechatUser $wechatUser, WechatAccount $account, $url)
+	protected function browser(API $api, WechatUser $wechatUser, WechatAccount $account, $url)
 	{
 		return null;
 	}

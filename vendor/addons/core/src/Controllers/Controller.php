@@ -15,10 +15,12 @@ class Controller extends BaseController {
 	/**
 	 * RBAC权限表，注意：只有被路由调用的函数才会检查权限
 	 * '函数名' => '权限名'
-	 * '函数名,函数名' => ['权限名', '权限名']
-	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.delete']
-	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.delete'] 此配置同上，* 代表所有未配置的函数名
-	 * @example  ['*' => ['member.view', 'dashborad.view']] * 代表所有未配置的函数名，此例也就是代表所有函数，其中权限可为数组
+	 * '函数名1,函数名2' => '权限名' 表示这两个函数对应此权限
+	 * '函数名1,函数名2' => ['权限名1', '权限名2'] 表示这两个权限都要满足，权限的数量没有限制
+	 * '*' => '权限名' 所有未配置的函数均要检查本权限，如果函数已经定义，则以定义的权限为准。
+	 * @example  ['index,show' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.destroy']
+	 * @example  ['*' => 'member.view', 'edit,update,create,store' => 'member.edit', 'destroy' => 'member.destroy'] 此配置同上，* 代表所有未配置的函数名
+	 * @example  ['*' => ['member.view', 'dashborad.view']] * 代表所有未配置的函数名，此例也就是代表所有函数，所有的函数都要满足这两个权限
 	 *  
 	 * @var array
 	 */
@@ -120,22 +122,6 @@ class Controller extends BaseController {
 		$this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
 		
 		return view($filename, $data)->with($this->viewData);
-	}
-
-	protected function response($content, $status = 200, array $headers = [], $nocache = false)
-	{
-		$response = response($content, $status, $headers)->header('P3P','CP="CAO PSA OUR"');
-		if ($nocache || in_array(app('request')->method(), array( 'POST', 'PUT', 'DELETE' )))
-		{
-			//header no cache when post
-			foreach([
-				'Expires' => '0',
-				'Cache-Control' => 'no-store,private, post-check=0, pre-check=0, max-age=0',
-				'Pragma' => 'no-cache',
-			] as $k => $v)
-				$response->header($k, $v);
-		}
-		return $response;
 	}
 
 	public function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
@@ -266,7 +252,7 @@ class Controller extends BaseController {
 			$response = response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
 		} else {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
-			$response = $this->response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
+			$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
 		if ($abort) throw new HttpResponseException($response);
 		return $response;

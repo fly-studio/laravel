@@ -10,16 +10,13 @@ use Addons\Core\Models\WechatUser;
 use Addons\Core\Jobs\WechatSend;
 class Send {
 
-	private $account;
 	private $user;
 
 	private $messages;
 
-	public function __construct(WechatAccount $account, WechatUser $user)
+	public function __construct(WechatUser $user)
 	{
-		$this->account = $account;
 		$this->user = $user;
-
 		$this->messages = [];
 	}
 	/**
@@ -35,11 +32,11 @@ class Send {
 
 	public function send($random = NULL)
 	{
-		$messages = !empty($random) ? array_pick($this->messages) : $this->messages;
+		$messages = !empty($random) ? array_pick($this->messages, $random) : $this->messages;
 		foreach ($messages as $value)
 		{
 			//Queue
-			$job = (new WechatSend($this->account, $this->user, $value))->onQueue('wechat')/*->delay(1)*/;
+			$job = (new WechatSend($this->user, $value))->onQueue('wechat')/*->delay(1)*/;
 			app('Illuminate\Contracts\Bus\Dispatcher')->dispatch($job);
 		}
 		return true;
