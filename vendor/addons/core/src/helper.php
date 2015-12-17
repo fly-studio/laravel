@@ -45,3 +45,30 @@ function delay_unlink($path, $delay)
 	app('Illuminate\Contracts\Bus\Dispatcher')->dispatch($job);
 }
 }
+if (!function_exists('slog'))
+{
+function slog($log, $type = 'log', $css = '')
+{
+	if(is_string($type))
+	{
+		$type = preg_replace_callback('/_([a-zA-Z])/', function($matches) {
+			return strtoupper($matches[1]);
+		}, $type);
+		if(method_exists('Addons\\Core\\Tools\\SocketLog', $type) || in_array($type, Addons\Core\Tools\SocketLog::$log_types))
+		   return call_user_func(array('Addons\\Core\\Tools\\SocketLog', $type), $log, $css);
+	}
+	if(is_object($type) && 'mysqli' == get_class($type))
+	{
+		   return Addons\Core\Tools\SocketLog::mysqlilog($log, $type);
+	}
+	if(is_resource($type) && ('mysql link' == get_resource_type($type) || 'mysql link persistent' == get_resource_type($type)))
+	{
+		   return Addons\Core\Tools\SocketLog::mysqllog($log, $type);
+	}
+	if(is_object($type) && 'PDO' == get_class($type))
+	{
+		   return Addons\Core\Tools\SocketLog::pdolog($log, $type);
+	}
+	throw new Exception($type.' is not SocketLog method');
+}
+}

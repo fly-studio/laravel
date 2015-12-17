@@ -11,6 +11,7 @@ use Addons\Core\Tools\Wechat\API;
 use Addons\Core\Tools\Wechat\Account as WechatAccountTool;
 use Addons\Core\Tools\Wechat\User as WechatUserTool;
 use Addons\Core\Tools\Wechat\Pay as WechatPayTool;
+use Addons\Core\Models\WechatDepotNews;
 use Addons\Core\Models\WechatAccount;
 use Addons\Core\Models\WechatUser;
 use Addons\Core\Models\WechatReply;
@@ -27,6 +28,19 @@ use Addons\Core\Models\Attachment;
 abstract class WechatController extends Controller {
 	use DispatchesJobs;
 
+	public function index(Request $request, $url, $wuid)
+	{
+		if (!empty($wuid))
+		{
+			$wechatUser = WechatUser::findOrFail($wuid);
+			$account = $wechatUser->account;
+
+			$api = new API($account->toArray, $account->getKey());
+			$this->auth($api, $wechatUser);
+		}
+
+		return redirect($url);
+	}
 	/**
 	 * 微信推送接口，自动添加用户
 	 * 
@@ -131,6 +145,7 @@ abstract class WechatController extends Controller {
 		}
 	}
 
+	abstract protected function auth(API $api, WechatUser $wechatUser);
 	abstract protected function user(API $api, WechatUser $wechatUser);
 
 	public function choose(Request $request, $url = NULL)
@@ -148,6 +163,10 @@ abstract class WechatController extends Controller {
 		return redirect()->intended($url);
 	}
 
+	public function news(Request $request, $id)
+	{
+		return null;
+	}
 	/**
 	 * 支付回调
 	 * @return [type] [description]

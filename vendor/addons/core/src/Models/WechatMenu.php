@@ -1,9 +1,9 @@
 <?php
 namespace Addons\Core\Models;
 
-use Addons\Core\Models\Model;
+use Addons\Core\Models\Tree;
 
-class WechatMenu extends Model{
+class WechatMenu extends Tree{
 	public $auto_cache = true;
 	protected $guarded = ['id'];
 

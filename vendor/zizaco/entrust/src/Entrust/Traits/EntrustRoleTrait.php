@@ -16,24 +16,27 @@ trait EntrustRoleTrait
     //Big block of caching functionality.
     public function cachedPermissions()
     {
-        $rolePrimaryKey = $this->primaryKey;
-        $cacheKey = 'entrust_permissions_for_role_'.$this->$rolePrimaryKey;
-        return Cache::tags(Config::get('entrust.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+        //$rolePrimaryKey = $this->primaryKey;
+        $cacheKey = 'entrust_permissions_for_role_'.$this->getKey();
+        return Cache::/*tags(Config::get('entrust.permission_role_table'))->*/remember($cacheKey, Config::get('cache.ttl'), function () {
             return $this->perms()->get();
         });
     }
     
     public static function bootEntrustRoleTrait()
     {
-        static::saved(function(){
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+        static::saved(function($item){
+            //Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::forget('entrust_permissions_for_role_'.$item->getKey());
         });
-        static::deleted(function(){
-            Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+        static::deleted(function($item){
+            //Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            Cache::forget('entrust_permissions_for_role_'.$item->getKey());
         });
         if (method_exists(static::class, 'restored'))
-            static::restored(function(){
-                Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+            static::restored(function($item){
+                //Cache::tags(Config::get('entrust.permission_role_table'))->flush();
+                Cache::forget('entrust_permissions_for_role_'.$item->getKey());
             });
     }
     
