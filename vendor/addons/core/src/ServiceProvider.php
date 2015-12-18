@@ -33,7 +33,8 @@ class ServiceProvider extends SP
 		});*/
 		//replace class
 		$this->app->bind('Illuminate\Contracts\Routing\ResponseFactory', ResponseFactory::class);
-		$this->app->bind('Illuminate\Routing\UrlGenerator', UrlGenerator::class);
+		$this->app->bind('Illuminate\Contracts\Routing\UrlGenerator', UrlGenerator::class);
+		//$this->app->bind('Illuminate\Routing\UrlGenerator', UrlGenerator::class);
 		
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/attachment.php', 'attachment');
