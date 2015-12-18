@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider as SP;
 //use Illuminate\Contracts\Validation\Validator;
 //use Translator,Validator;
 use Addons\Core\Http\ResponseFactory;
+use Addons\Core\Http\UrlGenerator;
 class ServiceProvider extends SP
 {
 	/**
@@ -27,9 +28,13 @@ class ServiceProvider extends SP
 			return new Core();
 		});
 
-		$this->app->singleton('Illuminate\Contracts\Routing\ResponseFactory', function ($app) {
+		/*$this->app->singleton('Illuminate\Contracts\Routing\ResponseFactory', function ($app) {
 			return new ResponseFactory($app['Illuminate\Contracts\View\Factory'], $app['redirect']);
-		});
+		});*/
+		//replace class
+		$this->app->bind('Illuminate\Contracts\Routing\ResponseFactory', ResponseFactory::class);
+		$this->app->bind('Illuminate\Routing\UrlGenerator', UrlGenerator::class);
+		
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/attachment.php', 'attachment');
 		$this->mergeConfigFrom(__DIR__ . '/../config/mimes.php', 'mimes');

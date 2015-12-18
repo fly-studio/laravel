@@ -92,7 +92,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 							'title' => $v['title'],
 							'description' => $v['description'],
 							'url' => $url->getURL('wechat/news?id='.$v['id'], $this->user),
-							'picurl' => queue_url('attachment?id='.$v['cover_aid']),
+							'picurl' => url('attachment?id='.$v['cover_aid']),
 						];
 					}, $depot->news->toArray()),
 				];

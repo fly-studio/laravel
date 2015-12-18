@@ -20,7 +20,7 @@ class Url {
 	
 	public function getURL($url, WechatUser $user = NULL)
 	{
-		return queue_url('wechat').'?url='.rawurlencode($url).(!empty($user) ? '&wuid='.rawurlencode($user->getKey()) : '');
+		return url('wechat').'?url='.rawurlencode($url).(!empty($user) ? '&wuid='.rawurlencode($user->getKey()) : '');
 	}
 
 }

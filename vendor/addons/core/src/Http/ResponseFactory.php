@@ -21,7 +21,6 @@ class ResponseFactory extends FactoryContract {
 		return new Response($content, $status, $headers);
 	}
 
-	
 	/**
 	 * Create a new file download response.
 	 *

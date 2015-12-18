@@ -72,38 +72,3 @@ function slog($log, $type = 'log', $css = '')
 	throw new Exception($type.' is not SocketLog method');
 }
 }
-if (!function_exists('queue_url'))
-{
-	/**
-	 * 修正在queue里使用url()获取网址不准确的BUG
-	 * 
-	 * @param  string $path
-	 * @param  array $extra
-	 * @param  boolean $secure
-	 * @return string
-	 */
-	function queue_url($path = null, $extra = [], $secure = null)
-	{
-		$url = app('url');
-		if ($url->isValidUrl($path)) {
-			return $path;
-		}
-		$scheme = $url->getScheme($secure);
-
-		$extra = $url->formatParameters($extra);
-
-		$tail = implode('/', array_map(
-			'rawurlencode', (array) $extra)
-		);
-
-		$root = $url->getRootUrl($scheme, config('app.url'));
-
-		if (($queryPosition = strpos($path, '?')) !== false) {
-			$query = mb_substr($path, $queryPosition);
-			$path = mb_substr($path, 0, $queryPosition);
-		} else {
-			$query = '';
-		}
-		return  $url->trimUrl($root, $path, $tail).$query;
-	}
-}
