@@ -302,7 +302,7 @@ class Attachment extends Model{
 		@unlink($path);
 		symlink($this->full_path(), $path);
 
-		!empty($life_time) && delay_unlink($path, $life_time);
+		//!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
@@ -320,7 +320,7 @@ class Attachment extends Model{
 		@unlink($path);
 		link($this->full_path(), $path);
 
-		!empty($life_time) && delay_unlink($path, $life_time);
+		//!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
@@ -338,7 +338,7 @@ class Attachment extends Model{
 		@unlink($path);
 		copy($this->full_path(), $path);
 
-		!empty($life_time) && delay_unlink($path, $life_time);
+		//!empty($life_time) && delay_unlink($path, $life_time);
 		return $path;
 	}
 
@@ -419,7 +419,7 @@ class Attachment extends Model{
 
 			//过期文件 删除
 			is_null($life_time) && !$this->_config['local']['enabled'] && $life_time = $this->_config['local']['life_time'];
-			!empty($life_time) && delay_unlink($local, $life_time);
+			//!empty($life_time) && delay_unlink($local, $life_time);
 		}
 		return TRUE;
 	}
