@@ -88,15 +88,15 @@ if (!function_exists('queue_url'))
 		if ($url->isValidUrl($path)) {
 			return $path;
 		}
-		$scheme = $this->getScheme($secure);
+		$scheme = $url->getScheme($secure);
 
-		$extra = $this->formatParameters($extra);
+		$extra = $url->formatParameters($extra);
 
 		$tail = implode('/', array_map(
 			'rawurlencode', (array) $extra)
 		);
 
-		$root = $this->getRootUrl($scheme, config('app.url'));
+		$root = $url->getRootUrl($scheme, config('app.url'));
 
 		if (($queryPosition = strpos($path, '?')) !== false) {
 			$query = mb_substr($path, $queryPosition);
