@@ -68,10 +68,11 @@ class Attachment extends Model{
 	 * @param  string $filename  需要放在网址结尾的文件名,用以欺骗浏览器
 	 * @return string
 	 */
-	public function url($filename = NULL)
+	public function url($filename = NULL, $inQueue = false)
 	{
 		empty($filename) && $filename = $this->original_basename;
-		return  url('attachment/'.$this->getKey().'/'.urlencode($filename));
+		$method = $inQueue ? 'queue_url' : 'url';
+		return $method('attachment/'.$this->getKey().'/'.urlencode($filename));
 	}
 
 	/**

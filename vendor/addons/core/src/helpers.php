@@ -72,3 +72,18 @@ function slog($log, $type = 'log', $css = '')
 	throw new Exception($type.' is not SocketLog method');
 }
 }
+if (function_exists('queue_url'))
+{
+	/**
+	 * 修正在queue里使用url()获取网址不准确的BUG
+	 * 
+	 * @param  string $path
+	 * @param  array $parameters
+	 * @param  boolean $secure
+	 * @return string
+	 */
+	function queue_url($path = null, $parameters = [], $secure = null)
+	{
+		return strpos($path, '://') !== false ? $path : config('app.url') .(substr(config('app.url'), -1) == '/' ? '' : '/'). route($path, $parameters, false);
+	}
+}
