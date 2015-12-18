@@ -78,12 +78,32 @@ if (!function_exists('queue_url'))
 	 * 修正在queue里使用url()获取网址不准确的BUG
 	 * 
 	 * @param  string $path
-	 * @param  array $parameters
+	 * @param  array $extra
 	 * @param  boolean $secure
 	 * @return string
 	 */
-	function queue_url($path = null, $parameters = [], $secure = null)
+	function queue_url($path = null, $extra = [], $secure = null)
 	{
-		return strpos($path, '://') !== false ? $path : config('app.url') .(substr(config('app.url'), -1) == '/' ? '' : '/'). route($path, $parameters, false);
+		$url = app('url');
+		if ($url->isValidUrl($path)) {
+			return $path;
+		}
+		$scheme = $this->getScheme($secure);
+
+		$extra = $this->formatParameters($extra);
+
+		$tail = implode('/', array_map(
+			'rawurlencode', (array) $extra)
+		);
+
+		$root = $this->getRootUrl($scheme, config('app.url'));
+
+		if (($queryPosition = strpos($path, '?')) !== false) {
+			$query = mb_substr($path, $queryPosition);
+			$path = mb_substr($path, 0, $queryPosition);
+		} else {
+			$query = '';
+		}
+		return  $url->trimUrl($root, $path, $tail).$query;
 	}
 }
