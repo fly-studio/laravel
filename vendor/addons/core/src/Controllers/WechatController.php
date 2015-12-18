@@ -35,7 +35,7 @@ abstract class WechatController extends Controller {
 			$wechatUser = WechatUser::findOrFail($wuid);
 			$account = $wechatUser->account;
 
-			$api = new API($account->toArray, $account->getKey());
+			$api = new API($account->toArray(), $account->getKey());
 			$this->auth($api, $wechatUser);
 		}
 
