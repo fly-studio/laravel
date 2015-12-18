@@ -72,7 +72,7 @@ function slog($log, $type = 'log', $css = '')
 	throw new Exception($type.' is not SocketLog method');
 }
 }
-if (function_exists('queue_url'))
+if (!function_exists('queue_url'))
 {
 	/**
 	 * 修正在queue里使用url()获取网址不准确的BUG
