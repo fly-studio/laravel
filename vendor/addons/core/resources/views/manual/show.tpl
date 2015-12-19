@@ -15,6 +15,30 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 #affix-side .nav li.active ul {display: block;}
 
 #affix-side {overflow: auto}
+
+h1:target:before,h2:target:before,h3:target:before,h4:target:before,h5:target:before {content: "\2794  "; text-shadow: 0 0 4px black; text-shadow: 0 0 4px black, 0 0 5px black;font-weight:normal; color:white; margin-left:-1.3em}
+
+h1[id]:hover:after, h1[id]:focus:after,
+h2[id]:hover:after, h2[id]:focus:after,
+h3[id]:hover:after, h3[id]:focus:after,
+h4[id]:hover:after, h4[id]:focus:after,
+h5[id]:hover:after, h5[id]:focus:after
+{
+	content: ' $';
+	font-size:1em;color:#aaa;font-weight:normal;
+}
+del {
+	color: #aaa;
+}
+ins {
+	display: inline-block;
+	transform: rotate(15deg) translate(0,-60%);
+	-o-transform: rotate(15deg) translate(0,-60%);
+	-moz-transform: rotate(15deg) translate(0,-60%);
+	-webkit-transform: rotate(15deg) translate(0,-60%);
+	margin-left: -2em;
+	text-decoration: none;
+}
 </style>
 <{/block}>
 
@@ -72,7 +96,7 @@ body {font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans G
 				<div id="editormd-view"></div>
 
 			</div>
-			<div class="col-md-3 col-xs-hidden">
+			<div class="col-md-3 hidden-xs">
 				<div data-spy="affix" data-offset-top="0" id="affix-side">
 					<h4>Table of Contents</h4>
 					<ul class="nav" id="navbar"></ul>
