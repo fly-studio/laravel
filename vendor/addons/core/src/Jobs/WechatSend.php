@@ -97,7 +97,7 @@ class WechatSend implements SelfHandling, ShouldQueue
 					}, $depot->news->toArray()),
 				];
 			} else if ($type == 'text') {
-				$data[$type] = ['text' => $depot->text->content];
+				$data[$type] = ['content' => $depot->text->content];
 			} else if ($type == 'callback') {
 				//
 			} else if ($type == 'music') {
