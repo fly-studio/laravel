@@ -131,9 +131,7 @@ class LaravelDebugbar extends DebugBar
             $startTime = defined('LARAVEL_START') ? LARAVEL_START : null;
             $this->addCollector(new TimeDataCollector($startTime));
 
-            if ($this->isLumen()) {
-                $debugbar->startMeasure('application', 'Application');
-            } else {
+            if ( ! $this->isLumen()) {
                 $this->app->booted(
                   function () use ($debugbar, $startTime) {
                       if ($startTime) {
@@ -141,26 +139,9 @@ class LaravelDebugbar extends DebugBar
                       }
                   }
                 );
-
-                //Check if App::before is already called..
-                if ($this->app->isBooted()) {
-                    $debugbar->startMeasure('application', 'Application');
-                } else {
-                    $this->app['router']->before(
-                      function () use ($debugbar) {
-                          $debugbar->startMeasure('application', 'Application');
-                      }
-                    );
-                }
-
-                $this->app['router']->after(
-                  function () use ($debugbar) {
-                      $debugbar->stopMeasure('application');
-                      $debugbar->startMeasure('after', 'After application');
-                  }
-                );
             }
-
+            
+            $debugbar->startMeasure('application', 'Application');
         }
 
         if ($this->shouldCollect('memory', true)) {
@@ -374,6 +355,15 @@ class LaravelDebugbar extends DebugBar
             }
         }
 
+        if ($this->shouldCollect('gate', false)) {
+            try {
+                $gateCollector = $this->app->make(GateCollector::class);
+                $this->addCollector($gateCollector);
+            } catch (\Exception $e){
+                // No Gate collector
+            }
+        }
+
         $renderer = $this->getJavascriptRenderer();
         $renderer->setIncludeVendors($this->app['config']->get('debugbar.include_vendors', true));
         $renderer->setBindAjaxHandlerToXHR($app['config']->get('debugbar.capture_ajax', true));
@@ -456,7 +446,7 @@ class LaravelDebugbar extends DebugBar
      * @param  \Symfony\Component\HttpFoundation\Response $response
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function modifyResponse($request, $response)
+    public function modifyResponse(Request $request, Response $response)
     {
         $app = $this->app;
         if ($app->runningInConsole() || !$this->isEnabled() || $this->isDebugbarRequest()) {
@@ -593,7 +583,7 @@ class LaravelDebugbar extends DebugBar
      * @param  \Symfony\Component\HttpFoundation\Request $request
      * @return bool
      */
-    protected function isJsonRequest($request)
+    protected function isJsonRequest(Request $request)
     {
         // If XmlHttpRequest, return true
         if ($request->isXmlHttpRequest()) {
@@ -841,7 +831,7 @@ class LaravelDebugbar extends DebugBar
         }
     }
 
-    protected function addClockworkHeaders($response)
+    protected function addClockworkHeaders(Response $response)
     {
         $prefix = $this->app['config']->get('debugbar.route_prefix');
         $response->headers->set('X-Clockwork-Id', $this->getCurrentRequestId(), true);
