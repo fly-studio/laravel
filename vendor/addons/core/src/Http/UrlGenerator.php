@@ -25,6 +25,6 @@ class UrlGenerator extends BaseUrlGenerator {
 		} else {
 			$query = '';
 		}
-		return $this->trimUrl($root, $path, $tail).$query;
+		return $this->trimUrl(rtrim($root, '/', $path, $tail).$query;
 	}
 }
