@@ -34,19 +34,19 @@ class ServiceProvider extends BaseServiceProvider
 	{
 		$this->mergeConfigFrom(__DIR__ . '/../../config/smarty.php', 'smarty');
 
-		$this->app['view']->addExtension($this->app['config']->get('smarty.extension', 'tpl'), 'smarty', function ()
+		$this->app['view']->addExtension(config('smarty.extension', 'tpl'), 'smarty', function ()
 		{
-			return new Engine($this->app['config']);
+			return new Engine(config('smarty'));
 		});
 	}
 
 	 /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['smarty'];
-    }
+	* Get the services provided by the provider.
+	*
+	* @return array
+	*/
+	public function provides()
+	{
+		return ['smarty'];
+	}
 }
