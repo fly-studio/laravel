@@ -34,7 +34,7 @@ class ServiceProvider extends BaseServiceProvider
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/mimes.php', 'mimes');
 		$this->mergeConfigFrom(__DIR__ . '/../config/socketlog.php', 'socketlog');
-		$this->mergeConfigFrom(__DIR__ . '/../config/plugins.php', 'plugins');
+		$this->mergeConfigFrom(__DIR__ . '/../config/plugin.php', 'plugin');
 
 		$this->registerPlugins();
 	}
@@ -43,12 +43,12 @@ class ServiceProvider extends BaseServiceProvider
 	{
 		//自动加载plugins下的配置，和ServiceProvider	
 		$loader = require SYSPATH.'/vendor/autoload.php';
-		$original_config = config('plugins');config()->set('plugins', []);
+		$original_config = config('plugin');config()->offsetUnset('plugin');
 		foreach (Finder::create()->directories()->in(PLUGINSPATH.'vendor')->depth(0) as $path)
 		{
 			$path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			//read config
-			$file = $path.'config'.DIRECTORY_SEPARATOR.'plugins.php';
+			$file = $path.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 			$config = array_merge($original_config, file_exists($file) ? require($file) : []);
 			//set path name namespace
 			$config['path'] = $path;

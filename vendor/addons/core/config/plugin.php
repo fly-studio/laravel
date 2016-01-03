@@ -1,6 +1,6 @@
 <?php
-//本文件只是示例文件，请使用config('plugins.{PLUGINSNAME}')调取对应插件的配置，
-//{PLUGINSNAME}对应下文的'name'，这里假设为tools
+//本文件只是示例文件，请使用config('plugins.{PLUGINNAME}')调取对应插件的配置，
+//{PLUGINNAME}对应下文的'name'，这里假设为tools
 //插件的namespace假设为Plugins\Tools
 
 return [
@@ -49,9 +49,9 @@ return [
 		// 'cry' => Plugins\Tools\App\Http\Middleware\Cry::class, 
 	],
 	//插件中的模板注入到主模板（确保相同路径）暂只支持smarty
-	//- 注意：注入不是智能的，只有当主模板中有<{'admin/sidebar.inc.tpl'|plugins}>时，程序会尝试按照顺序插入所有插件中的模板
-	//- 插入指定插件的模板：<{'admin/sidebar.inc.tpl'|plugins:'tools'}> 或者使用原生语句<{include file='[tools]admin/sidebar.inc.tpl'}>
-	//在插件的模板中，谨慎使用本语句，如发现重复嵌套或者其他错误，会抛出异常。
+	//- 注意：注入不是智能的，只有当主模板中有<{pluginclude file='admin/sidebar.inc.tpl'}>时，程序会尝试按照顺序插入所有插件中的模板
+	//- 插入指定插件的模板：<{pluginclude file='admin/sidebar.inc.tpl' plugins="tools;wechat;xxx"}> 或者使用原生语句<{include file='[tools]admin/sidebar.inc.tpl'}>
+	//- 为避免模板被重复(死递归)嵌套 pluginclude子模板中的pluginclude会直接忽略
 	'injectViews' => [
 		// 比如 管理员后台的菜单，会尝试<{include file="[tools]admin/sidebar.inc.tpl"}>
 		// 没有这行，不会插入
