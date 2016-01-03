@@ -4,14 +4,16 @@
 //插件的namespace假设为Plugins\Tools
 
 return [
-	//插件名(英文、数字、-、_)，全局唯一，符合PHP变量名规范，为空代表使用当前文件夹名，-_在转换为namespace会变为驼峰
-	//[name]            [namespace]
-	//tools       ->    Plugins\Tools\App\Controllers
-	//wechat-abc  ->    Plugins\WechatAbc\App\Controllers
-	//hi_world    ->    Plugins\HiWorld\App\Controllers
+	//插件名(英文、数字、-、_)，全局唯一，符合PHP变量名规范，为空代表使用当前文件夹名，
 	'name' => NULL, 
 	'display_name' => '', //本插件的名称，比如：工具箱
 	'description' => '', //本插件功能简介
+	//本插件的namespace，为空代表使用name，-_在转换为namespace会变为驼峰
+	//[name]      转    [namespace]
+	//tools       ->    Plugins\Tools
+	//wechat-abc  ->    Plugins\WechatAbc
+	//hi_world    ->    Plugins\HiWorld
+	'namespace' => NULL, 
 	'path' => NULL, //本插件的路径，这个值不用赋值，会被程序自动配置
 	'register' => [ //注册namespace
 		//是否注册/tools/resources/views到视图
