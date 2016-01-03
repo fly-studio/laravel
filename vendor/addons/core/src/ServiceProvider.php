@@ -100,14 +100,23 @@ class ServiceProvider extends BaseServiceProvider
 
 	private function bootPlugins()
 	{
+		$router = $this->app['router'];
+		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
+
 		foreach(config('plugins') as $name => $config)
 		{
 			!empty($config['register']['validation']) && $this->mergeConfigFrom($config['path'].'config/validation.php', 'validation');
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);
-			!empty($config['register']['router']) && $this->app['router']->group(['namespace' => empty($config['router']['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $config['router']['namespace'], 'prefix' => $config['router']['prefix'], 'middleware' => $config['router']['middleware']], function($router) use ($config) {
+			!empty($config['register']['router']) && $router->group(['namespace' => empty($config['router']['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $config['router']['namespace'], 'prefix' => $config['router']['prefix'], 'middleware' => $config['router']['middleware']], function($router) use ($config) {
 				require $config['path'].'routes.php';
 			});
+
+			if (!empty($config['routeMiddleware']))
+				foreach ($config['routeMiddleware'] as $key => $middleware) {
+					$router->middleware($key, $middleware);
+				}
+			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']); 
 		}
 	}
 

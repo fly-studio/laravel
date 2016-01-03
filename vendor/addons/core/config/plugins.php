@@ -36,17 +36,14 @@ return [
 	'router' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
 		'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
 		'prefix' => NULL, //路由的prefix，空代表 / (根目录)
-		'middleware' => NULL, //路由的中间件，空则不启用中间件
+		'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
 	],
-
-	//以下中间件会被附加到系统中
-
 	//全局中间件，会被自动调用
 	//参考 /app/Http/Kernel.php
 	'middleware' => [
 		// \App\Http\Middleware\VerifyCsrfToken::class,
 	],
-	//路由中间键
+	//路由中间键 附加到路由中
 	//参考 /app/Http/Kernel.php
 	'routeMiddleware' => [
 		// 'cry' => Plugins\Tools\App\Http\Middleware\Cry::class, 

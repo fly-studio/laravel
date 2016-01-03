@@ -52,7 +52,7 @@ class Router extends BaseRouter {
 	 * @param mixed $route_name      路由名，可以为数组，字符串
 	 * @param string $controller_name 控制器名，如果$route_name为字符串，这里不填写则会使用$route_name猜测一个Controller
 	 */
-	public function addUnActionRoutes($route_name, $controller_name = NULL)
+	public function addAnyActionRoutes($route_name, $controller_name = NULL)
 	{
 		$list = !is_array($route_name) ? [$route_name => $controller_name] : $route_name;
 		foreach($list as $route_name => $controller_name)
