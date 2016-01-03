@@ -34,28 +34,35 @@ class ServiceProvider extends BaseServiceProvider
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/mimes.php', 'mimes');
 		$this->mergeConfigFrom(__DIR__ . '/../config/socketlog.php', 'socketlog');
+		$this->mergeConfigFrom(__DIR__ . '/../config/plugins.php', 'plugins');
 
 		$this->registerPlugins();
 	}
 
 	private function registerPlugins()
 	{
-		//自动加载plugins下的ServiceProvider	
+		//自动加载plugins下的配置，和ServiceProvider	
 		$loader = require SYSPATH.'/vendor/autoload.php';
+		$original_config = config('plugins');config()->set('plugins', []);
 		foreach (Finder::create()->directories()->in(PLUGINSPATH.'vendor')->depth(0) as $path)
 		{
-			$name = basename($path);
+			$path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			//read config
+			$file = $path.'config'.DIRECTORY_SEPARATOR.'plugins.php';
+			$config = array_merge($original_config, ['path' => $path], file_exists($file) ? require($file) : []);
+			//set name namespace
+			$name = !empty($config['name']) ? $config['name'] : basename(rtrim($path, DIRECTORY_SEPARATOR));
 			$namespace = 'Plugins\\'.Str::studly($name).'\\';
-			$loader->setPsr4($namespace.'App\\', array($path.DIRECTORY_SEPARATOR.'app'));
+			//set psr-4
+			$loader->setPsr4($namespace.'App\\', array($path.'app'));
 			$loader->setPsr4($namespace, array($path));
-			$config = $path.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'plugins.php';
-			file_exists($config) && config()->set('plugins.'.$name, require($config) );
-			config()->set('plugins.'.$name.'.path', $path );
-			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $path.DIRECTORY_SEPARATOR.'resources/views']);
+			//set config
+			config()->set('plugins.'.$name, $config);
+			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $path.'resources/views']);
 
-			//如果你不满意bootPlugins中的配置，还可以在对应的ServiceProvider中自定义
+			//这里提供更加灵活的plugins/ServiceProvider.php的配置方式，注意$config['register']中配置所对应的程序会优先于plugins/ServiceProvider.php@boot(参考bootPlugins)
 			$provider = $namespace.'ServiceProvider';
-			file_exists($path.DIRECTORY_SEPARATOR.'ServiceProvider.php') && $this->app->register(new $provider($this->app));
+			file_exists($path.'ServiceProvider.php') && $this->app->register(new $provider($this->app));
 		}
 
 	}
@@ -93,14 +100,12 @@ class ServiceProvider extends BaseServiceProvider
 	{
 		foreach(config('plugins') as $name => $config)
 		{
-			if (!isset($config['register'])) continue;
-
 			$namespace = 'Plugins\\'.Str::studly($name);
-			$config['register']['validation'] && $this->mergeConfigFrom($config['path'] . '/config/validation.php', 'validation');
-			$config['register']['view'] && $this->app['view']->addNamespace($name, realpath($config['path'].'/resources/views/'));
-			$config['register']['translator'] && $this->app['translator']->addNamespace('plugins.'.$name, realpath($config['path'].'/resources/lang/'));
-			$config['register']['router'] && $this->app['router']->group(['namespace' => $namespace.'\\App\\Http\\Controllers'], function($router) use ($config) {
-				require $config['path'].'/routes.php';
+			!empty($config['register']['validation']) && $this->mergeConfigFrom($config['path'].'config/validation.php', 'validation');
+			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
+			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);
+			!empty($config['register']['router']) && $this->app['router']->group(['namespace' => empty($config['router']['namespace']) ? $namespace.'\\App\\Http\\Controllers' : $config['router']['namespace'], 'prefix' => $config['router']['prefix'], 'middleware' => $config['router']['middleware']], function($router) use ($config) {
+				require $config['path'].'routes.php';
 			});
 		}
 	}
