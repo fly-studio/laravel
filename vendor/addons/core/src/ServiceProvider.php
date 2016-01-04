@@ -50,6 +50,7 @@ class ServiceProvider extends BaseServiceProvider
 			//read config
 			$file = $path.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 			$config = array_merge($original_config, file_exists($file) ? require($file) : []);
+			if (!$config['enable']) continue;
 			//set path name namespace
 			$config['path'] = $path;
 			$config['name'] = $name = !empty($config['name']) ? $config['name'] : basename(rtrim($path, DIRECTORY_SEPARATOR));
