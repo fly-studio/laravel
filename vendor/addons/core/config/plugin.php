@@ -33,6 +33,8 @@ return [
 		//- 示例可以查看tools/config/valition.php
 		//- 为避免覆盖掉主配置，请谨慎设置键值
 		'validation' => false,
+		//是否读取config 查看下文的config数组
+		'config' => false,
 	],
 	'router' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
 		'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
@@ -57,6 +59,11 @@ return [
 		// 比如 管理员后台的菜单，会尝试<{include file="[tools]admin/sidebar.inc.tpl"}>
 		// 没有这行，不会插入
 		// 'admin/sidebar.inc.tpl',
+	],
+	//需要读取的配置文件，请勿加入plugin,validation
+	'config' => [
+		//比如config/attachment.php
+		//'attachment',
 	],
 
 ];
