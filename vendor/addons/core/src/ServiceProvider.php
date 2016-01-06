@@ -65,8 +65,8 @@ class ServiceProvider extends BaseServiceProvider
 			//read config
 			!empty($config['register']['validation']) && $this->mergeConfigFrom($config['path'].'config/validation.php', 'validation');
 			if (!empty($config['register']['config']))
-				foreach ($config['config'] as $name) {
-					$this->mergeConfigFrom($config['path'].'config/'.$name.'.php', $name);
+				foreach ($config['config'] as $file) {
+					$this->mergeConfigFrom($config['path'].'config/'.$file.'.php', $file);
 				}
 			//read middleware
 			$router = $this->app['router'];
@@ -119,8 +119,8 @@ class ServiceProvider extends BaseServiceProvider
 		{
 			$_c = !empty($config['register']['config']) ? $config['config'] : [];
 			!empty($config['register']['validation']) && $_c[] = 'validation';
-			foreach ($_c as $name)
-				$this->publishes([$config['path'].'config/'.$name.'.php' => config_path($name.'.php')], 'config');
+			foreach ($_c as $file)
+				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
 
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);

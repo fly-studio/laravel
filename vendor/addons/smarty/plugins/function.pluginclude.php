@@ -23,7 +23,7 @@ function smarty_function_pluginclude($params, $template)
 {
 	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,10);
 	for($i = 1; $i < count($dbt);$i++)
-		if ($dbt[$i]['function'] == 'smarty_function_pluginclude')
+		if ($dbt[$i]['function'] == __FUNCTION__)
 		{
 			trigger_error("pluginclude: cannot use under pluginclude (recursive)", E_USER_NOTICE);
 			return;
@@ -40,21 +40,24 @@ function smarty_function_pluginclude($params, $template)
 		}
 	}
 
-
 	if (empty($file)) {
 		trigger_error("pluginclude: missing 'file' parameter", E_USER_NOTICE);
 		return;
 	}
 
-	$config = config('plugins');
-	!empty($plugins) && $config = array_keyfilter($config, $plugins);
-	foreach ($config as $name => $v)
-	{
-		if (in_array($file, $v['injectViews']))
-		{
-			$template->smarty->ext->_subtemplate->render($template, ((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, array(), 0, true);
-		}
-	}
+	$_c = config('plugins');
+	!empty($plugins) && $_c = array_keyfilter($_c, $plugins);
+
+	$names = [];
+	array_walk($_c, function($v, $k) use (&$names, $file) {
+		if (array_key_exists($file, $v['injectViews']))
+			$names[$k] = $v['injectViews'][$file]; //defined order
+		elseif (in_array($file, $v['injectViews']))
+			$names[$k] = count($names);
+	});
+	asort($names);
+	foreach ($names as $name => $order)
+		$template->smarty->ext->_subtemplate->render($template, ((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, array(), 0, true);
 
 }
 
