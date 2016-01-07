@@ -44,6 +44,8 @@ class ServiceProvider extends BaseServiceProvider
 		//自动加载plugins下的配置，和ServiceProvider	
 		$loader = require SYSPATH.'/vendor/autoload.php';
 		$original_config = config('plugin');config()->offsetUnset('plugin');
+		$router = $this->app['router'];
+		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
 		foreach (Finder::create()->directories()->in([PLUGINSPATH.'vendor', APPPATH.'vendor'])->depth(0) as $path)
 		{
 			$path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
@@ -69,7 +71,6 @@ class ServiceProvider extends BaseServiceProvider
 					$this->mergeConfigFrom($config['path'].'config/'.$file.'.php', $file);
 				}
 			//read middleware
-			$router = $this->app['router'];
 			if (!empty($config['routeMiddleware']))
 				foreach ($config['routeMiddleware'] as $key => $middleware) {
 					$router->middleware($key, $middleware);
@@ -113,7 +114,6 @@ class ServiceProvider extends BaseServiceProvider
 	private function bootPlugins()
 	{
 		$router = $this->app['router'];
-		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
 
 		foreach(config('plugins') as $name => $config)
 		{
