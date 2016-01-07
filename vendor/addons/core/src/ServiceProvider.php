@@ -46,6 +46,7 @@ class ServiceProvider extends BaseServiceProvider
 		$original_config = config('plugin');config()->offsetUnset('plugin');
 		$router = $this->app['router'];
 		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
+		$consoleKernel = $this->app[\Illuminate\Contracts\Console\Kernel::class];
 		foreach (Finder::create()->directories()->in([PLUGINSPATH.'vendor', APPPATH.'vendor'])->depth(0) as $path)
 		{
 			$path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
@@ -66,16 +67,16 @@ class ServiceProvider extends BaseServiceProvider
 
 			//read config
 			!empty($config['register']['validation']) && $this->mergeConfigFrom($config['path'].'config/validation.php', 'validation');
-			if (!empty($config['register']['config']))
-				foreach ($config['config'] as $file) {
-					$this->mergeConfigFrom($config['path'].'config/'.$file.'.php', $file);
-				}
-			//read middleware
-			if (!empty($config['routeMiddleware']))
-				foreach ($config['routeMiddleware'] as $key => $middleware) {
-					$router->middleware($key, $middleware);
-				}
+			foreach ($config['config'] as $file)
+				$this->mergeConfigFrom($config['path'].'config/'.$file.'.php', $file);
+
+			//register middleware
+			foreach ($config['routeMiddleware'] as $key => $middleware)
+				$router->middleware($key, $middleware);
 			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']); 
+
+			//register commands
+			!empty($config['commands']) && $consoleKernel->commands = array($consoleKernel->commands, $config['commands']);
 
 			//这里提供更加灵活的plugins/ServiceProvider.php的配置方式，注意$config['register']中配置所对应的程序会优先于plugins/ServiceProvider.php
 			$provider = $namespace.'\\ServiceProvider';

@@ -33,8 +33,6 @@ return [
 		//- 示例可以查看tools/config/valition.php
 		//- 为避免覆盖掉主配置，请谨慎设置键值
 		'validation' => false,
-		//是否读取config 查看下文的config数组
-		'config' => false,
 	],
 	'router' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
 		'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
@@ -44,12 +42,17 @@ return [
 	//全局中间件，会被自动调用
 	//参考 /app/Http/Kernel.php
 	'middleware' => [
-		// \App\Http\Middleware\VerifyCsrfToken::class,
+		// \Plugins\Tools\App\Http\Middleware\VerifyCsrfToken::class,
 	],
 	//路由中间键 附加到路由中
 	//参考 /app/Http/Kernel.php
 	'routeMiddleware' => [
-		// 'cry' => Plugins\Tools\App\Http\Middleware\Cry::class, 
+		// 'cry' => \Plugins\Tools\App\Http\Middleware\Cry::class, 
+	],
+	//自定义artisan命令
+	//参考 /app/Console/Kernel.php
+	'commonds' => [
+        //\Plugins\Tools\App\Console\Commands\Inspire::class,
 	],
 	//插件中的模板注入到主模板（确保相同路径）暂只支持smarty
 	//- 注意：注入不是智能的，只有当主模板中有<{pluginclude file='admin/sidebar.inc.tpl'}>时，程序会尝试按照顺序插入所有插件中的模板
