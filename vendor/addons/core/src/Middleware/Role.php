@@ -37,7 +37,7 @@ class Role
 	public function handle($request, Closure $next, $roles)
 	{
 		if ($this->auth->guest() || !$request->user()->hasRole(explode('|', $roles))) {
-			return (new \Addons\Core\Controllers\Controller)->failure('auth.failure_permission');
+			return (new \Addons\Core\Controllers\Controller(false))->failure('auth.failure_permission');
 		}
 
 		return $next($request);

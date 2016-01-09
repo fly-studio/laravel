@@ -37,7 +37,7 @@ class Permission
 	public function handle($request, Closure $next, $permissions)
 	{
 		if ($this->auth->guest() || !$request->user()->can(explode('|', $permissions))) {
-			return (new \Addons\Core\Controllers\Controller)->failure('auth.failure_permission');
+			return (new \Addons\Core\Controllers\Controller(false))->failure('auth.failure_permission');
 		}
 
 		return $next($request);

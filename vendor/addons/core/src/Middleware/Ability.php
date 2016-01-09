@@ -39,7 +39,7 @@ class Ability
 	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
 	{
 		if ($this->auth->guest() || !$request->user()->ability(explode('|', $roles), explode('|', $permissions), array('validate_all' => boolval($validateAll)))) {
-			return (new \Addons\Core\Controllers\Controller)->failure('auth.failure_permission');
+			return (new \Addons\Core\Controllers\Controller(false))->failure('auth.failure_permission');
 		}
 
 		return $next($request);

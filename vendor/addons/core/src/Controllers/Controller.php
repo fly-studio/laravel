@@ -40,14 +40,15 @@ class Controller extends BaseController {
 
 	protected $viewData = [];
 
-	public function __construct()
+	public function __construct($withInit = true)
 	{
-		//$this->beforeFilter('csrf', ['on' => 'post']);
 		/*Init*/
-		$this->initCommon();
-		$this->initMember();
-		$this->initPermissions();
-
+		if (!$withInit)
+		{
+			$this->initCommon();
+			$this->initMember();
+			$this->initPermissions();
+		}
 	}
 
 	private function initPermissions()
@@ -119,7 +120,7 @@ class Controller extends BaseController {
 
 	protected function view($filename, $data = [])
 	{
-		$this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
+		isset($this->site) && $this->site['title_reverse'] && $this->site['titles'] = array_reverse($this->site['titles']);
 		
 		return view($filename, $data)->with($this->viewData);
 	}
@@ -220,8 +221,8 @@ class Controller extends BaseController {
 		$msg = array_keyfilter($msg, 'title,content');
 		$result = array(
 			'result' => $type,
-			'timeline' => time(),
-			'run-time' => microtime(TRUE) - LARAVEL_START,
+			'time' => time(),
+			'duration' => microtime(TRUE) - LARAVEL_START,
 			'uid' => $this->user['id'],
 			'message' => $msg,
 			'url' => is_string($url) ? url($url) : $url,
