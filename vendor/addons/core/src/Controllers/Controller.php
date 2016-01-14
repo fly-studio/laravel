@@ -43,7 +43,7 @@ class Controller extends BaseController {
 	public function __construct($withInit = true)
 	{
 		/*Init*/
-		if (!$withInit)
+		if ($withInit)
 		{
 			$this->initCommon();
 			$this->initMember();
