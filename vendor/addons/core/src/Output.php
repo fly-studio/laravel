@@ -25,6 +25,10 @@ class Output {
 		$excel = new \PHPExcel();
 		$excel->setActiveSheetIndex(0);
 		$sheet = $excel->getActiveSheet();
+		array_walk($data, function(&$v){
+			foreach ($v as $key => $value)
+				!is_scalar($value) && $v[$key] = @strval($value);
+		});
 		$sheet->fromArray($data);
 
 		$filepath == TRUE && $filepath = tempnam(storage_path('utils'),'excel');

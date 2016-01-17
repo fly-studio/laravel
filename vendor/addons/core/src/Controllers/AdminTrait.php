@@ -141,22 +141,34 @@ trait AdminTrait {
 
 	private function _getData(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*'])
 	{
-		$data = $this->_getPaginate($request, $builder, $columns);
+		$paginate = $this->_getPaginate($request, $builder, $columns);
 
 		if (!empty($callback) && is_callable($callback))
-			foreach ($data as $key => $value)
+			foreach ($paginate as $key => $value)
 				call_user_func_array($callback, [&$value, $key]);
 
-		return $data->toArray() + ['filters' => $data->filters, 'orders' => $data->orders];
+		return $paginate->toArray() + ['filters' => $paginate->filters, 'orders' => $paginate->orders];
 	}
 
+	private function _getCount(Request $request, Builder $builder)
+	{
+		$tables_columns = $this->_getColumns($builder);
+		$_b = clone $builder;
+		$this->_doFilter($request, $_b, $tables_columns);
+		return $_b->count();
+	}
 
 	private function _getExport(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*']) {
 		set_time_limit(600); //10min
 
 		$pagesize = $request->input('pagesize') ?: config('site.pagesize.export', 1000);
-		$data = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($pagesize, $columns)->toArray();
-		!empty($callback) && is_callable($callback) && array_walk($data['data'], $callback);
+		$tables_columns = $this->_getColumns($builder);
+		$this->_doFilter($request, $builder, $tables_columns);
+		$paginate = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($pagesize, $columns);
+		if (!empty($callback) && is_callable($callback))
+			foreach ($paginate as $key => $value)
+				call_user_func_array($callback, [&$value, $key]);
+		$data = $paginate->toArray();
 		!empty($data['data']) && is_assoc($data['data'][0]) && array_unshift($data['data'], array_keys($data['data'][0]));
 		array_unshift($data['data'], [$builder->getModel()->getTable(), $data['from']. '-'. $data['to'].'/'. $data['total'], date('Y-m-d h:i:s')]);
 		return $data['data'];
