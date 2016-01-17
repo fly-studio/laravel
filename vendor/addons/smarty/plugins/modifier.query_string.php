@@ -8,7 +8,7 @@
  */
 function smarty_modifier_query_string($key, $value = NULL)
 {
-	empty($value) && $value = is_string($key) ? app('request')->input($key) : NULL;
-	!empty($value) && $key = [$key => $value]; 
+	empty($value) && $value = !is_array($key) ? app('request')->input($key) : NULL;
+	!is_array($key) && $key = [$key => $value];
 	return http_build_query($key);
 }
