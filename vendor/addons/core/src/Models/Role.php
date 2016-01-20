@@ -49,6 +49,11 @@ class Role extends Model implements EntrustRoleInterface
         $this->table = Config::get('entrust.roles_table');
     }
 
+    public static function findByName($name, $columns = ['*'])
+    {
+    	return static::where('name', $name)->first($columns);
+    }
+
 	public function getRoles()
 	{
 		$roles = [];

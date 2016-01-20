@@ -48,7 +48,7 @@ class User extends Model implements AuthenticatableContract/*, CanResetPasswordC
 		$data['password'] = bcrypt($data['password']);
 		$user = $this->create($data);
 		//加入view组
-		$user->attachRole(Role::where('name', $role_name)->firstOrFail());
+		$user->attachRole(Role::findByName($role_name));
 		return $user;
 	}
 
