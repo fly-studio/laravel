@@ -65,7 +65,9 @@ class Controller extends BaseController {
 			$_permissions += [
 				'index' => $rest.'.view',
 				'show' => $rest.'.view',
+				'data' => $rest.'.view',
 				'export' => $rest.'.export',
+				'print' => $rest.'.export',
 				'edit' => $rest.'.edit',
 				'update' => $rest.'.edit',
 				'create' => $rest.'.create',
