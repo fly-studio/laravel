@@ -38,12 +38,15 @@ class Controller extends BaseController {
 	public $fields;
 	public $user;
 
+	public $withInit = NULL;
+
 	protected $viewData = [];
 
 	public function __construct($withInit = true)
 	{
+		is_null($this->withInit) && $this->withInit = $withInit;
 		/*Init*/
-		if ($withInit)
+		if ($this->withInit)
 		{
 			$this->initCommon();
 			$this->initMember();
