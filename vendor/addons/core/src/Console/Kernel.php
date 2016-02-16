@@ -22,4 +22,19 @@ class Kernel extends BaseKernel {
 		$artisan->setCatchExceptions(true);
         return $out;
     }
+
+    public function setCommands($commands)
+    {
+        $this->commands = $commands;
+    }
+
+    public function getCommands()
+    {
+        return $commands;
+    }
+
+    public function addCommand($command)
+    {
+        $this->commands[] = $command;
+    }
 }
