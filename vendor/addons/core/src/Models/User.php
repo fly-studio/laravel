@@ -2,20 +2,26 @@
 
 namespace Addons\Core\Models;
 
+
 use Addons\Core\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Auth\Authenticatable;
-//use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-//use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+
+
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use Addons\Core\Models\Role;
 use Addons\Core\Models\UserTrait;
 
-class User extends Model implements AuthenticatableContract/*, CanResetPasswordContract*/
+class User extends Model implements AuthenticatableContract,
+                                    AuthorizableContract,
+                                    /*CanResetPasswordContract*/
 {
-	use Authenticatable/*, CanResetPassword*/;
+	use Authenticatable, Authorizable/*, CanResetPassword*/;
 	use SoftDeletes, EntrustUserTrait;
 	use UserTrait;
 	/**
