@@ -25,4 +25,12 @@ class KeyMove extends Command
     {
         return 'MOVE';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

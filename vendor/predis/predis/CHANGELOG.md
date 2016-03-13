@@ -1,35 +1,3 @@
-v1.1.0 (2015-xx-xx)
-================================================================================
-
-- Responses to the following commands are no more casted into boolean values:
-  `SETNX`, `MSETNX`, `PFADD`, `EXISTS`, `MOVE`, `PERSIST`, `EXPIRE`, `EXPIREAT`,
-  `RENAMENX`, `HSET`, `HSETNX`, `HEXISTS`, `SISMEMBER`, `SMOVE`. The original
-  integer value is returned instead.
-
-- Non-boolean string values passed to the `persistent` connection parameter can
-  be used to create different persistent connections. Note that this feature was
-  already present in Predis but required both `persistent` and `path` to be set
-  as illustrated by [#139](https://github.com/nrk/predis/pull/139). This change
-  is needed to prevent confusion with how `path` is used to select a database
-  when using the `redis` scheme.
-
-- Changed how Predis handles URI strings in the context of UNIX domain sockets:
-  `unix:///path/to/socket` should be used now instead of `unix:/path/to/socket`
-  (note the lack of a double slash after the scheme). The old format should be
-  considered obsolete and will not be supported from the next major release.
-
-- Added support for default connection parameters in `Predis\Connection\Factory`
-  augmenting the user-supplied parameters used to create new connections.
-   but they do not override specific parameters when already defined.
-
-- Removed the default value for `timeout` from `Predis\Connection\Parameters`.
-  The fallback to a default value is a responsibility of connection classes, but
-  internally the default timeout for connect() operations is still 5 seconds.
-
-- Implemented support for SSL-encrypted connections, the connection parameters
-  must use either the `tls` or `rediss` scheme.
-
-
 v1.0.3 (2015-07-30)
 ================================================================================
 

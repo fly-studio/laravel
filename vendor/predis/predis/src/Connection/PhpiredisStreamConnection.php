@@ -87,20 +87,22 @@ class PhpiredisStreamConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    protected function assertSslSupport(ParametersInterface $parameters)
+    protected function tcpStreamInitializer(ParametersInterface $parameters)
     {
-        throw new \InvalidArgumentException('SSL encryption is not supported by this connection backend.');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createStreamSocket(ParametersInterface $parameters, $address, $flags, $context = null)
-    {
+        $uri = "tcp://[{$parameters->host}]:{$parameters->port}";
+        $flags = STREAM_CLIENT_CONNECT;
         $socket = null;
-        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
 
-        $resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags);
+        if (isset($parameters->async_connect) && (bool) $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+
+        if (isset($parameters->persistent) && (bool) $parameters->persistent) {
+            $flags |= STREAM_CLIENT_PERSISTENT;
+            $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
+        }
+
+        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);

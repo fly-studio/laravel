@@ -33,7 +33,7 @@ use Predis\Response\Status as StatusResponse;
  *  - scheme: must be 'http'.
  *  - host: hostname or IP address of the server.
  *  - port: TCP port of the server.
- *  - timeout: timeout to perform the connection (default is 5 seconds).
+ *  - timeout: timeout to perform the connection.
  *  - user: username for authentication.
  *  - pass: password for authentication.
  *
@@ -117,7 +117,6 @@ class WebdisConnection implements NodeConnectionInterface
     private function createCurl()
     {
         $parameters = $this->getParameters();
-        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0) * 1000;
 
         if (filter_var($host = $parameters->host, FILTER_VALIDATE_IP)) {
             $host = "[$host]";
@@ -125,7 +124,7 @@ class WebdisConnection implements NodeConnectionInterface
 
         $options = array(
             CURLOPT_FAILONERROR => true,
-            CURLOPT_CONNECTTIMEOUT_MS => $timeout,
+            CURLOPT_CONNECTTIMEOUT_MS => $parameters->timeout * 1000,
             CURLOPT_URL => "$parameters->scheme://$host:$parameters->port",
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_POST => true,

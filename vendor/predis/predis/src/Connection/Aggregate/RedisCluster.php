@@ -45,6 +45,7 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
 {
     private $useClusterSlots = true;
+    private $defaultParameters = array();
     private $pool = array();
     private $slots = array();
     private $slotsMap;
@@ -277,10 +278,14 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     {
         $separator = strrpos($connectionID, ':');
 
-        return $this->connections->create(array(
+        $parameters = array_merge($this->defaultParameters, array(
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
         ));
+
+        $connection = $this->connections->create($parameters);
+
+        return $connection;
     }
 
     /**
@@ -526,5 +531,23 @@ class RedisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     public function useClusterSlots($value)
     {
         $this->useClusterSlots = (bool) $value;
+    }
+
+    /**
+     * Sets a default array of connection parameters to be applied when creating
+     * new connection instances on the fly when they are not part of the initial
+     * pool supplied upon cluster initialization.
+     *
+     * These parameters are not applied to connections added to the pool using
+     * the add() method.
+     *
+     * @param array $parameters Array of connection parameters.
+     */
+    public function setDefaultParameters(array $parameters)
+    {
+        $this->defaultParameters = array_merge(
+            $this->defaultParameters,
+            $parameters ?: array()
+        );
     }
 }

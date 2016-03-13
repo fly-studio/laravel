@@ -25,4 +25,12 @@ class StringSetMultiplePreserve extends StringSetMultiple
     {
         return 'MSETNX';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

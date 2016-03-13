@@ -25,4 +25,12 @@ class SetIsMember extends Command
     {
         return 'SISMEMBER';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }

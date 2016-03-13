@@ -25,4 +25,12 @@ class HashSetPreserve extends Command
     {
         return 'HSETNX';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        return (bool) $data;
+    }
 }
