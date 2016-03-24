@@ -21,6 +21,9 @@
  */
 function smarty_function_pluginclude($params, $template)
 {
+	$_c = config('plugins');
+	if (empty($_c)) return;
+	
 	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,10);
 	for($i = 1; $i < count($dbt);$i++)
 		if ($dbt[$i]['function'] == __FUNCTION__)
@@ -45,7 +48,6 @@ function smarty_function_pluginclude($params, $template)
 		return;
 	}
 
-	$_c = config('plugins');
 	!empty($plugins) && $_c = array_keyfilter($_c, $plugins);
 
 	$names = [];

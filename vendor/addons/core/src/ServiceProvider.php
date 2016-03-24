@@ -47,7 +47,9 @@ class ServiceProvider extends BaseServiceProvider
 		$router = $this->app['router'];
 		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
 		$consoleKernel = $this->app[\Illuminate\Contracts\Console\Kernel::class];
-		foreach (Finder::create()->directories()->in([PLUGINSPATH.'vendor', APPPATH.'vendor'])->depth(0) as $path)
+		$paths = [APPPATH.'vendor'];
+		is_dir(PLUGINSPATH.'vendor') && array_unshift($paths, PLUGINSPATH.'vendor');
+		foreach (Finder::create()->directories()->in($paths)->depth(0) as $path)
 		{
 			$path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			//read config
@@ -115,8 +117,9 @@ class ServiceProvider extends BaseServiceProvider
 	private function bootPlugins()
 	{
 		$router = $this->app['router'];
-
-		foreach(config('plugins') as $name => $config)
+		$plugins = config('plugins');
+		if (empty($plugins)) return;
+		foreach($plugins as $name => $config)
 		{
 			$_c = !empty($config['register']['config']) ? $config['config'] : [];
 			!empty($config['register']['validation']) && $_c[] = 'validation';
