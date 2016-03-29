@@ -21,7 +21,9 @@ class Tree extends Model {
 	//relation
 	public function children()
 	{
-		return $this->hasMany(get_class($this), $this->getParentKeyName(), $this->getKeyName());
+		$builder = $this->hasMany(get_class($this), $this->getParentKeyName(), $this->getKeyName());
+		!empty($this->orderKey) && $builder->orderBy($this->orderKey, 'ASC');
+		return $builder;
 	}
 
 	public function parent()
