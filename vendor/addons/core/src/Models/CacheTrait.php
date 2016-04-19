@@ -57,7 +57,7 @@ trait CacheTrait{
 	{
 		$instance = new static();
 		switch ($method) {
-			case 'find':
+			/*case 'find':
 				if (!isset($parameters[1]))
 				{
 					$key = $parameters[0];			
@@ -70,7 +70,7 @@ trait CacheTrait{
 						$result = parent::__callStatic('find', $parameters); 
 					return $result;
 				}
-				break;
+				break;*/
 			case 'putCache':
 			case 'rememberCache':
 			case 'getCache':
