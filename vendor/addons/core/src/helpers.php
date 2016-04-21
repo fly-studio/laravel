@@ -37,6 +37,7 @@ if (!function_exists('delay_unlink'))
 {
 function delay_unlink($path, $delay)
 {
+	return;
 	if (!file_exists($path)) return FALSE;
 
 	$md5 = is_file($path) ? md5_file($path) : NULL;

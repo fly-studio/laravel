@@ -1,7 +1,7 @@
 <?php
 namespace Addons\Core\Controllers;
 
-use Closure, Schema;
+use Closure, Schema, DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -150,12 +150,22 @@ trait AdminTrait {
 		return $paginate->toArray() + ['filters' => $paginate->filters, 'orders' => $paginate->orders];
 	}
 
-	private function _getCount(Request $request, Builder $builder)
+	private function _getCount(Request $request, Builder $builder, $enable_filters = TRUE)
 	{
-		$tables_columns = $this->_getColumns($builder);
 		$_b = clone $builder;
-		$this->_doFilter($request, $_b, $tables_columns);
-		return $_b->count();
+		if ($enable_filters)
+		{
+			$tables_columns = $this->_getColumns($builder);
+			$this->_doFilter($request, $_b, $tables_columns);
+		}
+		$query = $_b->getQuery();
+		if (!empty($query->groups)) //group by
+		{
+			return DB::table( DB::raw("({$_b->toSql()}) as sub") )
+			->mergeBindings($_b->getQuery()) // you need to get underlying Query Builder
+			->count();
+		} else
+			return $_b->count();
 	}
 
 	private function _getExport(Request $request, Builder $builder, Closure $callback = NULL, array $columns = ['*']) {

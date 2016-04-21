@@ -34,7 +34,7 @@ class DelayUnlink implements SelfHandling, ShouldQueue
 	 * @return void
 	 */
 	public function handle()
-	{
+	{return ;
 		if (is_link($this->path))
 			unlink($this->path);
 		else if (is_dir($this->path))

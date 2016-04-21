@@ -256,6 +256,7 @@ class Validator extends BaseValidator {
 					case 'image':
 					case 'array':
 					case 'requiredif':
+					case 'requiredunless':
 					case 'requiredwith':
 					case 'requiredwithall':
 					case 'string':
