@@ -1,3 +1,6 @@
+<{block "head-scripts-debug"}>
+	<script src="<{'static/js/debug/eruda.debug.js'|url}>"></script>
+<{/block}>
 <{block "head-scripts-jquery"}>
 	<script src="<{'static/js/jquery-1.11.3.min.js'|url}>"></script>
 	<script>jQuery.noConflict();</script>
