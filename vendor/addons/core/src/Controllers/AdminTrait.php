@@ -51,7 +51,7 @@ trait AdminTrait {
 		];
 
 		array_walk($filters, function($v, $key) use ($builder, $operators, $columns) {
-			$key = $columns[$key] ?: $key;
+			$key = !empty($columns[$key]) ? $columns[$key] : $key;
 			array_walk($v, function($value, $method) use ($builder, $key, $operators){
 				if (empty($value) && $value !== '0') return; //''不做匹配
 				else if (in_array($method, ['like', 'like_binary', 'not_like'])) $value = '%'.$value.'%';

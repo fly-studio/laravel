@@ -49,7 +49,8 @@ class Output {
 				# code...
 				break;
 		}		
-		 $objWriter->save($filepath);
+		$objWriter->save($filepath);
+		@chmod($filepath, 0777);
 		//@unlink($filepath);
 		return $filepath;
 	}
@@ -94,6 +95,7 @@ class Output {
 	{
 		$filepath = tempnam(storage_path('utils'), 'yaml');
 		file_put_contents($filepath, function_exists('yaml_emit') ? yaml_emit($data) : Spyc::YAMLDump($data));
+		@chmod($filepath, 0777);
 		return $filepath;
 	}
 
