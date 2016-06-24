@@ -65,7 +65,7 @@ class GPS {
 		$x = $bdLon - 0.0065; $y = $bdLat - 0.006;  
 		$z = sqrt($x * $x + $y * $y) - 0.00002 * sin($y * $this->x_pi);  
 		$theta = atan2($y, $x) - 0.000003 * cos($x * $this->x_pi);  
-		$$gcjLon = $z * cos($theta);  
+		$gcjLon = $z * cos($theta);
 		$gcjLat = $z * sin($theta);
 		return array('lat' => $gcjLat, 'lon' => $gcjLon);
 	}
@@ -97,8 +97,8 @@ class GPS {
 		/*
 		if (abs($mercatorLon) < 180 && abs($mercatorLat) < 90)
 			return NULL;
-    	if ((abs($mercatorLon) > 20037508.3427892) || (abs($mercatorLat) > 20037508.3427892))
-        	return NULL;
+		if ((abs($mercatorLon) > 20037508.3427892) || (abs($mercatorLat) > 20037508.3427892))
+			return NULL;
 		$a = $mercatorLon / 6378137.0 * 57.295779513082323;
 		$x = $a - (floor((($a + 180.0) / 360.0)) * 360.0);
 		$y = (1.5707963267948966 - (2.0 * atan(exp((-1.0 * $mercatorLat) / 6378137.0)))) * 57.295779513082323;
@@ -118,22 +118,22 @@ class GPS {
 		$distance = $alpha * $earthR;
 		return $distance;
 		/*
-		  $earthRadius = 6367000; //approximate radius of earth in meters  
-	   
-	     $latA = ($latA * $this->PI ) / 180;  
-	     $lonA = ($lonA * $this->PI ) / 180;  
-	   
-	     $latA = ($latA * $this->PI ) / 180;  
-	     $lonB = ($lonB * $this->PI ) / 180;  
- 
-	   
-	     $calcLongitude = $lonB - $lonA;  
-	     $calcLatitude = $latA - $latA;  
-	     $stepOne = pow(sin($calcLatitude / 2), 2) + cos($latA) * cos($latA) * pow(sin($calcLongitude / 2), 2);    
-	     $stepTwo = 2 * asin(min(1, sqrt($stepOne)));  
-	     $calculatedDistance = $earthRadius * $stepTwo;  
-	   
-	     return round($calculatedDistance);  
+		$earthRadius = 6367000; //approximate radius of earth in meters  
+
+		$latA = ($latA * $this->PI ) / 180;  
+		$lonA = ($lonA * $this->PI ) / 180;  
+
+		$latA = ($latA * $this->PI ) / 180;  
+		$lonB = ($lonB * $this->PI ) / 180;  
+
+
+		$calcLongitude = $lonB - $lonA;  
+		$calcLatitude = $latA - $latA;  
+		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($latA) * cos($latA) * pow(sin($calcLongitude / 2), 2);    
+		$stepTwo = 2 * asin(min(1, sqrt($stepOne)));  
+		$calculatedDistance = $earthRadius * $stepTwo;  
+
+		return round($calculatedDistance);  
 		 */
 	}
 
