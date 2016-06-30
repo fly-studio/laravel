@@ -187,12 +187,6 @@ class Controller extends BaseController {
 		return $this->_make_output('failure', 'validation.failure_post', FALSE, ['errors' => $errors, 'messages' => implode($messages)], TRUE);
 	}
 
-	protected function failure_attachment($error_no, $url = FALSE)
-	{
-		$_config = config('attachment');
-		return $this->failure('attachment.'.$error_no, $url, ['maxsize' => format_bytes($_config['maxsize']), 'ext' => implode(',', $_config['ext'])]);
-	}
-
 	protected function failure_noexists($url = FALSE, array $data = [], $export_data = FALSE)
 	{
 		return $this->failure('document.failure_noexist', $url, $data, $export_data);
