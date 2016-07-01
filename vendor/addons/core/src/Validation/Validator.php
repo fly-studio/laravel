@@ -162,7 +162,7 @@ class Validator extends BaseValidator {
 						$parameters = '/^[\w\d]+$/i';
 						break;
 					case 'ansi':
-						$parameters = $parameters === true ? 2 : $parameters;
+						$parameters = $parameters === true ? 2 : floatval($parameters);
 						break;
 					case 'notin':
 						$rule = 'regex';
@@ -175,12 +175,12 @@ class Validator extends BaseValidator {
 					case 'digits':
 						if (!empty($parameters))
 						{
-							$jqueryRules[$attribute] += ['rangelength' => [$parameters, $parameters]];
+							$jqueryRules[$attribute] += ['rangelength' => [floatval($parameters), floatval($parameters)]];
 							$parameters = true;
 						}
 						break;
 					case 'digitsbetween':
-						$jqueryRules[$attribute] += ['rangelength' => [$parameters[0], $parameters[1]]];
+						$jqueryRules[$attribute] += ['rangelength' => [floatval($parameters[0]), floatval($parameters[1])]];
 						$rule = 'digits';
 						$parameters = true;
 						break;
@@ -194,7 +194,7 @@ class Validator extends BaseValidator {
 						break;
 					case 'size':
 						$rule = $this->isNumeric($_list) ? 'range' : 'rangelength';
-						$parameters = [$parameters, $parameters];
+						$parameters = [floatval($parameters), floatval($parameters)];
 						break;
 					case 'requiredwithoutall': //任意一个有值
 						$rule = 'require_from_group';
@@ -206,12 +206,16 @@ class Validator extends BaseValidator {
 						break;
 					case 'max':
 						$rule = $this->isNumeric($_list) ? 'max' : 'maxlength';
+						$parameters = floatval($parameters);
 						break;
 					case 'min':
 						$rule = $this->isNumeric($_list) ? 'min' : 'minlength';
+						$parameters = floatval($parameters);
 						break;
 					case 'between':
 						$rule = 'range';
+						$parameters = [floatval($parameters[0]), floatval($parameters[1])] ;
+
 						break;
 					case 'confirmed': //交換兩者的attribute
 						$parameters = '[name="'.$attribute.'"]';
