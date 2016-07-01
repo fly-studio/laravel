@@ -2,8 +2,8 @@
 namespace Addons\Core\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
-use Addons\Core\Models\Role;
-use Addons\Core\Models\Field;
+use App\Role;
+use App\Field;
 use Addons\Core\Output;
 use Addons\Core\File\Mimes;
 use Illuminate\Http\Exception\HttpResponseException;

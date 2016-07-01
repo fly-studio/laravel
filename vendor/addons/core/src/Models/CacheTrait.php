@@ -35,14 +35,15 @@ trait CacheTrait{
 		$result = parent::fireModelEvent($event, $halt);
 		if (in_array($event, ['created', 'updated', 'deleted', 'saved',]))
 		{
-			$primaryKey = $this->primaryKey;
 			if ($this->auto_cache === true)
-				$this->forgetCache($this->$primaryKey);
+				$this->forgetCache($this->getKey());
 			//clear the other fire
 			$this->forgetCache($this->fire_caches);
 		}
 		return $result;
 	}
+
+
 
 	/**
 	 * Call static method.
@@ -75,6 +76,7 @@ trait CacheTrait{
 			case 'rememberCache':
 			case 'getCache':
 			case 'forgetCache':
+			case 'clearCache':
 				return call_user_func_array([$instance, $method], $parameters);
 				break;
 		}
@@ -88,7 +90,7 @@ trait CacheTrait{
 	 * @param  integer $key
 	 * @param  string  $array
 	 */
-	public static function cache_key($key)
+	public function cache_key($key)
 	{
 		return Str::lower(get_called_class()).'_'.$key;
 	}
@@ -121,6 +123,13 @@ trait CacheTrait{
 			Cache::forget($key);
 		}
 		return TRUE;
+	}
+
+	protected function clearCache()
+	{
+		$this->forgetCache($this->fire_caches);
+		$this->forgetCache($this->getKey());
+
 	}
 
 }
