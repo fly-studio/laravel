@@ -74,19 +74,18 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 	{
 
 		parent::prepare($request);
+		$lastModified = $this->getLastModified();
 
 		if (!empty($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getEtag())
 		{
-			$this->setStatusCode(304);abort(304, '', ['Last-Modified' => $this->getLastModified()]); //此时必须退出，不然因为etag等头会触发chorme pending的BUG
+			$this->setStatusCode(304);abort(304, '', ['Last-Modified' => $lastModified instanceof \DateTime ? $lastModified->format('D, d M Y H:i:s').' GMT' : $lastModified]); //此时必须退出，不然因为etag等头会触发chorme pending的BUG
 			$this->maxlen = 0;
 		}
 		else if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']))
 		{
-			$lastModified = $this->getLastModified();
-			$lastModified instanceof \DateTime && $lastModified = $lastModified->getTimeStamp();
-			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $lastModified)
+			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= ($lastModified instanceof \DateTime ? $lastModified->getTimeStamp() : $lastModified))
 			{
-				$this->setStatusCode(304);abort(304, '' , ['Last-Modified' => $this->getLastModified()]);
+				$this->setStatusCode(304);abort(304, '' , ['Last-Modified' => $lastModified instanceof \DateTime ? $lastModified->format('D, d M Y H:i:s').' GMT' : $lastModified]);
 				$this->maxlen = 0;
 			}
 		} else {
