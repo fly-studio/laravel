@@ -77,7 +77,7 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 
 		if (!empty($_SERVER['HTTP_IF_NONE_MATCH']) && trim($_SERVER['HTTP_IF_NONE_MATCH']) == $this->getEtag())
 		{
-			$this->setStatusCode(304);
+			$this->setStatusCode(304);abort(304, '', ['Last-Modified' => $this->getLastModified()]); //此时必须退出，不然因为etag等头会触发chorme pending的BUG
 			$this->maxlen = 0;
 		}
 		else if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE']))
@@ -86,14 +86,14 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 			$lastModified instanceof \DateTime && $lastModified = $lastModified->getTimeStamp();
 			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $lastModified)
 			{
-				$this->setStatusCode(304);
+				$this->setStatusCode(304);abort(304, '' , ['Last-Modified' => $this->getLastModified()]);
 				$this->maxlen = 0;
 			}
 		} else {
 			switch (substr($_SERVER['SERVER_SOFTWARE'], 0, (int)strpos($_SERVER['SERVER_SOFTWARE'],'/'))) {
 				case 'nginx':
 					$this->headers->set('X-Accel-Redirect', env('APP_PATH').'/'.relative_path($this->file->getPathname(), APPPATH));
-					$this->headers->set('X-Accel-Buffering', 'yes');
+					$this->headers->set('X-Accel-Buffering', 'no');
 					//$this->headers->set('X-Accel-Limit-Rate', '102400'); //速度限制 Byte/s
 					//$this->headers('Accept-Ranges', 'none');//单线程 限制多线程
 					$this->maxlen = 0;
