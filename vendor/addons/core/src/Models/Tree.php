@@ -222,16 +222,15 @@ class Tree extends Model {
 			return $this->update([$this->getParentKeyName() => $target_id]); //自动调取changeParent
 		
 		if ($targetNode->getParentKey() != $this->getParentKey()) //父级不相同
-		{
 			$this->update([$this->getParentKeyName() => $targetNode->getParentKey()]); //自动调取changeParent
-			if (!empty($this->getOrderKeyName()))
-			{
-				$order = intval($targetNode->getOrderKey()) + ($move_type == 'prev' ? 0 : 1);
-				//更新同父级下所有的顺序
-				static::where($this->getParentKeyName(), $targetNode->getParentKey())->where($this->getOrderKeyName(), '>=', $order)->increment($this->getOrderKeyName());
-				$this->update([$this->getOrderKeyName() => $order]); //更新自己的顺序
-			}
+		if (!empty($this->getOrderKeyName()))
+		{
+			$order = intval($targetNode->getOrderKey()) + ($move_type == 'prev' ? 0 : 1);
+			//更新同父级下所有的顺序
+			static::where($this->getParentKeyName(), $targetNode->getParentKey())->where($this->getOrderKeyName(), '>=', $order)->increment($this->getOrderKeyName());
+			$this->update([$this->getOrderKeyName() => $order]); //更新自己的顺序
 		}
+
 		return $this;
 	}
 

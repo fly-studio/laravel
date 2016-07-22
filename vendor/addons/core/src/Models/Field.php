@@ -2,13 +2,16 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Tree;
-use Addons\Core\Models\FieldTrait;
+//use Addons\Core\Models\FieldTrait;
 use Cache;
 class Field extends Tree {
-	use FieldTrait;
+	//use FieldTrait;
 	//不能批量赋值
 	public $auto_cache = true;
 	public $fire_caches = ['fields'];
+	public $orderKey = 'order_index';
+	public $pathKey = NULL;
+	public $levelKey = NULL;
 
 	public $casts = [
 		'extra' => 'array',
