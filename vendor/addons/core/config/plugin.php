@@ -34,10 +34,18 @@ return [
 		//- 为避免覆盖掉主配置，请谨慎设置键值
 		'validation' => false,
 	],
-	'router' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
-		'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
-		'prefix' => NULL, //路由的prefix，空代表 / (根目录)
-		'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+	'routers' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
+		'web' => [
+			'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
+			'prefix' => '/', //路由的prefix，空代表 / (根目录)
+			'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+		],
+		'api' => [
+			'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
+			'prefix' => 'api', //路由的prefix，空代表 / (根目录)
+			'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+		],
+		//....
 	],
 	//全局中间件，会被自动调用
 	//参考 /app/Http/Kernel.php

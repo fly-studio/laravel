@@ -75,7 +75,7 @@ class ServiceProvider extends BaseServiceProvider
 			//register middleware
 			foreach ($config['routeMiddleware'] as $key => $middleware)
 				$router->middleware($key, $middleware);
-			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']); 
+			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']);
 
 			//register commands
 			!empty($config['commands']) && $consoleKernel->commands = array($consoleKernel->commands, $config['commands']);
@@ -128,10 +128,13 @@ class ServiceProvider extends BaseServiceProvider
 
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);
-			!empty($config['register']['router']) && $router->group(['namespace' => empty($config['router']['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $config['router']['namespace'], 'prefix' => $config['router']['prefix'], 'middleware' => $config['router']['middleware']], function($router) use ($config) {
-				require $config['path'].'routes.php';
-			});
 
+			foreach($config['routers'] as $key => $route)
+			{
+				$router->group(['namespace' => empty($route['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $route['namespace'], 'middleware' => array_merge([$key], $route['middleware']), 'prefix' => $route['prefix']], function($router) use ($config, $key) {
+					require $config['path'].'routes/'.$key.'.php';
+				});
+			}
 		}
 	}
 

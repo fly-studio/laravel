@@ -59,7 +59,7 @@ function smarty_function_pluginclude($params, $template)
 	});
 	asort($names);
 	foreach ($names as $name => $order)
-		$template->smarty->ext->_subtemplate->render($template, ((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, array(), 0, true);
+		$template->_subTemplateRender(((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, [], 0, true);
 
 }
 

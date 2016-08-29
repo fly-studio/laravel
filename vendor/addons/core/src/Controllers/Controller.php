@@ -8,8 +8,8 @@ use Addons\Core\Output;
 use Addons\Core\File\Mimes;
 use Illuminate\Http\Exception\HttpResponseException;
 //Facades
-use Auth, Lang;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 class Controller extends BaseController {
 
 	/**
@@ -24,7 +24,7 @@ class Controller extends BaseController {
 	 *  
 	 * @var array
 	 */
-	public $permissions = [];
+	protected $permissions = [];
 	/**
 	 * 设置本名称后，将自动为本名称加上一个通用的权限
 	 * 查看 initPermissions
@@ -32,27 +32,15 @@ class Controller extends BaseController {
 	 * 
 	 * @var string
 	 */
-	public $RESTful_permission = NULL;
+	protected $RESTful_permission = NULL;
 
 	public $site;
 	public $fields;
 	public $user;
 
-	public $withInit = NULL;
-
 	protected $viewData = [];
 
-	public function __construct($withInit = true)
-	{
-		is_null($this->withInit) && $this->withInit = $withInit;
-		/*Init*/
-		if ($this->withInit)
-		{
-			$this->initCommon();
-			$this->initMember();
-			$this->initPermissions();
-		}
-	}
+	//Illuminate\Routing\Route 需要读取中间件，所以需要取消构造函数
 
 	private function initPermissions()
 	{
@@ -218,15 +206,15 @@ class Controller extends BaseController {
 		}
 
 		$msg = array_keyfilter($msg, 'title,content');
-		$result = array(
+		$result = [
 			'result' => $type,
 			'time' => time(),
 			'duration' => microtime(TRUE) - LARAVEL_START,
-			'uid' => $this->user['id'],
+			'uid' => !empty($this->user) ? $this->user->getKey() : NULL,
 			'message' => $msg,
 			'url' => is_string($url) ? url($url) : $url,
 			'data' => $export_data ? $data : [],
-		);
+		];
 		return $this->output($result);
 	}
 
@@ -260,6 +248,7 @@ class Controller extends BaseController {
 
 	private function checkPermission($method)
 	{
+		$this->initPermissions();
 		$method = strtolower($method);
 		!isset($this->permissions[$method]) && $method = '*';
 		return array_key_exists($method, $this->permissions) ? $this->user->can($this->permissions[$method], true) : true;
@@ -267,6 +256,8 @@ class Controller extends BaseController {
 
 	public function callAction($method, $parameters)
 	{
+		$this->initCommon();
+		$this->initMember();
 		if( !$this->checkPermission($method) )
 		{
 			in_array(app('request')->input('of'), ['csv', 'xls', 'xlsx', 'pdf']) && app('request')->offsetSet('of', '');
