@@ -2,8 +2,11 @@
 
 namespace Illuminate\Session;
 
+use Carbon\Carbon;
 use SessionHandlerInterface;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Contracts\Container\Container;
 
 class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareInterface
 {
@@ -21,6 +24,20 @@ class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareI
      */
     protected $table;
 
+    /*
+     * The number of minutes the session should be valid.
+     *
+     * @var int
+     */
+    protected $minutes;
+
+    /**
+     * The container instance.
+     *
+     * @var \Illuminate\Contracts\Container\Container
+     */
+    protected $container;
+
     /**
      * The existence state of the session.
      *
@@ -33,11 +50,15 @@ class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareI
      *
      * @param  \Illuminate\Database\ConnectionInterface  $connection
      * @param  string  $table
+     * @param  int  $minutes
+     * @param  \Illuminate\Contracts\Container\Container|null  $container
      * @return void
      */
-    public function __construct(ConnectionInterface $connection, $table)
+    public function __construct(ConnectionInterface $connection, $table, $minutes, Container $container = null)
     {
         $this->table = $table;
+        $this->minutes = $minutes;
+        $this->container = $container;
         $this->connection = $connection;
     }
 
@@ -64,6 +85,14 @@ class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareI
     {
         $session = (object) $this->getQuery()->find($sessionId);
 
+        if (isset($session->last_activity)) {
+            if ($session->last_activity < Carbon::now()->subMinutes($this->minutes)->getTimestamp()) {
+                $this->exists = true;
+
+                return;
+            }
+        }
+
         if (isset($session->payload)) {
             $this->exists = true;
 
@@ -76,17 +105,50 @@ class DatabaseSessionHandler implements SessionHandlerInterface, ExistenceAwareI
      */
     public function write($sessionId, $data)
     {
+        $payload = $this->getDefaultPayload($data);
+
+        if (! $this->exists) {
+            $this->read($sessionId);
+        }
+
         if ($this->exists) {
-            $this->getQuery()->where('id', $sessionId)->update([
-                'payload' => base64_encode($data), 'last_activity' => time(),
-            ]);
+            $this->getQuery()->where('id', $sessionId)->update($payload);
         } else {
-            $this->getQuery()->insert([
-                'id' => $sessionId, 'payload' => base64_encode($data), 'last_activity' => time(),
-            ]);
+            $payload['id'] = $sessionId;
+
+            $this->getQuery()->insert($payload);
         }
 
         $this->exists = true;
+    }
+
+    /**
+     * Get the default payload for the session.
+     *
+     * @param  string  $data
+     * @return array
+     */
+    protected function getDefaultPayload($data)
+    {
+        $payload = ['payload' => base64_encode($data), 'last_activity' => time()];
+
+        if (! $container = $this->container) {
+            return $payload;
+        }
+
+        if ($container->bound(Guard::class)) {
+            $payload['user_id'] = $container->make(Guard::class)->id();
+        }
+
+        if ($container->bound('request')) {
+            $payload['ip_address'] = $container->make('request')->ip();
+
+            $payload['user_agent'] = substr(
+                (string) $container->make('request')->header('User-Agent'), 0, 500
+            );
+        }
+
+        return $payload;
     }
 
     /**

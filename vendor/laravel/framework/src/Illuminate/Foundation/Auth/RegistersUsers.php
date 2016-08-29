@@ -14,7 +14,7 @@ trait RegistersUsers
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegister()
+    public function showRegistrationForm()
     {
         return view('auth.register');
     }
@@ -25,18 +25,22 @@ trait RegistersUsers
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function postRegister(Request $request)
+    public function register(Request $request)
     {
-        $validator = $this->validator($request->all());
+        $this->validator($request->all())->validate();
 
-        if ($validator->fails()) {
-            $this->throwValidationException(
-                $request, $validator
-            );
-        }
-
-        Auth::login($this->create($request->all()));
+        $this->guard()->login($this->create($request->all()));
 
         return redirect($this->redirectPath());
+    }
+
+    /**
+     * Get the guard to be used during registration.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
     }
 }

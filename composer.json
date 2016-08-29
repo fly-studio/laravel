@@ -5,8 +5,8 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.5.9",
-        "laravel/framework": "5.1.*",
+        "php": ">=5.6.4",
+        "laravel/framework": "5.3.*",
         "barryvdh/laravel-debugbar": "^2.0",
         "smarty/smarty": "^3.1",
         "doctrine/dbal": "^2.5",
@@ -20,10 +20,11 @@
         "predis/predis": "^1.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
+       "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~4.0",
-        "phpspec/phpspec": "~2.1"
+        "phpunit/phpunit": "~5.0",
+        "symfony/css-selector": "3.1.*",
+        "symfony/dom-crawler": "3.1.*"
     },
     "autoload": {
         "classmap": [
@@ -39,7 +40,14 @@
         ]
     },
     "scripts": {
+        "post-root-package-install": [
+            "php -r \"copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "php artisan key:generate"
+        ],
         "post-install-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postInstall",
             "composer dump-autoload --optimize"
         ],
         "pre-update-cmd": [
@@ -47,13 +55,8 @@
         ],
         "post-update-cmd": [
             "move addons .\\vendor\\addons",
+	    "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "composer dump-autoload --optimize"
-        ],
-        "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "php artisan key:generate"
         ]
     },
     "config": {

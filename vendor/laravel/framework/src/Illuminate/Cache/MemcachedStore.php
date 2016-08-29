@@ -2,6 +2,7 @@
 
 namespace Illuminate\Cache;
 
+use Memcached;
 use Illuminate\Contracts\Cache\Store;
 
 class MemcachedStore extends TaggableStore implements Store
@@ -36,7 +37,7 @@ class MemcachedStore extends TaggableStore implements Store
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string  $key
+     * @param  string|array  $key
      * @return mixed
      */
     public function get($key)
@@ -49,16 +50,57 @@ class MemcachedStore extends TaggableStore implements Store
     }
 
     /**
+     * Retrieve multiple items from the cache by key.
+     *
+     * Items not found in the cache will have a null value.
+     *
+     * @param  array  $keys
+     * @return array
+     */
+    public function many(array $keys)
+    {
+        $prefixedKeys = array_map(function ($key) {
+            return $this->prefix.$key;
+        }, $keys);
+
+        $values = $this->memcached->getMulti($prefixedKeys, null, Memcached::GET_PRESERVE_ORDER);
+
+        if ($this->memcached->getResultCode() != 0) {
+            return array_fill_keys($keys, null);
+        }
+
+        return array_combine($keys, $values);
+    }
+
+    /**
      * Store an item in the cache for a given number of minutes.
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  int     $minutes
+     * @param  float|int  $minutes
      * @return void
      */
     public function put($key, $value, $minutes)
     {
-        $this->memcached->set($this->prefix.$key, $value, $minutes * 60);
+        $this->memcached->set($this->prefix.$key, $value, (int) ($minutes * 60));
+    }
+
+    /**
+     * Store multiple items in the cache for a given number of minutes.
+     *
+     * @param  array  $values
+     * @param  float|int  $minutes
+     * @return void
+     */
+    public function putMany(array $values, $minutes)
+    {
+        $prefixedValues = [];
+
+        foreach ($values as $key => $value) {
+            $prefixedValues[$this->prefix.$key] = $value;
+        }
+
+        $this->memcached->setMulti($prefixedValues, (int) ($minutes * 60));
     }
 
     /**
@@ -66,12 +108,12 @@ class MemcachedStore extends TaggableStore implements Store
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  int     $minutes
+     * @param  float|int  $minutes
      * @return bool
      */
     public function add($key, $value, $minutes)
     {
-        return $this->memcached->add($this->prefix.$key, $value, $minutes * 60);
+        return $this->memcached->add($this->prefix.$key, $value, (int) ($minutes * 60));
     }
 
     /**
