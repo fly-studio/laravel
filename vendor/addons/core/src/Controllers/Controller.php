@@ -228,7 +228,7 @@ class Controller extends BaseController {
 		
 		if (!in_array($of, ['js', 'json', 'jsonp', 'xml', 'txt', 'text', 'csv', 'xls', 'xlsx', 'yaml', 'html', 'pdf' ]))
 		{
-			if ($request->ajax()) //自动切换ajax状态下of为json
+			if ($request->expectsJson()) //自动切换ajax状态下of为json
 				$of = empty($jsonp) ? 'json' : 'jsonp';
 			else
 				$of = 'html';
