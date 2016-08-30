@@ -75,6 +75,10 @@ class ServiceProvider extends BaseServiceProvider
 			//register middleware
 			foreach ($config['routeMiddleware'] as $key => $middleware)
 				$router->middleware($key, $middleware);
+			foreach ($config['middlewareGroups'] as $group => $middlewares)
+				foreach($middlewares as $middleware)
+					$router->pushMiddlewareToGroup($group, $middleware);
+			
 			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']);
 
 			//register commands

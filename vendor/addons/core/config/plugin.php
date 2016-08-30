@@ -52,6 +52,10 @@ return [
 	'middleware' => [
 		// \Plugins\Tools\App\Http\Middleware\VerifyCsrfToken::class,
 	],
+	'middlewareGroups' => [
+		// 'web' => [],
+		// 'api' => [],
+	],
 	//路由中间键 附加到路由中
 	//参考 /app/Http/Kernel.php
 	'routeMiddleware' => [
