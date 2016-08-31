@@ -21,6 +21,8 @@ return [
 		//- Controller中这样调用：view('tools:system.xxx'); 对应/tools/resources/views/system/xxx.tpl
 		//- smarty模板中这样调用：<{include file="[tools]system/nav.inc.tpl"}>
 		'view' => false, 
+		//是否注册/tools/database/migrations到迁移
+		'migrate' => false, 
 		//是否注册/tools/resources/lang到语言包
 		//- Controller中这样调用：lang('tools:valition.alpha_dash');
 		//- smarty模板中这样调用：<{'tools:valition.alpha_dash'|lang}>
