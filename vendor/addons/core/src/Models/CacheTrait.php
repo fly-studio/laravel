@@ -5,23 +5,17 @@ use Cache;
 trait CacheTrait{
 
 	/**
-	 * Cache enabled
-	 *
-	 * @var boolean
-	 */
-	public $auto_cache = false;
-	/**
 	 * Cache live in minutes
 	 *
 	 * @var integer
 	 */
-	public $cache_ttl = 15;
+	protected $cache_ttl = 15;
 	/**
 	 * forget these keys when fire
 	 * 
 	 * @var array
 	 */
-	public $fire_caches = [];
+	protected $fire_caches = [];
 
 	/**
 	 * Fire the given event for the model.
@@ -30,58 +24,20 @@ trait CacheTrait{
 	 * @param  bool    $halt
 	 * @return mixed
 	 */
-	protected function fireModelEvent($event, $halt = true)
+	protected static function bootCacheTrait()
 	{
-		$result = parent::fireModelEvent($event, $halt);
-		if (in_array($event, ['created', 'updated', 'deleted', 'saved',]))
-		{
-			if ($this->auto_cache === true)
-				$this->forgetCache($this->getKey());
-			//clear the other fire
-			$this->forgetCache($this->fire_caches);
-		}
-		return $result;
-	}
-
-
-
-	/**
-	 * Call static method.
-	 *
-	 * Embeded cache with find method.
-	 *
-	 * @param  string  $method
-	 * @param  array   $parameters
-	 * @return Object
-	 */
-	public static function __callStatic($method, $parameters)
-	{
-		$instance = new static();
-		switch ($method) {
-			/*case 'find':
-				if (!isset($parameters[1]))
-				{
-					$key = $parameters[0];			
-					if ($instance->auto_cache === true) {
-						if (! $result = $instance->getCache($key)) {
-							$result = parent::__callStatic('find', $parameters);
-							! is_null($result) && $instance->putCache($key, $result);
-						}
-					} else
-						$result = parent::__callStatic('find', $parameters); 
-					return $result;
-				}
-				break;*/
-			case 'putCache':
-			case 'rememberCache':
-			case 'getCache':
-			case 'forgetCache':
-			case 'clearCache':
-				return call_user_func_array([$instance, $method], $parameters);
-				break;
-		}
-		unset($instance);
-		return parent::__callStatic($method, $parameters); 
+		static::created(function($model) {
+			$model->clearCache();
+		});
+		static::updated(function($model) {
+			$model->clearCache();
+		});
+		static::deleted(function($model) {
+			$model->clearCache();
+		});
+		static::saved(function($model) {
+			$model->clearCache();
+		});
 	}
 
 	/**
@@ -90,9 +46,9 @@ trait CacheTrait{
 	 * @param  integer $key
 	 * @param  string  $array
 	 */
-	public function cache_key($key)
+	private function cache_key($key)
 	{
-		return Str::lower(get_called_class()).'_'.$key;
+		return $key;//Str::lower(get_called_class()).'_'.$key;
 	}
 
 	protected function rememberCache($key, $callback, $expiredMinutes = NULL)
@@ -128,8 +84,6 @@ trait CacheTrait{
 	protected function clearCache()
 	{
 		$this->forgetCache($this->fire_caches);
-		$this->forgetCache($this->getKey());
-
 	}
 
 }
