@@ -42,7 +42,7 @@ trait AdminTrait {
 	 */
 	private function _doFilter(Request $request, Builder $builder, $columns = [])
 	{
-		$filters = $this->_getFilters($request, $builder);
+		$filters = $this->_getFilters($request);
 		$operators = [
 			'in' => 'in', 'not_in' => 'not in', 'is' => 'is', 'min' => '>=', 'greater_equal' => '>=', 'max' => '<=', 'less_equal' => '<=', 'between' => 'between', 'not_between' => 'not between', 'greater' => '>', 'less' => '<', 'not_equal' => '<>', 'inequal' => '<>', 'equal' => '=',
 			'like' => 'like', 'left_like' => 'like', 'right_like' => 'like', 'rlike' => 'rlike', 'ilike' => 'ilike', 'like_binary' => 'like binary', 'left_like_binary' => 'like binary', 'right_like_binary' => 'like binary', 'not_like' => 'not like', 'not_left_like' => 'not like', 'not_right_like' => 'not like',
@@ -83,7 +83,7 @@ trait AdminTrait {
 	 * @param  Builder $builder 
 	 * @return array           返回参数列表
 	 */
-	private function _getFilters(Request $request, Builder $builder)
+	private function _getFilters(Request $request)
 	{
 		$filters = [];
 		$inputs = $request->input('filters') ?: [];
