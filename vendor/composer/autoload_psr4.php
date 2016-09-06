@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
     'Zizaco\\Entrust\\' => array($vendorDir . '/zizaco/entrust/src/Entrust'),
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
@@ -35,6 +36,7 @@ return array(
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Mews\\Captcha\\' => array($vendorDir . '/mews/captcha/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
+    'Laravel\\Scout\\' => array($vendorDir . '/laravel/scout/src'),
     'Jenssegers\\Agent\\' => array($vendorDir . '/jenssegers/agent/src'),
     'Intervention\\Image\\' => array($vendorDir . '/intervention/image/src/Intervention/Image'),
     'Illuminate\\' => array($vendorDir . '/laravel/framework/src/Illuminate'),
