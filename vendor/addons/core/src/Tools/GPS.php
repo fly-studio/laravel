@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core;
+namespace Addons\Core\Tools;
 
 class GPS {
 	private $PI = 3.14159265358979324;

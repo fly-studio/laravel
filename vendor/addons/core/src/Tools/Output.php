@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core;
+namespace Addons\Core\Tools;
 
 use Addons\Core\Spyc;
 

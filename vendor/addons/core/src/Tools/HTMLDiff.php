@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core;
+namespace Addons\Core\Tools;
 /**
  * @example
  * echo '<style type="text/css">ins {	background-color: #cfc;	text-decoration: none;}del {	color: #999;	background-color:#FEC8C8;}</style>';

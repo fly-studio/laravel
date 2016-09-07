@@ -1,10 +1,11 @@
 <?php
 namespace Addons\Core\Controllers;
-use Addons\Core\Output;
+
+use Addons\Core\Tools\Output;
+use Addons\Core\Tools\Encrypt;
 use Illuminate\Http\Exception\HttpResponseException;
 use Addons\Core\File\Mimes;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Crypt;
 
 trait OutputTrait {
 
@@ -34,6 +35,11 @@ trait OutputTrait {
 	protected function view($filename, $data = [])
 	{		
 		return view($filename, $data)->with($this->viewData);
+	}
+
+	public function api(array $data, $encrypt = FALSE)
+	{
+		return $this->success(NULL, FALSE, $data, $encrypt ? 'encrypt': TRUE);
 	}
 
 	public function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
@@ -124,7 +130,9 @@ trait OutputTrait {
 		}
 
 		$msg = array_keyfilter($msg, 'title,content');
-		$export_data === 'encrypt' && $data = Crypt::encrypt(serialize($data));
+
+		//加密数据
+		$encrypt = new Encrypt;
 		$result = [
 			'result' => $type,
 			'time' => time(),
@@ -132,7 +140,7 @@ trait OutputTrait {
 			'uid' => !empty($this->user) ? $this->user->getKey() : NULL,
 			'message' => $msg,
 			'url' => is_string($url) ? url($url) : $url,
-			'data' => $export_data ? $data : [],
+			'data' => $export_data ? ($export_data === 'encrypt' ? $encrypt->encode(serialize($data)) : $data) : []
 		];
 		return $this->output($result);
 	}
@@ -158,10 +166,13 @@ trait OutputTrait {
 			$filename = Output::$of($data['data']);
 			$response = response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
 		} else {
-			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view(['_data' => $data]);
-			$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
+			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
+			$response = response($content)
+			->header('X-Public-Key', rawurlencode(session('encrypt.publickey', NULL)))
+			->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
 		if ($abort) throw new HttpResponseException($response);
 		return $response;
 	}
+
 }
