@@ -39,7 +39,7 @@ trait OutputTrait {
 
 	public function api(array $data, $encrypt = FALSE)
 	{
-		return $this->success(NULL, FALSE, $data, $encrypt ? 'encrypt': TRUE);
+		return $this->_make_output('api', NULL, FALSE, $data, $encrypt);
 	}
 
 	public function error($message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
@@ -111,37 +111,50 @@ trait OutputTrait {
 
 	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
 	{
-		$msg = $message_name;
-		if (!is_array($message_name))
-		{
-			$msg = Lang::has($message_name) ? trans($message_name) : (Lang::has('core::common.'.$message_name) ? trans('core::common.'.$message_name) : []);
-			is_string($msg) && $msg = ['content' => $msg];
-			$default = trans('core::common.default.'.$type );
-			$msg = _extends($msg, $default); //填充
-		}
-
-		$default = trans('core::common.default.'.$type );
-		$msg = _extends($msg, $default);
-
-		if (!empty($data))
-		{
-			foreach ($msg as &$value) 
-				$value = __($value, $data); //转化成有意义的文字
-		}
-
-		$msg = array_keyfilter($msg, 'title,content');
-
-		//加密数据
-		$encrypt = new Encrypt;
 		$result = [
 			'result' => $type,
 			'time' => time(),
 			'duration' => microtime(TRUE) - LARAVEL_START,
 			'uid' => !empty($this->user) ? $this->user->getKey() : NULL,
-			'message' => $msg,
-			'url' => is_string($url) ? url($url) : $url,
-			'data' => $export_data ? ($export_data === 'encrypt' ? $encrypt->encode(serialize($data)) : $data) : []
 		];
+
+		switch($type)
+		{
+			case 'api':
+				//加密数据
+				$encrypt = new Encrypt;
+				$result += [
+					'data' => $export_data ? $encrypt->encode(serialize($data)) : $data,
+				];
+				break;
+			default:
+				$msg = $message_name;
+				if (!is_array($message_name))
+				{
+					$msg = Lang::has($message_name) ? trans($message_name) : (Lang::has('core::common.'.$message_name) ? trans('core::common.'.$message_name) : []);
+					is_string($msg) && $msg = ['content' => $msg];
+					$default = trans('core::common.default.'.$type );
+					$msg = _extends($msg, $default); //填充
+				}
+
+				$default = trans('core::common.default.'.$type );
+				$msg = _extends($msg, $default);
+
+				if (!empty($data))
+				{
+					foreach ($msg as &$value) 
+						$value = __($value, $data); //转化成有意义的文字
+				}
+
+				$msg = array_keyfilter($msg, 'title,content');
+
+				$result += [
+					'message' => $msg,
+					'url' => is_string($url) ? url($url) : $url,
+					'data' => $export_data ? $data : [],
+				];
+				break;
+		}
 		return $this->output($result);
 	}
 
