@@ -9,11 +9,11 @@ class Encrypt {
 
 	public static $keys;
 
-	public function encode($string)
+	public function encode($data)
 	{
 		$keys = $this->getKeys();
 		$e = new Encrypter($keys['key'], config('app.cipher'));
-		return $e->encrypt($string);
+		return $e->encrypt($data);
 	}
 
 	public function getKeys()

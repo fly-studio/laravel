@@ -109,7 +109,7 @@ trait OutputTrait {
 		return $this->failure('document.failure_owner', $url, $data, $export_data);
 	}
 
-	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_data = FALSE)
+	protected function _make_output($type, $message_name = NULL, $url = FALSE, array $data = [], $export_or_encrypt = FALSE)
 	{
 		$result = [
 			'result' => $type,
@@ -122,7 +122,7 @@ trait OutputTrait {
 				//加密数据
 				$encrypt = new Encrypt;
 				$result += [
-					'data' => $export_data ? $encrypt->encode(serialize($data)) : $data,
+					'data' => $export_or_encrypt ? $encrypt->encode($data) : $data,
 				];
 				break;
 			default:
@@ -149,7 +149,7 @@ trait OutputTrait {
 				$result += [
 					'message' => $msg,
 					'url' => is_string($url) ? url($url) : $url,
-					'data' => $export_data ? $data : [],
+					'data' => $export_or_encrypt ? $data : [],
 				];
 				break;
 		}
