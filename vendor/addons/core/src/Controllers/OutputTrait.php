@@ -113,8 +113,6 @@ trait OutputTrait {
 	{
 		$result = [
 			'result' => $type,
-			'time' => time(),
-			'duration' => microtime(TRUE) - LARAVEL_START,
 			'uid' => !empty($this->user) ? $this->user->getKey() : NULL,
 		];
 
@@ -155,6 +153,11 @@ trait OutputTrait {
 				];
 				break;
 		}
+
+		$result += [
+			'time' => time(),
+			'duration' => microtime(TRUE) - LARAVEL_START,
+		];
 		return $this->output($result);
 	}
 
@@ -180,9 +183,7 @@ trait OutputTrait {
 			$response = response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(TRUE);
 		} else {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
-			$response = response($content)
-			->header('X-Public-Key', rawurlencode(session('encrypt.publickey', NULL)))
-			->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
+			$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
 		if ($abort) throw new HttpResponseException($response);
 		return $response;
