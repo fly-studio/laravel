@@ -9,9 +9,11 @@ class GPS {
 	{
 		$this->x_pi = 3.14159265358979324 * 3000.0 / 180.0;
 	}
+
 	//WGS-84 to GCJ-02
 	public function gcj_encrypt($wgsLat, $wgsLon) {
-		if ($this->outOfChina($wgsLat, $wgsLon))
+		//if ($this->outOfChina($wgsLat, $wgsLon))
+		if (!$this->isInChina($wgsLat, $wgsLon))
 			return array('lat' => $wgsLat, 'lon' => $wgsLon);
 
 		$d = $this->delta($wgsLat, $wgsLon);
@@ -19,7 +21,8 @@ class GPS {
 	}
 	//GCJ-02 to WGS-84
 	public function gcj_decrypt($gcjLat, $gcjLon) {
-		if ($this->outOfChina($gcjLat, $gcjLon))
+		//if ($this->outOfChina($gcjLat, $gcjLon))
+		if (!$this->isInChina($gcjLat, $gcjLon))
 			return array('lat' => $gcjLat, 'lon' => $gcjLon);
 		
 		$d = $this->delta($gcjLat, $gcjLon);
@@ -155,6 +158,51 @@ class GPS {
 		$dLat = ($dLat * 180.0) / (($a * (1 - $ee)) / ($magic * $sqrtMagic) * $this->PI);
 		$dLon = ($dLon * 180.0) / ($a / $sqrtMagic * cos($radLat) * $this->PI);
 		return array('lat' => $dLat, 'lon' => $dLon);
+	}
+
+	private function rectangle($lng1, $lat1, $lng2, $lat2) {
+		return array(
+			'west' => min($lng1, $lng2),
+			'north' => max($lat1, $lat2),
+			'east' => max($lng1, $lng2),
+			'south' => min($lat1, $lat2),
+		);
+	}
+
+	private function isInRect($rect, $lon, $lat) {
+		return $rect['west'] <= $lon && $rect['east'] >= $lon && $rect['north'] >= $lat && $rect['south'] <= $lat;
+	}
+
+	private function isInChina($lat, $lon) {
+		//China region - raw data
+		//http://www.cnblogs.com/Aimeast/archive/2012/08/09/2629614.html
+		$region = array(
+			$this->rectangle(79.446200, 49.220400, 96.330000,42.889900),
+			$this->rectangle(109.687200, 54.141500, 135.000200, 39.374200),
+			$this->rectangle(73.124600, 42.889900, 124.143255, 29.529700),
+			$this->rectangle(82.968400, 29.529700, 97.035200, 26.718600),
+			$this->rectangle(97.025300, 29.529700, 124.367395, 20.414096),
+			$this->rectangle(107.975793, 20.414096, 111.744104, 17.871542),
+		);
+
+		//China excluded region - raw data
+		$exclude = array(
+			$this->rectangle(119.921265, 25.398623, 122.497559, 21.785006),
+			$this->rectangle(101.865200, 22.284000, 106.665000, 20.098800),
+			$this->rectangle(106.452500, 21.542200, 108.051000, 20.487800),
+			$this->rectangle(109.032300, 55.817500, 119.127000, 50.325700),
+			$this->rectangle(127.456800, 55.817500, 137.022700, 49.557400),
+			$this->rectangle(131.266200, 44.892200, 137.022700, 42.569200),
+		);
+		for ($i = 0; $i < count($region); $i++)
+			if ($this->isInRect($region[$i], $lon, $lat))
+			{
+				for ($j = 0; $j < count($exclude); j++)
+					if ($this->isInRect($exclude[$j], $lon, $lat))
+						return false;
+				return true;
+			}
+		return false;
 	}
 
 	private function outOfChina($lat, $lon)
