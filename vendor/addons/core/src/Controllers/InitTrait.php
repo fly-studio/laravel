@@ -23,7 +23,7 @@ trait InitTrait {
 
 	protected function subtitle($title, $url = NULL, $target = '_self')
 	{
-		return call_user_func($this->site['title_reverse'] ? 'array_unshift' : 'array_push', $this->site, compact('title', 'url', 'target'));
+		return call_user_func_array($this->site['title_reverse'] ? 'array_unshift' : 'array_push', [&$this->site['titles'], compact('title', 'url', 'target')]);
 	}
 	
 }

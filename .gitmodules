@@ -1,3 +1,3 @@
 [submodule "vendor/addons/func/src/func"]
 	path = vendor/addons/func/src/func
-	url = http://www.load-page.com/r/function.git
+	url = http://git.load-page.com/r/function.git
