@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),

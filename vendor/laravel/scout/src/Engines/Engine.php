@@ -46,15 +46,23 @@ abstract class Engine
      *
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     abstract public function map($results, $model);
+
+    /**
+     * Get the total count from a raw result returned by the engine.
+     *
+     * @param  mixed  $results
+     * @return int
+     */
+    abstract public function getTotalCount($results);
 
     /**
      * Get the results of the given query mapped onto models.
      *
      * @param  \Laravel\Scout\Builder  $builder
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function get(Builder $builder)
     {

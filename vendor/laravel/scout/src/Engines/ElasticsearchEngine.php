@@ -10,7 +10,16 @@ use Illuminate\Support\Collection as BaseCollection;
 class ElasticsearchEngine extends Engine
 {
     /**
-     * @var string $index
+     * The Elasticsearch client instance.
+     *
+     * @var \Elasticsearch\Client
+     */
+    protected $elasticsearch;
+
+    /**
+     * The index name.
+     *
+     * @var string
      */
     protected $index;
 
@@ -35,14 +44,30 @@ class ElasticsearchEngine extends Engine
      */
     public function update($models)
     {
-        $models->each(function ($model) {
-            $this->elasticsearch->index([
-                'index' => $this->index,
-                'type' => $model->searchableAs(),
-                'id' => $model->getKey(),
-                'body' => $model->toSearchableArray(),
+        $body = new BaseCollection();
+
+        $models->each(function ($model) use ($body) {
+            $array = $model->toSearchableArray();
+
+            if (empty($array)) {
+                return;
+            }
+
+            $body->push([
+                'index' => [
+                    '_index' => $this->index,
+                    '_type' => $model->searchableAs(),
+                    '_id' => $model->getKey(),
+                ],
             ]);
+
+            $body->push($array);
         });
+
+        $this->elasticsearch->bulk([
+            'refresh' => true,
+            'body' => $body->all(),
+        ]);
     }
 
     /**
@@ -53,13 +78,22 @@ class ElasticsearchEngine extends Engine
      */
     public function delete($models)
     {
-        $models->each(function ($model) {
-            $this->elasticsearch->delete([
-                'index' => $this->index,
-                'type' => $model->searchableAs(),
-                'id'  => $model->getKey(),
+        $body = new BaseCollection();
+
+        $models->each(function ($model) use ($body) {
+            $body->push([
+                'delete' => [
+                    '_index' => $this->index,
+                    '_type' => $model->searchableAs(),
+                    '_id'  => $model->getKey(),
+                ],
             ]);
         });
+
+        $this->elasticsearch->bulk([
+            'refresh' => true,
+            'body' => $body->all(),
+        ]);
     }
 
     /**
@@ -86,12 +120,10 @@ class ElasticsearchEngine extends Engine
      */
     public function paginate(Builder $query, $perPage, $page)
     {
-        $from = (($page * $perPage) - $perPage);
-
         $result = $this->performSearch($query, [
             'filters' => $this->filters($query),
             'size' => $perPage,
-            'from' => $from,
+            'from' => (($page * $perPage) - $perPage),
         ]);
 
         $result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
@@ -108,20 +140,38 @@ class ElasticsearchEngine extends Engine
      */
     protected function performSearch(Builder $query, array $options = [])
     {
-        $filterQuery = [
-            "filter" => [
-                "query_string" => [
-                    "query" => "*{$query->query}*",
-                ],
+        $termFilters = [];
+
+        $matchQueries[] = [
+            'match' => [
+                '_all' => [
+                    'query' => $query->query,
+                    'fuzziness' => 1
+                ]
             ]
         ];
 
         if (array_key_exists('filters', $options) && $options['filters']) {
-            $filterQuery = array_merge($filterQuery, [
-                "must" => [
-                    "match" => $options['filters'],
-                ],
-            ]);
+            foreach ($options['filters'] as $field => $value) {
+
+                if(is_numeric($value)) {
+                    $termFilters[] = [
+                        'term' => [
+                            $field => $value,
+                        ],
+                    ];
+                } elseif(is_string($value)) {
+                    $matchQueries[] = [
+                        'match' => [
+                            $field => [
+                                'query' => $value,
+                                'operator' => 'and'
+                            ]
+                        ]
+                    ];
+                }
+
+            }
         }
 
         $searchQuery = [
@@ -129,7 +179,14 @@ class ElasticsearchEngine extends Engine
             'type'  =>  $query->model->searchableAs(),
             'body' => [
                 'query' => [
-                    'bool' => $filterQuery,
+                    'filtered' => [
+                        'filter' => $termFilters,
+                        'query' => [
+                            'bool' => [
+                                'must' => $matchQueries
+                            ]
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -182,9 +239,19 @@ class ElasticsearchEngine extends Engine
             $model->getKeyName(), $keys
         )->get()->keyBy($model->getKeyName());
 
-
-        return collect($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
+        return Collection::make($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
             return $models[$hit['_source'][$model->getKeyName()]];
         });
+    }
+
+    /**
+     * Get the total count from a raw result returned by the engine.
+     *
+     * @param  mixed  $results
+     * @return int
+     */
+    public function getTotalCount($results)
+    {
+        return $results['hits']['total'];
     }
 }

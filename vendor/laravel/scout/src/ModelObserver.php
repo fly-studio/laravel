@@ -69,15 +69,11 @@ class ModelObserver
      */
     public function updated($model)
     {
-        if (static::syncingDisabledFor($model)) {
-            return;
-        }
-
-        $model->searchable();
+        $this->created($model);
     }
 
     /**
-     * Handle the updated event for the model.
+     * Handle the deleted event for the model.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return void
@@ -99,10 +95,6 @@ class ModelObserver
      */
     public function restored($model)
     {
-        if (static::syncingDisabledFor($model)) {
-            return;
-        }
-
-        $model->searchable();
+        $this->created($model);
     }
 }

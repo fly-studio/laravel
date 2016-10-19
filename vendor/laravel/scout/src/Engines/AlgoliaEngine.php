@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Collection;
 class AlgoliaEngine extends Engine
 {
     /**
+     * The Algolia client.
+     *
+     * @var \AlgoliaSearch\Client
+     */
+    protected $algolia;
+
+    /**
      * Create a new engine instance.
      *
      * @param  \AlgoliaSearch\Client  $algolia
@@ -31,8 +38,14 @@ class AlgoliaEngine extends Engine
         $index = $this->algolia->initIndex($models->first()->searchableAs());
 
         $index->addObjects($models->map(function ($model) {
-            return array_merge(['objectID' => $model->getKey()], $model->toSearchableArray());
-        })->values()->all());
+            $array = $model->toSearchableArray();
+
+            if (empty($array)) {
+                return;
+            }
+
+            return array_merge(['objectID' => $model->getKey()], $array);
+        })->filter()->values()->all());
     }
 
     /**
@@ -130,12 +143,23 @@ class AlgoliaEngine extends Engine
             $model->getKeyName(), $keys
         )->get()->keyBy($model->getKeyName());
 
-        return collect($results['hits'])->map(function ($hit) use ($model, $models) {
+        return Collection::make($results['hits'])->map(function ($hit) use ($model, $models) {
             $key = $hit[$model->getKeyName()];
 
             if (isset($models[$key])) {
                 return $models[$key];
             }
         })->filter();
+    }
+
+    /**
+     * Get the total count from a raw result returned by the engine.
+     *
+     * @param  mixed  $results
+     * @return int
+     */
+    public function getTotalCount($results)
+    {
+        return $results['nbHits'];
     }
 }

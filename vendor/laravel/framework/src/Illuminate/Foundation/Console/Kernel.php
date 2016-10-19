@@ -210,6 +210,12 @@ class Kernel implements KernelContract
     {
         $this->bootstrap();
 
+        if (! $this->commandsLoaded) {
+            $this->commands();
+
+            $this->commandsLoaded = true;
+        }
+
         return $this->getArtisan()->call($command, $parameters);
     }
 
@@ -281,6 +287,17 @@ class Kernel implements KernelContract
         }
 
         return $this->artisan;
+    }
+
+    /**
+     * Set the Artisan application instance.
+     *
+     * @param  \Illuminate\Console\Application  $artisan
+     * @return void
+     */
+    public function setArtisan($artisan)
+    {
+        $this->artisan = $artisan;
     }
 
     /**

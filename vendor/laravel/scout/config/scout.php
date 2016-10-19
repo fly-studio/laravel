@@ -11,7 +11,7 @@ return [
     | using Laravel Scout. This connection is used when syncing all models
     | to the search service. You should adjust this based on your needs.
     |
-    | Supported: "algolia", "null"
+    | Supported: "algolia", "elasticsearch", "null"
     |
     */
 
@@ -75,7 +75,7 @@ return [
 
         'config' => [
             'hosts' => [
-                env('ELASTICSEARCH_HOST')
+                env('ELASTICSEARCH_HOST', 'localhost'),
             ],
         ],
     ],

@@ -289,7 +289,7 @@ class Router implements RegistrarContract
         // Authentication Routes...
         $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
         $this->post('login', 'Auth\LoginController@login');
-        $this->post('logout', 'Auth\LoginController@logout');
+        $this->post('logout', 'Auth\LoginController@logout')->name('logout');
 
         // Registration Routes...
         $this->get('register', 'Auth\RegisterController@showRegistrationForm');
@@ -690,7 +690,7 @@ class Router implements RegistrarContract
             list($name, $parameters) = array_pad(explode(':', $name, 2), 2, null);
 
             return (isset($map[$name]) ? $map[$name] : $name).
-                   ($parameters !== null ? ':'.$parameters : '');
+                   (! is_null($parameters) ? ':'.$parameters : '');
         }
     }
 
@@ -741,32 +741,7 @@ class Router implements RegistrarContract
      */
     protected function sortMiddleware(Collection $middlewares)
     {
-        $priority = $this->middlewarePriority;
-
-        $sorted = [];
-
-        foreach ($middlewares as $middleware) {
-            if (in_array($middleware, $sorted)) {
-                continue;
-            }
-
-            if (($index = array_search($middleware, $priority)) !== false) {
-                $sorted = array_merge(
-                    $sorted,
-                    array_filter(
-                        array_slice($priority, 0, $index),
-                        function ($middleware) use ($middlewares, $sorted) {
-                            return $middlewares->contains($middleware) &&
-                                 ! in_array($middleware, $sorted);
-                        }
-                    )
-                );
-            }
-
-            $sorted[] = $middleware;
-        }
-
-        return $sorted;
+        return (new SortedMiddleware($this->middlewarePriority, $middlewares))->all();
     }
 
     /**
@@ -1121,7 +1096,6 @@ class Router implements RegistrarContract
     /**
      * Alias for the "currentRouteNamed" method.
      *
-     * @param  mixed  string
      * @return bool
      */
     public function is()
@@ -1165,7 +1139,6 @@ class Router implements RegistrarContract
     /**
      * Alias for the "currentRouteUses" method.
      *
-     * @param  mixed  string
      * @return bool
      */
     public function uses()
