@@ -22,7 +22,9 @@ class Controller extends BaseController {
 			return $this->failure('auth.failure_permission');
 		}
 
-		return call_user_func_array([$this, $method], $parameters);
+		$response = call_user_func_array([$this, $method], $parameters);
+		//todo:
+		return $response;
 	}
 
 }

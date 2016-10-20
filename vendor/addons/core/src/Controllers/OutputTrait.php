@@ -161,7 +161,7 @@ trait OutputTrait {
 		return $this->output($result);
 	}
 
-	protected function output(array $data, $filename = NULL, $abort = FALSE)
+	protected function output(array $data, $filename = NULL)
 	{
 		$request = app('request');
 		$charset = config('app.charset');
@@ -185,7 +185,7 @@ trait OutputTrait {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
 			$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
-		if ($abort) throw new HttpResponseException($response);
+		if (!in_array($data['result'], ['success', 'api'])) throw new HttpResponseException($response); // 如果failure 则直接抛出
 		return $response;
 	}
 
