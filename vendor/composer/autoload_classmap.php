@@ -3777,6 +3777,8 @@ return array(
     'SocialiteProviders\\Manager\\OAuth2\\User' => $vendorDir . '/socialiteproviders/manager/src/OAuth2/User.php',
     'SocialiteProviders\\Manager\\ServiceProvider' => $vendorDir . '/socialiteproviders/manager/src/ServiceProvider.php',
     'SocialiteProviders\\Manager\\SocialiteWasCalled' => $vendorDir . '/socialiteproviders/manager/src/SocialiteWasCalled.php',
+    'SocialiteProviders\\Qq\\Provider' => $vendorDir . '/socialiteproviders/qq/src/Provider.php',
+    'SocialiteProviders\\Qq\\QqExtendSocialite' => $vendorDir . '/socialiteproviders/qq/src/QqExtendSocialite.php',
     'SocialiteProviders\\Weibo\\Provider' => $vendorDir . '/socialiteproviders/weibo/src/Provider.php',
     'SocialiteProviders\\Weibo\\WeiboExtendSocialite' => $vendorDir . '/socialiteproviders/weibo/src/WeiboExtendSocialite.php',
     'SocialiteProviders\\WeixinWeb\\Provider' => $vendorDir . '/socialiteproviders/weixin-web/src/Provider.php',

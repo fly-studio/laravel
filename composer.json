@@ -24,6 +24,7 @@
         "socialiteproviders/weixin-web": "^2.0",
         "socialiteproviders/weixin": "^3.0",
         "socialiteproviders/weibo": "^2.0",
+        "socialiteproviders/qq": "^2.0",
         "laravel/passport": "^1.0"
     },
     "require-dev": {

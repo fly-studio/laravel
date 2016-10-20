@@ -33,6 +33,7 @@ return array(
     'SocialiteProviders\\Weixin\\' => array($vendorDir . '/socialiteproviders/weixin/src'),
     'SocialiteProviders\\WeixinWeb\\' => array($vendorDir . '/socialiteproviders/weixin-web/src'),
     'SocialiteProviders\\Weibo\\' => array($vendorDir . '/socialiteproviders/weibo/src'),
+    'SocialiteProviders\\Qq\\' => array($vendorDir . '/socialiteproviders/qq/src'),
     'SocialiteProviders\\Manager\\Test\\' => array($vendorDir . '/socialiteproviders/manager/tests'),
     'SocialiteProviders\\Manager\\' => array($vendorDir . '/socialiteproviders/manager/src'),
     'Ramsey\\Uuid\\' => array($vendorDir . '/ramsey/uuid/src'),
