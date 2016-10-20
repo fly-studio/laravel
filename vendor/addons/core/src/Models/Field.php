@@ -7,7 +7,6 @@ use Cache;
 class Field extends Tree {
 	//use FieldTrait;
 	//不能批量赋值
-	public $auto_cache = true;
 	public $fire_caches = ['fields'];
 	public $orderKey = 'order_index';
 	public $pathKey = NULL;
@@ -16,7 +15,6 @@ class Field extends Tree {
 	public $casts = [
 		'extra' => 'array',
 	];
-
 
 	protected $guarded = [];
 
@@ -37,7 +35,7 @@ class Field extends Tree {
 
 	public function getFields()
 	{
-		return $this->rememberCache('fields', function(){
+		return Cache::remember('fields', 7 * 24 * 60, function(){
 			$result = [];
 			$all = $this->orderBy('order_index','ASC')->get();
 			$lines = $all->pluck('name', 'id')->toArray();
