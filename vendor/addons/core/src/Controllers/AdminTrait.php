@@ -60,7 +60,7 @@ trait AdminTrait {
 				if ($operators[$method] == 'in')
 					$builder->whereIn($key, $value);
 				else if ($operators[$method] == 'not in')
-					$builder->whereIn($key, $value);
+					$builder->whereNotIn($key, $value);
 				else
 					$builder->where($key, $operators[$method] ?: '=' , $value);
 			});
