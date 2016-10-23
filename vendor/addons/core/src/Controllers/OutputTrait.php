@@ -185,7 +185,7 @@ trait OutputTrait {
 			$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
 			$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 		}
-		if (!in_array($data['result'], ['success', 'api'])) throw new HttpResponseException($response); // 如果failure 则直接抛出
+		if (isset($data['result']) && !in_array($data['result'], ['success', 'api'])) throw new HttpResponseException($response); // 如果failure 则直接抛出
 		return $response;
 	}
 
