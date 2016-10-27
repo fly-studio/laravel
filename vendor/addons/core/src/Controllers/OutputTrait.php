@@ -2,7 +2,7 @@
 namespace Addons\Core\Controllers;
 
 use Addons\Core\Tools\Output;
-use Addons\Core\Tools\Encrypt;
+use Addons\Core\Tools\OutputEncrypt;
 use Illuminate\Http\Exception\HttpResponseException;
 use Addons\Core\File\Mimes;
 use Illuminate\Support\Facades\Lang;
@@ -120,10 +120,17 @@ trait OutputTrait {
 		{
 			case 'api':
 				//加密数据
-				$encrypt = new Encrypt;
-				$result += [
-					'data' => $export_or_encrypt ? $encrypt->encode($data) : $data,
-				];
+				if ($export_or_encrypt)
+				{
+					$encrypt = new OutputEncrypt;
+					$key = $encrypt->getEncryptedKey();
+					$result += [
+						'data' => empty($key) ? NULL : $encrypt->encode(json_encode($data)), //如果key不对,就不用耗费资源加密了
+						'key' => $key,
+						'encrypt' => true,
+					];
+				} else 
+					$result += ['data' => $data, 'encrypt' => false];
 				break;
 			default:
 				$msg = $message_name;
