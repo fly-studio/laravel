@@ -125,7 +125,7 @@ trait OutputTrait {
 					$encrypt = new OutputEncrypt;
 					$key = $encrypt->getEncryptedKey();
 					$result += [
-						'data' => empty($key) ? NULL : $encrypt->encode(json_encode($data)), //如果key不对,就不用耗费资源加密了
+						'data' => empty($key) ? NULL : $encrypt->encode($data), //如果key不对,就不用耗费资源加密了
 						'key' => $key,
 						'encrypt' => true,
 					];

@@ -14,8 +14,10 @@ class OutputEncrypt {
 		$request = request();
 		$public = urldecode($request->header('X-RSA'));
 		$rsa = new RSA;
+		$rsa->setPublicKey();
+		$rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
 		$rsa->loadKey($public);
-		$key = $rsa->encrypt($this->getKey());
+		$key = $rsa->encrypt(base64_encode($this->getKey()));
 		return $key ? base64_encode($key) : false;
 	}
 
