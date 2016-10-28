@@ -31,11 +31,11 @@ class OutputEncrypt {
 	{
 		if (!empty(static::$key)) return static::$key;
 
-		//static::$key = session('output-key');
+		static::$key = session('output-key');
 		empty(static::$key) && static::$key = random_bytes(config('app.cipher') == 'AES-128-CBC' ? 16 : 32);
 		
-		//session(['output-key' => static::$key]);
-		//session()->save();
+		session(['output-key' => static::$key]);
+		session()->save();
 		return static::$key;
 	}
 

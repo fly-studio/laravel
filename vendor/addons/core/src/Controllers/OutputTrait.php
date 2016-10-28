@@ -114,6 +114,7 @@ trait OutputTrait {
 		$result = [
 			'result' => $type,
 			'uid' => !empty($this->user) ? $this->user->getKey() : NULL,
+			'debug' => env('APP_DEBUG'),
 		];
 
 		switch($type)
