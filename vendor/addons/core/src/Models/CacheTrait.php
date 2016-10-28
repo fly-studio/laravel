@@ -33,16 +33,16 @@ trait CacheTrait{
 			Cache::forget($key);
 
 		$min = floor($this->getKey() / 1000); $max = $min + 1;
-		$key = $this->getTable().$min.'-'.($max);
+		$key = $this->getTable().','.$min.'-'.$max;
 		Cache::forget($key);
 	}
 
 	public static function findByCache($id)
 	{
-		$mode = new static();
-		$keyName = $mode->getKeyName();
+		$model = new static();
+		$keyName = $model->getKeyName();
 		$min = floor($id / 1000); $max = $min + 1;
-		$key = $mode->getTable().','.$min.'-'.($max);
+		$key = $model->getTable().','.$min.'-'.$max;
 		$data = Cache::remember($key, 7 * 24 * 60, function() use($min, $max, $keyName){ // 7 days
 			$models = static::where($keyName, '>=', $min * 1000)->where($keyName, '<', $max * 1000)->get();
 			return $models->keyBy($keyName);
