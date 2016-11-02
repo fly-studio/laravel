@@ -21,7 +21,7 @@
  */
 function smarty_modifier_attachment($id, $method = NULL, $params = [])
 {
-	$params['id'] = $id;
+	!empty($id) && $params['id'] = $id;
 	$url = url('attachment'.(!empty($method) ? '/'.$method : ''), $params);
 	return $url;
 }

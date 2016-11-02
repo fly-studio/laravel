@@ -7,11 +7,11 @@
 
 
 /**
- * Smarty static modifier plugin
+ * Smarty plugins modifier plugin
  *
  * Type:     modifier<br>
- * Name:     static<br>
- * Purpose:  get the absolute URL of static file
+ * Name:     plugins<br>
+ * Purpose:  get the absolute URL of plugins file
  *
  * @author   Fly <fly@load-page.com>
  * @param string
@@ -22,7 +22,6 @@ function smarty_modifier_plugins($string)
 {
 	static $static;
 	if (empty($static)) $static = config('app.static');
-
 	$urls = explode(',', $string);
 	foreach($urls as &$url)
 		$url = 'plugins/'.$url;
