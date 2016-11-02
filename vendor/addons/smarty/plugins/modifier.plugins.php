@@ -18,21 +18,18 @@
  * @param boolean
  * @return string
  */
-function smarty_modifier_static($string, $rewrite = FALSE)
+function smarty_modifier_plugins($string)
 {
 	static $static;
 	if (empty($static)) $static = config('app.static');
-	
-	if ($rewrite)
-	{
-		$urls = explode(',', $string);
-		foreach($urls as &$url)
-			if (!file_exists(APPPATH.$static.$url))
-				$url = 'common/'.$url;
-		$string = implode(',', $urls);
-	}
+
+	$urls = explode(',', $string);
+	foreach($urls as &$url)
+		$url = 'plugins/'.$url;
+	$string = implode(',', $urls);
 
 	$url = url($static . $string);
-	return str_replace('index.php', '', $url);
+	return $url;
 }
 
+?>
