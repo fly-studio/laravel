@@ -483,7 +483,13 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         $results = [];
 
         foreach ($this->items as $key => $item) {
-            $results[$keyBy($item, $key)] = $item;
+            $resolvedKey = $keyBy($item, $key);
+
+            if (is_object($resolvedKey)) {
+                $resolvedKey = (string) $resolvedKey;
+            }
+
+            $results[$resolvedKey] = $item;
         }
 
         return new static($results);
@@ -949,6 +955,10 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function chunk($size)
     {
+        if ($size <= 0) {
+            return new static;
+        }
+
         $chunks = [];
 
         foreach (array_chunk($this->items, $size, true) as $chunk) {
