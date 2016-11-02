@@ -11,7 +11,6 @@
         "doctrine/dbal": "^2.5",
         "intervention/image": "^2.3",
         "mews/captcha": "^2.1",
-        "zizaco/entrust": "^1.7",
         "php-curl-class/php-curl-class": "^4.11",
         "jenssegers/agent": "^2.3",
         "phpoffice/phpexcel": "^1.8",
@@ -25,16 +24,20 @@
         "socialiteproviders/weibo": "^2.0",
         "socialiteproviders/qq": "^2.0",
         "laravel/passport": "^1.0",
+        "addons/smarty": "dev-master",
+        "addons/entrust": "dev-master",
+        "addons/func": "dev-master",
+        "addons/core": "dev-master"
         
     },
     "require-dev": {
-       "fzaninotto/faker": "~1.4",
+        "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
-	"barryvdh/laravel-ide-helper": "^2.2",
-	"barryvdh/laravel-debugbar": "^2.3"
+        "barryvdh/laravel-debugbar": "^2.3",
+        "barryvdh/laravel-ide-helper": "^2.2"
     },
     "autoload": {
         "classmap": [
@@ -51,7 +54,7 @@
     },
     "scripts": {
         "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
+
         ],
         "post-create-project-cmd": [
             "php artisan key:generate"
@@ -61,10 +64,8 @@
             "composer dump-autoload --optimize"
         ],
         "pre-update-cmd": [
-            "move .\\vendor\\addons addons"
         ],
         "post-update-cmd": [
-            "move addons .\\vendor\\addons",
 	    "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "composer dump-autoload --optimize"
         ]
