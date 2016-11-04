@@ -27,8 +27,8 @@
         "addons/smarty": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
-        "addons/core": "dev-master"
-        
+        "addons/core": "dev-master",
+        "five-say/laravel-schema-extend": "3.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

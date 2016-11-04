@@ -2,10 +2,8 @@
 namespace Addons\Core\Models;
 
 use Addons\Core\Models\Tree;
-//use Addons\Core\Models\FieldTrait;
 use Cache;
-class Field extends Tree {
-	//use FieldTrait;
+class Catalog extends Tree {
 	//不能批量赋值
 	public $fire_caches = ['fields'];
 	public $orderKey = 'order_index';
@@ -28,12 +26,7 @@ class Field extends Tree {
 		return $this->where('name', $name)->where('field_class', $field_class)->count() > 0;
 	}
 
-	public function get($name, $field_class)
-	{
-		return $this->where('name', $name)->where('field_class', $field_class)->first();
-	}
-
-	public function getFields()
+	/*public function getFields()
 	{
 		return Cache::remember('fields', 7 * 24 * 60, function(){
 			$result = [];
@@ -55,5 +48,5 @@ class Field extends Tree {
 
 			return $result;
 		});
-	}
+	}*/
 }

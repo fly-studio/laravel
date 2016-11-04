@@ -1,18 +1,16 @@
 <?php
 namespace Addons\Core\Controllers;
 use Illuminate\Support\Facades\Auth;
-use App\Field;
+use App\Catalog;
 
 trait InitTrait {
 
 	public $site;
-	public $fields;
 	public $user;
 
 	private function initCommon()
 	{
 		$this->site = app('config')->get('site');
-		$this->fields = (new Field)->getFields();
 		$this->site['titles'][] = ['title' => $this->site['title'], 'url' => '', 'target' => '_self'];
 	}
 

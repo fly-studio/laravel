@@ -14,9 +14,13 @@ use Addons\Entrust\Traits\RoleTrait as EntrustRoleTrait;
 use Addons\Core\Models\Model;
 use Illuminate\Support\Facades\Config;
 use Addons\Core\Models\CacheTrait;
-class Role extends Model implements RoleInterface
+class Role extends Tree implements RoleInterface
 {
 	use EntrustRoleTrait;
+
+	public $orderKey = NULL;
+	public $pathKey = NULL;
+	public $levelKey = NULL;
 
 	public $auto_cache = true;
 	public $fire_caches = ['roles'];
