@@ -25,15 +25,8 @@ class Role extends Tree implements RoleInterface
 	public $auto_cache = true;
 	public $fire_caches = ['roles'];
 
-	const ADMIN = 'admin';
-	const MANGER = 'manger';
-	const OWNER = 'owner';
-	const LEADER = 'leader';
-	const VIEWER = 'viewer';
-	const WECHATER = 'wechater';
-
 	//不能批量赋值
-	public $guarded = [];
+	public $guarded = ['id'];
 
 	 /**
      * The database table used by the model.
@@ -53,15 +46,10 @@ class Role extends Tree implements RoleInterface
         $this->table = config('entrust.roles_table');
     }
 
-    public static function findByName($name, $columns = ['*'])
-    {
-    	return static::where('name', $name)->first($columns);
-    }
-
 	public function getRoles()
 	{
 		$roles = [];
-		$_roles = $this->rememberCache('roles', function() {return $this->with('perms')->orderBy('id', 'ASC')->get();});
+		$_roles = Cache::remember('roles', 24 * 60, function() {return $this->with('perms')->orderBy('id', 'ASC')->get();});
 		foreach ($_roles->toArray() as $role) {
 			$role['prems'] = array_map(function($v) { return $v['name'];}, $role['perms']);
 			$roles[$role['name']] = $role;

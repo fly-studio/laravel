@@ -14,7 +14,7 @@ class Catalog extends Tree {
 		'extra' => 'array',
 	];
 
-	protected $guarded = [];
+	protected $guarded = ['id'];
 
 	public function exists($id, $field_class)
 	{
