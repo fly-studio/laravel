@@ -1,4 +1,6 @@
-<?php namespace Addons\Entrust;
+<?php
+namespace Addons\Entrust;
+use Addons\Entrust\Commands\MigrationCommand;
 
 /**
  * This file is part of Entrust,
@@ -28,7 +30,7 @@ class ServiceProvider extends SP
     {
         // Publish config files
         $this->publishes([
-            __DIR__.'/../config/config.php' => config_path('entrust.php'),
+            __DIR__.'/../config/entrust.php' => config_path('entrust.php'),
         ]);
 
         // Register commands
@@ -121,7 +123,7 @@ class ServiceProvider extends SP
     private function mergeConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/config.php', 'entrust'
+            __DIR__.'/../config/entrust.php', 'entrust'
         );
     }
 

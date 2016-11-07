@@ -1,4 +1,5 @@
-<?php namespace Addons\Entrust;
+<?php
+namespace Addons\Entrust;
 
 /**
  * This class is the main entry point of entrust. Usually this the interaction

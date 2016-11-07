@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\Models;
+namespace Addons\Entrust;
 
 use Addons\Core\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -7,11 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
-use Addons\Entrust\Traits\UserTrait as EntrustUserTrait;
-use Addons\Core\Models\Role;
-use Addons\Core\Models\UserTrait;
-
+use Addons\Entrust\Role;
+use Addons\Entrust\Traits\UserTrait;
 use Addons\Core\Models\CacheTrait;
 use Addons\Core\Models\CallTrait;
 
@@ -19,7 +16,7 @@ class User extends Authenticatable
 {
 	use CacheTrait, CallTrait;
 	use Notifiable;
-	use SoftDeletes, EntrustUserTrait;
+	use SoftDeletes;
 	use UserTrait;
 	/**
 	 * Cache enabled
@@ -28,18 +25,11 @@ class User extends Authenticatable
 	 */
 	public $auto_cache = true;
 
-
-	//能批量赋值
-	//protected $fillable = ['username', 'password'];
 	//不能批量赋值
 	protected $guarded = ['id'];
-	protected $dates = ['lastlogin_at'];
-	/**
-	 * The attributes excluded from the model's JSON form.
-	 *
-	 * @var array
-	 */
 	protected $hidden = ['password', 'remember_token', 'deleted_at'];
+	
+	protected $dates = ['lastlogin_at'];
 
 	public function get($username)
 	{
@@ -61,14 +51,5 @@ class User extends Authenticatable
 		return md5($username.config('app.key').md5($username));
 	}
 
-	public function _gender()
-	{
-		return $this->hasOne(get_namespace($this).'\\Catalog', 'id', 'gender');
-	}
-
-	public function finance()
-	{
-		return $this->hasOne(get_namespace($this).'\\UserFinance', 'id', 'id');
-	}
 }
 

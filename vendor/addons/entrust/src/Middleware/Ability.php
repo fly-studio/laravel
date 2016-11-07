@@ -1,18 +1,18 @@
-<?php namespace Zizaco\Entrust\Middleware;
-namespace Addons\Core\Middleware;
+<?php
+namespace Addons\Entrust\Middleware;
 
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Addons\Entrust
  */
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
-class Permission
+class Ability
 {
 	protected $auth;
 
@@ -29,15 +29,18 @@ class Permission
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  Closure $next
-	 * @param  $permissions
+	 * @param \Illuminate\Http\Request $request
+	 * @param Closure $next
+	 * @param $roles
+	 * @param $permissions
+	 * @param bool $validateAll
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next, ...$permissions)
+	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
 	{
-		if ($this->auth->guest() || !$request->user()->can($permissions)) {
+		if ($this->auth->guest() || !$request->user()->ability(explode('|', $roles), explode('|', $permissions), array('validate_all' => $validateAll))) {
 			return (new \Addons\Core\Controllers\Controller())->failure('auth.failure_permission');
+			//abort(403);
 		}
 
 		return $next($request);

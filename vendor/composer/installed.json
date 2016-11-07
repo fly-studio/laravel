@@ -5949,7 +5949,8 @@
             "illuminate/cache": "~5.0",
             "illuminate/console": "~5.0",
             "illuminate/support": "~5.0",
-            "php": ">=5.5.0"
+            "php": ">=5.5.0",
+            "addons/core": "dev-master"
         },
         "require-dev": {
             "illuminate/database": "~5.0",
@@ -5961,7 +5962,7 @@
         "installation-source": "source",
         "autoload": {
             "classmap": [
-                "src/commands"
+                "src"
             ],
             "psr-4": {
                 "Addons\\Entrust\\": "src/Entrust/"
@@ -6063,9 +6064,7 @@
             "reference": "09d6e327b3dad2a9713148507cc72a0626544735"
         },
         "require": {
-            "addons/entrust": "dev-master",
             "addons/func": "dev-master",
-            "addons/smarty": "dev-master",
             "illuminate/database": "~5.0",
             "php": ">=5.6.10"
         },

@@ -1,4 +1,4 @@
-<?php namespace Addons\Entrust;
+<?php namespace Addons\Entrust\Commands;
 
 /**
  * This file is part of Entrust,
@@ -18,7 +18,7 @@ class MigrationCommand extends Command
      *
      * @var string
      */
-    protected $name = 'entrust:migration';
+    protected $name = 'addons:entrust';
 
     /**
      * The console command description.
@@ -34,7 +34,7 @@ class MigrationCommand extends Command
      */
     public function fire()
     {
-        $this->laravel->view->addNamespace('entrust', substr(__DIR__, 0, -8).'views');
+        $this->laravel->view->addNamespace('entrust', __DIR__.'/../../resources/views');
 
         $rolesTable          = config('entrust.roles_table');
         $roleUserTable       = config('entrust.role_user_table');
@@ -80,14 +80,14 @@ class MigrationCommand extends Command
      */
     protected function createMigration($rolesTable, $roleUserTable, $permissionsTable, $permissionRoleTable, $permissionUserTable)
     {
-        $migrationFile = base_path("/database/migrations")."/".date('Y_m_d_His')."_entrust_setup_tables.php";
+        $migrationFile = base_path("database/migrations")."/".date('Y_m_d_His')."_entrust_setup_tables.php";
 
         $userModel = config('auth.providers.users.model');
         $model = new $userModel();
         $userKeyName = $model->getKeyName();
         $usersTable  =  $model->getTable();
 
-        $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable', 'userKeyName');
+        $data = compact('rolesTable', 'roleUserTable', 'permissionsTable', 'permissionRoleTable', 'usersTable', 'userKeyName', 'permissionUserTable');
 
         $output = $this->laravel->view->make('entrust::generators.migration')->with($data)->render();
 

@@ -43,10 +43,10 @@
     },
     "autoload": {
         "classmap": [
-            "src/commands"
+            "src/"
         ],
         "psr-4": {
-            "Addons\\Entrust\\": "src/Entrust/"
+            "Addons\\Entrust\\": "src/"
         }
     },
     "minimum-stability": "dev"

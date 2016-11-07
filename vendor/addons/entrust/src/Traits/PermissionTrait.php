@@ -1,4 +1,5 @@
-<?php namespace Addons\Entrust\Traits;
+<?php
+namespace Addons\Entrust\Traits;
 
 /**
  * This file is part of Entrust,
@@ -7,8 +8,6 @@
  * @license MIT
  * @package Addons\Entrust
  */
-
-use Config;
 
 trait PermissionTrait
 {
@@ -29,9 +28,8 @@ trait PermissionTrait
      *
      * @return void|bool
      */
-    public static function bootEntrustPermissionTrait()
+    public static function bootPermissionTrait()
     {
-
         static::deleting(function($permission) {
             if (!method_exists(config('entrust.permission'), 'bootSoftDeletes')) {
                 $permission->roles()->sync([]);

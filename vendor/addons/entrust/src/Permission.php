@@ -1,4 +1,5 @@
-<?php namespace Addons\Entrust;
+<?php
+namespace Addons\Entrust;
 
 /**
  * This file is part of Entrust,
@@ -8,15 +9,16 @@
  * @package Addons\Entrust
  */
 
-use Addons\Entrust\Contracts\RoleInterface;
-use Addons\Entrust\Traits\RoleTrait;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
+use Addons\Entrust\Contracts\PermissionInterface;
+use Addons\Entrust\Traits\PermissionTrait;
+use Addons\Core\Models\Model;
 
-class Role extends Model implements RoleInterface
+class Permission extends Model implements PermissionInterface
 {
-    use RoleTrait;
-
+    use PermissionTrait;
+    public $auto_cache = true;
+    public $fire_caches = ['roles'];
+    public $guarded = ['id'];
     /**
      * The database table used by the model.
      *
@@ -32,7 +34,7 @@ class Role extends Model implements RoleInterface
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('entrust.roles_table');
+        $this->table = config('entrust.permissions_table');
     }
 
 }
