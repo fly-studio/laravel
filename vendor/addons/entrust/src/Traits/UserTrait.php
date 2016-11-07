@@ -31,7 +31,6 @@ trait UserTrait
 	{
 
 		static::saved(function($item){
-			echo 1;
 			Cache::forget('entrust_roles_for_user_'.$item->getKey());
 		});
 		static::deleted(function($item){
