@@ -1,7 +1,6 @@
 <?php
 namespace Addons\Core\Controllers;
 use Illuminate\Support\Facades\Auth;
-use App\Catalog;
 
 trait InitTrait {
 
