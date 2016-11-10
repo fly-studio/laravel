@@ -22,7 +22,6 @@ class Role extends Tree implements RoleInterface
     public $pathKey = NULL;
     public $levelKey = NULL;
 
-    public $auto_cache = true;
     public $fire_caches = ['roles'];
 
     /**
