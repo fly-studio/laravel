@@ -5,6 +5,7 @@ namespace Laravel\Scout\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 
 class MakeSearchable implements ShouldQueue
 {
@@ -35,7 +36,7 @@ class MakeSearchable implements ShouldQueue
      */
     public function handle()
     {
-        if (empty($this->models)) {
+        if (count($this->models) === 0) {
             return;
         }
 

@@ -18,5 +18,4 @@ return array(
     'Doctrine\\Common\\Collections\\' => array($vendorDir . '/doctrine/collections/lib'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
     'Cron' => array($vendorDir . '/mtdowling/cron-expression/src'),
-    'Barryvdh' => array($vendorDir . '/barryvdh/reflection-docblock/src'),
 );

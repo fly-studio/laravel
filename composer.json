@@ -27,8 +27,7 @@
         "addons/smarty": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
-        "addons/core": "dev-master",
-        "five-say/laravel-schema-extend": "3.*"
+        "addons/core": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -36,8 +35,7 @@
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
-        "barryvdh/laravel-debugbar": "^2.3",
-        "barryvdh/laravel-ide-helper": "^2.2"
+        "barryvdh/laravel-debugbar": "^2.3"
     },
     "autoload": {
         "classmap": [
@@ -66,7 +64,7 @@
         "pre-update-cmd": [
         ],
         "post-update-cmd": [
-	    "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "composer dump-autoload --optimize"
         ]
     },

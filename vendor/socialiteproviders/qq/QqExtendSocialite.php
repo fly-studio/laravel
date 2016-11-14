@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\Qq;
+namespace SocialiteProviders\QQ;
 
 use SocialiteProviders\Manager\SocialiteWasCalled;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\Qq;
+namespace SocialiteProviders\QQ;
 
 use Laravel\Socialite\Two\ProviderInterface;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
