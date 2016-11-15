@@ -1,9 +1,10 @@
 <?php
+namespace Addons\Core\Tools;
 /**
  * github: https://github.com/luofei614/SocketLog
  * @author luofei614<weibo.com/luofei614>
  */
-namespace Addons\Core\Tools;
+
 class SocketLog
 {
 	public static $start_time=0;

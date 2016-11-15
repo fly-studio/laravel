@@ -2,9 +2,8 @@
 namespace Addons\Core;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-//use Illuminate\Translation\Translator;
-//use Illuminate\Contracts\Validation\Validator;
-//use Translator,Validator;
+use Addons\Core\validation\Validator;
+
 use Addons\Core\Http\ResponseFactory;
 use Addons\Core\Http\UrlGenerator;
 use Symfony\Component\Finder\Finder;
@@ -33,7 +32,7 @@ class ServiceProvider extends BaseServiceProvider
 		$this->app->bind('Illuminate\Contracts\Routing\UrlGenerator', UrlGenerator::class);
 
 		$this->mergeConfigFrom(__DIR__ . '/../config/mimes.php', 'mimes');
-		$this->mergeConfigFrom(__DIR__ . '/../config/socketlog.php', 'socketlog');
+		//$this->mergeConfigFrom(__DIR__ . '/../config/socketlog.php', 'socketlog');
 		$this->mergeConfigFrom(__DIR__ . '/../config/plugin.php', 'plugin');
 
 		$this->registerPlugins();
@@ -47,7 +46,7 @@ class ServiceProvider extends BaseServiceProvider
 		$router = $this->app['router'];
 		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
 		$consoleKernel = $this->app[\Illuminate\Contracts\Console\Kernel::class];
-		$paths = [APPPATH.'vendor'];
+		$paths = [base_path('vendor')];
 		is_dir(PLUGINSPATH.'vendor') && array_unshift($paths, PLUGINSPATH.'vendor');
 		foreach (Finder::create()->directories()->in($paths)->depth(0) as $path)
 		{
@@ -75,7 +74,11 @@ class ServiceProvider extends BaseServiceProvider
 			//register middleware
 			foreach ($config['routeMiddleware'] as $key => $middleware)
 				$router->middleware($key, $middleware);
-			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']); 
+			foreach ($config['middlewareGroups'] as $group => $middlewares)
+				foreach($middlewares as $middleware)
+					$router->pushMiddlewareToGroup($group, $middleware);
+			
+			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']);
 
 			//register commands
 			!empty($config['commands']) && $consoleKernel->commands = array($consoleKernel->commands, $config['commands']);
@@ -96,7 +99,7 @@ class ServiceProvider extends BaseServiceProvider
 		$this->publishes([__DIR__ . '/../config/attachment.php' => config_path('attachment.php')], 'config');
 		$this->publishes([__DIR__ . '/../config/mimes.php' => config_path('mimes.php')], 'config');
 		$this->publishes([__DIR__ . '/../config/validation.php' => config_path('validation.php')], 'config');
-		$this->publishes([__DIR__ . '/../config/socketlog.php' => config_path('socketlog.php')], 'config');
+		//$this->publishes([__DIR__ . '/../config/socketlog.php' => config_path('socketlog.php')], 'config');
 
 		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));
@@ -108,7 +111,7 @@ class ServiceProvider extends BaseServiceProvider
 		]);
 
 		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
-			return new Validation\Validator( $translator, $data, $rules, $messages, $customAttributes );
+			return new Validator( $translator, $data, $rules, $messages, $customAttributes );
 		});
 
 		$this->bootPlugins();
@@ -128,10 +131,14 @@ class ServiceProvider extends BaseServiceProvider
 
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);
-			!empty($config['register']['router']) && $router->group(['namespace' => empty($config['router']['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $config['router']['namespace'], 'prefix' => $config['router']['prefix'], 'middleware' => $config['router']['middleware']], function($router) use ($config) {
-				require $config['path'].'routes.php';
-			});
-
+			if (!empty($config['register']['migrate']) && $this->app->runningInConsole())
+				$this->loadMigrationsFrom(realpath($config['path'].'database/migrations'));
+			foreach($config['routers'] as $key => $route)
+			{
+				$router->group(['namespace' => empty($route['namespace']) ? $config['namespace'].'\\App\\Http\\Controllers' : $route['namespace'], 'middleware' => array_merge([$key], $route['middleware']), 'prefix' => $route['prefix']], function($router) use ($config, $key) {
+					require $config['path'].'routes/'.$key.'.php';
+				});
+			}
 		}
 	}
 

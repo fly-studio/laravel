@@ -1,8 +1,13 @@
 {
     "name": "addons/smarty",
     "description": "This package lets you run Smarty3 on Laravel5 elegantly.",
+    "homepage": "https://www.load-page.com",
     "keywords": ["L5", "Laravel 5", "Laravel", "Smarty", "Smarty 3", "View", "Templating"],
     "license": "MIT",
+    "support": {
+        "issues": "https://git.load-page.com/addons/smarty/issues",
+        "source": "https://git.load-page.com/addons/smarty"
+    },
     "authors": [
         {
             "name": "Latrell Chan",
@@ -24,9 +29,5 @@
             "/src"
         ]
     },
-     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
-    }
+    "minimum-stability": "dev"
 }

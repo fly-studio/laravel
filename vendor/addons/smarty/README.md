@@ -6,7 +6,7 @@ This package lets you run Smarty3 on Laravel5 elegantly.
 ## Installation
 
 ```
-composer require latrell/smarty dev-master
+composer require addons/smarty dev-master
 ```
 
 Update your packages with ```composer update``` or install with ```composer install```.
@@ -22,11 +22,11 @@ Find the `providers` key in `config/app.php` and register the Smarty Service Pro
 ```php
     'providers' => [
         // ...
-        'Latrell\Smarty\SmartyServiceProvider',
+        'Addons\Smarty\View\SmartyServiceProvider',
     ]
 ```
 
-Then publish the config file with `php artisan vendor:publish`. This will add the file `config/latrell-smarty.php`. This config file is the primary way you interact with Smarty.
+Then publish the config file with `php artisan vendor:publish`. This will add the file `config/smarty.php`. This config file is the primary way you interact with Smarty.
 
 Then simply reference templates using the normal dot syntax of Laravel. 
 

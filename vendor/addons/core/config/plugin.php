@@ -4,7 +4,7 @@
 //插件的namespace假设为Plugins\Tools
 
 return [
-	'enable' => TRUE, //开关，已停止的插件，建议设置FALSE，以避免浪费资源
+	'enable' => FALSE, //开关，已停止的插件，建议设置FALSE，以避免浪费资源
 	//插件名(英文、数字、-、_)，全局唯一，符合PHP变量名规范，为空代表使用当前文件夹名，
 	'name' => NULL, 
 	'display_name' => '', //本插件的名称，比如：工具箱
@@ -21,6 +21,8 @@ return [
 		//- Controller中这样调用：view('tools:system.xxx'); 对应/tools/resources/views/system/xxx.tpl
 		//- smarty模板中这样调用：<{include file="[tools]system/nav.inc.tpl"}>
 		'view' => false, 
+		//是否注册/tools/database/migrations到迁移
+		'migrate' => false, 
 		//是否注册/tools/resources/lang到语言包
 		//- Controller中这样调用：lang('tools:valition.alpha_dash');
 		//- smarty模板中这样调用：<{'tools:valition.alpha_dash'|lang}>
@@ -34,15 +36,27 @@ return [
 		//- 为避免覆盖掉主配置，请谨慎设置键值
 		'validation' => false,
 	],
-	'router' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
-		'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
-		'prefix' => NULL, //路由的prefix，空代表 / (根目录)
-		'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+	'routers' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
+		'web' => [
+			'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
+			'prefix' => '/', //路由的prefix，空代表 / (根目录)
+			'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+		],
+		'api' => [
+			'namespace' => NULL, //本插件下Controller的路由的namespace，空代表使用Plugins\tools\App\Http\Controllers
+			'prefix' => 'api', //路由的prefix，空代表 / (根目录)
+			'middleware' => [], //路由的中间件，不启用中间件时，必须为空数组，不能设为NULL
+		],
+		//....
 	],
 	//全局中间件，会被自动调用
 	//参考 /app/Http/Kernel.php
 	'middleware' => [
 		// \Plugins\Tools\App\Http\Middleware\VerifyCsrfToken::class,
+	],
+	'middlewareGroups' => [
+		// 'web' => [],
+		// 'api' => [],
 	],
 	//路由中间键 附加到路由中
 	//参考 /app/Http/Kernel.php

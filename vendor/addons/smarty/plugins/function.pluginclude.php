@@ -24,11 +24,11 @@ function smarty_function_pluginclude($params, $template)
 	$_c = config('plugins');
 	if (empty($_c)) return;
 	
-	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,10);
+	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 	for($i = 1; $i < count($dbt);$i++)
 		if ($dbt[$i]['function'] == __FUNCTION__)
 		{
-			trigger_error("pluginclude: cannot use under pluginclude (recursive)", E_USER_NOTICE);
+			trigger_error("pluginclude: cannot call 'pluginclude' in 'pluginclude' (recursive)", E_USER_NOTICE);
 			return;
 		}
 
@@ -59,8 +59,6 @@ function smarty_function_pluginclude($params, $template)
 	});
 	asort($names);
 	foreach ($names as $name => $order)
-		$template->smarty->ext->_subtemplate->render($template, ((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, array(), 0, true);
+		$template->_subTemplateRender(((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, [], 0, true);
 
 }
-
-?>

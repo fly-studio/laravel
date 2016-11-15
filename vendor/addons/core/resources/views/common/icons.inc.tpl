@@ -1,6 +1,6 @@
 <!-- Icons -->
-<link rel="shortcut icon" href="<{'static/icons/favicon.ico'|url}>" />
-<link rel="Bookmark" href="<{'static/icons/favicon.ico'|url}>" />
+<link rel="shortcut icon" href="<{'icons/favicon.ico'|static}>" />
+<link rel="Bookmark" href="<{'icons/favicon.ico'|static}>" />
 <!--
 <link rel="apple-touch-icon" href="img/icon57.png" sizes="57x57">
 <link rel="apple-touch-icon" href="img/icon72.png" sizes="72x72">

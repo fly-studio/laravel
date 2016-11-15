@@ -24,5 +24,3 @@ function smarty_modifier_url($string, $nocache = FALSE, $params = [])
 	$nocache && $url .= ((strpos($url, '?') !== FALSE) ? '&' : '?') . '_='. uniqid(date('YmdHis,') . rand(100000,999999)); 
 	return $url;
 }
-
-?>

@@ -1,8 +1,13 @@
 {
     "name": "addons/func",
     "description": "Some Function files.",
+    "homepage": "https://www.load-page.com",
     "keywords": ["L5", "Laravel 5", "Laravel", "Function"],
     "license": "MIT",
+    "support": {
+        "issues": "https://git.load-page.com/addons/function/issues",
+        "source": "https://git.load-page.com/addons/function"
+    },
     "authors": [
         {
             "name": "Fly",
@@ -10,16 +15,13 @@
         }
     ],
     "require": {
-        "php": ">=5.1.0",
+        "php": ">=5.1.0"
     },
     "autoload": {
         "files": [
             "src/func/helpers.php"
         ]
     },
-     "extra": {
-        "branch-alias": {
-            "dev-master": "2.0-dev"
-        }
-    }
+    "minimum-stability": "dev"
+    
 }

@@ -7,7 +7,6 @@ use Addons\Core\Models\TreeTrait;
 class Tree extends Model {
 	use TreeTrait;
 	//不能批量赋值
-	public $auto_cache = false;
 	public $fire_caches = [];
 
 
@@ -128,12 +127,12 @@ class Tree extends Model {
 			return $builder->get($columns);
 		} else {
 			$result = $this->newCollection();
-			
 			$children = $this->getChildren($columns);
-			array_walk($children, function($v) use ($result, $columns){
+			foreach($children as $v)
+			{
 				$result[] = $v;
-				$result->merge($this->getDescendant($columns));
-			});
+				$result = $result->merge($v->getDescendant($columns));
+			}
 			return $result;
 		}
 	}
@@ -154,10 +153,11 @@ class Tree extends Model {
 	 * @param mixed $items 通过getData获得的二维数组(with_id)
 	 * @param integer $topid 提供此二维数组中的顶级节点topid
 	 */
-	protected function _data_to_tree($items, $topid = 0, $with_id = TRUE)
-	{
+	public function _data_to_tree($items, $topid = 0, $with_id = TRUE)
+	{ 
 		foreach ($items as $item)
 		{
+			if ($item[$this->getKeyName()] == $item[$this->getParentKeyName()]) continue; //如果父ID等于自己，避免死循环，跳过
 			if ($with_id)
 				$items[ ($item[$this->getParentKeyName()]) ][ 'children' ][ ($item[$this->getKeyName()]) ] = &$items[ ($item[$this->getKeyName()]) ];
 			else

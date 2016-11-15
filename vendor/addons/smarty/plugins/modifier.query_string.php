@@ -4,7 +4,7 @@
  * 
  * @param  string $string 输入内容
  * @param  string $mode   encode or decode
- * @return string         输出加密或解密内容
+ * @return string         输出网址
  */
 function smarty_modifier_query_string($key, $value = NULL)
 {
