@@ -28,8 +28,7 @@ function smarty_function_pluginclude($params, $template)
 	for($i = 1; $i < count($dbt);$i++)
 		if ($dbt[$i]['function'] == __FUNCTION__)
 		{
-			trigger_error("pluginclude: cannot call 'pluginclude' in 'pluginclude' (recursive)", E_USER_NOTICE);
-			return;
+			trigger_error("pluginclude: cannot call 'pluginclude' in 'pluginclude' (recursive)", E_USER_NOTICE);			return;
 		}
 
 	$file = '';
