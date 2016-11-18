@@ -11,12 +11,15 @@ namespace Addons\Entrust;
 
 use Addons\Entrust\Contracts\PermissionInterface;
 use Addons\Entrust\Traits\PermissionTrait;
-use Addons\Core\Models\Model;
+use Illuminate\Database\Eloquent\Model;
+use Addons\Core\Models\CacheTrait;
+use Addons\Core\Models\CallTrait;
+use Addons\Core\Models\PolyfillTrait;
 
 class Permission extends Model implements PermissionInterface
 {
+    use CacheTrait, CallTrait, PolyfillTrait;
     use PermissionTrait;
-    public $auto_cache = true;
     public $fire_caches = ['roles'];
     public $guarded = ['id'];
     /**
