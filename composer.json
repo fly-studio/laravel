@@ -27,7 +27,9 @@
         "addons/smarty": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
-        "addons/core": "dev-master"
+        "addons/core": "dev-master",
+        "elasticsearch/elasticsearch": "^5.0",
+        "addons/scout-elastic": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
