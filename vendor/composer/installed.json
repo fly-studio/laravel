@@ -6170,5 +6170,54 @@
             "laravel",
             "scout"
         ]
+    },
+    {
+        "name": "tufanbarisyildirim/php-apk-parser",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tufanbarisyildirim/php-apk-parser.git",
+            "reference": "ba5b29c1c9ea60a629604de103976638f5204d22"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tufanbarisyildirim/php-apk-parser/zipball/ba5b29c1c9ea60a629604de103976638f5204d22",
+            "reference": "ba5b29c1c9ea60a629604de103976638f5204d22",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*"
+        },
+        "time": "2016-01-15 18:08:46",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "ApkParser": "lib"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Tufan Baris YILDIRIM",
+                "email": "tufanbarisyildirim@gmail.com",
+                "homepage": "http://tufanbarisyildirim.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "Read basic info about an application from .apk file.",
+        "homepage": "https://github.com/tufanbarisyildirim/php-apk-parser",
+        "keywords": [
+            "android",
+            "apk",
+            "parser"
+        ]
     }
 ]

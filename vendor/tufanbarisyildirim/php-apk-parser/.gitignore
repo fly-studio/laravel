@@ -1,0 +1,15 @@
+### IntelliJ ###
+*.ipr
+*.iws
+*.iml
+.idea/
+out/
+
+### Composer ###
+composer.phar
+composer.lock
+vendor/
+
+# Mac OS
+.DS_Store
+examples/extract_folder

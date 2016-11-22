@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5ffcd93b22e7a4de44196949879f2d00",
-    "content-hash": "57b6781e14810493ff882dfc1a2bb26a",
+    "hash": "1dcbf8026ae94dbde2deadce9ebe1457",
+    "content-hash": "46a279f56000ef82d9c2a3019e304d04",
     "packages": [
         {
             "name": "addons/core",
@@ -4183,6 +4183,53 @@
             "time": "2016-10-18 15:46:07"
         },
         {
+            "name": "tufanbarisyildirim/php-apk-parser",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tufanbarisyildirim/php-apk-parser.git",
+                "reference": "ba5b29c1c9ea60a629604de103976638f5204d22"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tufanbarisyildirim/php-apk-parser/zipball/ba5b29c1c9ea60a629604de103976638f5204d22",
+                "reference": "ba5b29c1c9ea60a629604de103976638f5204d22",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ApkParser": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tufan Baris YILDIRIM",
+                    "email": "tufanbarisyildirim@gmail.com",
+                    "homepage": "http://tufanbarisyildirim.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Read basic info about an application from .apk file.",
+            "homepage": "https://github.com/tufanbarisyildirim/php-apk-parser",
+            "keywords": [
+                "android",
+                "apk",
+                "parser"
+            ],
+            "time": "2016-01-15 18:08:46"
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v2.4.0",
             "source": {
@@ -5974,7 +6021,8 @@
         "addons/smarty": 20,
         "addons/entrust": 20,
         "addons/func": 20,
-        "addons/core": 20
+        "addons/core": 20,
+        "tufanbarisyildirim/php-apk-parser": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

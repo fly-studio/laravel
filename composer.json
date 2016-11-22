@@ -29,7 +29,8 @@
         "addons/func": "dev-master",
         "addons/core": "dev-master",
         "elasticsearch/elasticsearch": "^5.0",
-        "addons/scout-elastic": "^1.0"
+        "addons/scout-elastic": "^1.0",
+        "tufanbarisyildirim/php-apk-parser": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
