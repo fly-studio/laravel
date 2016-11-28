@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
     'Zend\\Diactoros\\' => array($vendorDir . '/zendframework/zend-diactoros/src'),
     'XdgBaseDir\\' => array($vendorDir . '/dnoegel/php-xdg-base-dir/src'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
@@ -75,7 +75,8 @@ return array(
     'ClassPreloader\\' => array($vendorDir . '/classpreloader/classpreloader/src'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Barryvdh\\Debugbar\\' => array($vendorDir . '/barryvdh/laravel-debugbar/src'),
+    'Addons\\Ucloud\\' => array($vendorDir . '/addons/ucloud/src'),
     'Addons\\Smarty\\' => array($vendorDir . '/addons/smarty/src'),
-    'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src/Entrust'),
+    'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src'),
     'Addons\\Core\\' => array($vendorDir . '/addons/core/src'),
 );
