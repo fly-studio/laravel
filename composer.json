@@ -27,14 +27,18 @@
         "addons/smarty": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
-        "addons/core": "dev-master"
+        "addons/core": "dev-master",
+        "elasticsearch/elasticsearch": "^5.0",
+        "addons/scout-elastic": "^1.0",
+        "tufanbarisyildirim/php-apk-parser": "dev-master",
+        "addons/ucloud": "dev-master",
+        "symfony/dom-crawler": "^3.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.0",
         "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*",
         "barryvdh/laravel-debugbar": "^2.3"
     },
     "autoload": {

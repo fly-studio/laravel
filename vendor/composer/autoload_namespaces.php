@@ -18,4 +18,5 @@ return array(
     'Doctrine\\Common\\Collections\\' => array($vendorDir . '/doctrine/collections/lib'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
     'Cron' => array($vendorDir . '/mtdowling/cron-expression/src'),
+    'ApkParser' => array($vendorDir . '/tufanbarisyildirim/php-apk-parser/lib'),
 );

@@ -1,0 +1,8 @@
+.git
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+.settings
+.buildpath
+.project
