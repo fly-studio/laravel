@@ -174,7 +174,7 @@ trait OutputTrait {
 	{
 		$request = app('request');
 		$charset = config('app.charset');
-		$of = strtolower($request->input('of', 'html')); //默认是html
+		$of = strtolower($request->input('of', $request->expectsJson() ? '' : 'html')); //默认是html
 		$callback = $request->query('callback'); //必须是GET请求，以免和POST字段冲突
 
 		$response = null;
@@ -195,7 +195,6 @@ trait OutputTrait {
 				$response = response()->download($filename, date('YmdHis').'.'.$of, ['Content-Type' =>  Mimes::getInstance()->mime_by_ext($of)])->deleteFileAfterSend(true);
 				break;
 			default: //其余全部为json
-				//if ($request->expectsJson()) //此条件不需要
 				$response = (new JsonResponse($data))->withCallback($callback);
 				break;
 		}
