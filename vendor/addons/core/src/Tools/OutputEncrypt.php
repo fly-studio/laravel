@@ -24,7 +24,6 @@ class OutputEncrypt {
 	public function encode($data)
 	{
 		$e = new Encrypter($this->getKey(), config('app.cipher'));
-		$data = json_decode(json_encode($data), true); //turn Object to Array
 		return $e->encrypt($data);
 	}
 

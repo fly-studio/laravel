@@ -117,7 +117,8 @@ trait OutputTrait {
 			'uid' => !empty($this->user) ? $this->user->getKey() : null,
 			'debug' => env('APP_DEBUG'),
 		];
-
+		$data = json_decode(json_encode($data), true); //turn Object to Array
+		
 		switch($type)
 		{
 			case 'api':
@@ -183,7 +184,7 @@ trait OutputTrait {
 			case 'txt':
 			case 'text':
 			case 'html': //text
-				$content = $of != 'html' ? Output::$of($data, $jsonp) : $this->view('tips', ['_data' => $data]);
+				$content = $of != 'html' ? Output::$of($data) : $this->view('tips', ['_data' => $data]);
 				$response = response($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 				break;
 			case 'yaml':
