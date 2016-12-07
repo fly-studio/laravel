@@ -35,7 +35,6 @@ return array(
     'SocialiteProviders\\QQ\\' => array($vendorDir . '/socialiteproviders/qq'),
     'SocialiteProviders\\Manager\\Test\\' => array($vendorDir . '/socialiteproviders/manager/tests'),
     'SocialiteProviders\\Manager\\' => array($vendorDir . '/socialiteproviders/manager/src'),
-    'ScoutEngines\\Elasticsearch\\' => array($vendorDir . '/addons/scout-elastic/src'),
     'React\\Promise\\' => array($vendorDir . '/react/promise/src'),
     'Ramsey\\Uuid\\' => array($vendorDir . '/ramsey/uuid/src'),
     'Psy\\' => array($vendorDir . '/psy/psysh/src/Psy'),

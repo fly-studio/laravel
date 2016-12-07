@@ -3803,8 +3803,6 @@ return array(
     'React\\Promise\\PromisorInterface' => $vendorDir . '/react/promise/src/PromisorInterface.php',
     'React\\Promise\\RejectedPromise' => $vendorDir . '/react/promise/src/RejectedPromise.php',
     'React\\Promise\\UnhandledRejectionException' => $vendorDir . '/react/promise/src/UnhandledRejectionException.php',
-    'ScoutEngines\\Elasticsearch\\ElasticsearchEngine' => $vendorDir . '/addons/scout-elastic/src/ElasticsearchEngine.php',
-    'ScoutEngines\\Elasticsearch\\ElasticsearchProvider' => $vendorDir . '/addons/scout-elastic/src/ElasticsearchProvider.php',
     'SebastianBergmann\\CodeCoverage\\CodeCoverage' => $vendorDir . '/phpunit/php-code-coverage/src/CodeCoverage.php',
     'SebastianBergmann\\CodeCoverage\\CoveredCodeNotExecutedException' => $vendorDir . '/phpunit/php-code-coverage/src/Exception/CoveredCodeNotExecutedException.php',
     'SebastianBergmann\\CodeCoverage\\Driver\\Driver' => $vendorDir . '/phpunit/php-code-coverage/src/Driver/Driver.php',
