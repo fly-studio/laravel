@@ -77,5 +77,6 @@ return array(
     'Addons\\Ucloud\\' => array($vendorDir . '/addons/ucloud/src'),
     'Addons\\Smarty\\' => array($vendorDir . '/addons/smarty/src'),
     'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src'),
+    'Addons\\Elasticsearch\\' => array($vendorDir . '/addons/elasticsearch/src'),
     'Addons\\Core\\' => array($vendorDir . '/addons/core/src'),
 );
