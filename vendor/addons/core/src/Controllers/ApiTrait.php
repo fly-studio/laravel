@@ -5,7 +5,7 @@ use Closure, Schema, DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-trait AdminTrait {
+trait ApiTrait {
 
 	private function _getColumns(Builder $builder)
 	{

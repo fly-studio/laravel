@@ -7,7 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Addons\\Core\\Console\\Kernel' => $vendorDir . '/addons/core/src/Console/Kernel.php',
-    'Addons\\Core\\Controllers\\AdminTrait' => $vendorDir . '/addons/core/src/Controllers/AdminTrait.php',
+    'Addons\\Core\\Controllers\\ApiTrait' => $vendorDir . '/addons/core/src/Controllers/ApiTrait.php',
     'Addons\\Core\\Controllers\\Controller' => $vendorDir . '/addons/core/src/Controllers/Controller.php',
     'Addons\\Core\\Controllers\\InitTrait' => $vendorDir . '/addons/core/src/Controllers/InitTrait.php',
     'Addons\\Core\\Controllers\\OutputTrait' => $vendorDir . '/addons/core/src/Controllers/OutputTrait.php',
