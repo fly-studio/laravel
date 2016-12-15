@@ -32,7 +32,8 @@
         "tufanbarisyildirim/php-apk-parser": "dev-master",
         "addons/ucloud": "dev-master",
         "symfony/dom-crawler": "^3.1",
-        "addons/elasticsearch": "dev-master"
+        "addons/elasticsearch": "dev-master",
+        "rap2hpoutre/laravel-log-viewer": "^0.7.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

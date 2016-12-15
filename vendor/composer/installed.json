@@ -6275,5 +6275,55 @@
             "monolog",
             "paginator"
         ]
+    },
+    {
+        "name": "rap2hpoutre/laravel-log-viewer",
+        "version": "v0.7.1",
+        "version_normalized": "0.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/rap2hpoutre/laravel-log-viewer.git",
+            "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+            "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/support": "4.2.*|5.*",
+            "php": ">=5.4.0"
+        },
+        "time": "2016-11-24 19:39:06",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/controllers"
+            ],
+            "psr-0": {
+                "Rap2hpoutre\\LaravelLogViewer\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "rap2hpoutre",
+                "email": "raphaelht@gmail.com"
+            }
+        ],
+        "description": "A Laravel log reader",
+        "keywords": [
+            "laravel",
+            "log",
+            "log-reader",
+            "log-viewer",
+            "logging",
+            "lumen"
+        ]
     }
 ]
