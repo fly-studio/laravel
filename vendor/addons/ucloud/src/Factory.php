@@ -86,7 +86,7 @@ class Factory {
 				logger()->error($e);
 			}
 			
-			usleep(500);
+			usleep(1000);
 		}
 		return false;
 	}
