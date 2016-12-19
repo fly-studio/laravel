@@ -80,10 +80,13 @@ class Factory {
 				}
 			} catch (RequestException $e) {
 				logger()->error($e->getMessage());
+				logger()->error($e->getTraceAsString());
 			} catch (ClientException $e) {
 				logger()->error($e->getMessage());
+				logger()->error($e->getTraceAsString());
 			} catch (Exception $e) {
 				logger()->error($e->getMessage());
+				logger()->error($e->getTraceAsString());
 			}
 			
 			usleep(500);
