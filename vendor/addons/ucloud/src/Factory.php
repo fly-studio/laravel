@@ -59,7 +59,7 @@ class Factory {
 		$stack->push(
 			Middleware::log(
 				app('log'),
-				new MessageFormatter('GuzzleHttp {uri}:'.PHP_EOL.'{request}'.PHP_EOL.'{response}'.PHP_EOL.'{error}')
+				new MessageFormatter('GuzzleHttp {uri}'.PHP_EOL.PHP_EOL.'{request}'.PHP_EOL.PHP_EOL.'{response}'.PHP_EOL.PHP_EOL.'{error}')
 			)
 		);
 		$client = new \GuzzleHttp\Client([
