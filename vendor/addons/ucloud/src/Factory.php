@@ -86,8 +86,9 @@ class Factory {
 				logger()->error($e);
 			}
 			
-			usleep(1000);
+			usleep(500);
 		}
+		throw new Exception('GuzzleHttp: 5 fails of GET '.$this->config['url'].'?'.http_build_query($params));
 		return false;
 	}
 
