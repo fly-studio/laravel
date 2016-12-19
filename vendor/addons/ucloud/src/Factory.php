@@ -3,6 +3,9 @@ namespace Addons\Ucloud;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\MessageFormatter;
 class Factory {
 	private $config = [];
 	private $app;
@@ -51,7 +54,18 @@ class Factory {
 	{
 		$params['Action'] = $action;
 		$params = $this->buildParams($params);
-		$client = new \GuzzleHttp\Client();
+
+		$stack = HandlerStack::create();
+		$stack->push(
+			Middleware::log(
+				app('log'),
+				new MessageFormatter('GuzzleHttp {uri}:'.PHP_EOL.'{request}'.PHP_EOL.'{response}'.PHP_EOL.'{error}')
+			)
+		);
+		$client = new \GuzzleHttp\Client([
+			'handler' => $stack,
+			'verify' => false,
+		]);
 		for($i = 0; $i <= 5; ++$i)
 		{
 			try {
