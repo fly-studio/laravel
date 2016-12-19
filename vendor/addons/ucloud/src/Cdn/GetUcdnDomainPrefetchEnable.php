@@ -12,6 +12,6 @@ class GetUcdnDomainPrefetchEnable {
 	public function handle()
 	{
 		$result = $this->factory->http_get('GetUcdnDomainPrefetchEnable');
-		return $result['RetCode'] == 0 ? $result['Enable'] : false;
+		return isset($result['RetCode']) && $result['RetCode'] == 0 ? $result['Enable'] : false;
 	}
 }

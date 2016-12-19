@@ -24,6 +24,6 @@ class PrefetchDomainCache {
 			$params['UrlList.'. $key] = $url;
 
 		$result = $this->factory->http_get('PrefetchDomainCache', $params);
-		return $result['RetCode'] == 0 ? $result['TaskId'] : false;
+		return isset($result['RetCode']) && $result['RetCode'] == 0 ? $result['TaskId'] : false;
 	}
 }
