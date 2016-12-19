@@ -6117,44 +6117,6 @@
         ]
     },
     {
-        "name": "addons/scout-elastic",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://git.load-page.com/addons/scout-elastic.git",
-            "reference": "61a744ee411d54b487fed7bc3f0833d8cdbfab41"
-        },
-        "require": {
-            "elasticsearch/elasticsearch": "^5.0",
-            "illuminate/database": "^5.3",
-            "illuminate/support": "^5.3",
-            "laravel/scout": "^1.0",
-            "php": ">=5.6.4"
-        },
-        "require-dev": {
-            "fzaninotto/faker": "~1.4",
-            "mockery/mockery": "0.9.*",
-            "phpunit/phpunit": "~5.0"
-        },
-        "time": "2016-11-21 09:07:20",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "ScoutEngines\\Elasticsearch\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "description": "Elastic Driver for Laravel Scout",
-        "keywords": [
-            "elastic",
-            "elasticsearch",
-            "laravel",
-            "scout"
-        ]
-    },
-    {
         "name": "addons/ucloud",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -6265,6 +6227,103 @@
             "laravel",
             "permission",
             "roles"
+        ]
+    },
+    {
+        "name": "addons/elasticsearch",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://git.load-page.com/addons/elasticsearch.git",
+            "reference": "9aebc65aa0b844ab4fb29987051cffae88d14dbc"
+        },
+        "require": {
+            "elasticsearch/elasticsearch": "^5.0",
+            "php": ">=5.6.10"
+        },
+        "time": "2016-12-09 08:06:10",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Addons\\Elasticsearch\\": "src/"
+            },
+            "classmap": [
+                "src/"
+            ],
+            "files": []
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fly",
+                "email": "fly@load-page.com"
+            }
+        ],
+        "description": "Laravel's elasticsearch Paginator/Collection/Logger Helper.",
+        "homepage": "https://www.load-page.com",
+        "keywords": [
+            "collection",
+            "elasticsearch",
+            "l5",
+            "laravel",
+            "laravel 5",
+            "monolog",
+            "paginator"
+        ]
+    },
+    {
+        "name": "rap2hpoutre/laravel-log-viewer",
+        "version": "v0.7.1",
+        "version_normalized": "0.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/rap2hpoutre/laravel-log-viewer.git",
+            "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+            "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/support": "4.2.*|5.*",
+            "php": ">=5.4.0"
+        },
+        "time": "2016-11-24 19:39:06",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/controllers"
+            ],
+            "psr-0": {
+                "Rap2hpoutre\\LaravelLogViewer\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "rap2hpoutre",
+                "email": "raphaelht@gmail.com"
+            }
+        ],
+        "description": "A Laravel log reader",
+        "keywords": [
+            "laravel",
+            "log",
+            "log-reader",
+            "log-viewer",
+            "logging",
+            "lumen"
         ]
     }
 ]

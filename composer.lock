@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "41ba8f9f24fef8298f574db939ecb77a",
-    "content-hash": "c6b42102e5c933372db4efc3f543ef6d",
+    "hash": "5db0162f11a370441bdd6b4aed91f470",
+    "content-hash": "d7d697954bd87058b784db138f6a2c95",
     "packages": [
         {
             "name": "addons/core",
@@ -52,6 +52,51 @@
                 "laravel 5"
             ],
             "time": "2016-11-28 10:46:51"
+        },
+        {
+            "name": "addons/elasticsearch",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://git.load-page.com/addons/elasticsearch.git",
+                "reference": "9aebc65aa0b844ab4fb29987051cffae88d14dbc"
+            },
+            "require": {
+                "elasticsearch/elasticsearch": "^5.0",
+                "php": ">=5.6.10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Addons\\Elasticsearch\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ],
+                "files": []
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fly",
+                    "email": "fly@load-page.com"
+                }
+            ],
+            "description": "Laravel's elasticsearch Paginator/Collection/Logger Helper.",
+            "homepage": "https://www.load-page.com",
+            "keywords": [
+                "collection",
+                "elasticsearch",
+                "l5",
+                "laravel",
+                "laravel 5",
+                "monolog",
+                "paginator"
+            ],
+            "time": "2016-12-09 08:06:10"
         },
         {
             "name": "addons/entrust",
@@ -156,42 +201,6 @@
                 "laravel 5"
             ],
             "time": "2016-11-02 15:05:12"
-        },
-        {
-            "name": "addons/scout-elastic",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://git.load-page.com/addons/scout-elastic.git",
-                "reference": "61a744ee411d54b487fed7bc3f0833d8cdbfab41"
-            },
-            "require": {
-                "elasticsearch/elasticsearch": "^5.0",
-                "illuminate/database": "^5.3",
-                "illuminate/support": "^5.3",
-                "laravel/scout": "^1.0",
-                "php": ">=5.6.4"
-            },
-            "require-dev": {
-                "fzaninotto/faker": "~1.4",
-                "mockery/mockery": "0.9.*",
-                "phpunit/phpunit": "~5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ScoutEngines\\Elasticsearch\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "Elastic Driver for Laravel Scout",
-            "keywords": [
-                "elastic",
-                "elasticsearch",
-                "laravel",
-                "scout"
-            ],
-            "time": "2016-11-21 09:07:20"
         },
         {
             "name": "addons/smarty",
@@ -3039,6 +3048,54 @@
                 "uuid"
             ],
             "time": "2016-11-22 19:21:44"
+        },
+        {
+            "name": "rap2hpoutre/laravel-log-viewer",
+            "version": "v0.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rap2hpoutre/laravel-log-viewer.git",
+                "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rap2hpoutre/laravel-log-viewer/zipball/03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+                "reference": "03d5cb9e0229e2e01e842c1075257ecaeeb5b3cd",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "4.2.*|5.*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/controllers"
+                ],
+                "psr-0": {
+                    "Rap2hpoutre\\LaravelLogViewer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "rap2hpoutre",
+                    "email": "raphaelht@gmail.com"
+                }
+            ],
+            "description": "A Laravel log reader",
+            "keywords": [
+                "laravel",
+                "log",
+                "log-reader",
+                "log-viewer",
+                "logging",
+                "lumen"
+            ],
+            "time": "2016-11-24 19:39:06"
         },
         {
             "name": "react/promise",
@@ -6068,7 +6125,8 @@
         "addons/func": 20,
         "addons/core": 20,
         "tufanbarisyildirim/php-apk-parser": 20,
-        "addons/ucloud": 20
+        "addons/ucloud": 20,
+        "addons/elasticsearch": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
