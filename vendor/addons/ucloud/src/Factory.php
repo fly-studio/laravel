@@ -79,9 +79,11 @@ class Factory {
 						return $result;
 				}
 			} catch (RequestException $e) {
-				logger($e->getMessage());
+				logger()->error($e->getMessage());
 			} catch (ClientException $e) {
-				logger($e->getMessage());
+				logger()->error($e->getMessage());
+			} catch (Exception $e) {
+				logger()->error($e->getMessage());
 			}
 			
 			usleep(500);
