@@ -78,15 +78,12 @@ class Factory {
 					if ($result !== null)
 						return $result;
 				}
-			} catch (RequestException $e) {
-				logger()->error($e->getMessage());
-				logger()->error($e->getTraceAsString());
-			} catch (ClientException $e) {
-				logger()->error($e->getMessage());
-				logger()->error($e->getTraceAsString());
-			} catch (Exception $e) {
-				logger()->error($e->getMessage());
-				logger()->error($e->getTraceAsString());
+			//} catch (RequestException $e) {
+			//	logger()->error($e);
+			//} catch (ClientException $e) {
+			//	logger()->error($e);
+			} catch (\Exception $e) {
+				logger()->error($e);
 			}
 			
 			usleep(500);
