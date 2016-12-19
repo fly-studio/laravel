@@ -3,6 +3,7 @@ namespace Addons\Ucloud;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\MessageFormatter;
@@ -65,6 +66,7 @@ class Factory {
 		$client = new \GuzzleHttp\Client([
 			'handler' => $stack,
 			'verify' => false,
+			'timeout' => 20,
 		]);
 		for($i = 0; $i <= 5; ++$i)
 		{
@@ -76,11 +78,13 @@ class Factory {
 					if ($result !== null)
 						return $result;
 				}
+			} catch (RequestException $e) {
+				logger($e->getMessage());
 			} catch (ClientException $e) {
-
+				logger($e->getMessage());
 			}
 			
-			sleep(1);
+			usleep(500);
 		}
 		return false;
 	}
