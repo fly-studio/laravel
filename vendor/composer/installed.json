@@ -6324,5 +6324,74 @@
         ],
         "description": "Symfony DomCrawler Component",
         "homepage": "https://symfony.com"
+    },
+    {
+        "name": "owen-it/laravel-auditing",
+        "version": "3.1.10",
+        "version_normalized": "3.1.10.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/owen-it/laravel-auditing.git",
+            "reference": "90d0827df729e142d6c804b4411470717ba6f9cc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packagist.phpcomposer.com/files/owen-it/laravel-auditing/90d0827df729e142d6c804b4411470717ba6f9cc.zip",
+            "reference": "90d0827df729e142d6c804b4411470717ba6f9cc",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/bus": "5.2.*|5.3.*",
+            "illuminate/contracts": "5.2.*|5.3.*",
+            "illuminate/database": "5.2.*|5.3.*",
+            "illuminate/queue": "5.2.*|5.3.*",
+            "illuminate/support": "5.2.*|5.3.*",
+            "php": ">=5.5.9",
+            "ramsey/uuid": "~3.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9.4",
+            "phpunit/phpunit": "~5.4"
+        },
+        "time": "2016-11-24 13:21:56",
+        "type": "package",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "OwenIt\\Auditing\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Antério Vieira",
+                "email": "anteriovieira@gmail.com"
+            },
+            {
+                "name": "Raphael França",
+                "email": "raphaelfrancabsb@gmail.com"
+            }
+        ],
+        "description": "Keep a change history for your models using laravel and lumen",
+        "homepage": "https://laravel-auditing.com",
+        "keywords": [
+            "Audit",
+            "activity",
+            "auditing",
+            "laravel",
+            "log",
+            "logging",
+            "lumen",
+            "observer",
+            "register"
+        ]
     }
 ]
