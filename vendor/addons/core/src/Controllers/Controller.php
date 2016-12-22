@@ -7,12 +7,16 @@ use App\Role;
 use Addons\Core\Controllers\OutputTrait;
 use Addons\Core\Controllers\InitTrait;
 use Addons\Core\Controllers\PermissionTrait;
+use Addons\Core\Events\BeforeControllerEvent;
+use Addons\Core\Events\ControllerEvent;
 class Controller extends BaseController {
 	use InitTrait, PermissionTrait, OutputTrait;
 	protected $addons = true;
 	
 	public function callAction($method, $parameters)
 	{
+		//event before
+		event(new BeforeControllerEvent($this, $method, $parameters));
 		if ($this->addons)
 		{
 			$this->initCommon();
@@ -27,7 +31,8 @@ class Controller extends BaseController {
 		}
 
 		$response = call_user_func_array([$this, $method], $parameters);
-		//todo:
+		//event after
+		event(new ControllerEvent($this, $method, $parameters, null));
 		return $response;
 	}
 
