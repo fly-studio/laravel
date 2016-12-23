@@ -9,14 +9,45 @@ trait Searchable {
 
 	/**
      * Perform a search against the model's indexed data.
+     * @example
+     * $query = [
+     *     [
+     *         'term' => [
+     *             'name' => 'admin'
+     *         ]
+     *     ],
+     *     [
+     *         'multi_match' => [
+     *             'fields' => ['name', 'title'],
+     *             'query' => 'admin'
+     *         ]
+     *     ] 
+     * ];
+     * search($query);
+     * 
+     * @example
+     * search('admin');
      *
-     * @param  string  $query
+     * @example
+     * $query = [
+     *     'term' => [
+     *         'name' => 'admin'
+     *     ]
+     * ];
+     * search($query);
+     * 
+     *
+     * @param  string|array  $query
      * @param  Closure  $callback
      * @return \Addons\Elasticsearch\Scout\Builder
      */
-    public static function search($query, $callback = null)
+    public static function search($query = null, $callback = null)
     {
-        return new Builder(new static, $query, $callback);
+        $builder = new Builder(new static, null, $callback);
+        if (is_null($query))
+            !is_array($query) ? $builder->where('_all', $query) : $builder->where($query);
+
+        return $builder;
     }
 
 }

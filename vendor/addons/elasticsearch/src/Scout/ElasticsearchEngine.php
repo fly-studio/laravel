@@ -2,8 +2,33 @@
 namespace Addons\Elasticsearch\Scout;
 
 use Laravel\Scout\Engines\ElasticsearchEngine as BaseElasticsearchEngine;
-use Addons\Elasticsearch\Scout\Builder;
+//use Addons\Elasticsearch\Scout\Builder;
+use Laravel\Scout\Builder;
 class ElasticsearchEngine extends BaseElasticsearchEngine {
+
+	/**
+     * Get the filter array for the query.
+     *
+     * @param  Builder  $query
+     * @return array
+     */
+    protected function filters(Builder $query)
+    {
+        return $query->wheres->toArray();
+    }
+	/**
+     * Perform the given search on the engine.
+     *
+     * @param  Builder  $query
+     * @return mixed
+     */
+    public function search(Builder $query)
+    {
+        return $this->performSearch($query, [
+            'filters' => $this->filters($query),
+            'size' => $query->limit ?: 10000,
+        ]);
+    }
 
 	/**
      * Perform the given search on the engine.
@@ -13,72 +38,21 @@ class ElasticsearchEngine extends BaseElasticsearchEngine {
      */
     public function count(Builder $query)
     {
-        $result = $this->performSearch($query, [
+        $result = $this->performCount($query, [
             'filters' => $this->filters($query),
         ]);
         return isset($result['count']) ? $result['count'] : false;
     }
 
-	protected function makeMatches($query, $filters)
-	{
-		$matches = [];
-		if (!empty($query))
-			$matches[] = [
-				'match' => [
-					'_all' => [
-						'query' => $query,
-						'fuzziness' => 1
-					]
-				]
-			];
-
-		if (!empty( $filters )) {
-			foreach ( $filters as $field => $value) {
-
-				if (strpos($field, ',') !== false)
-				{
-					$matches[] = [
-						'multi_match' => [
-							'fields' => explode(',', $field),
-							'query' => $value
-						]
-					];
-				}
-				else if(is_string($value)) {
-					$matches[] = [
-						'match' => [
-							$field => [
-								'query' => $value,
-								'operator' => 'and',
-							],
-						],
-					];
-				} elseif (is_array($value)) {
-					$matches[] = $value;
-				} else { //other 
-					$matches[] = [
-						'term' => [
-							$field => $value,
-						],
-					];
-				}
-			}
-		}
-	}
+	
 
 	protected function performCount(Builder $builder, array $options = [])
 	{
-		$matches = $this->makeMatches($builder->query, $options['filters']);
-
 		$query = [
 			'index' =>  $this->index,
 			'type'  =>  $builder->model->searchableAs(),
 			'body' => [
-				'query' => [
-					'bool' => [
-						'must' => $matches
-					],
-				],
+				'query' => $options['filters'],
 			],
 		];
 
@@ -96,18 +70,12 @@ class ElasticsearchEngine extends BaseElasticsearchEngine {
 	protected function performSearch(Builder $builder, array $options = [])
 	{
 		
-		$matches = $this->makeMatches($builder->query, $options['filters']);
-
 		$query = [
 			'index' =>  $this->index,
 			'type'  =>  $builder->model->searchableAs(),
 			'body' => [
 				'_source' => $builder->_source,
-				'query' => [
-					'bool' => [
-						'must' => $matches
-					],
-				],
+				'query' => $options['filters'],
 			],
 		];
 
