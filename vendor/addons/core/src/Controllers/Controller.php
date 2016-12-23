@@ -16,7 +16,8 @@ class Controller extends BaseController {
 	public function callAction($method, $parameters)
 	{
 		//event before
-		event(new BeforeControllerEvent($this, $method, $parameters));
+		//event(new BeforeControllerEvent($this, $method));
+
 		if ($this->addons)
 		{
 			$this->initCommon();
@@ -32,7 +33,7 @@ class Controller extends BaseController {
 
 		$response = call_user_func_array([$this, $method], $parameters);
 		//event after
-		event(new ControllerEvent($this, $method, $parameters, null));
+		event(new ControllerEvent($this, $method, $response));
 		return $response;
 	}
 

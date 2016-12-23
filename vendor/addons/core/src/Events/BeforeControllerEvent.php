@@ -3,33 +3,13 @@
 namespace Addons\Core\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Addons\Core\Contracts\Events\ControllerEvent as ControllerEventContract;
+use Addons\Core\Contracts\Events\ControllerEvent as BaseControllerEvent;
 
-class BeforeControllerEvent  implements ControllerEventContract
+class BeforeControllerEvent extends BaseControllerEvent
 {
-    use ControllerEventTrait;
-    use InteractsWithSockets, SerializesModels;
-
-    public $controllerObject;
-    public $methodName;
-    public $parameters;
-    /**
-     * Create a new event instance.
-     *
-     * @return void
-     */
-    public function __construct($controllerObject, $methodName, $parameters)
-    {
-        $this->controllerObject = $controllerObject;
-        $this->methodName = $methodName;
-        $this->parameters = $parameters;
-    }
-
     /**
      * Get the channels the event should broadcast on.
      *

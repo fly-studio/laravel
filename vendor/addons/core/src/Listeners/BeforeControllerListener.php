@@ -10,11 +10,13 @@ use Addons\Core\Contracts\Listeners\ControllerListener as ControllerListenerCont
 abstract class BeforeControllerListener extends ControllerListenerContract implements ShouldQueue
 {
 	use InteractsWithQueue;
-	// auto call class 'Namespace\App\Listener\ControllerBeforeListener' without defined
+
 	protected $controllerListeners = [
-		// 'App\Http\Controllers\HomeController' => [
-		// 		'App\Listener\HomeControllerBeforeListener', //auto set Controller's method name
-		// 		'App\Listener\HomeControllerBeforeListener1@handle',
+		// eg: Admin\MemberController edit
+		// if not matched, auto call class 'App\Listener\Admin\MemberControllerBeforeListener@edit' 
+		// 'App\Http\Controllers\Home*' => [
+		// 		'App\Listener\HomeControllerBeforeListener', //auto call current controller's method
+		// 		'App\Listener\HomeControllerBeforeListener@defined_method',
 		// 	],
 	];
 
