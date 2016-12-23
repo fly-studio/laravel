@@ -10,8 +10,9 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Addons\Core\Contracts\Events\ControllerEvent as ControllerEventContract;
 
-class BeforeControllerEvent implements ControllerEventContract
+class BeforeControllerEvent  implements ControllerEventContract
 {
+    use ControllerEventTrait;
     use InteractsWithSockets, SerializesModels;
 
     public $controllerObject;
@@ -27,26 +28,6 @@ class BeforeControllerEvent implements ControllerEventContract
         $this->controllerObject = $controllerObject;
         $this->methodName = $methodName;
         $this->parameters = $parameters;
-    }
-
-    public function getClass()
-    {
-        return $this->controllerObject;
-    }
-
-    public function getClassName()
-    {
-        return get_class($this->controllerObject);
-    }
-
-    public function getMethod()
-    {
-        return $this->methodName;
-    }
-
-    public function getParameters()
-    {
-        return $this->parameters;
     }
 
     /**
