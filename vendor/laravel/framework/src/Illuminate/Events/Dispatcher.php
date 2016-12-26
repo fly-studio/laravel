@@ -412,7 +412,7 @@ class Dispatcher implements DispatcherContract
 
             if (method_exists($class, 'queue')) {
                 $this->callQueueMethodOnHandler($class, $method, $arguments);
-            } else {
+            } else {!is_array($arguments) && dd(($arguments));
                 $this->resolveQueue()->push('Illuminate\Events\CallQueuedHandler@call', [
                     'class' => $class, 'method' => $method, 'data' => serialize($arguments),
                 ]);

@@ -58,6 +58,6 @@ class DescribePrefetchCacheTask {
 
 		$result = $this->factory->http_get('DescribePrefetchCacheTask', $params);
 
-		return $result['RetCode'] == 0 ? $result['TaskSet'] : false;
+		return isset($result['RetCode']) && $result['RetCode'] == 0 ? $result['TaskSet'] : false;
 	}
 }
