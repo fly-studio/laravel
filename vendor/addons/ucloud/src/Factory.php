@@ -3,6 +3,10 @@ namespace Addons\Ucloud;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\MessageFormatter;
 class Factory {
 	private $config = [];
 	private $app;
@@ -51,7 +55,19 @@ class Factory {
 	{
 		$params['Action'] = $action;
 		$params = $this->buildParams($params);
-		$client = new \GuzzleHttp\Client();
+
+		$stack = HandlerStack::create();
+		$stack->push(
+			Middleware::log(
+				app('log'),
+				new MessageFormatter('GuzzleHttp {uri}'.PHP_EOL.PHP_EOL.'{request}'.PHP_EOL.PHP_EOL.'{response}'.PHP_EOL.PHP_EOL.'{error}')
+			)
+		);
+		$client = new \GuzzleHttp\Client([
+			'handler' => $stack,
+			'verify' => false,
+			'timeout' => 20,
+		]);
 		for($i = 0; $i <= 5; ++$i)
 		{
 			try {
@@ -62,12 +78,17 @@ class Factory {
 					if ($result !== null)
 						return $result;
 				}
-			} catch (ClientException $e) {
-
+			//} catch (RequestException $e) {
+			//	logger()->error($e);
+			//} catch (ClientException $e) {
+			//	logger()->error($e);
+			} catch (\Exception $e) {
+				logger()->error($e);
 			}
 			
-			sleep(1);
+			usleep(500);
 		}
+		throw new \Exception('GuzzleHttp: 5 fails of GET '.$this->config['url'].'?'.http_build_query($params));
 		return false;
 	}
 
