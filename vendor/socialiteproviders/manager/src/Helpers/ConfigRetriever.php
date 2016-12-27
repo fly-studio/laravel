@@ -4,8 +4,9 @@ namespace SocialiteProviders\Manager\Helpers;
 
 use SocialiteProviders\Manager\Config;
 use SocialiteProviders\Manager\Contracts\ConfigInterface;
-use SocialiteProviders\Manager\Exception\MissingConfigException;
 use SocialiteProviders\Manager\Contracts\Helpers\ConfigRetrieverInterface;
+use SocialiteProviders\Manager\Exception\MissingConfigException;
+use SocialiteProviders\Manager\SocialiteWasCalled;
 
 class ConfigRetriever implements ConfigRetrieverInterface
 {
@@ -150,7 +151,14 @@ class ConfigRetriever implements ConfigRetrieverInterface
 
         // REQUIRED value is empty
         if (empty($item)) {
-            throw new MissingConfigException("Configuration for $providerKey is missing.");
+            // If we are running in console we should spoof values to make Socialite happy...
+            if (app()->runningInConsole()) {
+                $item = $providerKey;
+
+                SocialiteWasCalled::$spoofedConfig = true;
+            } else {
+                throw new MissingConfigException("Configuration for $providerKey is missing.");
+            }
         }
 
         return $item;
@@ -166,10 +174,22 @@ class ConfigRetriever implements ConfigRetrieverInterface
     protected function getConfigFromServicesArray($providerName)
     {
         /** @var array $configArray */
-        $configArray = config('services.'.$providerName);
+        $configArray = config("services.$providerName");
 
         if (empty($configArray)) {
-            throw new MissingConfigException("There is no services entry for $providerName");
+            // If we are running in console we should spoof values to make Socialite happy...
+            if (app()->runningInConsole()) {
+                $configArray = [
+                    'client_id' => "{$this->providerIdentifier}_KEY",
+                    'client_secret' => "{$this->providerIdentifier}_SECRET",
+                    'redirect' => "{$this->providerIdentifier}_REDIRECT_URI",
+                ];
+
+                SocialiteWasCalled::$spoofedConfig = true;
+            } else {
+                throw new MissingConfigException("There is no services entry for $providerName");
+            }
+
         }
 
         $this->servicesArray = $configArray;
