@@ -136,17 +136,17 @@ class ElasticsearchEngine {
 	}
 
 	/**
-     * Get the results of the given query mapped onto models.
-     *
-     * @param  \Laravel\Scout\Builder  $builder
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function get(Builder $builder)
-    {
-        return Collection::make($this->map(
-            $this->search($builder), $builder->model
-        ));
-    }
+	 * Get the results of the given query mapped onto models.
+	 *
+	 * @param  \Laravel\Scout\Builder  $builder
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function get(Builder $builder)
+	{
+		return Collection::make($this->map(
+			$this->search($builder), $builder->model
+		));
+	}
 
 	/**
 	 * Perform the given search on the engine.
@@ -200,8 +200,12 @@ class ElasticsearchEngine {
 				'_source' => $builder->_source,
 				'query' => $options['filters'],
 			],
+			'sort' => $builder->orders,
 		];
-		!empty($builder->match_all) && $query['body']['match_all'] = $builder->match_all;
+		foreach(['match_all'] as $var)
+			!is_null($builder->$var) && $query['body']['query'][$var] = $builder->$var;
+		foreach(['track_scores', 'stored_fields', 'docvalue_fields', 'highlight', 'rescore', 'explain', 'version', 'indices_boost', 'min_score', 'search_after'] as $var)
+			!is_null($builder->$var) && $query['body'][$var] = $builder->$var;
 
 		if (array_key_exists('size', $options)) {
 			$query['size'] = $options['size'];
