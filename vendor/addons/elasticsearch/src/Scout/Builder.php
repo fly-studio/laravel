@@ -3,6 +3,7 @@ namespace Addons\Elasticsearch\Scout;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Closure;
 
 //see Laravel\Scout\Builder
@@ -16,11 +17,11 @@ class Builder {
 	public $model;
 
 	/**
-     * The _all's keywords.
-     *
-     * @var string
-     */
-    private $_all;
+	 * The _all's keywords.
+	 *
+	 * @var string
+	 */
+	private $_all;
 
 	/**
 	 * Optional callback before search execution.
@@ -39,6 +40,7 @@ class Builder {
 	/**
 	 * Allows to control how the _source field is returned with every hit.
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-source-filtering.html
+	 * 
 	 * @var boolean|array
 	 */
 	public $_source = false;
@@ -46,12 +48,93 @@ class Builder {
 	/**
 	 * The most simple query, which matches all documents
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
+	 * 
 	 * @var  array
 	 */
-	public $match_all = [];
+	public $match_all = null;
 
 	/**
-	 * $this->wheres['bool']['must']
+	 * When sorting on a field, scores are not computed. By setting track_scores to true, scores will still be computed and tracked.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html#_track_scores
+	 * 
+	 * @var boolean
+	 */
+	public $track_scores = null;
+
+	/**
+	 * The stored_fields parameter is about fields that are explicitly marked as stored in the mapping, which is off by default and generally not recommended
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-stored-fields.html
+	 * 
+	 * @var array
+	 */
+	public $stored_fields = null;
+
+	/**
+	 * Allows to return the doc value representation of a field for each hit
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-docvalue-fields.html
+	 * 
+	 * @var array
+	 */
+	public $docvalue_fields = null;
+
+	/**
+	 * Allows to highlight search results on one or more fields.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-highlighting.html
+	 * 
+	 * @var array
+	 */
+	public $highlight = null;
+
+	/**
+	 * Rescoring can help to improve precision by reordering just the top (eg 100 - 500) documents returned by the query and post_filter phases, using a secondary (usually more costly) algorithm, instead of applying the costly algorithm to all documents in the index.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-rescore.html
+	 * 
+	 * @var array
+	 */
+	public $rescore = null;
+
+	/**
+	 * Enables explanation for each hit on how its score was computed.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-explain.html
+	 * 
+	 * @var boolean
+	 */
+	public $explain = null;
+
+	/**
+	 * Returns a version for each search hit.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-version.html
+	 * 
+	 * @var boolean
+	 */
+	public $version = null;
+
+	/**
+	 * Allows to configure different boost level per index when searching across more than one indices.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-index-boost.html
+	 * 
+	 * @var array
+	 */
+	public $indices_boost = null;
+
+	/**
+	 * Pagination of results can be done by using the from and size but the cost becomes prohibitive when the deep pagination is reached
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-search-after.html
+	 * 
+	 * @var float
+	 */
+	public $min_score = null;
+
+	/**
+	 * Exclude documents which have a _score less than the minimum specified in min_score
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-min-score.html
+	 * 
+	 * @var float
+	 */
+	public $search_after = null;
+
+	/**
+	 * referencing like $this->wheres['bool']['must']
 	 */
 	private $whereAppendedPointer;
 
@@ -147,17 +230,23 @@ class Builder {
 
 	/**
 	 * Add an "order" for the search query.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html
 	 *
 	 * @param  string  $column
-	 * @param  string  $direction
+	 * @param  string  $direction [asc]|desc
+	 * @param  string  $mode null|min|max|sum|avg|median
+	 * @param  string  $options nested_path,nested_filter,missing,unmapped_type,_geo_distance
 	 * @return $this
 	 */
-	public function orderBy($column, $direction = 'asc')
+	public function orderBy($column, $direction = 'asc', $mode = null, $options = [])
 	{
-		$this->orders[] = [
-			'column' => $column,
-			'direction' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
-		];
+		if (is_null($direction))
+			$this->orders[] = $column;
+		else
+			$this->orders[$column] = [
+				'order' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
+				'mode' => $mode,
+			] + $options;
 
 		return $this;
 	}
@@ -230,17 +319,6 @@ class Builder {
 	{
 		$this->wheres = $wheres;
 		$this->whereAppendedPointer = is_null($whereAppendedPointer) ? $wheres : $whereAppendedPointer;
-	}
-
-	/**
-	 * set match_all
-	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
-	 * 
-	 * @param array $match_all [description]
-	 */
-	public function setMatchAll(array $match_all)
-	{
-		$this->match_all = $match_all;
 	}
 
 	/**
@@ -469,6 +547,19 @@ class Builder {
 	protected function engine()
 	{
 		return $this->model->searchableUsing();
+	}
+
+	public function __call($method, $parameters)
+	{
+		if (isset($parameters[0]) && Str::startsWith($method, 'set'))
+		{
+			$var = Str::snake(Str::substr($method, 3));
+			isset($this->$var) && $this->$var = $parameters[0];
+		} elseif (empty($parameters[0]) && Str::startsWith($method, 'get')) {
+			$var = Str::snake(Str::substr($method, 3));
+			return isset($this->$var) ? $this->$var : null;
+		}
+		return this;
 	}
 
 }
