@@ -47,16 +47,16 @@ function smarty_function_pluginclude($params, $template)
 		trigger_error("pluginclude: missing 'file' parameter", E_USER_NOTICE);
 		return;
 	}
-
-	!empty($plugins) && $_c = array_keyfilter($_c, $plugins);
+	!empty($plugins) && !is_array($plugins) && $plugins = explode(',', $plugins);
+	!empty($plugins) && $_c = array_only($_c, $plugins);
 
 	$names = [];
-	array_walk($_c, function($v, $k) use (&$names, $file) {
+	foreach ($_c as $k => $v) {
 		if (array_key_exists($file, $v['injectViews']))
 			$names[$k] = $v['injectViews'][$file]; //defined order
 		elseif (in_array($file, $v['injectViews']))
 			$names[$k] = count($names);
-	});
+	}
 	asort($names);
 	foreach ($names as $name => $order)
 		$template->_subTemplateRender(((string)'['.$name.']'.$file), $template->cache_id, $template->compile_id, 0, $template->cache_lifetime, [], 0, true);

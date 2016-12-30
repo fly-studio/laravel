@@ -27,5 +27,4 @@ abstract class BeforeControllerListener extends ControllerListenerContract imple
 
 		return $this->loadControllerListeners($className, $methodName, func_get_args(), 'BeforeListener');
 	}
-
 }

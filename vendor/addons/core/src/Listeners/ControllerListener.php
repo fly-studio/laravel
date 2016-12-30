@@ -27,7 +27,4 @@ abstract class ControllerListener extends ControllerListenerContract implements 
 
 		return $this->loadControllerListeners($className, $methodName, func_get_args());
 	}
-
-	
-
 }
