@@ -38,16 +38,24 @@ class Builder {
 	public $index;
 
 	/**
+	 * A query that uses a query parser in order to parse its content. 
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+	 * 
+	 */
+	public $query_string = null;
+	/**
 	 * Allows to control how the _source field is returned with every hit.
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-source-filtering.html
 	 * 
 	 * @var boolean|array
 	 */
-	public $_source = false;
+	public $_source = null;
 
 	/**
 	 * The most simple query, which matches all documents
 	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
+	 *
+	 * query_string match_all
 	 * 
 	 * @var  array
 	 */
@@ -134,16 +142,17 @@ class Builder {
 	public $search_after = null;
 
 	/**
-	 * referencing like $this->wheres['bool']['must']
+	 * referencing like $this->bool['bool']['must']
 	 */
-	private $whereAppendedPointer;
+	private $boolAppendedPointer = null;
 
 	/**
 	 * The "where" constraints added to the query.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html
 	 *
 	 * @var array
 	 */
-	public $wheres = [];
+	public $bool = null;
 
 	/**
 	 * The "limit" that should be applied to the search.
@@ -175,20 +184,12 @@ class Builder {
 	 * Create a new search builder instance.
 	 *
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
-	 * @param  bool  [must]|should|filter|must_not https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html
 	 * @param  Closure  $callback
-	 * @param  Collection $parentWheres the parent wheres, for nested where
 	 * @return void
 	 */
-	public function __construct($model, $bool = 'must', $callback = null, Collection $parentWheres = null)
+	public function __construct($model, $callback = null)
 	{
 		$this->model = $model;
-		is_null($parentWheres) && $parentWheres = new Collection();
-		//create [bool][must]
-		$parentWheres['bool'] = new Collection([
-			$bool => new Collection(),
-		]);
-		$this->setWheres($parentWheres, $parentWheres['bool'][$bool]); //Object is referenced
 		$this->callback = $callback;
 	}
 
@@ -307,18 +308,56 @@ class Builder {
 			'pageName' => $pageName,
 		]));
 
-		return $paginator->append(['_all' => $this->_all]);
+		return $paginator;
 	}
 
 	/**
 	 * set wheres
-	 * @param Collection      $wheres          the where's array
-	 * @param Collection|null $whereAppendedPointer the pointer that appending data
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html
+	 *
+	 * setMatchAll,setQueryString,setBool only 1 run
+	 * 
+	 * @param string       $boolOccur    [must]|should|filter|must_not 
+	 * @param Collection   $wheres       the where's array
 	 */
-	public function setWheres(Collection $wheres, Collection $whereAppendedPointer = null)
+	public function setBool($boolOccur = 'must', Collection $bool = null)
 	{
-		$this->wheres = $wheres;
-		$this->whereAppendedPointer = is_null($whereAppendedPointer) ? $wheres : $whereAppendedPointer;
+		is_null($bool) && $bool = new Collection();
+		//create [bool][must]
+		$bool['bool'] = new Collection([
+			$boolOccur => new Collection(),
+		]);
+		$this->bool = $bool;
+		$this->boolAppendedPointer = $bool['bool'][$boolOccur];
+		return $this;
+	}
+
+	/**
+	 * A query that uses a query parser in order to parse its content.
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
+	 *
+	 * setMatchAll,setQueryString,setBool only 1 run
+	 * 
+	 * @param mixed $stringOrArray string|array
+	 */
+	public function setQueryString($stringOrArray)
+	{
+		$this->query_string = !is_array($stringOrArray) ? ['query' => $stringOrArray] : $stringOrArray;
+		return $this;
+	}
+
+	/**
+	 * The most simple query, which matches all documents
+	 * https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
+	 *
+	 * setMatchAll,setQueryString,setBool only 1 run
+	 * 
+	 * @param mixed $stringOrArray string|array
+	 */
+	public function setMatchAll($match_all)
+	{
+		$this->match_all = $match_all;
+		return $this;
 	}
 
 	/**
@@ -366,10 +405,11 @@ class Builder {
 	{
 		if ($column instanceof Closure)
 		{
-			$bool = $operator;
-			$this->whereAppendedPointer[] = new Collection();
-			$wheres = $this->whereAppendedPointer->last();
-			$new = new static($this->model, $bool, null, $wheres);
+			$boolOccur = $operator;
+			$this->boolAppendedPointer[] = new Collection();
+			$bool = $this->boolAppendedPointer->last();
+			$new = new static($this->model, null);
+			$new->setBool($boolOccur, $bool);
 			call_user_func_array($column, [$new]);
 		} else
 			$this->parseWhere($column, $operator, $value);
@@ -430,7 +470,7 @@ class Builder {
 			$value = $operator;
 			$operator = is_array($column) ? 'multi_match' : 'term';
 		}
-		$pointer = $this->whereAppendedPointer;
+		$pointer = $this->boolAppendedPointer;
 
 		if ($column == '_all') { // _all
 			$pointer[] = [
@@ -559,7 +599,7 @@ class Builder {
 			$var = Str::snake(Str::substr($method, 3));
 			return isset($this->$var) ? $this->$var : null;
 		}
-		return this;
+		return $this;
 	}
 
 }
