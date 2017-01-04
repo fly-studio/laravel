@@ -77,11 +77,12 @@ class ServiceProvider extends BaseServiceProvider
 			foreach ($config['middlewareGroups'] as $group => $middlewares)
 				foreach($middlewares as $middleware)
 					$router->pushMiddlewareToGroup($group, $middleware);
-			
-			!empty($config['middleware']) && $kernel->middleware = array_merge($kernel->middleware, $config['middleware']);
 
+			//bind main middleware.
+			//use middlewareGroups instead. remove it at 2017-01-04
+			//!empty($config['middleware']) && set_property($kernel, 'middleware', array_merge(get_property($kernel, 'middleware'), $config['middleware']));
 			//register commands
-			!empty($config['commands']) && $consoleKernel->commands = array($consoleKernel->commands, $config['commands']);
+			!empty($config['commands']) && $this->commands($config['commands']);
 
 			//这里提供更加灵活的plugins/ServiceProvider.php的配置方式，注意$config['register']中配置所对应的程序会优先于plugins/ServiceProvider.php
 			$provider = $namespace.'\ServiceProvider';
