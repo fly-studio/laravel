@@ -5,7 +5,7 @@ use Addons\Core\Http\OutputResponse;
 use Addons\Core\Tools\OutputEncrypt;
 use Addons\Core\Tools\Office;
 
-class ApiResponse extends OutputResponse {
+class OfficeResponse extends OutputResponse {
 
 	protected $type = 'export';
 
