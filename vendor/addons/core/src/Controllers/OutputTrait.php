@@ -68,19 +68,19 @@ trait OutputTrait {
 				$response = new OfficeResponse();
 				return $response->setData($data);
 			}
-			// $this->success($message_name = null, $url = true, $data = [], $export = true);
-			// $this->failure,notice,warning($message_name = null, $url = false, $data = [], $export = false);
-			// $this->error_param($url = false, $data = [], $export = false);
-			// $this->success_login($url = true, $data = [], $export = true);
+			// $this->success($message_name = null, $url = true, $data = [], $showData = true);
+			// $this->failure,notice,warning($message_name = null, $url = false, $data = [], $showData = false);
+			// $this->error_param($url = false, $data = [], $showData = false);
+			// $this->success_login($url = true, $data = [], $showData = true);
 			else if ($method == $type || isset($this->outputTable[$method]))
 			{
 				if ($method != $type) array_unshift($parameters, $this->outputTable[$method]);
 
-				list($message_name, $url, $data, $export) = $parameters + ($type == 'success' ? [null, true, [], true] : [null, false, [], false]);
+				list($message_name, $url, $data, $showData) = $parameters + ($type == 'success' ? [null, true, [], true] : [null, false, [], false]);
 
 				$response = new OutputResponse();
 				$response->setResult($type)->setMessage($message_name, $data)->setUrl($url);
-				if ($export) $response->setData($data);
+				if ($showData) $response->setData($data);
 
 				if ($type != 'success')
 					throw new HttpResponseException($response); // 如果failure 则直接抛出

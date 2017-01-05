@@ -39,9 +39,10 @@ class OutputResponse extends Response {
 		if ($this->formatter == 'auto')
 		{
 			$request = app('request');
+			$route = $request->route();
 			$of = $request->input('of', null);
 			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml', 'html']))
-				$of = $request->expectsJson() ? 'json' : 'html';
+				$of = $request->expectsJson() || in_array('api', $route->gatherMiddleware()) ? 'json' : 'html';
 			return $of;
 		}
 		return $this->formatter;
@@ -93,6 +94,12 @@ class OutputResponse extends Response {
 		return $this;
 	}
 
+	public function setRawMessage($message)
+	{
+		$this->message = $message;
+		return $this;
+	}
+
 	public function getMessage()
 	{
 		return empty($this->message) ? trans('core::common.default.' . $this->getResult() ) : $this->message;
@@ -102,6 +109,7 @@ class OutputResponse extends Response {
 	{
 		$result = [
 			'result' => $this->getResult(),
+			'status_code' => $this->getStatusCode(),
 			'uid' => Auth::check() ? Auth::user()->getKey() : null,
 			'debug' => config('app.debug'),
 			'message' => $this->getMessage(),
