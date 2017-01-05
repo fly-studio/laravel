@@ -343,3 +343,47 @@ function get_property($class, $variant)
     return $property->getValue($class);
 }
 }
+
+/**
+ * call class's public/private/protected method
+ *
+ * @param object $class
+ * @param string $variant property name
+ * @param string $value value
+ *
+ * @return array
+ */
+if (!function_exists('call_class_method_array'))
+{
+function call_class_method_array($class, $method, $parameters)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+
+    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+    $reflectionMethod->setAccessible(true);
+
+    return $reflectionMethod->invokeArgs($class, $parameters);
+}
+}
+
+/**
+ * call class's public/private/protected method
+ *
+ * @param object $class
+ * @param string $variant property name
+ * @param string $value value
+ *
+ * @return array
+ */
+if (!function_exists('call_class_method'))
+{
+function call_class_method($class, $method, ...$parameters)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+
+    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+    $reflectionMethod->setAccessible(true);
+
+    return $reflectionMethod->invokeArgs($class, $parameters);
+}
+}

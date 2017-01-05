@@ -80,6 +80,10 @@ class ServiceProvider extends BaseServiceProvider
 
 			//bind main middleware.
 			//use middlewareGroups instead. remove it at 2017-01-04
+			//if (!empty($config['middleware']))
+			//	foreach($config['middleware'] as $middleware)
+			//		$kernel->pushMiddleware($middleware);
+			// or
 			//!empty($config['middleware']) && set_property($kernel, 'middleware', array_merge(get_property($kernel, 'middleware'), $config['middleware']));
 			//register commands
 			!empty($config['commands']) && $this->commands($config['commands']);
@@ -102,14 +106,8 @@ class ServiceProvider extends BaseServiceProvider
 		$this->publishes([__DIR__ . '/../config/validation.php' => config_path('validation.php')], 'config');
 		//$this->publishes([__DIR__ . '/../config/socketlog.php' => config_path('socketlog.php')], 'config');
 
-		$this->app['view']->addLocation(realpath(__DIR__.'/../resources/views/'));
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));
 
-		$this->app['view']->share('url', [
-			'current' => app('Illuminate\Routing\UrlGenerator')->current(),
-			'full' => app('Illuminate\Routing\UrlGenerator')->full(),
-			'previous' => app('Illuminate\Routing\UrlGenerator')->previous(),
-		]);
 
 		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
 			return new Validator( $translator, $data, $rules, $messages, $customAttributes );
