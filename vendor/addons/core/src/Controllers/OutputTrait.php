@@ -10,6 +10,7 @@ use Auth;
 trait OutputTrait {
 
 	protected $viewData = [];
+	protected $addons = true;
 	protected $outputTable = [
 		'error_param' => 'server.error_param',
 		'success_login' => 'auth.success_login',
@@ -47,7 +48,7 @@ trait OutputTrait {
 
 	protected function view($filename, $data = [])
 	{
-		$this->viewData['_user'] = Auth::user();
+		if ($addons) $this->viewData['_user'] = Auth::user();
 		return view($filename, $data)->with($this->viewData);
 	}
 
