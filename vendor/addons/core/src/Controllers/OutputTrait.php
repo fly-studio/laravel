@@ -48,7 +48,7 @@ trait OutputTrait {
 
 	protected function view($filename, $data = [])
 	{
-		if ($addons) $this->viewData['_user'] = Auth::user();
+		if ($this->addons) $this->viewData['_user'] = Auth::user();
 		return view($filename, $data)->with($this->viewData);
 	}
 
