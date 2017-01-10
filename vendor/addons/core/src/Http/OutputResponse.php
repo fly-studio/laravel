@@ -83,7 +83,7 @@ class OutputResponse extends Response {
 			$this->message = null;
 			return $this;
 		}
-		$message = is_array($message_name) ? $message_name : trans(Lang::has($message_name) || !Lang::has('core::common.'.$message_name) ? $message_name : 'core::common.'.$message_name);
+		$message = is_array($message_name) ? $message_name : trans($message_name);
 
 		if (!empty($transData))
 		{
