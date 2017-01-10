@@ -94,7 +94,7 @@ class OutputResponse extends Response {
 					$v = $this->makeReplacements($v, $transData);
 			}
 			else 
-				$message = $this->makeReplacements($v, $transData);
+				$message = $this->makeReplacements($message, $transData);
 		}
 		$this->message = $message;
 		return $this;
