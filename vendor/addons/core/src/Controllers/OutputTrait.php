@@ -6,7 +6,7 @@ use Illuminate\Http\Exception\HttpResponseException;
 use Addons\Core\Http\OutputResponse;
 use Addons\Core\Http\ApiResponse;
 use Addons\Core\Http\OfficeResponse;
-use Auth;
+use Auth, Lang;
 trait OutputTrait {
 
 	protected $viewData = [];
