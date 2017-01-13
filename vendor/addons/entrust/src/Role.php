@@ -23,6 +23,7 @@ class Role extends Tree implements RoleInterface
     public $levelKey = NULL;
 
     public $fire_caches = ['roles'];
+    protected $touches = ['perms'];
 
     /**
      * The database table used by the model.

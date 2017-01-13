@@ -301,3 +301,89 @@ if (!function_exists('get_namespace'))
 		return substr($class_name, 0, strrpos($class_name, '\\'));
 	}
 }
+
+/**
+ * set class's public/private/protected property
+ *
+ * @param object $class
+ * @param string $variant property name
+ * @param string $value value
+ *
+ * @return array
+ */
+if (!function_exists('set_property'))
+{
+function set_property($class, $variant, $value)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+
+    $property = (new ReflectionClass($class))->getProperty($variant);
+    $property->setAccessible(true);
+
+    return $property->setValue($class, $value);
+}
+}
+/**
+ * get class's public/private/protected property
+ *
+ * @param object $class
+ * @param string $variant property name
+ *
+ * @return array
+ */
+if (!function_exists('get_property'))
+{
+function get_property($class, $variant)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+	
+    $property = (new ReflectionClass($class))->getProperty($variant);
+    $property->setAccessible(true);
+
+    return $property->getValue($class);
+}
+}
+
+/**
+ * call class's public/private/protected method
+ *
+ * @param object $class
+ * @param string $variant property name
+ * @param string $value value
+ *
+ * @return array
+ */
+if (!function_exists('call_class_method_array'))
+{
+function call_class_method_array($class, $method, $parameters)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+
+    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+    $reflectionMethod->setAccessible(true);
+
+    return $reflectionMethod->invokeArgs($class, $parameters);
+}
+}
+
+/**
+ * call class's public/private/protected method
+ *
+ * @param object $class
+ * @param string $variant property name
+ * @param string $value value
+ *
+ * @return array
+ */
+if (!function_exists('call_class_method'))
+{
+function call_class_method($class, $method, ...$parameters)
+{
+	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
+
+    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+    $reflectionMethod->setAccessible(true);
+
+    return $reflectionMethod->invokeArgs($class, $parameters);
+}
+}
