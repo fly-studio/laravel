@@ -230,7 +230,7 @@ function fileinfo($path)
  * @example
  * 忽略列表：可输入绝对路径，或 *\name （表示任意目录的此文件(夹)），可以使用通配符*代表任意路径和文件
  * 如果忽略文件夹，则会忽略本文件夹及子文件，并且请勿以DIRECTORY_SEPARATOR结尾
- * 比如：[APPPATH.'cache', APPPATH.'attachments', APPPATH.'logs', '*'.DIRECTORY_SEPARATOR.'.gitignore', '*'.DIRECTORY_SEPARATOR.'.gitmodules', '*'.DIRECTORY_SEPARATOR.'.git', '*'.DIRECTORY_SEPARATOR.'.svn',]
+ * 比如：[base_path('cache'), base_path('attachments'), base_path('logs'), '*'.DIRECTORY_SEPARATOR.'.gitignore', '*'.DIRECTORY_SEPARATOR.'.gitmodules', '*'.DIRECTORY_SEPARATOR.'.git', '*'.DIRECTORY_SEPARATOR.'.svn',]
  * 
  * 注意：fnmatch 的第三个参数如果添加[FNM_PATHNAME]属性，使用[*\filename]过滤[\path\to\filename]，在linux下会返回FALSE
  * 
@@ -240,7 +240,7 @@ function fileinfo($path)
  * @return array                 返回所有文件(夹)数组
  */
 define('FILE_LIST_FILE_KEY', 1); //
-define('FILE_LIST_DEBUG_PATH', 3); // 1 | 2 则会隐藏真实路径，将路径替换为APPPATH、SYSPATH、MODPATH
+define('FILE_LIST_DEBUG_PATH', 3); // 1 | 2 则会隐藏真实路径，将路径转化为base_path的相对路径
 define('FILE_LIST_FILE_INFO', 4);
 define('FILE_LIST_INCLUDE_FOLDER', 8);
 define('FILE_LIST_SUBFOLDER', 8);
@@ -295,7 +295,7 @@ function file_list($path, $include_files = array(), $ignore_files = array(), $se
 				}
 
 				if ($_setting['file_key'])
-					$pt = &$result[anystring2utf8(str_replace('\\','/', $_setting['debug_path'] ? Debug::path($real_path) : $real_path))];
+					$pt = &$result[anystring2utf8(str_replace('\\','/', $_setting['debug_path'] ? str_replace(base_path(), 'BASE_PATH', $real_path) : $real_path))];
 				else
 					$pt = &$result[];
 				$pt = $_setting['file_info'] ? fileinfo($real_path) : $real_path;
@@ -317,7 +317,7 @@ function file_list($path, $include_files = array(), $ignore_files = array(), $se
 				if (fnmatch($value, $real_path, FNM_PATHNAME | FNM_CASEFOLD | FNM_NOESCAPE))
 					continue 2;
 			}
-			$result[str_replace('\\','/', $debug_path ? Debug::path($real_path) : $real_path)] = $fileinfo = fileinfo($real_path);
+			$result[str_replace('\\','/', $debug_path ? str_replace(base_path(), 'BASE_PATH', $real_path) : $real_path)] = $fileinfo = fileinfo($real_path);
 			if ($fileinfo['type'] == 'dir')
 				$queue[] = $real_path;
 		}
