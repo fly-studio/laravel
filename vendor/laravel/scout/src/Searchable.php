@@ -210,16 +210,16 @@ trait Searchable
      */
     public function syncWithSearchUsing()
     {
-        return config('queue.default');
+        return config('scout.queue.connection') ?: config('queue.default');
     }
 
     /**
      * Get the queue that should be used with syncing
      *
-     * @return  string|null
+     * @return  string
      */
     public function syncWithSearchUsingQueue()
     {
-        return null;
+        return config('scout.queue.queue');
     }
 }

@@ -1,11 +1,11 @@
-# Laravel Socialite
+<p align="center"><img src="https://laravel.com/assets/img/components/logo-socialite.svg"></p>
 
-[![Build Status](https://travis-ci.org/laravel/socialite.svg)](https://travis-ci.org/laravel/socialite)
-[![Total Downloads](https://poser.pugx.org/laravel/socialite/d/total.svg)](https://packagist.org/packages/laravel/socialite)
-[![Latest Stable Version](https://poser.pugx.org/laravel/socialite/v/stable.svg)](https://packagist.org/packages/laravel/socialite)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/socialite/v/unstable.svg)](https://packagist.org/packages/laravel/socialite)
-[![License](https://poser.pugx.org/laravel/socialite/license.svg)](https://packagist.org/packages/laravel/socialite)
-[![Dependency Status](https://www.versioneye.com/php/laravel:socialite/dev-master/badge?style=flat)](https://www.versioneye.com/php/laravel:socialite/dev-master)
+<p align="center">
+<a href="https://travis-ci.org/laravel/socialite"><img src="https://travis-ci.org/laravel/socialite.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/socialite"><img src="https://poser.pugx.org/laravel/socialite/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/socialite"><img src="https://poser.pugx.org/laravel/socialite/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/socialite"><img src="https://poser.pugx.org/laravel/socialite/license.svg" alt="License"></a>
+</p>
 
 ## Introduction
 
@@ -23,7 +23,7 @@ Laravel Socialite is open-sourced software licensed under the [MIT license](http
 
 In addition to typical, form based authentication, Laravel also provides a simple, convenient way to authenticate with OAuth providers using [Laravel Socialite](https://github.com/laravel/socialite). Socialite currently supports authentication with Facebook, Twitter, LinkedIn, Google, GitHub and Bitbucket.
 
-To get started with Socialite, add to your `composer.json` file as a dependency:
+To get started with Socialite, use Composer to add the package to your project's dependencies:
 
     composer require laravel/socialite
 

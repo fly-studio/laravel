@@ -3,10 +3,16 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Curl\Curl;
 
+// curl --request GET "https://httpbin.org/get?key=value"
+
 $curl = new Curl();
-for ($i = 1; $i <= 10; $i++) {
-    $curl->get('https://httpbin.org/get', array(
-        'page' => $i,
-    ));
-    // TODO: Do something with result $curl->response.
+$curl->get('https://httpbin.org/get', array(
+    'key' => 'value',
+));
+
+if ($curl->error) {
+    echo 'Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . "\n";
+} else {
+    echo 'Response:' . "\n";
+    var_dump($curl->response);
 }

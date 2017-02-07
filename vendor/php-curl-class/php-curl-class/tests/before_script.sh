@@ -1,5 +1,7 @@
 set -x
 echo "TRAVIS_PHP_VERSION: ${TRAVIS_PHP_VERSION}"
+php -r "var_dump(phpversion());"
+php -r "var_dump(curl_version());"
 
 composer self-update
 composer install --prefer-source --no-interaction
@@ -36,6 +38,8 @@ elif [[ "${TRAVIS_PHP_VERSION}" == "5.5" ]]; then
 elif [[ "${TRAVIS_PHP_VERSION}" == "5.6" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "7.0" ]]; then
+    php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
+elif [[ "${TRAVIS_PHP_VERSION}" == "7.1" ]]; then
     php -S 127.0.0.1:8000 -t tests/PHPCurlClass/ &
 elif [[ "${TRAVIS_PHP_VERSION}" == "hhvm" ]]; then
     sudo add-apt-repository -y ppa:nginx/stable
