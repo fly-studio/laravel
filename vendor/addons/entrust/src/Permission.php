@@ -40,4 +40,28 @@ class Permission extends Model implements PermissionInterface
         $this->table = config('entrust.permissions_table');
     }
 
+    /**
+     * import the methods's permission of resource's route
+     * 
+     * @example
+     * Permission::import([
+     *     'member' => '用户',
+     *     'catalog' => '分类'
+     * ]);
+     *
+     * see config/entrust.php - import_fields
+     * 
+     * @param  array  $permissions 
+     * @return 
+     */
+    public static function import(array $permissions)
+    {
+        foreach ($permissions as $permission => $text)
+            foreach((array)config('entrust.import_fields') as $key)
+                static::create([
+                    'name' => $permission.'.'.$key,
+                    'display_name' => trans('permission.import.'.$key, compact('key', 'text', 'permission')),
+                ]);
+    }
+
 }
