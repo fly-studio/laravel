@@ -2,7 +2,7 @@
 /public/storage
 /public/hot
 /storage/*.key
-/vendor
+vendor/aferrandini/phpqrcode/cache
 /.idea
 _ide_helper.php
 _ide_helper_models.php
