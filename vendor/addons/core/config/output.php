@@ -1,7 +1,7 @@
 <?php
 
 return [
-	'tips' => [
+	'tipTypes' => [
 		'redirect' => [
 			'timeout' => 1500,
 		],
