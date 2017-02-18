@@ -1019,12 +1019,12 @@ function nohtml($string)
   $string = preg_replace("'<[\/\!]*?[^<>]*?>'si", "", $string);  //去掉HTML标记 <!DOCTYPE <span> </span>
   $string = preg_replace("@<style[^>]*?>.*?</style>@siU", "", $string);  //去掉style
   $string = preg_replace("@<![\s\S]*?--[ \t\n\r]*>@", "", $string);  //去掉<!--Multi-Line -->
-  $string = preg_replace("'([\r\n])[\s]+'", "", $string);  //去掉空白字符
+/*  $string = preg_replace("'([\r\n])[\s]+'", "", $string);  //去掉空白字符
   $string = preg_replace("'&(quot|#34);'i", "", $string);  //替换HTML实体
   $string = preg_replace("'&(amp|#38);'i", "", $string);
   $string = preg_replace("'&(lt|#60);'i", "", $string);
   $string = preg_replace("'&(gt|#62);'i", "", $string);
-  $string = preg_replace("'&(nbsp|#160);'i", "", $string);
+  $string = preg_replace("'&(nbsp|#160);'i", "", $string);*/
   return $string;
 }
 
