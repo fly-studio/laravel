@@ -58,7 +58,7 @@ trait OutputTrait {
 	public function __call($method, $parameters)
 	{
 		list($type) = explode('_', $method);
-		if (in_array($type, ['error', 'failure', 'api', 'export', 'success', 'notice', 'warning']))
+		if (in_array($type, ['error', 'failure', 'api', 'office', 'success', 'notice', 'warning']))
 		{
 			if ($method == 'api')
 			{
@@ -66,7 +66,7 @@ trait OutputTrait {
 				$response = new ApiResponse();
 				return $response->setData($data, $encryptd);
 			}
-			else if ($method == 'export')
+			else if ($method == 'office')
 			{
 				list($data) = $parameters + [[]];
 				$response = new OfficeResponse();
