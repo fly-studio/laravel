@@ -163,3 +163,55 @@ function date_range_search($needle, $range_data)
 		if ($needle >= $v[0] && $needle <= $v[1]) return $k;
 	return FALSE;
 }
+
+/**
+ * DOS datetime(4 bytes) to Unix timestamp
+ * https://msdn.microsoft.com/en-us/library/ms724247.aspx
+ * 
+ * @param  integer $dos DOS datetime for 4 bytes
+ * @return integer      Unix Timestamp
+ */
+function dos2timestamp($dos)
+{
+	/*
+	$date = $dos >> 16;
+	$time = $dos & 0xff;
+	$y = (($date & 0xfe00) >> 9) + 1980;
+	$m = ($date & 0x01e0) >> 5;
+	$d = ($date & 0x1f);
+	$h = ($time & 0xf800) >> 11;
+	$i = ($time & 0x07e0) >> 5;
+	$s = ($time & 0x1f) * 2;
+	return mktime($h, $i, $s, $m, $d, $y);*/
+
+	return mktime(
+        (($dos >> 11) & 0x1f), // hours
+        (($dos >> 5) & 0x3f),  // minutes
+        (($dos << 1) & 0x3e),  // seconds
+        (($dos >> 21) & 0x0f),   // month
+        (($dos >> 16) & 0x1f),         // day
+        ((($dos >> 25) & 0x7f) + 1980) // year
+    );
+}
+
+/**
+ * Unix timestamp to DOS datetime(4 bytes)
+ * https://msdn.microsoft.com/en-us/library/ms724247.aspx
+ * 
+ * @param  integer $timestamp Unix timestamp
+ * @return integer            DOS datetime for 4 bytes
+ */
+function timestamp2dos($timestamp)
+{
+	$bit = empty($timestamp) ? getdate() : getdate($timestamp);
+	if ($bit['year'] < 1980)
+		return (1 << 21 | 1 << 16);
+	$bit['year'] -= 1980;
+
+	return $bit['year'] << 25 |
+		$bit['mon'] << 21 |
+		$bit['mday'] << 16 |
+		$bit['hours'] << 11 |
+		$bit['minutes'] << 5 |
+		$bit['seconds'] >> 1;
+}
