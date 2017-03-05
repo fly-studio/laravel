@@ -122,6 +122,8 @@ class OutputResponse extends Response {
 			$message = trans($message_name);
 		else if (Lang::has('core::common.'.$message_name))
 			$message = trans('core::common.'.$message_name);
+		else
+			$message = $message_name;
 
 		if (!empty($transData))
 		{

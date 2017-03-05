@@ -20,7 +20,7 @@ trait OutputTrait {
 		'failure_login' => 'auth.failure_login',
 		'failure_notexists' => 'document.not_exists',
 		'failure_owner' => 'document.owner_deny',
-		'failure_post' => 'validation.post_invalid',
+		'failure_post' => 'validation.post_fields_invalid',
 	];
 
 	public function __set($key, $value)
