@@ -53,12 +53,12 @@ return [
 		],
 	],
 	'validation' => [
-		'failure_post' => [
+		'post_fields_invalid' => [
 			'title' => 'Post Failure',
 			'content' => '<ul class="post_faiure">:messages</ul>',
 			'list' => '<li>:message</li>'.PHP_EOL,
 		],
-		'failure_csrf' => [
+		'csrf_invalid' => [
 			'title' => 'CSRF Invalid',
 			'content' => 'maybe you stay too long, please save your data.(copy the `content` to other tool, eg. notepad), then refresh this page, and retry.',
 		],
@@ -72,7 +72,7 @@ return [
 			'title' => 'Logout Success',
 			'content' => 'Logout success, redirect to the page that you last visited',
 		],
-		'failure_permission' => [
+		'permission_forbidden' => [
 			'title' => 'Permission Forbidden',
 			'content' => 'You have no permission to visit this page，if you wanna switch a super user, <a href="'.url('auth').'" target="_self">Click here</a>.',
 		],
@@ -80,21 +80,21 @@ return [
 			'title' => 'Login Failure',
 			'content' => 'Username or Password is invalid.',
 		],
-		'failure_unlogin' => [
+		'unlogin' => [
 			'title' => 'No Login',
 			'content' => 'No login, if you wanna login, <a href="'.url('auth').'" target="_self">Click here</a>.',
 		],
 	],
 	'document' => [
-		'failure_noexist' => [
+		'not_exists' => [
 			'title' => 'No Document Exists',
 			'content' => 'the document that your visited is not exists.',
 		],
-		'failure_owner' => [
+		'owner_deny' => [
 			'title' => 'Cross-User Failure',
 			'content' => 'You can not edit or view others document.',
 		],
-		'failure_model_noexist' => [
+		'model_not_exists' => [
 			'title' => 'No Record Exists ',
 			'content' => 'The database [:model] have no data from ID [:id] <br /> :file line :line！',
 		],

@@ -10,7 +10,7 @@ namespace Addons\Core\Tools;
  * @copyright  (c) 2011 Jexmex
  * @license    MIT
  */
-class SSH
+class SSHClient
 {
 	/**/
 	protected $_connected = FALSE;

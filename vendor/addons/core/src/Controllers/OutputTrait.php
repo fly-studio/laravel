@@ -18,9 +18,9 @@ trait OutputTrait {
 		'success_login' => 'auth.success_login',
 		'success_logout' => 'auth.success_logout',
 		'failure_login' => 'auth.failure_login',
-		'failure_noexists' => 'document.failure_noexist',
-		'failure_owner' => 'document.failure_owner',
-		'failure_post' => 'validation.failure_post',
+		'failure_notexists' => 'document.not_exists',
+		'failure_owner' => 'document.owner_deny',
+		'failure_post' => 'validation.post_invalid',
 	];
 
 	public function __set($key, $value)
@@ -45,8 +45,9 @@ trait OutputTrait {
 
 	protected function subtitle($title, $url = NULL, $target = '_self')
 	{
+		$title = trans($title);
 		$titles = config('settings.subtitles', []);
-		config(['settings.subtitles' => array_merge($titles, compact('title', 'url', 'target'))]);
+		config(['settings.subtitles' => array_merge($titles, [compact('title', 'url', 'target')])]);
 	}
 
 	protected function view($filename, $data = [])
@@ -83,7 +84,7 @@ trait OutputTrait {
 				list($message_name, $url, $data, $showData) = $parameters + ($type == 'success' ? [null, true, [], true] : [null, false, [], false]);
 
 				$response = new OutputResponse();
-				$response->setResult($type)->setMessage($message_name, $data)->setTipType(app(TipTypeManager::class)->autoDriver($url));
+				$response->setResult($type)->setMessage($message_name, $data)->setAutoTip($url);
 				if ($showData) $response->setData($data);
 
 				if ($type != 'success')
