@@ -10,7 +10,8 @@
   "devDependencies": {
     "axios": "^0.15.3",
     "cross-env": "^3.2.3",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-latest": "^6.22.0",
+    "babel-preset-stage-0": "^6.22.0",
     "laravel-mix": "^0.8.1",
     "lodash": "^4.17.4",
     "vue": "^2.1.10"
