@@ -95,10 +95,11 @@ class Passport
     }
 
     /**
-     * Get a Passport route registrar.
+     * Binds the Passport routes into the controller.
      *
+     * @param  callable|null  $callback
      * @param  array  $options
-     * @return RouteRegistrar
+     * @return void
      */
     public static function routes($callback = null, array $options = [])
     {
@@ -106,9 +107,12 @@ class Passport
             $router->all();
         };
 
-        $options = array_merge($options, [
+        $defaultOptions = [
+            'prefix' => 'oauth',
             'namespace' => '\Laravel\Passport\Http\Controllers',
-        ]);
+        ];
+
+        $options = array_merge($defaultOptions, $options);
 
         Route::group($options, function ($router) use ($callback) {
             $callback(new RouteRegistrar($router));

@@ -44,7 +44,7 @@ composer require rap2hpoutre/laravel-log-viewer
 
 Add the following in `bootstrap/app.php`:
 ```php
-$app->register(Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class);
+$app->register(\Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class);
 ```
 
 Explicitly set the namespace in `app/Http/routes.php`:
@@ -53,3 +53,9 @@ $app->group(['namespace' => '\Rap2hpoutre\LaravelLogViewer'], function() use ($a
     $app->get('logs', 'LogViewerController@index');
 });
 ```
+
+Troubleshooting
+---------------
+
+If you got a `InvalidArgumentException in FileViewFinder.php` error, it may be a problem with config caching. Double check installation, then run `php artisan config:clear`.
+
