@@ -919,8 +919,8 @@ function addBOM($str, $encode = 'UTF-8')
  */
 function anystring2utf8($str)
 {
-	$encode = mb_detect_encoding($str,'ASCII,UNICODE,UTF-8,CP936,BIG-5,EUC-TW');
-	return removeBOM(!in_array($encode, array('UTF-8','ASCII')) ? iconv($encode,'UTF-8//IGNORE',$str) : $str); //移除BOM的UTF-8
+	$encode = mb_detect_encoding($str,'ASCII,UCS-2,UTF-8,CP936,BIG-5,EUC-TW,EUC-KR,auto');
+	return removeBOM(!in_array($encode, array('UTF-8', 'ASCII')) ? iconv($encode,'UTF-8//IGNORE',$str) : $str); //移除BOM的UTF-8
 }
 
 /**
@@ -931,8 +931,8 @@ function anystring2utf8($str)
  */
 function anystring2gbk($str)
 {
-	$encode = mb_detect_encoding($str,'ASCII,UNICODE,UTF-8,CP936,BIG-5,EUC-TW');
-	return (!in_array($encode, array('CP936','ASCII')) ? iconv($encode,'GB18030//TRANSLIT',$str) : $str);
+	$encode = mb_detect_encoding($str,'ASCII,UCS-2,UTF-8,CP936,BIG-5,EUC-TW,EUC-KR,auto');
+	return (!in_array($encode, array('CP936', 'ASCII')) ? iconv($encode,'GB18030//TRANSLIT',$str) : $str);
 }
 
 
