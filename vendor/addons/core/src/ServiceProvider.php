@@ -135,9 +135,10 @@ class ServiceProvider extends BaseServiceProvider
 			if ($config['register']['router'])
 				foreach($config['router'] as $key => $route)
 				{
-					$router->group(['namespace' => empty($route['namespace']) ? $config['namespace'].'\App\Http\Controllers' : $route['namespace'], 'middleware' => array_merge([$key], $route['middleware']), 'prefix' => $route['prefix']], function($router) use ($config, $key) {
-						require $config['path'].'routes/'.$key.'.php';
-					});
+					$router->prefix($route['prefix'])
+					 ->middleware(array_merge([$key], $route['middleware']))
+					 ->namespace(empty($route['namespace']) ? $config['namespace'].'\App\Http\Controllers' : $route['namespace'])
+					 ->group($config['path'].'routes/'.$key.'.php');
 				}
 			if ($this->app->runningInConsole())
 			{
