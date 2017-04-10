@@ -11,7 +11,7 @@
   "devDependencies": {
     "axios": "^0.15.3",
     "cross-env": "^3.2.3",
-    "babel-preset-latest": "^6.22.0",
+    "babel-preset-latest": "^6.24.0",
     "babel-preset-stage-0": "^6.22.0",
     "laravel-mix": "0.*",
     "lodash": "^4.17.4",
