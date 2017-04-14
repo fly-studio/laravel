@@ -2305,6 +2305,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Illuminate\\Log\\LogServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/LogServiceProvider.php',
         'Illuminate\\Log\\Writer' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/Writer.php',
         'Illuminate\\Mail\\Events\\MessageSending' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Events/MessageSending.php',
+        'Illuminate\\Mail\\Events\\MessageSent' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Events/MessageSent.php',
         'Illuminate\\Mail\\MailServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/MailServiceProvider.php',
         'Illuminate\\Mail\\Mailable' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Mailable.php',
         'Illuminate\\Mail\\Mailer' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Mail/Mailer.php',

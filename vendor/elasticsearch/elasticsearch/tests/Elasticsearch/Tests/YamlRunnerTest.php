@@ -103,7 +103,11 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->clean();
-        $this->client = Elasticsearch\ClientBuilder::create()->setHosts([self::getHost()])->build();
+        $builder = Elasticsearch\ClientBuilder::create()->setHosts([self::getHost()]);
+        if (version_compare(phpversion(), '5.6.6', '<') || ! defined('JSON_PRESERVE_ZERO_FRACTION')) {
+            $builder->allowBadJSONSerialization();
+        }
+        $this->client = $builder->build();
     }
 
     /**
@@ -393,7 +397,14 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
         if ($expectedWarnings !== null) {
             if (isset($last['response']['headers']['Warning']) === true) {
                 foreach ($last['response']['headers']['Warning'] as $warning) {
-                    $position = array_search($warning, $expectedWarnings);
+                    //$position = array_search($warning, $expectedWarnings);
+                    $position = false;
+                    foreach ($expectedWarnings as $index => $value) {
+                        if (stristr($warning, $value) !== false) {
+                            $position = $index;
+                            break;
+                        }
+                    }
                     if ($position !== false) {
                         // found the warning
                         unset($expectedWarnings[$position]);
@@ -403,6 +414,7 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
                     }
                 }
                 if (count($expectedWarnings) > 0) {
+                    print_r($last['response']);
                     throw new \Exception("Expected to find more warnings: ". print_r($expectedWarnings, true));
                 }
             }

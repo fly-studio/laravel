@@ -1768,6 +1768,7 @@ return array(
     'Illuminate\\Log\\LogServiceProvider' => $vendorDir . '/laravel/framework/src/Illuminate/Log/LogServiceProvider.php',
     'Illuminate\\Log\\Writer' => $vendorDir . '/laravel/framework/src/Illuminate/Log/Writer.php',
     'Illuminate\\Mail\\Events\\MessageSending' => $vendorDir . '/laravel/framework/src/Illuminate/Mail/Events/MessageSending.php',
+    'Illuminate\\Mail\\Events\\MessageSent' => $vendorDir . '/laravel/framework/src/Illuminate/Mail/Events/MessageSent.php',
     'Illuminate\\Mail\\MailServiceProvider' => $vendorDir . '/laravel/framework/src/Illuminate/Mail/MailServiceProvider.php',
     'Illuminate\\Mail\\Mailable' => $vendorDir . '/laravel/framework/src/Illuminate/Mail/Mailable.php',
     'Illuminate\\Mail\\Mailer' => $vendorDir . '/laravel/framework/src/Illuminate/Mail/Mailer.php',

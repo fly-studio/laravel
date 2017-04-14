@@ -50,7 +50,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-04-10 08:24:00"
+            "time": "2017-04-10T08:24:00+00:00"
         },
         {
             "name": "addons/elasticsearch",
@@ -96,7 +96,7 @@
                 "monolog",
                 "paginator"
             ],
-            "time": "2017-04-10 08:15:03"
+            "time": "2017-04-10T08:15:03+00:00"
         },
         {
             "name": "addons/entrust",
@@ -163,7 +163,7 @@
                 "permission",
                 "roles"
             ],
-            "time": "2017-04-10 08:22:04"
+            "time": "2017-04-10T08:22:04+00:00"
         },
         {
             "name": "addons/func",
@@ -200,7 +200,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-04-10 08:22:47"
+            "time": "2017-04-10T08:22:47+00:00"
         },
         {
             "name": "addons/smarty",
@@ -840,16 +840,16 @@
         },
         {
             "name": "elasticsearch/elasticsearch",
-            "version": "v5.1.3",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elastic/elasticsearch-php.git",
-                "reference": "ee931ebb6f371dc31eecbd9ec2ab2cc563823453"
+                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/ee931ebb6f371dc31eecbd9ec2ab2cc563823453",
-                "reference": "ee931ebb6f371dc31eecbd9ec2ab2cc563823453",
+                "url": "https://files.phpcomposer.com/files/elastic/elasticsearch-php/dc57bbcd4be2c9061ebe5be59058ea8bdebc904e.zip",
+                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
                 "shasum": ""
             },
             "require": {
@@ -891,7 +891,7 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2017-02-06T13:20:44+00:00"
+            "time": "2017-04-12T20:40:50+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -1515,16 +1515,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.4.17",
+            "version": "v5.4.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "f7675d59e3863a58ecdff1a5ee1dcd0cff788f4b"
+                "reference": "d15ded55b5e690199393ea93a57edcbae20d1ffc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/f7675d59e3863a58ecdff1a5ee1dcd0cff788f4b",
-                "reference": "f7675d59e3863a58ecdff1a5ee1dcd0cff788f4b",
+                "url": "https://files.phpcomposer.com/files/laravel/framework/d15ded55b5e690199393ea93a57edcbae20d1ffc.zip",
+                "reference": "d15ded55b5e690199393ea93a57edcbae20d1ffc",
                 "shasum": ""
             },
             "require": {
@@ -1640,7 +1640,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-04-03T13:07:39+00:00"
+            "time": "2017-04-10T19:27:41+00:00"
         },
         {
             "name": "laravel/passport",
@@ -1708,16 +1708,16 @@
         },
         {
             "name": "laravel/scout",
-            "version": "v3.0.2",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/scout.git",
-                "reference": "1ddb0fa6f165bf6a69864960102062e7cf3f989d"
+                "reference": "64d28db58a054174eadf1d4df38dad81ff7e68dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/scout/zipball/1ddb0fa6f165bf6a69864960102062e7cf3f989d",
-                "reference": "1ddb0fa6f165bf6a69864960102062e7cf3f989d",
+                "url": "https://files.phpcomposer.com/files/laravel/scout/64d28db58a054174eadf1d4df38dad81ff7e68dd.zip",
+                "reference": "64d28db58a054174eadf1d4df38dad81ff7e68dd",
                 "shasum": ""
             },
             "require": {
@@ -1764,7 +1764,7 @@
                 "laravel",
                 "search"
             ],
-            "time": "2017-03-01T14:37:40+00:00"
+            "time": "2017-04-09T00:54:26+00:00"
         },
         {
             "name": "laravel/socialite",
@@ -4872,7 +4872,7 @@
             "version": "0.9.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/padraic/mockery.git",
+                "url": "https://github.com/mockery/mockery.git",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856"
             },
             "dist": {
@@ -4934,16 +4934,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "5a5a9fc8025a08d8919be87d6884d5a92520cefe"
+                "reference": "8e6e04167378abf1ddb4d3522d8755c5fd90d102"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/5a5a9fc8025a08d8919be87d6884d5a92520cefe",
-                "reference": "5a5a9fc8025a08d8919be87d6884d5a92520cefe",
+                "url": "https://files.phpcomposer.com/files/myclabs/DeepCopy/8e6e04167378abf1ddb4d3522d8755c5fd90d102.zip",
+                "reference": "8e6e04167378abf1ddb4d3522d8755c5fd90d102",
                 "shasum": ""
             },
             "require": {
@@ -4972,7 +4972,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2017-01-26T22:05:40+00:00"
+            "time": "2017-04-12T18:52:22+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
