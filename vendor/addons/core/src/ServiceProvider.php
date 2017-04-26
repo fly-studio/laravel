@@ -3,7 +3,6 @@ namespace Addons\Core;
 
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
-use Addons\Core\Validation\Validator;
 use Addons\Core\Http\ResponseFactory;
 use Addons\Core\Events\EventDispatcher;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -109,9 +108,6 @@ class ServiceProvider extends BaseServiceProvider
 		$this->app['translator']->addNamespace('core', realpath(__DIR__.'/../resources/lang/'));
 
 
-		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
-			return new Validator( $translator, $data, $rules, $messages, $customAttributes );
-		});
 
 		$this->bootPlugins();
 	}

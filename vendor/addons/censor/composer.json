@@ -1,12 +1,12 @@
 {
-    "name": "addons/core",
-    "description": "Laravel's Addons.",
+    "name": "addons/censor",
+    "description": "Laravel's Censor based Validation, support locale.",
     "homepage": "https://www.load-page.com/manuals",
     "keywords": ["L5", "Laravel 5", "Laravel","Addons"],
     "license": "MIT",
     "support": {
-        "issues": "https://git.load-page.com/addons/core/issues",
-        "source": "https://git.load-page.com/addons/core"
+        "issues": "https://git.load-page.com/addons/sensor/issues",
+        "source": "https://git.load-page.com/addons/sensor"
     },
     "authors": [
         {
@@ -16,22 +16,19 @@
     ],
     "require": {
         "php": ">=5.6.10",
-        "illuminate/support": "~5.4",
-        "illuminate/translate": "~5.4",
-        "illuminate/database": "~5.4",
-        "addons/smarty": "dev-master",
-        "addons/func": "dev-master",
-        "addons/censor": "dev-master"
+        "illuminate/validation": "~5.4",
+        "illuminate/translator": "~5.4",
+        "addons/core": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "Addons\\Core\\": "src/"
+            "Addons\\Sensor\\": "src/"
         },
         "classmap": [
             "src/"
         ],
         "files": [
-            "src/helpers.php"
+
         ]
     },
     "minimum-stability": "dev"

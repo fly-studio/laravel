@@ -1,15 +1,14 @@
 <?php
-namespace Addons\Core\Validation;
+namespace Addons\Censor\Validation;
  
 use BadMethodCallException;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationRuleParser;
 use Illuminate\Validation\Validator as BaseValidator;
 /**
  * 本Class主要是处理宽字符的长度、Fields检索等
  * 
  */
-class Validator extends BaseValidator {
+class ValidatorEx extends BaseValidator {
   
 	/**
 	 * Allow only alphabets, spaces and dashes (hyphens and underscores)
@@ -106,180 +105,6 @@ class Validator extends BaseValidator {
 
 		return strlen_ansi($value, NULL, $ansiWidth);
 		//return mb_strlen($value);
-	}
-
-	public function getParsedRules()
-	{
-		$rules = [];
-		foreach ($this->rules as $attribute => $_list)
-		{
-			foreach ($_list as $rule)
-			{
-				list($rule, $parameters) = ValidationRuleParser::parse($rule);
-				$rules[$attribute][$rule] = empty($parameters) ? true : (count($parameters) == 1 ? $parameters[0] : $parameters); 
-			}
-		}
-		return $rules;
-	}
-
-	private function isNumeric($rule_list)
-	{
-		foreach ($rule_list as $rule => $value)
-		{
-			if (in_array(strtolower($rule), ['digits', 'digitsbetween', 'numeric', 'integer']))
-				return true;
-		}
-		return false;
-	}
-
-	public function getjQueryRules()
-	{
-		$jqueryRules = [];
-		$rules = $this->getParsedRules();
-		foreach($rules as $attribute => $_list)
-		{ //3
-			$jqueryRules[$attribute] = [];
-			foreach($_list as $rule => $parameters)
-			{ //2
-				if (empty($rule)) continue;
-				$rule = strtolower($rule);
-				switch ($rule) { // 1
-					case 'alpha':
-						$rule = 'regex';
-						$parameters = '/^[\w]+$/i';
-						break;
-					case 'alphadash':
-						$rule = 'regex';
-						$parameters = '/^[\w_-]+$/i';
-						break;
-					case 'alpha_num':
-						$rule = 'regex';
-						$parameters = '/^[\w\d]+$/i';
-						break;
-					case 'ansi':
-						$parameters = $parameters === true ? 2 : floatval($parameters);
-						break;
-					case 'notin':
-						$rule = 'regex';
-						$parameters = '(?!('.implode('|', array_map('preg_quote', $parameters)).'))';
-						break;
-					case 'in':
-						$rule = 'regex';
-						$parameters = '('.implode('|', array_map('preg_quote', $parameters)).')';
-						break;
-					case 'digits':
-						if (!empty($parameters))
-						{
-							$jqueryRules[$attribute] += ['rangelength' => [floatval($parameters), floatval($parameters)]];
-							$parameters = true;
-						}
-						break;
-					case 'digitsbetween':
-						$jqueryRules[$attribute] += ['rangelength' => [floatval($parameters[0]), floatval($parameters[1])]];
-						$rule = 'digits';
-						$parameters = true;
-						break;
-					case 'ip':
-						$rule = 'regex';
-						$parameters = '\d{1,3}\\.\d{1,3}\\.\d{1,3}\\.\d{1,3}';
-						break;
-					case 'boolean':
-						$rule = 'regex';
-						$parameters = '(true|false|1|0)';
-						break;
-					case 'size':
-						$rule = $this->isNumeric($_list) ? 'range' : 'rangelength';
-						$parameters = [floatval($parameters), floatval($parameters)];
-						break;
-					/*case 'requiredwithoutall': //任意一个有值
-						$rule = 'require_from_group';
-						!is_array($parameters) && $parameters = [$parameters];
-						$attribute =  [1, implode(',', array_map(function($v) {return '[name="'.$v.'"]';}, $parameters))];
-						break;
-					case 'requiredwithout': //任意一个有值
-						$rule = 'require_from_group';
-						!is_array($parameters) && $parameters = [$parameters];
-						$parameters =  [count($parameters) > 1 ? count($parameters) - 1 : 1, implode(',', array_map(function($v) {return '[name="'.$v.'"]';}, $parameters))];
-						break;*/
-					case 'max':
-						$rule = $this->isNumeric($_list) ? 'max' : 'maxlength';
-						$parameters = floatval($parameters);
-						break;
-					case 'min':
-						$rule = $this->isNumeric($_list) ? 'min' : 'minlength';
-						$parameters = floatval($parameters);
-						break;
-					case 'between':
-						$rule = 'range';
-						$parameters = [floatval($parameters[0]), floatval($parameters[1])] ;
-
-						break;
-					case 'confirmed': //交換兩者的attribute
-						$parameters = '[name="'.$attribute.'"]';
-						$attribute = $attribute.'_confirmation';
-						!isset($jqueryRules[$attribute]) && $jqueryRules[$attribute] = [];
-					case 'same':
-						$rule = 'equalTo';
-						break;
-					case 'mimes':
-						$rule = 'extension';
-						$attribute = implode('|', $parameters);
-						break;
-					case 'accepted':
-						$rule = 'required';
-						break;
-					case 'activeurl':
-						$rule = 'url';
-						break;
-					case 'dateformat':
-						$rule = 'date';
-						break;
-					case 'integer':
-						$rule = 'digits';
-						break;
-					case 'numeric':
-						$rule = 'number';
-						break;
-					//case 'date':
-					//	$rule = 'regex';
-					//	$parameters = '(1[1-9]\d{2}|20\d{2}|2100)-([0-1]?[1-9]|1[0-2])-([0-2]?[1-9]|3[0-1]|[1-2]0)(\s([0-1]?\d|2[0-3]):([0-5]?\d)(:([0-5]?\d))?)?';
-					//	break;
-					case 'before':
-					case 'different':
-					case 'exists':
-					case 'image':
-					case 'array':
-					case 'requiredif':
-					case 'requiredunless':
-					case 'requiredwith':
-					case 'requiredwithall':
-					case 'string':
-					case 'timezone':
-					case 'unique':
-					case 'requiredwithout':
-					case 'requiredwithoutall':
-						continue 2;
-					case 'email':
-					case 'url':
-					case 'regex':
-					case 'required':
-					case 'ansi':
-					case 'phone':
-					case 'idcard':
-					case 'notzero':
-					case 'timestamp':
-					case 'timetick':
-						break;
-					default:
-						continue 2;
-				}
-				$jqueryRules[$attribute] +=  [$rule => $parameters];
-			}
-		}
-		foreach ($jqueryRules as $key => $value)
-			if (empty($value)) unset($jqueryRules[$key]);
-
-		return $jqueryRules;
 	}
 
 	/**
