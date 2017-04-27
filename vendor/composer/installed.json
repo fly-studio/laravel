@@ -5635,75 +5635,6 @@
         ]
     },
     {
-        "name": "addons/entrust",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://git.load-page.com/addons/entrust.git",
-            "reference": "4e201679fd55c1945935ce2755b5e4bf9d4282d1"
-        },
-        "require": {
-            "addons/core": "dev-master",
-            "illuminate/cache": "~5.0",
-            "illuminate/console": "~5.0",
-            "illuminate/support": "~5.0",
-            "php": ">=5.5.0"
-        },
-        "require-dev": {
-            "illuminate/database": "~5.0",
-            "mockery/mockery": "dev-master",
-            "phpunit/phpunit": "~4.1"
-        },
-        "time": "2017-04-10T08:22:04+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "classmap": [
-                "src/"
-            ],
-            "psr-4": {
-                "Addons\\Entrust\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Andrew Elkins",
-                "homepage": "http://andrewelkins.com"
-            },
-            {
-                "name": "Zizaco Zizuini",
-                "email": "zizaco@gmail.com"
-            },
-            {
-                "name": "Ben Batschelet",
-                "homepage": "http://github.com/bbatsche"
-            },
-            {
-                "name": "Michele Angioni",
-                "email": "michele.angioni@gmail.com"
-            },
-            {
-                "name": "Fly",
-                "email": "fly@load-page.com"
-            }
-        ],
-        "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
-        "homepage": "https://www.load-page.com",
-        "keywords": [
-            "acl",
-            "auth",
-            "illuminate",
-            "laravel",
-            "permission",
-            "roles"
-        ]
-    },
-    {
         "name": "laravel/scout",
         "version": "v3.0.3",
         "version_normalized": "3.0.3.0",
@@ -6309,51 +6240,6 @@
         ]
     },
     {
-        "name": "addons/censor",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://git.load-page.com/addons/censor.git",
-            "reference": "1da3e02355dc1f08ec20ccbcf56c92d9f85b36a3"
-        },
-        "require": {
-            "illuminate/translation": "~5.4",
-            "illuminate/validation": "~5.4",
-            "php": ">=5.6.10"
-        },
-        "time": "2017-04-27T03:54:40+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "Addons\\Censor\\": "src/"
-            },
-            "classmap": [
-                "src/"
-            ],
-            "files": []
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fly",
-                "email": "fly@load-page.com"
-            }
-        ],
-        "description": "Laravel's Censor based Validation, support locale.",
-        "homepage": "https://www.load-page.com/manuals",
-        "keywords": [
-            "addons",
-            "l5",
-            "laravel",
-            "laravel 5"
-        ]
-    },
-    {
         "name": "addons/elasticsearch",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -6403,13 +6289,82 @@
         ]
     },
     {
+        "name": "addons/entrust",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://git.load-page.com/addons/entrust.git",
+            "reference": "1e5eb749b40314e87e00ff62ab640e5f4f5995d9"
+        },
+        "require": {
+            "addons/core": "dev-master",
+            "illuminate/cache": "~5.0",
+            "illuminate/console": "~5.0",
+            "illuminate/support": "~5.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "illuminate/database": "~5.0",
+            "mockery/mockery": "dev-master",
+            "phpunit/phpunit": "~4.1"
+        },
+        "time": "2017-04-27T06:49:10+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ],
+            "psr-4": {
+                "Addons\\Entrust\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Andrew Elkins",
+                "homepage": "http://andrewelkins.com"
+            },
+            {
+                "name": "Zizaco Zizuini",
+                "email": "zizaco@gmail.com"
+            },
+            {
+                "name": "Ben Batschelet",
+                "homepage": "http://github.com/bbatsche"
+            },
+            {
+                "name": "Michele Angioni",
+                "email": "michele.angioni@gmail.com"
+            },
+            {
+                "name": "Fly",
+                "email": "fly@load-page.com"
+            }
+        ],
+        "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
+        "homepage": "https://www.load-page.com",
+        "keywords": [
+            "acl",
+            "auth",
+            "illuminate",
+            "laravel",
+            "permission",
+            "roles"
+        ]
+    },
+    {
         "name": "addons/core",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://git.load-page.com/addons/core.git",
-            "reference": "afffaf68cd5f3167f3cf676db65ad9a7f15217c4"
+            "reference": "4b6df8e2de31f19b20fd1ac301947697b117b0a2"
         },
         "require": {
             "addons/censor": "dev-master",
@@ -6420,7 +6375,7 @@
             "illuminate/translation": "~5.4",
             "php": ">=5.6.10"
         },
-        "time": "2017-04-27T03:54:55+00:00",
+        "time": "2017-04-27T06:48:48+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -6445,6 +6400,53 @@
             }
         ],
         "description": "Laravel's Addons.",
+        "homepage": "https://www.load-page.com/manuals",
+        "keywords": [
+            "addons",
+            "l5",
+            "laravel",
+            "laravel 5"
+        ]
+    },
+    {
+        "name": "addons/censor",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://git.load-page.com/addons/censor.git",
+            "reference": "eacee1de523552f303baca22b8d83616e7a490aa"
+        },
+        "require": {
+            "illuminate/translation": "~5.4",
+            "illuminate/validation": "~5.4",
+            "php": ">=5.6.10"
+        },
+        "time": "2017-04-27T06:55:56+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Addons\\Censor\\": "src/"
+            },
+            "classmap": [
+                "src/"
+            ],
+            "files": [
+                "src/helpers.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fly",
+                "email": "fly@load-page.com"
+            }
+        ],
+        "description": "Laravel's Censor based Validation, support locale.",
         "homepage": "https://www.load-page.com/manuals",
         "keywords": [
             "addons",

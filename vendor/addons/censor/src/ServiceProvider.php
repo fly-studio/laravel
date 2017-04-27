@@ -24,7 +24,7 @@ class ServiceProvider extends BaseServiceProvider
 	{
         $this->app->instance('path.censors', $this->censorsPath());
 
-        $this->app->singleton('ruler.loader', function ($app) {
+		$this->app->singleton('ruler.loader', function ($app) {
             return new FileLoader($app['files'], $app['path.censors']);
         });
 

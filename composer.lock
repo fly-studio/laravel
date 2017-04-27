@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/censor.git",
-                "reference": "1da3e02355dc1f08ec20ccbcf56c92d9f85b36a3"
+                "reference": "eacee1de523552f303baca22b8d83616e7a490aa"
             },
             "require": {
                 "illuminate/translation": "~5.4",
@@ -27,7 +27,9 @@
                 "classmap": [
                     "src/"
                 ],
-                "files": []
+                "files": [
+                    "src/helpers.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -47,7 +49,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-04-27 03:54:40"
+            "time": "2017-04-27 06:55:56"
         },
         {
             "name": "addons/core",
@@ -55,7 +57,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/core.git",
-                "reference": "afffaf68cd5f3167f3cf676db65ad9a7f15217c4"
+                "reference": "4b6df8e2de31f19b20fd1ac301947697b117b0a2"
             },
             "require": {
                 "addons/censor": "dev-master",
@@ -96,7 +98,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-04-27 03:54:55"
+            "time": "2017-04-27 06:48:48"
         },
         {
             "name": "addons/elasticsearch",
@@ -143,7 +145,7 @@
                 "monolog",
                 "paginator"
             ],
-            "time": "2017-04-27 03:49:58"
+            "time": "2017-04-27T03:49:58+00:00"
         },
         {
             "name": "addons/entrust",
@@ -151,7 +153,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/entrust.git",
-                "reference": "4e201679fd55c1945935ce2755b5e4bf9d4282d1"
+                "reference": "1e5eb749b40314e87e00ff62ab640e5f4f5995d9"
             },
             "require": {
                 "addons/core": "dev-master",
@@ -210,7 +212,7 @@
                 "permission",
                 "roles"
             ],
-            "time": "2017-04-10T08:22:04+00:00"
+            "time": "2017-04-27 06:49:10"
         },
         {
             "name": "addons/func",
