@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Core\File;
+namespace Addons\Censor\File;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

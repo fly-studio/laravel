@@ -24,11 +24,12 @@ class ValidatorEx extends BaseValidator {
 
 	protected function validatePhone($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';empty($parameters) && $parameters = ['cn'];
+		$patten = '/[0-9\-\s]*/i';
+		empty($parameters) && $parameters = ['zh-CN'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
 				break;
-			default: //cn
+			case 'zh-CN': //cn
 				//如：010-12345678、0912-1234567、(010)-12345678、(0912)1234567、(010)12345678、(0912)-1234567、01012345678、09121234567
 				$patten = '/^(((\+86|086|17951)[\-\s])?1([34578][0-9])[\-\s]?[0-9]{4}[\-\s]?[0-9]{4}|(^0\d{2}-?\d{8}$)|(^0\d{3}-?\d{7}$)|(^\(0\d{2}\)-?\d{8}$)|(^\(0\d{3}\)-?\d{7}$))$/';
 				break;
@@ -45,12 +46,13 @@ class ValidatorEx extends BaseValidator {
 
 	protected function validateIdCard($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';empty($parameters) && $parameters = ['cn'];
+		$patten = '/[0-9\-\s]*/i';
+		empty($parameters) && $parameters = ['zh-CN'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
 				$patten = '/^\d{6}-\d{2}-\d{4}$/';
 				break;
-			default: //cn
+			case 'zh-CN': //cn
 				$patten = '/^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/';
 				if(strlen($value) == 18) {
 					$idCardWi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 ]; //将前17位加权因子保存在数组里

@@ -17,12 +17,11 @@
     "require": {
         "php": ">=5.6.10",
         "illuminate/validation": "~5.4",
-        "illuminate/translator": "~5.4",
-        "addons/core": "dev-master"
+        "illuminate/translator": "~5.4"
     },
     "autoload": {
         "psr-4": {
-            "Addons\\Sensor\\": "src/"
+            "Addons\\Censor\\": "src/"
         },
         "classmap": [
             "src/"
