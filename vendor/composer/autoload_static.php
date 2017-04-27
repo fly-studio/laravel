@@ -548,8 +548,12 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
     );
 
     public static $classMap = array (
+        'Addons\\Censor\\Censor' => __DIR__ . '/..' . '/addons/censor/src/Censor.php',
         'Addons\\Censor\\Exceptions\\RuleNotFoundException' => __DIR__ . '/..' . '/addons/censor/src/Exceptions/RuleNotFoundException.php',
+        'Addons\\Censor\\Factory' => __DIR__ . '/..' . '/addons/censor/src/Factory.php',
         'Addons\\Censor\\File\\Localer' => __DIR__ . '/..' . '/addons/censor/src/File/Localer.php',
+        'Addons\\Censor\\Ruling\\Ruler' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Ruler.php',
+        'Addons\\Censor\\Ruling\\Rules' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Rules.php',
         'Addons\\Censor\\ServiceProvider' => __DIR__ . '/..' . '/addons/censor/src/ServiceProvider.php',
         'Addons\\Censor\\Validation\\ValidatesRequests' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatesRequests.php',
         'Addons\\Censor\\Validation\\ValidatorEx' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatorEx.php',
@@ -624,10 +628,6 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Entrust\\Traits\\PermissionTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/PermissionTrait.php',
         'Addons\\Entrust\\Traits\\RoleTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/RoleTrait.php',
         'Addons\\Entrust\\Traits\\UserTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/UserTrait.php',
-        'Addons\\Sensor\\Censor' => __DIR__ . '/..' . '/addons/censor/src/Censor.php',
-        'Addons\\Sensor\\Factory' => __DIR__ . '/..' . '/addons/censor/src/Factory.php',
-        'Addons\\Sensor\\Ruling\\Ruler' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Ruler.php',
-        'Addons\\Sensor\\Ruling\\Rules' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Rules.php',
         'Addons\\Smarty\\ServiceProvider' => __DIR__ . '/..' . '/addons/smarty/src/ServiceProvider.php',
         'Addons\\Smarty\\View\\Engine' => __DIR__ . '/..' . '/addons/smarty/src/View/Engine.php',
         'Addons\\Ucloud\\Cdn\\DescribePrefetchCacheTask' => __DIR__ . '/..' . '/addons/ucloud/src/Cdn/DescribePrefetchCacheTask.php',

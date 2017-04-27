@@ -1,11 +1,11 @@
 <?php
 
-namespace Addons\Sensor\Ruling;
+namespace Addons\Censor\Ruling;
 
-use Addons\Core\File\Localer;
+use Addons\Censor\File\Localer;
 use Addons\Censor\Exceptions\RuleNotFoundException;
 
-class Ruler extends Localer{
+class Ruler extends Localer {
 
     public function get($key, $ruleKeys, $replace = [], $locale = null)
     {
@@ -18,9 +18,9 @@ class Ruler extends Localer{
     	$ruleKeys == '*' && $ruleKeys = array_keys($validations);
 		!is_array($ruleKeys) && $ruleKeys = explode(',', $ruleKeys);
 
-		$validation_data = array_only($validations, $ruleKeys);
+		$validations = array_only($validations, $ruleKeys);
 
-		if (!empty($diff = array_diff(array_keys($validation_data), $ruleKeys)))
+		if (!empty($diff = array_diff(array_keys($validations), $ruleKeys)))
     		throw new RuleNotFoundException('[validation] Rule keys are not exists: '.implode(', ', $diff));
 
     	foreach($validations as $attribute => &$v)
@@ -29,13 +29,9 @@ class Ruler extends Localer{
     	return $validations;
     }
 
-
-
     private function parseRules($attribute, $rules, $replace)
     {
     	return new Rules($attribute, $rules, $replace);
     }
-
-
 
 }

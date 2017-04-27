@@ -2,7 +2,7 @@
 namespace Addons\Censor\Validation;
 
 use Closure;
-use Addons\Sensor\Factory;
+use Addons\Censor\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Validation\Validator;
@@ -13,46 +13,62 @@ trait ValidatesRequests
 {
 	use BaseValidatesRequests;
 
-	public function getScriptValidate($table, $attributes, Model $model = null)
+	public function getValidatorScript($censorKey, $attributes, Model $model = null)
 	{
-		$censor = $this->getCensorFactory()->make($table, $attributes, $model);
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model);
 
 		return $censor->js();
 	}
 	/**
-	 * [autoValidate description]
-	 * @param  Request $request [description]
-	 * @param  [type]  $table   [description]
-	 * @param  string  $attributes    [description]
-	 * @return [type]           [description]
+	 * if json or api, use validateWithApi.
+	 * otherwish use validateWithNative
+	 * 
+	 * @param  Request $request
+	 * @param  string  $censorKey
+	 * @param  array  $attributes
+	 * @param  Model|null $model
+	 * @return array|Exception
 	 */
-	public function autoValidate(Request $request, $table, $attributes, Model $model = null)
+	public function autoValidate(Request $request, $censorKey, $attributes, Model $model = null)
 	{
-		if ($request->expectsJson() || $request->offsetExists('of'))
-			return $this->validateWithApi($request, $table, $attributes, $model);
+		if ($request->expectsJson() || $request->offsetExists('of') || (!empty($request->route()) && in_array('api', $request->route()->gatherMiddleware())))
+			return $this->validateWithApi($request, $censorKey, $attributes, $model);
 		else 
-			return $this->validateWithBack($request, $table, $attributes, $model);
+			return $this->validateWithNative($request, $censorKey, $attributes, $model);
 	}
 
-	public function validateWithBack(Request $request, $table, $attributes, Model $model = null)
+	/**
+	 * laravel's native validator
+	 * flash and back page when fails
+	 * 
+	 * @param  Request    $request
+	 * @param  string     $censorKey
+	 * @param  array      $attributes
+	 * @param  Model|null $model
+	 * @return array|Exception
+	 */
+	public function validateWithNative(Request $request, $censorKey, $attributes, Model $model = null)
 	{
-		$censor = $this->getCensorFactory()->make($table, $attributes, $model)->data($request->all());
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($request->all());
 		$validator = $censor->validator();
 		return $validator->fails() ? $this->throwValidationException($request, $validator) : $censor->validData();
 	}
 
 	/**
-	 * [validateWithApi description]
-	 * @param  Request $request [description]
-	 * @param  [type]  $table   [description]
-	 * @param  string  $attributes    [description]
-	 * @return [type]           [description]
+	 * api's validator
+	 * OutputException when fails
+	 * 
+	 * @param  Request    $request
+	 * @param  string     $censorKey
+	 * @param  array      $attributes
+	 * @param  Model|null $model
+	 * @return array|Exception
 	 */
-	public function validateWithApi(Request $request, $table, $attributes, Model $model = null)
+	public function validateWithApi(Request $request, $censorKey, $attributes, Model $model = null)
 	{
-		$censor = $this->getCensorFactory()->make($table, $attributes, $model)->data($request->all());
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($request->all());
 		$validator = $censor->validator();
-		return $validator->fails() ? $this->throwValidationOutputResponse($validator->errors()) : $this->validData();
+		return $validator->fails() ? $this->throwValidationOutputResponse($validator->errors()) : $censor->validData();
 	}
 
 	private function throwValidationOutputResponse(\Illuminate\Support\MessageBag $messagebag)
@@ -68,9 +84,9 @@ trait ValidatesRequests
 	}
 
 	/**
-     * Get a validation factory instance.
+     * Get a censor factory instance.
      *
-     * @return \Illuminate\Contracts\Validation\Factory
+     * @return \Addons\Censor\Factory
      */
     protected function getCensorFactory()
     {

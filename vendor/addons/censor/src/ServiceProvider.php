@@ -1,6 +1,7 @@
 <?php
 namespace Addons\Censor;
 
+use Addons\Censor\Factory;
 use Addons\Censor\Ruling\Ruler;
 use Illuminate\Translation\FileLoader;
 use Addons\Censor\Validation\ValidatorEx;
@@ -21,9 +22,9 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-        $this->instance('path.censors', $this->censorsPath());
+        $this->app->instance('path.censors', $this->censorsPath());
 
-		$this->app->singleton('ruler.loader', function ($app) {
+        $this->app->singleton('ruler.loader', function ($app) {
             return new FileLoader($app['files'], $app['path.censors']);
         });
 
@@ -42,7 +43,12 @@ class ServiceProvider extends BaseServiceProvider
             return $ruler;
         });
 
+        $this->app->singleton('censor', function ($app) {
+            return new Factory($app['ruler']);
+        });
+
         $this->app->alias('ruler', Ruler::class);
+        $this->app->alias('censor', Factory::class);
 
 	}
 

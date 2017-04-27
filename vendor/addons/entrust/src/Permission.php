@@ -54,12 +54,12 @@ class Permission extends Model implements PermissionInterface
      * @param  array  $permissions 
      * @return 
      */
-    public static function import(array $permissions)
+    public static function import(array $permissions, $format = '{{name}}.{{key}}')
     {
         foreach ($permissions as $permission => $text)
             foreach((array)config('entrust.import_fields') as $key)
                 static::create([
-                    'name' => $permission.'.'.$key,
+                    'name' => str_replace(['{{name}}', '{{key}}'], [$permission, $key], $format),
                     'display_name' => trans('permission.import.'.$key, compact('key', 'text', 'permission')),
                 ]);
     }

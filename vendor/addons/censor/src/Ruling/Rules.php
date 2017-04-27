@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Sensor\Ruling;
+namespace Addons\Censor\Ruling;
 
 use Illuminate\Validation\ValidationRuleParser;
 
@@ -34,12 +34,12 @@ class Rules {
 		$attribute = $this->isArray() ? $this->attribute. '[]' : $this->attribute;
 
 		$rules[$attribute] = [];
-		foreach($this->rules as $ruleName => $parameters)
+		foreach($this->rules() as $ruleName => $parameters)
 		{
 			if (empty($ruleName))
 				continue;
-			$parameters= empty($parameters) ? true : (count($parameters) == 1 ? $parameters[0] : $parameters);
-
+			$parameters = empty($parameters) ? true : (count($parameters) == 1 ? $parameters[0] : $parameters);
+			$ruleName = strtolower($ruleName);
 			switch ($ruleName) { // 1
 				case 'alpha':
 					$ruleName = 'regex';
@@ -109,7 +109,6 @@ class Rules {
 				case 'between':
 					$ruleName = 'range';
 					$parameters = [floatval($parameters[0]), floatval($parameters[1])] ;
-
 					break;
 				case 'confirmed': //改变attribute
 					$parameters = '[name="'.$attribute.'"]';
@@ -172,6 +171,9 @@ class Rules {
 			}
 			$rules[$attribute] +=  [$ruleName => $parameters];
 		}
+		foreach($rules as $key => $value)
+			if (empty($value))
+				unset($rules[$key]);
 		return $rules;
 	}
 
@@ -179,8 +181,11 @@ class Rules {
 
 	protected function parse($ruleLines, $replace)
 	{
+		$this->originalRules = [];
+		$this->rules = [];
+
 		if (empty($ruleLines))
-			return [];
+			return;
 
 		if (!is_array($ruleLines))
 			$ruleLines = explode('|', $ruleLines);
@@ -203,21 +208,21 @@ class Rules {
 			? preg_replace($pattern, '', $line)
 			: preg_replace_callback($pattern, function( $matches ) use ($replace){
 				$key = $matches[1];
-				return isset($replace[$key]) ? $replace[$key] : '';
+				return isset($replace[$key]) ? ','.$replace[$key] : '';
 			}, $line);
 	}
 
 	public function isNumeric()
 	{
-		foreach(['digits', 'digitsbetween', 'numeric', 'integer'] as $pattern)
-			if (array_key_exists($pattern, $this->rules))
+		foreach(['Digits', 'DigitsBetween', 'Numeric', 'Integer'] as $pattern)
+			if (array_key_exists($pattern, $this->rules()))
 				return true;
 		return false;
 	}
 
 	public function isArray()
 	{
-		return array_key_exists('array', $this->rules);
+		return array_key_exists('Array', $this->rules());
 	}
 
 }

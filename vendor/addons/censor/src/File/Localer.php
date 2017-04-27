@@ -118,12 +118,12 @@ class Localer extends NamespacedItemResolver {
      * Get the translation for the given key.
      *
      * @param  string  $key
-     * @param  array   $replace
+     * @param  array|null|Model   $replace
      * @param  string|null  $locale
      * @param  bool  $fallback
      * @return string|array|null
      */
-    public function getLine($key, array $replace = [], $locale = null, $fallback = true)
+    public function getLine($key, $replace = [], $locale = null, $fallback = true)
     {
         list($namespace, $group, $item) = $this->parseKey($key);
 

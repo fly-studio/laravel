@@ -1,25 +1,25 @@
 <?php
 
-namespace Addons\Sensor;
+namespace Addons\Censor;
 
 use Illuminate\Support\Str;
-use Addons\Sensor\Ruling\Ruler;
+use Addons\Censor\Ruling\Ruler;
 use Illuminate\Contracts\Validation\Factory;
 
 class Censor {
 
 	protected $data;
-	protected $key;
+	protected $censorKey;
 	protected $attributes;
 	protected $replace;
 	protected $validations;
 
-	public function __construct(Ruler $ruler, $key, $attributes, $replace = [], $locale = null)
+	public function __construct(Ruler $ruler, $censorKey, $attributes, $replace = [], $locale = null)
 	{
 		$this->ruler = $ruler;
-		$this->key = $key;
+		$this->censorKey = $censorKey;
 		$this->replace = $replace;
-		$this->validations = $ruler->get($key, $attributes, $replace, $locale);
+		$this->validations = $ruler->get($censorKey, $attributes, $replace, $locale);
 		$this->attributes = array_keys($this->validations);
 	}
 
@@ -64,9 +64,9 @@ class Censor {
 		return $this->attributes;
 	}
 
-	public function key()
+	public function censorKey()
 	{
-		return $this->key;
+		return $this->censorKey;
 	}
 
 	public function replace()
@@ -88,6 +88,7 @@ class Censor {
 				continue;
 			$messages[$attribute] = $line['message'];
 		}
+		return $messages;
 	}
 
 	public function names()
@@ -99,6 +100,7 @@ class Censor {
 				continue;
 			$names[$attribute] = $line['name'];
 		}
+		return $names;
 	}
 
 	public function originalRules()
@@ -132,7 +134,7 @@ class Censor {
 		return $this->getValidationFactory()->make($this->data(), $this->originalRules(), $this->messagesWithDot(), $this->names());
 	}
 
-	public function js($key, $ruleKeys, $locale = null) 
+	public function js() 
 	{
 		return [
 			'rules' => $this->jsRules(),
