@@ -80,4 +80,5 @@ return array(
     'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src'),
     'Addons\\Elasticsearch\\' => array($vendorDir . '/addons/elasticsearch/src'),
     'Addons\\Core\\' => array($vendorDir . '/addons/core/src'),
+    'Addons\\Censor\\' => array($vendorDir . '/addons/censor/src'),
 );

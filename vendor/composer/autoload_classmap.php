@@ -6,6 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Addons\\Censor\\Exceptions\\RuleNotFoundException' => $vendorDir . '/addons/censor/src/Exceptions/RuleNotFoundException.php',
+    'Addons\\Censor\\File\\Localer' => $vendorDir . '/addons/censor/src/File/Localer.php',
+    'Addons\\Censor\\ServiceProvider' => $vendorDir . '/addons/censor/src/ServiceProvider.php',
+    'Addons\\Censor\\Validation\\ValidatesRequests' => $vendorDir . '/addons/censor/src/Validation/ValidatesRequests.php',
+    'Addons\\Censor\\Validation\\ValidatorEx' => $vendorDir . '/addons/censor/src/Validation/ValidatorEx.php',
     'Addons\\Core\\Console\\Kernel' => $vendorDir . '/addons/core/src/Console/Kernel.php',
     'Addons\\Core\\Contracts\\Events\\ControllerEvent' => $vendorDir . '/addons/core/src/Contracts/Events/ControllerEvent.php',
     'Addons\\Core\\Contracts\\Http\\Output\\TipType' => $vendorDir . '/addons/core/src/Contracts/Http/Output/TipType.php',
@@ -77,6 +82,10 @@ return array(
     'Addons\\Entrust\\Traits\\PermissionTrait' => $vendorDir . '/addons/entrust/src/Traits/PermissionTrait.php',
     'Addons\\Entrust\\Traits\\RoleTrait' => $vendorDir . '/addons/entrust/src/Traits/RoleTrait.php',
     'Addons\\Entrust\\Traits\\UserTrait' => $vendorDir . '/addons/entrust/src/Traits/UserTrait.php',
+    'Addons\\Sensor\\Censor' => $vendorDir . '/addons/censor/src/Censor.php',
+    'Addons\\Sensor\\Factory' => $vendorDir . '/addons/censor/src/Factory.php',
+    'Addons\\Sensor\\Ruling\\Ruler' => $vendorDir . '/addons/censor/src/Ruling/Ruler.php',
+    'Addons\\Sensor\\Ruling\\Rules' => $vendorDir . '/addons/censor/src/Ruling/Rules.php',
     'Addons\\Smarty\\ServiceProvider' => $vendorDir . '/addons/smarty/src/ServiceProvider.php',
     'Addons\\Smarty\\View\\Engine' => $vendorDir . '/addons/smarty/src/View/Engine.php',
     'Addons\\Ucloud\\Cdn\\DescribePrefetchCacheTask' => $vendorDir . '/addons/ucloud/src/Cdn/DescribePrefetchCacheTask.php',

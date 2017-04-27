@@ -15,9 +15,9 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         'f084d01b0a599f67676cffef638aa95b' => __DIR__ . '/..' . '/smarty/smarty/libs/bootstrap.php',
-        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
         '4bcc8d86c9e4c7b037c26c95381f6eeb' => __DIR__ . '/..' . '/addons/func/src/func/helpers.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         'd635694d01516539fed9c3958c0179fb' => __DIR__ . '/..' . '/addons/core/src/helpers.php',
@@ -161,6 +161,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
             'Addons\\Entrust\\' => 15,
             'Addons\\Elasticsearch\\' => 21,
             'Addons\\Core\\' => 12,
+            'Addons\\Censor\\' => 14,
         ),
     );
 
@@ -463,6 +464,10 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         array (
             0 => __DIR__ . '/..' . '/addons/core/src',
         ),
+        'Addons\\Censor\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/addons/censor/src',
+        ),
     );
 
     public static $prefixesPsr0 = array (
@@ -543,6 +548,11 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
     );
 
     public static $classMap = array (
+        'Addons\\Censor\\Exceptions\\RuleNotFoundException' => __DIR__ . '/..' . '/addons/censor/src/Exceptions/RuleNotFoundException.php',
+        'Addons\\Censor\\File\\Localer' => __DIR__ . '/..' . '/addons/censor/src/File/Localer.php',
+        'Addons\\Censor\\ServiceProvider' => __DIR__ . '/..' . '/addons/censor/src/ServiceProvider.php',
+        'Addons\\Censor\\Validation\\ValidatesRequests' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatesRequests.php',
+        'Addons\\Censor\\Validation\\ValidatorEx' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatorEx.php',
         'Addons\\Core\\Console\\Kernel' => __DIR__ . '/..' . '/addons/core/src/Console/Kernel.php',
         'Addons\\Core\\Contracts\\Events\\ControllerEvent' => __DIR__ . '/..' . '/addons/core/src/Contracts/Events/ControllerEvent.php',
         'Addons\\Core\\Contracts\\Http\\Output\\TipType' => __DIR__ . '/..' . '/addons/core/src/Contracts/Http/Output/TipType.php',
@@ -614,6 +624,10 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Entrust\\Traits\\PermissionTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/PermissionTrait.php',
         'Addons\\Entrust\\Traits\\RoleTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/RoleTrait.php',
         'Addons\\Entrust\\Traits\\UserTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/UserTrait.php',
+        'Addons\\Sensor\\Censor' => __DIR__ . '/..' . '/addons/censor/src/Censor.php',
+        'Addons\\Sensor\\Factory' => __DIR__ . '/..' . '/addons/censor/src/Factory.php',
+        'Addons\\Sensor\\Ruling\\Ruler' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Ruler.php',
+        'Addons\\Sensor\\Ruling\\Rules' => __DIR__ . '/..' . '/addons/censor/src/Ruling/Rules.php',
         'Addons\\Smarty\\ServiceProvider' => __DIR__ . '/..' . '/addons/smarty/src/ServiceProvider.php',
         'Addons\\Smarty\\View\\Engine' => __DIR__ . '/..' . '/addons/smarty/src/View/Engine.php',
         'Addons\\Ucloud\\Cdn\\DescribePrefetchCacheTask' => __DIR__ . '/..' . '/addons/ucloud/src/Cdn/DescribePrefetchCacheTask.php',

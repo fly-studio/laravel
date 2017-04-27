@@ -4,20 +4,66 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d74aa991352bc3e49811ce1c5aafc80",
+    "content-hash": "e59e6fc216f6b43ac72babd203715ac9",
     "packages": [
+        {
+            "name": "addons/censor",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://git.load-page.com/addons/censor.git",
+                "reference": "1da3e02355dc1f08ec20ccbcf56c92d9f85b36a3"
+            },
+            "require": {
+                "illuminate/translation": "~5.4",
+                "illuminate/validation": "~5.4",
+                "php": ">=5.6.10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Addons\\Censor\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ],
+                "files": []
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fly",
+                    "email": "fly@load-page.com"
+                }
+            ],
+            "description": "Laravel's Censor based Validation, support locale.",
+            "homepage": "https://www.load-page.com/manuals",
+            "keywords": [
+                "addons",
+                "l5",
+                "laravel",
+                "laravel 5"
+            ],
+            "time": "2017-04-27 03:54:40"
+        },
         {
             "name": "addons/core",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/core.git",
-                "reference": "1b0b67814d37aedba51c7c4141276ad182f08a39"
+                "reference": "afffaf68cd5f3167f3cf676db65ad9a7f15217c4"
             },
             "require": {
+                "addons/censor": "dev-master",
                 "addons/func": "dev-master",
                 "addons/smarty": "dev-master",
-                "illuminate/database": "~5.0",
+                "illuminate/database": "~5.4",
+                "illuminate/support": "~5.4",
+                "illuminate/translation": "~5.4",
                 "php": ">=5.6.10"
             },
             "type": "library",
@@ -43,14 +89,14 @@
                 }
             ],
             "description": "Laravel's Addons.",
-            "homepage": "https://www.load-page.com",
+            "homepage": "https://www.load-page.com/manuals",
             "keywords": [
                 "addons",
                 "l5",
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-04-10T08:24:00+00:00"
+            "time": "2017-04-27 03:54:55"
         },
         {
             "name": "addons/elasticsearch",
@@ -58,9 +104,10 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/elasticsearch.git",
-                "reference": "26e597b8ac3ec4a0870042df00da45712b8e22d8"
+                "reference": "0bb1c5cd73fabc6d6a792fbafadeb6a7ec1a2aef"
             },
             "require": {
+                "addons/func": "dev-master",
                 "elasticsearch/elasticsearch": "^5.0",
                 "laravel/scout": "^3.0",
                 "php": ">=5.6.10"
@@ -86,7 +133,7 @@
                 }
             ],
             "description": "Laravel's elasticsearch Paginator/Collection/Logger Helper.",
-            "homepage": "https://www.load-page.com",
+            "homepage": "https://www.load-page.com/manuals",
             "keywords": [
                 "collection",
                 "elasticsearch",
@@ -96,7 +143,7 @@
                 "monolog",
                 "paginator"
             ],
-            "time": "2017-04-10T08:15:03+00:00"
+            "time": "2017-04-27 03:49:58"
         },
         {
             "name": "addons/entrust",
@@ -848,7 +895,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/elastic/elasticsearch-php/dc57bbcd4be2c9061ebe5be59058ea8bdebc904e.zip",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
                 "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
                 "shasum": ""
             },
@@ -1259,16 +1306,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "2.3.11",
+            "version": "2.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "e8881fd99b9804b29e02d6d1c2c15ee459335cf1"
+                "reference": "15a517f052ee15d373ffa145c9642d5fec7ddf5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/e8881fd99b9804b29e02d6d1c2c15ee459335cf1",
-                "reference": "e8881fd99b9804b29e02d6d1c2c15ee459335cf1",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/15a517f052ee15d373ffa145c9642d5fec7ddf5c",
+                "reference": "15a517f052ee15d373ffa145c9642d5fec7ddf5c",
                 "shasum": ""
             },
             "require": {
@@ -1317,7 +1364,7 @@
                 "thumbnail",
                 "watermark"
             ],
-            "time": "2017-02-04T10:37:19+00:00"
+            "time": "2017-04-23T18:45:36+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -1408,16 +1455,16 @@
         },
         {
             "name": "jaybizzle/crawler-detect",
-            "version": "v1.2.38",
+            "version": "v1.2.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JayBizzle/Crawler-Detect.git",
-                "reference": "00476c7470729f3d3541bc75e93d6fd5708961bf"
+                "reference": "c5c0f049264edcf6499847c756dc36e51a072313"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/00476c7470729f3d3541bc75e93d6fd5708961bf",
-                "reference": "00476c7470729f3d3541bc75e93d6fd5708961bf",
+                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/c5c0f049264edcf6499847c756dc36e51a072313",
+                "reference": "c5c0f049264edcf6499847c756dc36e51a072313",
                 "shasum": ""
             },
             "require": {
@@ -1452,7 +1499,7 @@
                 "crawlerdetect",
                 "php crawler detect"
             ],
-            "time": "2017-04-03T20:28:04+00:00"
+            "time": "2017-04-20T18:58:25+00:00"
         },
         {
             "name": "jenssegers/agent",
@@ -1515,16 +1562,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.4.18",
+            "version": "v5.4.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "d15ded55b5e690199393ea93a57edcbae20d1ffc"
+                "reference": "02444b7450350db17a7607c8a52f7268ebdb0dad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/laravel/framework/d15ded55b5e690199393ea93a57edcbae20d1ffc.zip",
-                "reference": "d15ded55b5e690199393ea93a57edcbae20d1ffc",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/02444b7450350db17a7607c8a52f7268ebdb0dad",
+                "reference": "02444b7450350db17a7607c8a52f7268ebdb0dad",
                 "shasum": ""
             },
             "require": {
@@ -1640,7 +1687,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-04-10T19:27:41+00:00"
+            "time": "2017-04-16T13:33:34+00:00"
         },
         {
             "name": "laravel/passport",
@@ -1716,7 +1763,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/laravel/scout/64d28db58a054174eadf1d4df38dad81ff7e68dd.zip",
+                "url": "https://api.github.com/repos/laravel/scout/zipball/64d28db58a054174eadf1d4df38dad81ff7e68dd",
                 "reference": "64d28db58a054174eadf1d4df38dad81ff7e68dd",
                 "shasum": ""
             },
@@ -1768,16 +1815,16 @@
         },
         {
             "name": "laravel/socialite",
-            "version": "v3.0.4",
+            "version": "v3.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/socialite.git",
-                "reference": "441e0d467319044e4913b1748382d427795416e9"
+                "reference": "2771ab96004b6149d0974f8a469e08c8e54474a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/socialite/zipball/441e0d467319044e4913b1748382d427795416e9",
-                "reference": "441e0d467319044e4913b1748382d427795416e9",
+                "url": "https://api.github.com/repos/laravel/socialite/zipball/2771ab96004b6149d0974f8a469e08c8e54474a5",
+                "reference": "2771ab96004b6149d0974f8a469e08c8e54474a5",
                 "shasum": ""
             },
             "require": {
@@ -1818,7 +1865,7 @@
                 "laravel",
                 "oauth"
             ],
-            "time": "2017-03-27T19:43:19+00:00"
+            "time": "2017-04-20T16:24:07+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1988,16 +2035,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.37",
+            "version": "1.0.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "78b5cc4feb61a882302df4fbaf63b7662e5e4ccd"
+                "reference": "2474325ee924134bb05848663b12531f6f2e9fbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/78b5cc4feb61a882302df4fbaf63b7662e5e4ccd",
-                "reference": "78b5cc4feb61a882302df4fbaf63b7662e5e4ccd",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/2474325ee924134bb05848663b12531f6f2e9fbe",
+                "reference": "2474325ee924134bb05848663b12531f6f2e9fbe",
                 "shasum": ""
             },
             "require": {
@@ -2019,12 +2066,12 @@
                 "league/flysystem-azure": "Allows you to use Windows Azure Blob storage",
                 "league/flysystem-cached-adapter": "Flysystem adapter decorator for metadata caching",
                 "league/flysystem-copy": "Allows you to use Copy.com storage",
-                "league/flysystem-dropbox": "Allows you to use Dropbox storage",
                 "league/flysystem-eventable-filesystem": "Allows you to use EventableFilesystem",
                 "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
                 "league/flysystem-sftp": "Allows you to use SFTP server storage via phpseclib",
                 "league/flysystem-webdav": "Allows you to use WebDAV storage",
-                "league/flysystem-ziparchive": "Allows you to use ZipArchive adapter"
+                "league/flysystem-ziparchive": "Allows you to use ZipArchive adapter",
+                "spatie/flysystem-dropbox": "Allows you to use Dropbox storage"
             },
             "type": "library",
             "extra": {
@@ -2067,7 +2114,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2017-03-22T15:43:14+00:00"
+            "time": "2017-04-25T15:24:43+00:00"
         },
         {
             "name": "league/oauth1-client",
@@ -3509,16 +3556,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.4.6",
+            "version": "v5.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e"
+                "reference": "56db4ed32a6d5c9824c3ecc1d2e538f663f47eb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e",
-                "reference": "81fdccfaf8bdc5d5d7a1ef6bb3a61bbb1a6c4a3e",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/56db4ed32a6d5c9824c3ecc1d2e538f663f47eb4",
+                "reference": "56db4ed32a6d5c9824c3ecc1d2e538f663f47eb4",
                 "shasum": ""
             },
             "require": {
@@ -3559,7 +3606,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2017-02-13T07:52:53+00:00"
+            "time": "2017-04-20T17:32:18+00:00"
         },
         {
             "name": "symfony/console",
@@ -4877,7 +4924,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/6fdb61243844dc924071d3404bb23994ea0b6856",
                 "reference": "6fdb61243844dc924071d3404bb23994ea0b6856",
                 "shasum": ""
             },
@@ -4942,7 +4989,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/myclabs/DeepCopy/8e6e04167378abf1ddb4d3522d8755c5fd90d102.zip",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/8e6e04167378abf1ddb4d3522d8755c5fd90d102",
                 "reference": "8e6e04167378abf1ddb4d3522d8755c5fd90d102",
                 "shasum": ""
             },
@@ -6196,6 +6243,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "addons/core": 20,
+        "addons/censor": 20,
         "addons/elasticsearch": 20,
         "addons/entrust": 20,
         "addons/func": 20,
