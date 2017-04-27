@@ -12,7 +12,7 @@
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "addons/core": "dev-master",
-        "addons/sensor": "dev-master",
+        "addons/censor": "dev-master",
         "addons/elasticsearch": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
