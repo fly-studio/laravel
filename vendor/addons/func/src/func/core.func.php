@@ -387,3 +387,17 @@ function call_class_method($class, $method, ...$parameters)
     return $reflectionMethod->invokeArgs($class, $parameters);
 }
 }
+
+if (!function_exists('base64_urlencode'))
+{
+	function base64_urlencode($data) {
+		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+	}
+}
+
+if (!function_exists('base64_urldecode'))
+{
+	function base64_urldecode($data) {
+		return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+	}
+}
