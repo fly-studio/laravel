@@ -1154,7 +1154,7 @@ function isNaW($str)
  * @param  array $replace_arr  需要替换的数组结构
  * @return string              替换之后的字符串
  */
-function zend_strtr(&$str, &$replace_arr) {
+function zend_strtr($str, $replace_arr) {
 	$maxlen = 0;$minlen = 1024*128;
 	if (empty($replace_arr)) return $str;
 	foreach($replace_arr as $k => $v) {
@@ -1169,7 +1169,8 @@ function zend_strtr(&$str, &$replace_arr) {
 		if ($pos + $maxlen > $len) $maxlen = $len - $pos;
 		$found = false;$key = '';
 		for($i = 0;$i<$maxlen;++$i) $key .= $str[$i+$pos];
-		for($i = $maxlen;$i >= $minlen;--$i) {
+		//for($i = $maxlen;$i >= $minlen;--$i) { //最大替换
+		for($i = $minlen;$i <= $maxlen;++$i) { //最小替换
 			$key1 = substr($key, 0, $i);
 			if (isset($replace_arr[$key1])) {
 				$result .= $replace_arr[$key1];

@@ -62,6 +62,8 @@ class ServiceProvider extends BaseServiceProvider
 		$this->app['validator']->resolver( function( $translator, $data, $rules, $messages = [], $customAttributes = []) {
 			return new ValidatorEx( $translator, $data, $rules, $messages, $customAttributes );
 		});
+
+		$this->loadTranslationsFrom(realpath(__DIR__.'/../resources/lang/'), 'censor');
 	}
 
 	/**

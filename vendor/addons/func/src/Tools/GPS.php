@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\Tools;
+namespace Addons\Func\Tools;
 
 class GPS {
 	private $PI = 3.14159265358979324;
@@ -197,7 +197,7 @@ class GPS {
 		for ($i = 0; $i < count($region); $i++)
 			if ($this->isInRect($region[$i], $lon, $lat))
 			{
-				for ($j = 0; $j < count($exclude); j++)
+				for ($j = 0; $j < count($exclude); $j++)
 					if ($this->isInRect($exclude[$j], $lon, $lat))
 						return false;
 				return true;

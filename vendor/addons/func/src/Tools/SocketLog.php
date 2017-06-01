@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\Tools;
+namespace Addons\Func\Tools;
 /**
  * github: https://github.com/luofei614/SocketLog
  * @author luofei614<weibo.com/luofei614>

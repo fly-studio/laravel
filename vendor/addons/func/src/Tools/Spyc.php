@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Core\Tools;
+namespace Addons\Func\Tools;
 /**
    * Spyc -- A Simple PHP YAML Class
    * @version 0.5.1

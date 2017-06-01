@@ -204,9 +204,9 @@ function dos2timestamp($dos)
 function timestamp2dos($timestamp)
 {
 	$bit = empty($timestamp) ? getdate() : getdate($timestamp);
-	if ($bit['year'] < 1980)
+	if ($bit['year'] < 2000)
 		return (1 << 21 | 1 << 16);
-	$bit['year'] -= 1980;
+	$bit['year'] -= 2000;
 
 	return $bit['year'] << 25 |
 		$bit['mon'] << 21 |

@@ -11,7 +11,7 @@ namespace Addons\Entrust\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Addons\Core\Http\OutputResponse;
+use Addons\Core\Http\OutputResponseFactory;
 
 class Ability
 {
@@ -40,7 +40,7 @@ class Ability
 	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
 	{
 		if ($this->auth->guest() || !$request->user()->ability(explode('|', $roles), explode('|', $permissions), array('validate_all' => $validateAll)))
-			return (new OutputResponse)->setRequest($request)->setResult('failure')->setMessage('auth.permission_forbidden')->setStatusCode(403);
+			return app(OutputResponseFactory::class)->failure('auth.permission_forbidden')->setRequest($request)->setStatusCode(403);
 
 		return $next($request);
 	}
