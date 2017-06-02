@@ -77,6 +77,7 @@ return array(
     'Barryvdh\\Debugbar\\' => array($vendorDir . '/barryvdh/laravel-debugbar/src'),
     'Addons\\Ucloud\\' => array($vendorDir . '/addons/ucloud/src'),
     'Addons\\Smarty\\' => array($vendorDir . '/addons/smarty/src'),
+    'Addons\\Func\\' => array($vendorDir . '/addons/func/src'),
     'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src'),
     'Addons\\Elasticsearch\\' => array($vendorDir . '/addons/elasticsearch/src'),
     'Addons\\Core\\' => array($vendorDir . '/addons/core/src'),

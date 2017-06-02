@@ -86,7 +86,7 @@ class TokenRepository
      */
     public function revokeAccessToken($id)
     {
-        return $this->find($id)->update(['revoked' => true]);
+        return Token::where('id', $id)->update(['revoked' => true]);
     }
 
     /**
@@ -105,10 +105,10 @@ class TokenRepository
         return true;
     }
 
-        /**
+    /**
      * Find a valid token for the given user and client.
      *
-     * @param  Model  $userId
+     * @param  Model  $user
      * @param  Client  $client
      * @return Token|null
      */

@@ -514,12 +514,14 @@ class MultiCurl
      * Set JSON Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setJsonDecoder($function)
+    public function setJsonDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->jsonDecoder = $function;
+        if ($mixed === false) {
+            $this->jsonDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->jsonDecoder = $mixed;
         }
     }
 
@@ -527,12 +529,14 @@ class MultiCurl
      * Set XML Decoder
      *
      * @access public
-     * @param  $function
+     * @param  $mixed boolean|callable
      */
-    public function setXmlDecoder($function)
+    public function setXmlDecoder($mixed)
     {
-        if (is_callable($function)) {
-            $this->xmlDecoder = $function;
+        if ($mixed === false) {
+            $this->xmlDecoder = false;
+        } elseif (is_callable($mixed)) {
+            $this->xmlDecoder = $mixed;
         }
     }
 
@@ -639,7 +643,12 @@ class MultiCurl
         }
 
         do {
-            curl_multi_select($this->multiCurl);
+            // Wait for activity on any curl_multi connection when curl_multi_select (libcurl) fails to correctly block.
+            // https://bugs.php.net/bug.php?id=63411
+            if (curl_multi_select($this->multiCurl) === -1) {
+                usleep(100000);
+            }
+
             curl_multi_exec($this->multiCurl, $active);
 
             while (!($info_array = curl_multi_info_read($this->multiCurl)) === false) {
@@ -652,6 +661,7 @@ class MultiCurl
                             $ch->curlErrorCode = $info_array['result'];
                             $ch->exec($ch->curl);
 
+                            // Remove completed instance from active curls.
                             unset($this->activeCurls[$key]);
 
                             // Start a new request before removing the handle of the completed one.
@@ -659,6 +669,9 @@ class MultiCurl
                                 $this->initHandle(array_shift($this->curls));
                             }
                             curl_multi_remove_handle($this->multiCurl, $ch->curl);
+
+                            // Clean up completed instance.
+                            $ch->close();
 
                             break;
                         }

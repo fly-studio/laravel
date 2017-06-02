@@ -35,11 +35,14 @@ class DenyAuthorizationController
      */
     public function deny(Request $request)
     {
-        $redirect = $this->getAuthRequestFromSession($request)
-                    ->getClient()->getRedirectUri();
+        $authRequest = $this->getAuthRequestFromSession($request);
+
+        $uri = $authRequest->getClient()->getRedirectUri();
+
+        $separator = $authRequest->getGrantTypeId() === 'implicit' ? '#' : '?';
 
         return $this->response->redirectTo(
-            $redirect.'?error=access_denied&state='.$request->input('state')
+            $uri.$separator.'error=access_denied&state='.$request->input('state')
         );
     }
 }
