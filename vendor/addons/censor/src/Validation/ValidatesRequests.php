@@ -1,28 +1,25 @@
 <?php
 namespace Addons\Censor\Validation;
 
-use Closure;
 use Addons\Censor\Factory;
-use Addons\Censor\Exceptions\CensorException;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Validation\ValidatesRequests as BaseValidatesRequests;
+use Addons\Censor\Exceptions\CensorException;
+use Illuminate\Contracts\Validation\Validator;use Illuminate\Foundation\Validation\ValidatesRequests as BaseValidatesRequests;
 
 trait ValidatesRequests
 {
 	use BaseValidatesRequests;
 
-	public function getValidatorScript($censorKey, $attributes, Model $model = null)
+	public function censorScripts($censorKey, $attributes, Model $model = null)
 	{
 		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model);
 
 		return $censor->js();
 	}
+
 	/**
-	 * if json or api, use validateWithApi.
-	 * otherwish use validateWithNative
+	 * censor a 
 	 * 
 	 * @param  Request $request
 	 * @param  string  $censorKey
@@ -30,7 +27,7 @@ trait ValidatesRequests
 	 * @param  Model|null $model
 	 * @return array|Exception
 	 */
-	public function autoValidate(Request $request, $censorKey, $attributes, Model $model = null)
+	public function censor(Request $request, $censorKey, $attributes, Model $model = null)
 	{
 		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($request->all());
 		$validator = $censor->validator();
@@ -44,7 +41,7 @@ trait ValidatesRequests
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws Addons\Censor\Exceptions\CensorException
      */
     protected function throwValidationException(Request $request, $validator)
     {
