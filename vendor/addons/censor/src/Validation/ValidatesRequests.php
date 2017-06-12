@@ -5,7 +5,8 @@ use Addons\Censor\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
 use Addons\Censor\Exceptions\CensorException;
-use Illuminate\Contracts\Validation\Validator;use Illuminate\Foundation\Validation\ValidatesRequests as BaseValidatesRequests;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Validation\ValidatesRequests as BaseValidatesRequests;
 
 trait ValidatesRequests
 {

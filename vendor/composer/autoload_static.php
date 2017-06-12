@@ -19,13 +19,13 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '4bcc8d86c9e4c7b037c26c95381f6eeb' => __DIR__ . '/..' . '/addons/func/src/func/helpers.php',
         '7d460151ef8e4da499d7bd12b8887b94' => __DIR__ . '/..' . '/addons/censor/src/helpers.php',
+        'd635694d01516539fed9c3958c0179fb' => __DIR__ . '/..' . '/addons/core/src/helpers.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
-        'd635694d01516539fed9c3958c0179fb' => __DIR__ . '/..' . '/addons/core/src/helpers.php',
         '5e8fe2a5ffaded85af682684fe3bbf5a' => __DIR__ . '/..' . '/mews/captcha/src/helpers.php',
+        '4a1f389d6ce373bda9e57857d3b61c84' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/helpers.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
-        '4a1f389d6ce373bda9e57857d3b61c84' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
