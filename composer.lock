@@ -12,7 +12,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/censor.git",
-                "reference": "799215a4b637fd7c5e7aa20a4e5ec3898806d097"
+                "reference": "13fe50e8dca6aa580dd3eca8d205eb4b3f313edb"
             },
             "require": {
                 "illuminate/translation": "~5.4",
@@ -49,7 +49,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-06-02 06:26:44"
+            "time": "2017-06-20 07:12:45"
         },
         {
             "name": "addons/core",
@@ -57,7 +57,7 @@
             "source": {
                 "type": "git",
                 "url": "https://git.load-page.com/addons/core.git",
-                "reference": "5bc29f1f949d6aac8c4502d1dac758a575ee7584"
+                "reference": "847170debb12922a07737e9789c7cf0197002439"
             },
             "require": {
                 "addons/censor": "dev-master",
@@ -98,7 +98,7 @@
                 "laravel",
                 "laravel 5"
             ],
-            "time": "2017-06-02 06:28:38"
+            "time": "2017-06-20 07:13:46"
         },
         {
             "name": "addons/elasticsearch",
@@ -1460,16 +1460,16 @@
         },
         {
             "name": "jaybizzle/crawler-detect",
-            "version": "v1.2.45",
+            "version": "v1.2.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JayBizzle/Crawler-Detect.git",
-                "reference": "fa55dc49376dbc4b4786e49113faa8bdea8250a1"
+                "reference": "55e98a6c733a7f99912f6239c8d7ee25ed4f9eb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/fa55dc49376dbc4b4786e49113faa8bdea8250a1",
-                "reference": "fa55dc49376dbc4b4786e49113faa8bdea8250a1",
+                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/55e98a6c733a7f99912f6239c8d7ee25ed4f9eb5",
+                "reference": "55e98a6c733a7f99912f6239c8d7ee25ed4f9eb5",
                 "shasum": ""
             },
             "require": {
@@ -1504,7 +1504,7 @@
                 "crawlerdetect",
                 "php crawler detect"
             ],
-            "time": "2017-06-07T20:58:57+00:00"
+            "time": "2017-06-19T21:29:50+00:00"
         },
         {
             "name": "jenssegers/agent",
@@ -1567,16 +1567,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.4.25",
+            "version": "v5.4.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6bcc9b1f542b3deed16d51f6aa1fe318ab407c2a"
+                "reference": "66f5e1b37cbd66e730ea18850ded6dc0ad570404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6bcc9b1f542b3deed16d51f6aa1fe318ab407c2a",
-                "reference": "6bcc9b1f542b3deed16d51f6aa1fe318ab407c2a",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/66f5e1b37cbd66e730ea18850ded6dc0ad570404",
+                "reference": "66f5e1b37cbd66e730ea18850ded6dc0ad570404",
                 "shasum": ""
             },
             "require": {
@@ -1692,20 +1692,20 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-06-07T13:35:12+00:00"
+            "time": "2017-06-15T19:08:25+00:00"
         },
         {
             "name": "laravel/passport",
-            "version": "v2.0.10",
+            "version": "v2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "cd908e73505f7d3aad101d3177280db952ffc190"
+                "reference": "1e6f56ccf42255e8479d0dcd695619dab6613313"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/cd908e73505f7d3aad101d3177280db952ffc190",
-                "reference": "cd908e73505f7d3aad101d3177280db952ffc190",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/1e6f56ccf42255e8479d0dcd695619dab6613313",
+                "reference": "1e6f56ccf42255e8479d0dcd695619dab6613313",
                 "shasum": ""
             },
             "require": {
@@ -1733,6 +1733,11 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "3.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Passport\\PassportServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -1756,7 +1761,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2017-06-02T21:51:18+00:00"
+            "time": "2017-06-14T21:58:27+00:00"
         },
         {
             "name": "laravel/scout",
@@ -2376,16 +2381,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.22.1",
+            "version": "1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0"
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1e044bc4b34e91743943479f1be7a1d5eb93add0",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
                 "shasum": ""
             },
             "require": {
@@ -2406,7 +2411,7 @@
                 "phpunit/phpunit-mock-objects": "2.3.0",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "sentry/sentry": "^0.13",
-                "swiftmailer/swiftmailer": "~5.3"
+                "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
@@ -2450,7 +2455,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-03-13T07:08:03+00:00"
+            "time": "2017-06-19T01:22:40+00:00"
         },
         {
             "name": "mtdowling/cron-expression",
