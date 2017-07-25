@@ -43,7 +43,7 @@ class ServiceProvider extends BaseServiceProvider
 		$loader = $GLOBALS['loader'];
 		$original_config = config('plugin');config()->offsetUnset('plugin');
 		$router = $this->app['router'];
-		$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
+		//$kernel = $this->app[\Illuminate\Contracts\Http\Kernel::class];
 		//$consoleKernel = $this->app[\Illuminate\Contracts\Console\Kernel::class];
 		$paths = [base_path('plugins')];
 		if (defined('LPPATH') && is_dir(LPPATH.'plugins')) array_unshift($paths, LPPATH.'plugins');
