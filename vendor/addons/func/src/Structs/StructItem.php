@@ -1,7 +1,10 @@
 <?php
 
-namespace Addons\Func\Tools;
+namespace Addons\Func\Structs;
 
+use Addons\Func\Structs\Struct;
+use Addons\Func\Exceptions\Structs\TypeException;
+use Addons\Func\Exceptions\Structs\SizeException;
 
 class StructItem implements \ArrayAccess
 {
@@ -14,6 +17,10 @@ class StructItem implements \ArrayAccess
 
 	public function __construct($name, $type, $length = 1)
 	{
+		if (!in_array($type, Struct::defineds))
+			throw new TypeException('Struct `'.$name.'` type: '. $type . ' is not invalid');
+		if (bccomp($length, PHP_INT_MAX) > 0 || $length <= 0)
+			throw new TypeException('Struct `'.$name.'` length must > 0 && < PHP_INT_MAX.');
 		$this->name     = $name;
 		$this->type     = $type;
 		$this->length   = $length;
@@ -23,17 +30,17 @@ class StructItem implements \ArrayAccess
 
 	public function type()
 	{
-		return $type;
+		return $this->type;
 	}
 
 	public function name()
 	{
-		return $name;
+		return $this->name;
 	}
 
 	public function length()
 	{
-		return $length;
+		return $this->length;
 	}
 
 	public function size()
@@ -68,7 +75,7 @@ class StructItem implements \ArrayAccess
 
 	public function at($offset, $value = null, $asBinary = false)
 	{
-		if (!is_numeric($offset) || $offset >= 0 || $offset < $this->length())
+		if (!$this->offsetExists($offset))
 			return null;
 
 		$size = $this->sizeof();
@@ -82,6 +89,11 @@ class StructItem implements \ArrayAccess
 		}
 
 		//set
+		if ($asBinary)
+		{
+			if (strlen($value) < $this->sizeof())
+				throw new SizeException('Struct `'.$this->name().'['.$offset.']` binary size must be '.$this->sizeof());
+		}
 		$bytes = $asBinary ? $value : pack($this->type(), $value);
 		for($i = 0; $i < $size; ++$offset)
 			$this->data[$i + $offset] = $bytes[$i]; 
@@ -89,7 +101,7 @@ class StructItem implements \ArrayAccess
 		return $this;
 	}
 
-	public function atBinary($offset, $value = null)
+	public function atAsBinary($offset, $value = null)
 	{
 		return $this->at($offset, $value, true);
 	}
@@ -111,10 +123,18 @@ class StructItem implements \ArrayAccess
 
 		//set
 		if ($asBinary) //二进制
-			$this->data = str_pad(substr($data, 0, $this->size()), $this->size(), "\x0");
+		{
+			if (strlen($data) < $this->size())
+				throw new SizeException('Struct \''.$this->name().'\' must be a '.$this->size().' size binary bytes');
+
+			$this->data = substr($data, 0, $this->size());
+		}
 		else
 		{
-			$_d = array_pad(array_wrap($data), $this->length(), "\x0");
+			if(($this->length() != 1 && !is_array($data)) || ($this->length() > 1 && count($data) != $this->length()))
+				throw new SizeException('parameter#0 must be '.$this->length().' length array for \''.$this->name().'\'');
+
+			$_d = array_wrap($data);
 			array_unshift($_d, str_repeat($this->type(), $this->length()));
 			$this->data = call_user_func_array('pack', $_d);
 		}
@@ -122,5 +142,9 @@ class StructItem implements \ArrayAccess
 		return $this;
 	}
 
-	
+	public function dataAsBinary($data = null)
+	{
+		return $this->data($data, true);
+	}
+
 }

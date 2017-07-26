@@ -1,5 +1,5 @@
 <?php
-namespace Addons\Func\Tools;
+namespace Addons\Func;
 /**
  * SSH Library includes the ability to connect to a host and verify its key, login with a username/password or a ssh key.
  * Currently capable of SCP, directory navigation, and directory listing
