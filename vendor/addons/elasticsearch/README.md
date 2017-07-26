@@ -14,7 +14,7 @@ An easy way to use the official Elastic Search client in your Laravel 5.
 Install the `addons/elasticsearch` package via composer:
 
 ```shell
-composer require addons/elasticsearch:dev-master
+composer require addons/elasticsearch
 ```
 
 ### Laravel
@@ -24,6 +24,7 @@ Add the service provider and facade to `config/app.php`:
 ```php
 'providers' => [
     ...
+    Laravel\Scout\ScoutServiceProvider::class,
     Addons\Elasticsearch\ServiceProvider::class,
 ]
 
@@ -33,7 +34,9 @@ Add the service provider and facade to `config/app.php`:
 ]
 ```
 
-Pull this to `.env`
+`ScoutServiceProvider` must Before the `Addons\Elasticsearch\ServiceProvider`.
+
+Pull these to the `.env`
 
 ```
 SCOUT_DRIVER=elasticsearch
@@ -50,6 +53,7 @@ ELASTICSEARCH_HOST=127.0.0.1
 Publish the configuration file:
 
 ```shell
+php artisan vendor:publish --provider="Laravel\Scout\ScoutServiceProvider"
 php artisan vendor:publish --provider="Addons\Elasticsearch\ServiceProvider"
 ```
 
@@ -68,7 +72,9 @@ class User extends Model {
     use Searchable;
 }
 ```
+
 #### Search example
+
 ```
 User::search('must')->where('name', 'admin')->whereIn('type', ['1', '2'])->get();
 
@@ -94,20 +100,24 @@ User::search('must')->where('name', 'admin')->whereIn('type', ['1', '2'])->get()
 ```
 
 #### search(string $boolOccur = 'must', Closure $callback = null)
+
 - $boolOccur [string]:  must|should|filter|must_not
 
   default: must
 - $callback [Closure]:  null|Closure
 
   It'll call before get();
+
     - $elasticsearch [Object]:
 
      the elasticsearch's object
+
     - $query [array]:
 
      the builder's query to search
 
 **Example**
+
 ```
 User::search()->where(...)->get();
 
@@ -135,20 +145,25 @@ User::search('should', function($elasticsearch, $query){
 ```
 
 #### where(string $column, string $operator, mixed $value, $options = [])
+
  - $column [string]:
 
     the field's name that you wanna to search.
+
  - $operator [string]:    term,=|terms,in|match,like|multi_match|range|prefix|common|wildcard|regexp|fuzzy|type|match_phrase|match_phrase_prefix|more_like_this|exists
 
     `https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html`
+
  - $value [mixed]:
 
     the value that you wanna to search.
+
  - $options [array]:
 
     the elasticseach DSL's parameters
 
 **Example 1**
+
 ```php
 User::search()
 ->where('name', '=', 'admin')
@@ -179,7 +194,9 @@ User::search()
     }
 }
 ```
+
 **Example 2: with option**
+
 ```php
 User::search()->where('created_at', 'range', [
     'gte' => '2000-01-01 00:00:00',
@@ -204,9 +221,11 @@ User::search()->where('created_at', 'range', [
 }
 ```
 #### where(string $column, mixed $value);
+
 It equal to `where($field, '=', $value);`
 
 #### where(Closure $nestedWhere, $boolOccur = 'must')
+
 - $nestedWhere [Closure]
 
 - $boolOccur [string]:  must|should|filter|must_not
@@ -214,6 +233,7 @@ It equal to `where($field, '=', $value);`
   default: must
 
 **Example**
+
 ```php
 // like SQL: WHERE `name` = 'admin' AND (`gender` is null or `gender` = 'female')
 User::search()
@@ -252,9 +272,11 @@ User::search()
 ```
 
 #### whereNot(string $column, string $operator = null, mixed $value = null, array $options = [])
+
 It equal to `where(Closure, 'must_not')`
 
 **Example 1**
+
 ```php
 User::search()->whereNot('name', 'admin')->where('gender', 'female')->get();
 
@@ -281,7 +303,9 @@ User::search()->whereNot('name', 'admin')->where('gender', 'female')->get();
     }
 }
 ```
+
 **Example 2**
+
 ```php
 User::search()->where(function($query){
   $query->where('name', 'admin')
@@ -312,9 +336,11 @@ User::search()->where(function($query){
 }
 ```
 #### whereIn(string $column, array $value)
+
 It equal to `where($column, 'in', $value)`
 
 #### whereNotIn(string $column, array $value)
+
 It equal to `whereNot($column, 'in', $value)`
 
 #### orderBy(string $column, string $direction = 'asc', $mode = null, $options = [])
@@ -338,6 +364,7 @@ Allows to add one or more sort on specific fields.
 `https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html`
 
 **Example**
+
 ```
 User::search()->where(...)
 ->orderBy('created_at', 'desc')
@@ -386,6 +413,7 @@ User::search()->where(...)
 Get data, like Model's get(), return Collection
 
 **Example**
+
 ```php
 Use::search()->where(...)->get();
 
@@ -396,6 +424,7 @@ Use::search()->where(...)->get(['name', 'gender', 'created_at']);
 Make all records's id to an array
 
 **Example**
+
 ```php
 Use::search()->where(...)->keys();
 ```
@@ -413,10 +442,13 @@ User::search()->paginate(25, ['*'], 'page', 4);
 ```
 
 #### setAggs(array $aggs)
+
 - $aggs [array]:
+
   the aggs's array
 
 **Example**
+
 ```php
 $aggs = [
     'distinct_uid' =>[
@@ -427,7 +459,9 @@ $aggs = [
 ];
 User::search()->setAggs($aggs)->aggregations('distinct_uid.value');
 ```
+
 #### aggregations($key = null)
+
 - $key [string]:
 
   default: null
@@ -435,6 +469,7 @@ User::search()->setAggs($aggs)->aggregations('distinct_uid.value');
   if defined, use `array_get($returnData, $key)`` to find value
 
 **Example**
+
 ```php
 //return All aggs's data
 User::search()->setAggs($aggs)->aggregations();
@@ -444,8 +479,11 @@ User::search()->setAggs($aggs)->aggregations('distinct_uid.value');
 ```
 
 ### Logstash
+
 It publish all Laravel's log to
+
 - a JSON file `storage/logs/logstash-YYYY-MM-DD.log`
+
 - redis server
 
 Logstash can read and parse it;
@@ -464,7 +502,7 @@ Logstash can read and parse it;
 ## Copyright and License
 
 [elasticsearch](https://git.load-page.com/addons/elasticsearch)
-was written by [Colin Viebrock](http://viebrock.ca),[Fly](https://www.load-page.com/base/manual) and is released under the
+was written by [Colin Viebrock](http://viebrock.ca), [Fly](https://www.load-page.com/base/manual) and is released under the
 [MIT License](LICENSE.md).
 
 Copyright (c) 2016-2017
