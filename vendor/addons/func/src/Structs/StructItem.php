@@ -73,7 +73,7 @@ class StructItem implements \ArrayAccess
 		return false;
 	}
 
-	public function at($offset, $value = null, $asBinary = false)
+	public function at($offset, $value = null, $asRaw = false)
 	{
 		if (!$this->offsetExists($offset))
 			return null;
@@ -85,33 +85,33 @@ class StructItem implements \ArrayAccess
 		if (is_null($value))
 		{
 			$data = substr($this->data, $offset, $size);
-			return $asBinary ? $data : unpack($this->type(), $data)[1];
+			return $asRaw ? $data : unpack($this->type(), $data)[1];
 		}
 
 		//set
-		if ($asBinary)
+		if ($asRaw)
 		{
 			if (strlen($value) < $this->sizeof())
-				throw new SizeException('Struct `'.$this->name().'['.$offset.']` binary size must be '.$this->sizeof());
+				throw new SizeException('Struct `'.$this->name().'['.$offset.']` raw size must be '.$this->sizeof());
 		}
-		$bytes = $asBinary ? $value : pack($this->type(), $value);
+		$bytes = $asRaw ? $value : pack($this->type(), $value);
 		for($i = 0; $i < $size; ++$offset)
 			$this->data[$i + $offset] = $bytes[$i]; 
 
 		return $this;
 	}
 
-	public function atAsBinary($offset, $value = null)
+	public function atAsRaw($offset, $value = null)
 	{
 		return $this->at($offset, $value, true);
 	}
 
-	public function data($data = null, $asBinary = false)
+	public function data($data = null, $asRaw = false)
 	{
 		//get
 		if (is_null($data))
 		{
-			if ($asBinary)
+			if ($asRaw)
 				return $this->data;
 
 			$data = unpack($this->type().$this->length(), $this->data());
@@ -122,10 +122,10 @@ class StructItem implements \ArrayAccess
 		}
 
 		//set
-		if ($asBinary) //二进制
+		if ($asRaw) //二进制
 		{
 			if (strlen($data) < $this->size())
-				throw new SizeException('Struct \''.$this->name().'\' must be a '.$this->size().' size binary bytes');
+				throw new SizeException('Struct \''.$this->name().'\' must be a '.$this->size().' size raw bytes');
 
 			$this->data = substr($data, 0, $this->size());
 		}
@@ -142,7 +142,7 @@ class StructItem implements \ArrayAccess
 		return $this;
 	}
 
-	public function dataAsBinary($data = null)
+	public function dataAsRaw($data = null)
 	{
 		return $this->data($data, true);
 	}

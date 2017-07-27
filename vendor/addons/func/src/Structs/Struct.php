@@ -36,6 +36,7 @@ class Struct implements \ArrayAccess
 	];
 
 	protected $items = [];
+	protected $structs = [];
 	protected $endianess;
 	protected $size = 0;
 
@@ -58,6 +59,7 @@ class Struct implements \ArrayAccess
 			throw new TypeException('Empty structs.');
 		$this->endianess = $endianess;
 		$this->items = [];
+		$this->structs = [];
 		$this->size = 0;
 		$pattern = '#^(?<type>'.implode('|', array_keys(static::defineds)).')(\[(?<length>\d*)\])?$#i';
 		foreach($structs as $name => $item)
@@ -69,12 +71,23 @@ class Struct implements \ArrayAccess
 				throw new TypeException('Struct \''.$name.': '.$item.'\' , length must be > 0 && < PHP_INT_MAX.');
 
 			if (($endianess & LITTLE_ENDIAN) == LITTLE_ENDIAN)
-				$type = $this->convertToLE($type);
+				$type = $this->convertToLE($matches['type']);
 			else if (($endianess & BIG_ENDIAN) == BIG_ENDIAN)
-				$type = $this->convertToBE($type);
-			
-			$this->items[$name] = new StructItem($name, static::defineds[ $matches['type'] ], empty($matches['length']) ? 1 : $matches['length']);
-			$this->size += $this->items[$name]->size();
+				$type = $this->convertToBE($matches['type']);
+			else 
+				$type = $matches['type'];
+
+			$this->items[$name] = new StructItem($name, static::defineds[ $type ], empty($matches['length']) ? 1 : $matches['length']);
+			$this->structs[$name] = [
+				'expression' => $item,
+				'type' => $matches['type'],
+				'length' => $matches['length'],
+				'endianess' => $endianess,
+				'realType' => $type,
+				'pack' => static::defineds[ $type ],
+				'size' => $this->items[$name]->size(),
+			];
+			$this->size += $this->structs[$name]['size'];
 		}
 	}
 
@@ -113,20 +126,30 @@ class Struct implements \ArrayAccess
 		return is_null($offset) ? $this->size() : ($this->offsetExists($offset) ? $this->item($offset)->size() : null);
 	}
 
-	public function at($offset, $value = null, $asBinary = false)
+	public function typeAt($offset)
+	{
+		return $this->offsetExists($offset) ? $this->structs[$offset]['expression'] : null;
+	}
+
+	public function structAt($offset)
+	{
+		return $this->offsetExists($offset) ? $this->structs[$offset] : null;
+	}
+
+	public function at($offset, $value = null, $asRaw = false)
 	{
 		if (!$this->offsetExists($offset)) return null;
 
 		// get
 		if (is_null($value))
-			return $this->items[$offset]->data($value, $asBinary);
+			return $this->items[$offset]->data($value, $asRaw);
 		
 		// set
-		$this->items[$offset]->data($value, $asBinary);
+		$this->items[$offset]->data($value, $asRaw);
 		return $this;
 	}
 
-	public function atAsBinary($offset, $value = null)
+	public function atAsRaw($offset, $value = null)
 	{
 		return $this->at($offset, $value, true);
 	}
@@ -151,15 +174,15 @@ class Struct implements \ArrayAccess
 		return false;
 	}
 
-	public function load($binaryData)
+	public function load($rawData)
 	{
-		if (strlen($binaryData) < $this->size())
-			throw new SizeException('parameter#0 must be a '. $this->size(). ' size binary bytes.');
+		if (strlen($rawData) < $this->size())
+			throw new SizeException('parameter#0 must be a '. $this->size(). ' size raw bytes.');
 		
 		$offset = 0;
 		foreach($this->items as $item)
 		{
-			$item->dataAsBinary(substr($binaryData, $offset, $item->size()));
+			$item->dataAsRaw(substr($rawData, $offset, $item->size()));
 			$offset += $item->size();
 		}
 	}
@@ -168,7 +191,7 @@ class Struct implements \ArrayAccess
 	{
 		$data = '';
 		foreach($this->items as $item)
-			$data .= $item->dataAsBinary();
+			$data .= $item->dataAsRaw();
 		return $data;
 	}
 }
