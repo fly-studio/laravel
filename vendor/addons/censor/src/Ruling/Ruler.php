@@ -13,7 +13,7 @@ class Ruler extends Localer {
     	$validations = $this->getLine($key, $locale);
 
     	if (empty($validations))
-    		throw new RuleNotFoundException('[validation] Key is not exists: '. $key);
+    		throw new RuleNotFoundException('[Censor] Censor Config File is not exists: ['. $key. ']. In directory '.app('path.censors'));
 
     	$ruleKeys == '*' && $ruleKeys = array_keys($validations);
 		!is_array($ruleKeys) && $ruleKeys = explode(',', $ruleKeys);
@@ -21,7 +21,7 @@ class Ruler extends Localer {
 		$validations = array_only($validations, $ruleKeys);
 
 		if (!empty($diff = array_diff(array_keys($validations), $ruleKeys)))
-    		throw new RuleNotFoundException('[validation] Rule keys are not exists: '.implode(', ', $diff));
+    		throw new RuleNotFoundException('[Censor] Rule keys are not exists: ['.implode(', ', $diff). ']. In directory '.app('path.censors'));
 
     	foreach($validations as $attribute => &$v)
     		$v['rules'] = $this->parseRules($attribute, $v['rules'], $replace);
