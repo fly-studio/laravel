@@ -3,7 +3,7 @@ namespace Addons\Censor;
 
 use Addons\Censor\Factory;
 use Addons\Censor\Ruling\Ruler;
-use Illuminate\Translation\FileLoader;
+use Addons\Censor\File\FileLoader;
 use Addons\Censor\Validation\ValidatorEx;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 

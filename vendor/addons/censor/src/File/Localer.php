@@ -278,4 +278,10 @@ class Localer extends NamespacedItemResolver {
         return $segments;
     }
 
+    public function getPath($key, $fallback = false)
+    {
+        list($namespace, $group, $item) = $this->parseKey($key);
+        return $this->loader->getPath($fallback ? $this->fallback : $this->locale, $group, $namespace);
+    }
+
 }
