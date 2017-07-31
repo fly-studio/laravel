@@ -11,6 +11,7 @@
  * @param  int $year   年
  * @return int         输出时间戳
  */
+if (! function_exists('mktime_optional')) {
 function mktime_optional($hour = NULL, $minute = NULL, $second = NULL, $month = NULL, $day = NULL, $year = NULL)
 {
 	$times = getdate();
@@ -23,6 +24,7 @@ function mktime_optional($hour = NULL, $minute = NULL, $second = NULL, $month = 
 
 	return mktime( $times['hours'], $times['minutes'], $times['seconds'], $times['mon'], $times['mday'], $times['year'] );
 }
+}
 
 /**
  * 本地时间转化为世界时
@@ -30,9 +32,11 @@ function mktime_optional($hour = NULL, $minute = NULL, $second = NULL, $month = 
  * @param  int $timestamp 本地时间戳
  * @return int            世界时时间戳
  */
+if (! function_exists('local_to_utc')) {
 function local_to_utc($timestamp = NULL)
 {
 	return (is_null($timestamp) ? time() : $timestamp) - intval(date('Z'));
+}
 }
 
 /**
@@ -41,9 +45,11 @@ function local_to_utc($timestamp = NULL)
  * @param  int $timestamp 世界时时间戳
  * @return int            本地时间时间戳
  */
+if (! function_exists('utc_to_local')) {
 function utc_to_local($timestamp = NULL)
 {
 	return (is_null($timestamp) ? time() : $timestamp) + intval(date('Z'));
+}
 }
 
 /**
@@ -55,9 +61,11 @@ function utc_to_local($timestamp = NULL)
  * @param  int $year     年，默认为今天
  * @return int           返回该时间戳
  */
+if (! function_exists('timetick_to_timestamp')) {
 function timetick_to_timestamp($timetick, $month = NULL, $day = NULL, $year = NULL)
 {
 	return mktime_optional(0, 0, ($timetick), $month, $day, $year);
+}
 }
 
 /**
@@ -67,9 +75,11 @@ function timetick_to_timestamp($timetick, $month = NULL, $day = NULL, $year = NU
  * @param  int $year    年，默认为今年
  * @return int          返回该时间戳
  */
+if (! function_exists('daytick_to_timestamp')) {
 function daytick_to_timestamp($daytick, $year = NULL)
 {
 	return mktime_optional(0, 0, 0, 1, $daytick, $year);
+}
 }
 
 /**
@@ -78,11 +88,13 @@ function daytick_to_timestamp($daytick, $year = NULL)
  * @param  int $timestamp 输入时间戳，默认为当前时间
  * @return int            秒数
  */
+if (! function_exists('timestamp_to_timetick')) {
 function timestamp_to_timetick($timestamp = NULL)
 {
 	is_null($timestamp) && $timestamp = time();
 	$times = getdate($timestamp);
 	return $timestamp - mktime(0, 0, 0, $times['mon'], $times['mday'], $times['year']);
+}
 }
 
 /**
@@ -90,10 +102,12 @@ function timestamp_to_timetick($timestamp = NULL)
  * @param  int $timestamp 输入时间戳，默认为当前时间
  * @return int            天数
  */
+if (! function_exists('timestamp_to_daytick')) {
 function timestamp_to_daytick($timestamp = NULL)
 {
 	is_null($timestamp) && $timestamp = time();
 	return intval(date('z', $timestamp));
+}
 }
 
 /**
@@ -105,6 +119,7 @@ function timestamp_to_daytick($timestamp = NULL)
  * @param  integer $week_start_by 星期的起始时间，0、1、...、6（周日、周一、...、周六）
  * @return array                 [0 => [start, end], 1 => [start, end], ...] 或者 [0 => [start, end], -1 => [start, end], ...]
  */
+if (! function_exists('date_range')) {
 function date_range($start, $limit, $date_type = 'day', $week_start_by = 1)
 {
 	$times = getdate($start);
@@ -149,6 +164,7 @@ function date_range($start, $limit, $date_type = 'day', $week_start_by = 1)
 	$result[0][ $limit >= 0 ? 0 : 1 ] = $start; //将第一项的开始/结束时间设置为参数的时间
 	return $result;
 }
+}
 
 /**
  * 根据某时间，查找其在哪个时间段，与上面date_range对应
@@ -157,11 +173,13 @@ function date_range($start, $limit, $date_type = 'day', $week_start_by = 1)
  * @param  array $range_data  date_range返回的时间范围数组
  * @return integer            返回对应的KEY
  */
+if (! function_exists('date_range_search')) {
 function date_range_search($needle, $range_data)
 {
 	foreach ($range_data as $k => $v)
 		if ($needle >= $v[0] && $needle <= $v[1]) return $k;
 	return FALSE;
+}
 }
 
 /**
@@ -171,6 +189,7 @@ function date_range_search($needle, $range_data)
  * @param  integer $dos DOS datetime for 4 bytes
  * @return integer      Unix Timestamp
  */
+if (! function_exists('dos2timestamp')) {
 function dos2timestamp($dos)
 {
 	/*
@@ -193,6 +212,7 @@ function dos2timestamp($dos)
         ((($dos >> 25) & 0x7f) + 1980) // year
     );
 }
+}
 
 /**
  * Unix timestamp to DOS datetime(4 bytes)
@@ -201,6 +221,7 @@ function dos2timestamp($dos)
  * @param  integer $timestamp Unix timestamp
  * @return integer            DOS datetime for 4 bytes
  */
+if (! function_exists('timestamp2dos')) {
 function timestamp2dos($timestamp)
 {
 	$bit = empty($timestamp) ? getdate() : getdate($timestamp);
@@ -214,4 +235,5 @@ function timestamp2dos($timestamp)
 		$bit['hours'] << 11 |
 		$bit['minutes'] << 5 |
 		$bit['seconds'] >> 1;
+}
 }

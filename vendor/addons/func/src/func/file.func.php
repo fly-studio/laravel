@@ -6,6 +6,7 @@
  * @param  string $suffix 如果文件名是以 suffix 结束的，那这一部分也会被去掉
  * @return string         返回文件名
  */
+if (! function_exists('mb_basename')) {
 function mb_basename($param, $suffix = NULL) {
 	$param = str_replace('\\', '/', $param);
 	if ( $suffix ) { 
@@ -19,6 +20,7 @@ function mb_basename($param, $suffix = NULL) {
 		return ltrim(substr($param, strrpos($param, '/') ), '/'); 
 	} 
 }
+}
 
 /**
  * 根据base_path，取出target_path相对路径
@@ -30,6 +32,7 @@ function mb_basename($param, $suffix = NULL) {
  * @param  string $base_path   根目录路径
  * @return string              输出相对路径
  */
+if (! function_exists('relative_path')) {
 function relative_path($target_path, $base_path = __FILE__ )
 {
 	// some compatibility fixes for Windows paths
@@ -62,6 +65,7 @@ function relative_path($target_path, $base_path = __FILE__ )
 	}
 	return implode('/', $relPath);
 }
+}
 
 /**
  * 去掉路径中多余的..或/
@@ -72,6 +76,7 @@ function relative_path($target_path, $base_path = __FILE__ )
  * @param  string $path 输入路径
  * @return string       输出格式化之后的路径
  */
+if (! function_exists('normalize_path')) {
 function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
 {
 	$parts = array();// Array to build a new path from the good parts
@@ -103,6 +108,7 @@ function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
 	}
 	return implode($separator, $parts);
 }
+}
 
 /**
  * recursively remove a directory
@@ -111,6 +117,7 @@ function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
  * @param boolean $retain_parent_directory 是否保留父目录
  * @return string
  */
+if (! function_exists('rmdir_recursive')) {
 function rmdir_recursive($dir, $retain_parent_directory = FALSE)
 {
 	foreach(glob($dir . '/*') as $file) {
@@ -122,27 +129,30 @@ function rmdir_recursive($dir, $retain_parent_directory = FALSE)
 	if (!$retain_parent_directory)
 		rmdir($dir);
 }
+}
 
 /**
  * 获取文件的扩展名(比如：jpg、php，无句号)
  * @param  string $basename 文件名称或路径
  * @return string           返回不带.的扩展名
  */
+if (! function_exists('fileext')) {
 function fileext($basename)
 {
 	return pathinfo($basename, PATHINFO_EXTENSION);
 }
+}
 
-if (!function_exists('fnmatch')) { 
-	define('FNM_PATHNAME', 1); 
-	define('FNM_NOESCAPE', 2); 
-	define('FNM_PERIOD', 4); 
-	define('FNM_CASEFOLD', 16); 
-	
-	function fnmatch($pattern, $string, $flags = 0) { 
-		return pcre_fnmatch($pattern, $string, $flags); 
-	} 
-} 
+if (! function_exists('fnmatch')) {
+define('FNM_PATHNAME', 1); 
+define('FNM_NOESCAPE', 2); 
+define('FNM_PERIOD', 4); 
+define('FNM_CASEFOLD', 16); 
+
+function fnmatch($pattern, $string, $flags = 0) { 
+	return pcre_fnmatch($pattern, $string, $flags); 
+}
+}
 
 /**
  * 同fnmatch函数，用于支持低版本的PHP
@@ -152,6 +162,7 @@ if (!function_exists('fnmatch')) {
  * @param  integer $flags   参数：FNM_PATHNAME FNM_NOESCAPE FNM_PERIOD FNM_CASEFOLD
  * @return boolean          是否匹配
  */
+if (! function_exists('pcre_fnmatch')) {
 function pcre_fnmatch($pattern, $string, $flags = 0) { 
 	//return preg_match("#^".strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.'))."$#i", $string);
 	$modifiers = null; 
@@ -191,6 +202,7 @@ function pcre_fnmatch($pattern, $string, $flags = 0) {
 		. $modifiers; 
 	return (boolean)preg_match($pattern, $string); 
 }
+}
 
 /**
  * 返回文件的一些基本属性
@@ -198,6 +210,7 @@ function pcre_fnmatch($pattern, $string, $flags = 0) {
  * @param  string $path 文件路径
  * @return array        返回属性数组
  */
+if (! function_exists('fileinfo')) {
 function fileinfo($path)
 {
 	$stat = /*array(
@@ -223,6 +236,7 @@ function fileinfo($path)
 		//'writable' => is_writable($path), /*比较耗费资源*/
 	);
 }
+}
 
 /**
  * 返回某目录下的所有文件，支持过滤
@@ -239,6 +253,7 @@ function fileinfo($path)
  * @param  boolean $setting   FILE_LIST_FILE_KEY | FILE_LIST_DEBUG_PATH | FILE_LIST_FILE_INFO | FILE_LIST_FOLDER | FILE_LIST_SUBFOLDER
  * @return array                 返回所有文件(夹)数组
  */
+if (! function_exists('file_list')) {
 define('FILE_LIST_FILE_KEY', 1); //
 define('FILE_LIST_DEBUG_PATH', 3); // 1 | 2 则会隐藏真实路径，将路径转化为base_path的相对路径
 define('FILE_LIST_FILE_INFO', 4);
@@ -327,23 +342,26 @@ function file_list($path, $include_files = array(), $ignore_files = array(), $se
 	//print_r($result);
 	return $result;
 }
-if (!function_exists('sys_get_temp_dir')) {
-	function sys_get_temp_dir()
+}
+
+if (! function_exists('sys_get_temp_dir')) {
+function sys_get_temp_dir()
+{
+	if( $temp = getenv('TMP') ) return $temp;
+	if( $temp = getenv('TEMP') ) return $temp;
+	if( $temp = getenv('TMPDIR') ) return $temp;
+	$temp = tempnam(__FILE__, '');
+	if (file_exists($temp))
 	{
-		if( $temp = getenv('TMP') ) return $temp;
-		if( $temp = getenv('TEMP') ) return $temp;
-		if( $temp = getenv('TMPDIR') ) return $temp;
-		$temp = tempnam(__FILE__, '');
-		if (file_exists($temp))
-		{
-			unlink($temp);
-			return dirname($temp);
-		}
-		return NULL;
+		unlink($temp);
+		return dirname($temp);
 	}
+	return NULL;
+}
 }
 
 
+if (! function_exists('tempnam_sfx')) {
 function tempnam_sfx($path, $suffix) 
 {
 	empty($path) && $path = sys_get_temp_dir();
@@ -357,7 +375,9 @@ function tempnam_sfx($path, $suffix)
 	fclose($fp); 
 	return $file; 
 }
+}
 
+if (! function_exists('fileperms_string')) {
 function fileperms_string($perms)
 {
 
@@ -401,19 +421,23 @@ function fileperms_string($perms)
 
 	return $info;
 }
+}
 
 /**
  * 字节转化为单位
  * @param  int $size 输入字节数
  * @return string    返回带单位的字节数
  */
+if (! function_exists('format_bytes')) {
 function format_bytes($size, $standard_unit = FALSE)
 { 
 	$arr = $standard_unit ? array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB') : array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'); 
 	$log = floor(log($size, 1024)); 
 	return round($size / pow(1024, $log), 2) . ' ' . $arr[$log]; 
 }
+}
 
+if (! function_exists('create_file')) {
 function create_file($filename, $size = 0)
 {
 	$dirname = dirname($filename);
@@ -431,4 +455,5 @@ function create_file($filename, $size = 0)
 	}
 	fclose($fp);
 	return true;
+}
 }

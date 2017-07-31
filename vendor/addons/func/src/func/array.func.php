@@ -18,6 +18,7 @@
  * @param   array   $array  array to check
  * @return  boolean
  */
+if (! function_exists('is_assoc')) {
 function is_assoc(array $array)
 {
 	//return (bool)count(array_filter(array_keys($array), 'is_string'));
@@ -29,6 +30,7 @@ function is_assoc(array $array)
 	// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
 	return array_keys($keys) !== $keys;
 }
+}
 
 /**
  * 将一个非数组的变量转成数组
@@ -37,10 +39,12 @@ function is_assoc(array $array)
  * @param  bool $strict 开启严格模式，NULL返回NULL，否则返回array(NULL)
  * @return array      返回数组
  */
+if (! function_exists('to_array')) {
 function to_array($data, $strict = TRUE)
 {
 	if ($strict && is_null($data)) return $data;
 	return !is_array($data) ?  array($data) : $data;
+}
 }
 
 /**
@@ -50,6 +54,7 @@ function to_array($data, $strict = TRUE)
  * @param array $b 数据集2
  * @return array 返回如:$c = array(0=>array('f1'=>'v1','f2'=>'v2','f3'=>'v3','f4'=>'v4'));
  */
+if (! function_exists('dataset_merge')) {
 function dataset_merge(array $a,array $b) //合并数据集
 {
 	$d = array();
@@ -66,6 +71,8 @@ function dataset_merge(array $a,array $b) //合并数据集
 	}
 	return $d;
 }
+}
+
 /**
  * 按照value删除数组对应的项
  *
@@ -74,6 +81,7 @@ function dataset_merge(array $a,array $b) //合并数据集
  * @param boolean $strict 是否强制对比类型
  * @return array 返回操作结果
  */
+if (! function_exists('array_delete')) {
 function array_delete(array &$haystack, $needles, $strict = FALSE)
 {
 	$needles = toarray($needles);
@@ -86,6 +94,8 @@ function array_delete(array &$haystack, $needles, $strict = FALSE)
 	}
 	return $_haystack;
 }
+}
+
 /**
  * 以一个数组为基础,完善另外一个数组中没有的项目(并且会删除多余的项)
  * 优先以$arr_set的值为准，比如：
@@ -108,6 +118,7 @@ function array_delete(array &$haystack, $needles, $strict = FALSE)
  * @param array $arr_base 基础数组
  * @return array 返回调整之后的结果
  */
+if (! function_exists('_extends')) {
 function _extends(&$arr_set, array &$arr_base) //以arr_base为默认,填补arr_set缺的项
 {
 	$result = array();
@@ -130,6 +141,8 @@ function _extends(&$arr_set, array &$arr_base) //以arr_base为默认,填补arr_
 	}
 	return $result;
 }
+}
+
 /**
  * 合并时，后者覆盖前者的值（array_merge_recursive会将相同KEY合并数组）
  * @param  array $arr1 
@@ -137,6 +150,7 @@ function _extends(&$arr_set, array &$arr_base) //以arr_base为默认,填补arr_
  * @param  array ... 
  * @return array 返回合并后的结果
  */
+if (! function_exists('array_merge_recursive_overwrite')) {
 function array_merge_recursive_overwrite()
 {
 
@@ -155,6 +169,8 @@ function array_merge_recursive_overwrite()
 	}
 	return $base;
 }
+}
+
 /**
  * 按key1/key2/key3的方式添加一个项,相当于$src['key1']['key2']['key3'] = $value
  *
@@ -163,6 +179,7 @@ function array_merge_recursive_overwrite()
  * @param mixed $value 该项的值
  * @return array 得到操作后的数据
  */
+if (! function_exists('array_add_recursive')) {
 function array_add_recursive(array &$src, $key, $value)
 {
 	$keys = explode('/',$key);
@@ -175,6 +192,8 @@ function array_add_recursive(array &$src, $key, $value)
 	$t = $value;
 	return $_src;
 }
+}
+
 /**
  * 按key1/key2/key3的方式删除一个项,相当于unset($src['key1']['key2']['key3'])
  *
@@ -182,6 +201,7 @@ function array_add_recursive(array &$src, $key, $value)
  * @param string $key 以"key1/key2/key3/key4/key5"的方式传递,可以无限级\
  * @return array 得到操作后的数据
  */
+if (! function_exists('array_delete_recursive')) {
 function array_delete_recursive(array &$src, $key)
 {
 	$keys = explode('/',$key);
@@ -198,6 +218,7 @@ function array_delete_recursive(array &$src, $key)
 		unset($t[$k]); //删除最后一个
 	return $_src;
 }
+}
 
 /**
  * 按key1/key2/key3的方式获取一个项,相当于得到$value = $src['key1']['key2']['key3']，没有则返回NULL
@@ -206,6 +227,7 @@ function array_delete_recursive(array &$src, $key)
  * @param string $key 以"key1/key2/key3/key4/key5"的方式传递,可以无限级
  * @return mixed 该项的值
  */
+if (! function_exists('array_get_recursive')) {
 function array_get_recursive(array &$src, $key)
 {
 	$keys = explode('/',$key);
@@ -218,6 +240,7 @@ function array_get_recursive(array &$src, $key)
 	$value = $t;
 	return $value;
 }
+}
 
 /**
  * 按key1/key2/key3的方式设置一个项,相当于$src['key1']['key2']['key3'] = $value
@@ -228,9 +251,11 @@ function array_get_recursive(array &$src, $key)
  * @param miexed $value 该项的值
  * @return array 得到操作后的数据
  */
+if (! function_exists('array_set_recursive')) {
 function array_set_recursive(array &$src, $key, $value)
 {
 	return array_add_recursive($src, $key, $value);
+}
 }
 
 /**
@@ -245,12 +270,14 @@ function array_set_recursive(array &$src, $key, $value)
  * 
  * 
  */
+if (! function_exists('_array_selector_subkey')) {
 function _array_selector_subkey($selector, $with_whitespace = FALSE, $with_empty = FALSE)
 {
 	if (is_array($selector)) return $selector;
 
 	!$with_whitespace && $selector = preg_replace('/\s*([,;])\s*/', '$1', $selector); //去掉这些分隔符前后的空格
 	return $with_empty ? preg_split('/[,;]/', $selector) : preg_split('/[,;]+/', $selector, NULL, PREG_SPLIT_NO_EMPTY);
+}
 }
 
 /**
@@ -264,6 +291,7 @@ function _array_selector_subkey($selector, $with_whitespace = FALSE, $with_empty
  * @return array 返回切分后的数组
  * 
  */
+if (! function_exists('_array_selector_keymaker')) {
 function _array_selector_keymaker($selector, $with_whitespace = FALSE, $with_empty = FALSE)
 {
 	if (is_array($selector)) return $selector;
@@ -284,6 +312,8 @@ function _array_selector_keymaker($selector, $with_whitespace = FALSE, $with_emp
 	//print_r($keys);
 	return $keys;
 }
+}
+
 /**
  * 获取数组下面的某些项的集合
  * 如 $a = array('a' => array('f1'=>'v1','f2'=>'v2','f3'=>'v3'),'b' => array('f1'=>'v4','f2'=>'v5'),'c'=>array('f1'=>'v6'));
@@ -294,6 +324,7 @@ function _array_selector_keymaker($selector, $with_whitespace = FALSE, $with_emp
  * @param string $selector  条件表达式 [/] 表示数组维度;  [[,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回根据表达式计算出来的值
  */
+if (! function_exists('array_selector')) {
 function array_selector(array $data, $selector = '*')
 {
 	if (!is_array($data)) return false;
@@ -311,7 +342,10 @@ function array_selector(array $data, $selector = '*')
 	}
 	return $result;
 }
+}
+
 /*array_selector 的 private 函数,外界一般不调用*/
+if (! function_exists('_array_selector_rev')) {
 function _array_selector_rev(array &$data, array $keys, $level = 0)
 {
 	if (is_array($data)) {
@@ -326,6 +360,8 @@ function _array_selector_rev(array &$data, array $keys, $level = 0)
 		}
 	}
 }
+}
+
 /**
  * 获取数组下面的某些项的集合
  * array_selector的别名函数
@@ -334,11 +370,12 @@ function _array_selector_rev(array &$data, array $keys, $level = 0)
  * @param string $selector  条件表达式 [/] 表示数组维度;  [[,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回根据表达式计算出来的值
  */
+if (! function_exists('array_get_selector')) {
 function array_get_selector(array $data, $selector = '*')
 {
 	return array_selector($data, $selector);
 }
-
+}
 
 /**
  * 数组下面的某些项添加一些数据,没有维度限制
@@ -352,6 +389,7 @@ function array_get_selector(array $data, $selector = '*')
  * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回根据表达式计算出来的值
  */
+if (! function_exists('array_add_selector')) {
 function array_add_selector(array $data, array $add_content, $selector = '*')
 {
 	if (!is_array($data)) return false;
@@ -363,7 +401,10 @@ function array_add_selector(array $data, array $add_content, $selector = '*')
 	}
 	return $result;
 }
+}
+
 /*array_add_selector 的 private 函数,外界一般不调用*/
+if (! function_exists('_array_add_selector_rev')) {
 function _array_add_selector_rev(array &$data, array $keys, array &$add_content, $level = 0)
 {
 	if (is_array($data)) {
@@ -378,6 +419,8 @@ function _array_add_selector_rev(array &$data, array $keys, array &$add_content,
 		}
 	}
 }
+}
+
 /**
  * 删除数组下面的某些项,没有维度限制
  * 如 $a = array('a' => array('f1' => 'v1', 'f2' => 'v2'),'b' => array('f1' => 'v4','f2' => 'v5'),'c'=>array('f1' => 'v6'));
@@ -390,6 +433,7 @@ function _array_add_selector_rev(array &$data, array $keys, array &$add_content,
  * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回根据表达式计算出来的值
  */
+if (! function_exists('array_delete_selector')) {
 function array_delete_selector(array $data, $selector = '*')
 {
 	if (!is_array($data)) return FALSE;
@@ -410,7 +454,10 @@ function array_delete_selector(array $data, $selector = '*')
 	}
 	return $result;
 }
+}
+
 /*array_delete_selector 的 private 函数,外界一般不调用*/
+if (! function_exists('_array_delete_selector_rev')) {
 function _array_delete_selector_rev(array &$data, array $keys, $delete_keys, $level = 0)
 {
 	if (is_array($data)) {
@@ -433,6 +480,7 @@ function _array_delete_selector_rev(array &$data, array $keys, $delete_keys, $le
 		}
 	}
 }
+}
 
 /**
  * 根据传递的$keys来筛选数组
@@ -443,6 +491,7 @@ function _array_delete_selector_rev(array &$data, array $keys, $delete_keys, $le
  * @param mixed $keys 需要筛选的keys,可以为array或使用逗号连接的字符串
  * @return array 返回筛选之后的内容
  */
+if (! function_exists('array_keyfilter')) {
 function array_keyfilter(array $data, $keys)
 {
 
@@ -454,6 +503,7 @@ function array_keyfilter(array $data, $keys)
 	}
 	return $result;
 }
+}
 
 /**
  * 通过$selector来筛选数据
@@ -463,9 +513,11 @@ function array_keyfilter(array $data, $keys)
  * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回筛选之后的内容
  */
+if (! function_exists('array_keyfilter_selector')) {
 function array_keyfilter_selector(array $data, $selector = '*')
 {
 	return array_selector($data, $selector);
+}
 }
 
 /**
@@ -474,6 +526,7 @@ function array_keyfilter_selector(array $data, $selector = '*')
  * @param  array $arr  输入数据
  * @return array       显示所有值
  */
+if (! function_exists('array_values_recursive')) {
 function array_values_recursive(array $arr) {
 	$arr = array_values($arr);
 	while (list($k,$v)=each($arr))
@@ -486,7 +539,7 @@ function array_values_recursive(array $arr) {
 	}
 	return $arr;
 }
-
+}
 
 /**
  * 将数组按照a/b/c的方式变为一维数组
@@ -497,6 +550,7 @@ function array_values_recursive(array $arr) {
  * @param string $key 前缀，比如 $key = ':'，将会得到 array(':a/c' => 1, ':a/d' => 2,':b/c' => 4);
  * @return array 返回筛选之后的内容
  */
+if (! function_exists('array_keyflatten')) {
 function array_keyflatten(array $data, $delimiter = '/', $prefix_key = '')
 {
 	$_result = array();
@@ -522,12 +576,13 @@ function array_keyflatten(array $data, $delimiter = '/', $prefix_key = '')
 		$_result[$prefix_key] = $data;
 	return $_result;
 }
-if (!function_exists('array_flatten'))
+}
+
+if (! function_exists('array_flatten')) {
+function array_flatten(array $data, $delimiter = '/', $prefix_key = '')
 {
-	function array_flatten(array $data, $delimiter = '/', $prefix_key = '')
-	{
-		return array_keyflatten($data, $delimiter, $prefix_key);
-	}
+	return array_keyflatten($data, $delimiter, $prefix_key);
+}
 }
 /**
  * 根据表达式，提取第几层的数据，并把数据提到一维，如果$overwrite为TRUE，则相同的键值，后者会覆盖前者
@@ -539,6 +594,7 @@ if (!function_exists('array_flatten'))
  * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回筛选之后的内容
  */
+if (! function_exists('array_flatten_selector')) {
 function array_flatten_selector($data, $selector = '*', $overwrite = TRUE)
 {
 
@@ -577,8 +633,10 @@ function array_flatten_selector($data, $selector = '*', $overwrite = TRUE)
 	}
 	return $result;
 }
+}
 
 /*array_flatten_selector 的 private 函数,外界一般不调用*/
+if (! function_exists('_array_flatten_selector_rev')) {
 function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $overwrite = TRUE)
 {
 
@@ -608,6 +666,7 @@ function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $ove
 
 	return $_result;
 }
+}
 
 /**
  * 将数组里面的某些项目转化为数组，注意：只转化表达式最后一级的项目
@@ -621,6 +680,7 @@ function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $ove
  * @param  string $selector 条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array            返回数据
  */
+if (! function_exists('to_array_selector')) {
 function to_array_selector(&$data, $selector = '*')
 {
 	if (!is_array($data)) return to_array($data);
@@ -630,8 +690,10 @@ function to_array_selector(&$data, $selector = '*')
 		$result = _to_array_selector_rev($result, $keys, 0);
 	return $result;
 }
+}
 
 /*to_array_selector 的 private 函数，外界一般不调用*/
+if (! function_exists('_to_array_selector_rev')) {
 function _to_array_selector_rev(&$data, array $keys, $level = 0)
 {
 	if (!is_array($data)) return $data;
@@ -653,6 +715,7 @@ function _to_array_selector_rev(&$data, array $keys, $level = 0)
 
 	return $result;
 }
+}
 
 /**
  * 在数组开头，添加一个带KEY的数据
@@ -663,6 +726,7 @@ function _to_array_selector_rev(&$data, array $keys, $level = 0)
  * @return array 返回添加后的结果
  */
 
+if (! function_exists('array_unshift_assoc')) {
 function array_unshift_assoc(array $arr, $key, $val)
 {
 	// return array($key => $val) + $arr;
@@ -670,9 +734,10 @@ function array_unshift_assoc(array $arr, $key, $val)
 	$_arr[$key] = $val;
 	return array_reverse($_arr, true);
 }
-
+}
 
 /**
+
  * Function array_insert().
  *
  * Returns the new number of the elements in the array.
@@ -682,6 +747,7 @@ function array_unshift_assoc(array $arr, $key, $val)
  * @param int $offset Position
  * @return int
  */
+if (! function_exists('array_insert')) {
 function array_insert(array &$array, $value, int $offset)
 {
 	if (is_array($array)) {
@@ -703,8 +769,7 @@ function array_insert(array &$array, $value, int $offset)
 	}
 	return count($array);
 }
-
-
+}
 
 /**
  * Range as a string. Items are separated with a comma; which can be in any of the following formats:
@@ -721,6 +786,7 @@ function array_insert(array &$array, $value, int $offset)
  * @param string $range_str
  * @return mixed
  */
+if (! function_exists('range_string')) {
 function range_string($range_str)
 {
 	$range_out = array();
@@ -820,6 +886,8 @@ function range_string($range_str)
 	}
 	return $range_out;
 }
+}
+
 /**
  * 移动到匹配性的下一个
  * @example value_next('DESC', array('ASC', 'DESC', 'OTHER')) 返回 OTHER
@@ -830,6 +898,7 @@ function range_string($range_str)
  * @param  array  $haystack 输入数组
  * @return mixed          匹配的下一个value
  */	
+if (! function_exists('value_next')) {
 function value_next($needle, array $haystack)
 {
 	$size = count($haystack);
@@ -840,6 +909,7 @@ function value_next($needle, array $haystack)
 	if ($index === FALSE || ++$index >= $size)
 		$index = 0;
 	return $_data[$index];
+}
 }
 
 /**
@@ -852,6 +922,7 @@ function value_next($needle, array $haystack)
  * @param  array  $haystack  原始数组
  * @return bool              $needles是否完全存在$haystack中
  */
+if (! function_exists('array_in_array')) {
 function array_in_array(array $needles, array $haystack)
 {
 	//简单办法，遍历数组，查找是否有不存在的值
@@ -864,6 +935,7 @@ function array_in_array(array $needles, array $haystack)
 	//高阶,查看交集的数量是否等于$needles的数量，使用内置C，效率高
 	return count($needles) == count(array_intersect($needles, $haystack));
 }
+}
 
 /**
  * 通过一个数组,分析出其中的某些字段,并返回
@@ -875,6 +947,7 @@ function array_in_array(array $needles, array $haystack)
  * @param  string $keys 需要查找的KEY,可以多项
  * @return array       返回一个符合该KEY的数组
  */
+if (! function_exists('search_fields')) {
 function search_fields($data, $keys)
 {
 	if (empty($data)) return array();
@@ -891,12 +964,14 @@ function search_fields($data, $keys)
 	}
 	return array_unique($result);
 }
+}
 
 /**
  * 从某索引取到另外一个索引
  * 不包含end_offset
  *
  */
+if (! function_exists('array_slice_byoffset')) {
 function array_slice_byoffset(&$arr, $start_offset, $end_offset, $preserve_keys = FALSE)
 {
 	return array_slice($arr, $start_offset, $end_offset - $start_offset, $preserve_keys);
@@ -914,6 +989,7 @@ function array_slice_byoffset(&$arr, $start_offset, $end_offset, $preserve_keys 
 	return $result;
 	*/
 }
+}
 
 /**
  * 对多维数组进行排序，类似于 SQL 的 ORDER BY 子句的功能
@@ -927,6 +1003,7 @@ function array_slice_byoffset(&$arr, $start_offset, $end_offset, $preserve_keys 
  * @param 重复
  * @return array 返回已排序的数组
  */
+if (! function_exists('array_orderby')) {
 function array_orderby()
 {
 	$args = func_get_args();
@@ -943,6 +1020,7 @@ function array_orderby()
 	call_user_func_array('array_multisort', $args);
 	return array_pop($args);
 }
+}
 
 /**
  * PHP内置HASH KEY生成函数
@@ -956,6 +1034,7 @@ function array_orderby()
  * @param  string $arKey 输入KEY
  * @return integer        返回hash key
  */
+if (! function_exists('zend_inline_hash_func')) {
 function zend_inline_hash_func($arKey)
 {
 		$hash = 5381;
@@ -965,6 +1044,7 @@ function zend_inline_hash_func($arKey)
 			$hash = (($hash << 5) + $hash) + ord($arKey{$i});
 		return $hash;
 }
+}
 
 /**
  * 计算数组平均数
@@ -972,10 +1052,13 @@ function zend_inline_hash_func($arKey)
  * @param array $a 数字的数组
  * @return double
  */
+if (! function_exists('array_average')) {
 function array_average(array $a)
 {
 	return !empty($a) ? array_sum($a) / count($a) : FALSE;
 }
+}
+
 /**
  * 从数组中随机取出一些值，类似array_rand，但是返回的是数据，而不是KEY
  * 
@@ -983,6 +1066,7 @@ function array_average(array $a)
  * @param  int $num    需要随机取出多少数据
  * @return array       返回结果
  */
+if (! function_exists('array_pick')) {
 function array_pick($data, $num) { 
 	$count = count($data); 
 	if ($num <= 0) return array(); 
@@ -992,7 +1076,8 @@ function array_pick($data, $num) {
 	$keys = to_array($keys);
 	foreach ($keys as $k) unset($data[$k]);
 	return $data; 
-} 
+}
+}
 
 /**
  * 打乱数组，保留KEY
@@ -1000,6 +1085,7 @@ function array_pick($data, $num) {
  * @param  array $array 需要打乱的数组
  * @return boolean      永远输出TRUE
  */
+if (! function_exists('shuffle_assoc')) {
 function shuffle_assoc( array &$array ) 
 { 
 	$keys = array_keys( $array ); 
@@ -1012,6 +1098,7 @@ function shuffle_assoc( array &$array )
 	$array = $random;
 	return TRUE;
 }
+}
 
 /**
  * 递归查找数据中最大的值
@@ -1019,6 +1106,7 @@ function shuffle_assoc( array &$array )
  * @param  mixed  $array 一个多维数组，或者数字
  * @return mixed        最大的数据
  */
+if (! function_exists('array_max_recursive')) {
 function array_max_recursive(array $array /*, ...*/) {
 	$max = NULL;
 	$stack = func_get_args();
@@ -1042,6 +1130,7 @@ function array_max_recursive(array $array /*, ...*/) {
 
 	return $max;
 }
+}
 
 /**
  * 递归查找数据中最小的值
@@ -1049,6 +1138,7 @@ function array_max_recursive(array $array /*, ...*/) {
  * @param  mixed  $array 一个多维数组，或者数字
  * @return mixed        最小的数据
  */
+if (! function_exists('array_min_recursive')) {
 function array_min_recursive(array $array /*, ...*/) {
 	$min = NULL;
 	$stack = func_get_args();
@@ -1071,4 +1161,5 @@ function array_min_recursive(array $array /*, ...*/) {
 	} while (!empty($stack));
 
 	return $min;
+}
 }

@@ -22,6 +22,7 @@
  * @param string $str 输入utf-8字符串
  * @return array 返回成一段数组
  */
+if (! function_exists('str_split_utf8')) {
 function str_split_utf8($str)
 {
 	return preg_match_all('/./u', removeBOM($str), $out) ? $out[0] : FALSE;
@@ -55,6 +56,7 @@ function str_split_utf8($str)
 	return $array;
 	*/
 }
+}
 
 /**
  * 按多字节分隔为数组，效率比MB_Substr高
@@ -62,6 +64,7 @@ function str_split_utf8($str)
  * @param string $str 输入utf-8字符串
  * @return array 返回成一段数组
  */
+if (! function_exists('str_split_multibyte')) {
 function str_split_multibyte($str, $encode = 'GBK')
 {
 	
@@ -172,22 +175,30 @@ function str_split_multibyte($str, $encode = 'GBK')
 	}
 	return preg_match_all($pattern, $str, $out) ? $out[0] : FALSE;
 }
+}
 
+if (! function_exists('str_split_unicode')) {
 function str_split_unicode($str)
 {
 	return preg_match_all('/.{2}/', removeBOM($str), $out) ? $out[0] : FALSE;
 }
+}
 
+if (! function_exists('str_split_utf16')) {
 function str_split_utf16($str)
 {
 	return str_split_unicode($str);
 }
+}
 
+if (! function_exists('str_split_utf32')) {
 function str_split_utf32($str)
 {
 	return preg_match_all('/.{4}/', removeBOM($str), $out) ? $out[0] : FALSE;
 }
+}
 
+if (! function_exists('str_split_any')) {
 function str_split_any($str, $encode = NULL)
 {
 	empty($encode) && $encode = mb_detect_encoding($str, 'ASCII,UTF-8,UCS-2,UCS-4,UTF-16,UTF-32');
@@ -264,7 +275,9 @@ function str_split_any($str, $encode = NULL)
 	}
 	return $result;
 }
+}
 
+if (! function_exists('encoding_aliases')) {
 function encoding_aliases($encode)
 {
 	$_encode = '';
@@ -684,6 +697,7 @@ function encoding_aliases($encode)
 	}
 	return $_encode;
 }
+}
 
 /**
  * 按非ascii字符占有几个字宽的方式切分字符串，并且不会将汉字切成半个
@@ -698,6 +712,7 @@ function encoding_aliases($encode)
  * @param integer $ansi_width 汉字等非英文字符按照几个字符来处理
  * @return string 返回裁减的字符串
  */
+if (! function_exists('substr_ansi')) {
 function substr_ansi($string, $offset, $length = 0, $charset = 'utf-8', $ansi_width = 1)
 {
 	if (empty($string)) return FALSE;
@@ -740,6 +755,8 @@ function substr_ansi($string, $offset, $length = 0, $charset = 'utf-8', $ansi_wi
 
 	return implode('',$_data);
 }
+}
+
 /**
  * 按非ascii字符占有几个字宽的方式计算字符串长度
  * @example $ansi_width = 2 表示汉字等非英文字符按照两个字宽长度
@@ -750,6 +767,7 @@ function substr_ansi($string, $offset, $length = 0, $charset = 'utf-8', $ansi_wi
  * @param integer $ansi_width 汉字等非英文字符按照几个字宽来处理
  * @return string 返回字符串长度
  */
+if (! function_exists('strlen_ansi')) {
 function strlen_ansi($string, $charset, $ansi_width = 1)
 {
 	if (empty($string)) return 0;
@@ -760,6 +778,7 @@ function strlen_ansi($string, $charset, $ansi_width = 1)
 		$as += strlen($v) > 1 ? $ansi_width : 1;
 	unset($data);
 	return $as;
+}
 }
 
 /**
@@ -772,6 +791,7 @@ function strlen_ansi($string, $charset, $ansi_width = 1)
  * @param string $dot 裁减之后的字符串末尾补码
  * @return string 输出裁减之后的字符串
  */
+if (! function_exists('cutstr')) {
 function cutstr($string, $offset, $length, $charset = 'UTF-8') //裁剪字符
 {
 
@@ -849,6 +869,7 @@ function cutstr($string, $offset, $length, $charset = 'UTF-8') //裁剪字符
 
 	return $strcut;
 }
+}
 
 /**
  * 移除字符串的BOM
@@ -856,6 +877,7 @@ function cutstr($string, $offset, $length, $charset = 'UTF-8') //裁剪字符
  * @param  string $str 输入字符串
  * @return string 输出字符串
  */
+if (! function_exists('removeBOM')) {
 function removeBOM($str)
 {
 	$str_2 = substr($str, 0, 2);
@@ -869,6 +891,7 @@ function removeBOM($str)
 		return substr($str, 4);
 	return $str;
 }
+}
 
 /**
  * 添加字符串的BOM
@@ -876,6 +899,7 @@ function removeBOM($str)
  * @param  string $str 输入字符串
  * @return string 输出字符串
  */
+if (! function_exists('addBOM')) {
 function addBOM($str, $encode = 'UTF-8')
 {
 	$encode = encoding_aliases($encode);
@@ -910,6 +934,7 @@ function addBOM($str, $encode = 'UTF-8')
 	}
 	return $str;
 }
+}
 
 /**
  * 任意编码的字符串转为UTF-8(non BOM)，支持一些常见东方语言
@@ -917,10 +942,12 @@ function addBOM($str, $encode = 'UTF-8')
  * @param string $str 输入字符串
  * @return string 输出字符串
  */
+if (! function_exists('anystring2utf8')) {
 function anystring2utf8($str)
 {
 	$encode = mb_detect_encoding($str,'ASCII,UCS-2,UTF-8,CP936,BIG-5,EUC-TW,EUC-KR,auto');
 	return removeBOM(!in_array($encode, array('UTF-8', 'ASCII')) ? iconv($encode,'UTF-8//IGNORE',$str) : $str); //移除BOM的UTF-8
+}
 }
 
 /**
@@ -929,12 +956,13 @@ function anystring2utf8($str)
  * @param string $str 输入字符串
  * @return string 输出字符串
  */
+if (! function_exists('anystring2gbk')) {
 function anystring2gbk($str)
 {
 	$encode = mb_detect_encoding($str,'ASCII,UCS-2,UTF-8,CP936,BIG-5,EUC-TW,EUC-KR,auto');
 	return (!in_array($encode, array('CP936', 'ASCII')) ? iconv($encode,'GB18030//TRANSLIT',$str) : $str);
 }
-
+}
 
 /**
  * 任何编码字符串(数组)转换为utf-8
@@ -942,6 +970,7 @@ function anystring2gbk($str)
  * @param mixed $string 输入字符串(数组)
  * @return mixed 输出utf-8编码字符串(数组)
  */
+if (! function_exists('any2utf8')) {
 function any2utf8($string) //通过递归转换字符串编码
 {
 	if(is_array($string))
@@ -957,6 +986,7 @@ function any2utf8($string) //通过递归转换字符串编码
 	}
 	return $string;
 }
+}
 
 /**
  * 任何编码字符串(数组)转换为gbk
@@ -964,6 +994,7 @@ function any2utf8($string) //通过递归转换字符串编码
  * @param mixed $string 输入字符串(数组)
  * @return mixed 输出gbk编码字符串(数组)
  */
+if (! function_exists('any2gbk')) {
 function any2gbk($string) //通过递归转换字符串编码
 {
 	if(is_array($string))
@@ -979,15 +1010,17 @@ function any2gbk($string) //通过递归转换字符串编码
 	}
 	return $string;
 }
+}
 
 /**
  * 获取GUID
  *
  * @return string
  */
+if (! function_exists('guid')) {
 function guid()
 {
-	if (function_exists('com_create_guid'))
+	if (! function_exists('com_create_guid'))
 	{
 		return com_create_guid();
 	}
@@ -1006,6 +1039,7 @@ function guid()
 		return $uuid;
 	}
 }
+}
 
 /**
  * 去掉字符串中的HTML标签
@@ -1013,6 +1047,7 @@ function guid()
  * @param string $string 输入字符串
  * @return string 返回结果
  */
+if (! function_exists('nohtml')) {
 function nohtml($string)
 {
   $string = preg_replace("'<script[^>]*?>.*?</script>'si", "", $string);  //去掉javascript
@@ -1027,6 +1062,7 @@ function nohtml($string)
   $string = preg_replace("'&(nbsp|#160);'i", "", $string);*/
   return $string;
 }
+}
 
 /**
  * 去掉字符串中的Script/Style标签和onload/on...等方法
@@ -1034,6 +1070,7 @@ function nohtml($string)
  * @param string $string 输入字符串
  * @return string 返回结果
  */
+if (! function_exists('noscript')) {
 function noscript($string)
 {
 	$string = preg_replace("'<script[^>]*?>.*?</script>'si", "", $string);  //去掉javascript
@@ -1071,6 +1108,7 @@ function noscript($string)
 	}, $string);
 	return $string;
 }
+}
 
 /**
  * 将数组转换为XML
@@ -1078,6 +1116,7 @@ function noscript($string)
  * @param  array $data 输入数组
  * @return string       输出XML字符串
  */
+if (! function_exists('xml_encode')) {
 function xml_encode($data, $charset = 'UTF-8')
 {
 	$xml = '<?xml version="1.0" encoding="'.$charset.'"?><catalog>';
@@ -1086,7 +1125,9 @@ function xml_encode($data, $charset = 'UTF-8')
 	$xml .= '</catalog>';
 	return $xml;
 }
+}
 
+if (! function_exists('_xml_encode')) {
 function _xml_encode(&$data)
 {
 	$xml = '';
@@ -1102,6 +1143,7 @@ function _xml_encode(&$data)
 	}
 	return $xml;
 }
+}
 
 /**
  * 将数组转换为csv(Windows)
@@ -1110,6 +1152,7 @@ function _xml_encode(&$data)
  * @param  array $header 标题栏，默认去读取数组的KEY
  * @return string       输出csv字符串
  */
+if (! function_exists('csv_encode')) {
 function csv_encode($data, $header = array())
 {
 	if (empty($data)) return FALSE;
@@ -1128,12 +1171,15 @@ function csv_encode($data, $header = array())
 
 	return addBOM($output);
 }
+}
+
 /**
  * 判断字符是否非英文字符/符号 is not a word
  * 
  * @param    $str 输入字符串或字
  * @return boolean      输出是否非英文字符/符号
  */
+if (! function_exists('isNaW')) {
 function isNaW($str) 
 {
 	return preg_match('/[\\x{7F}-\\x{FF}]/', $str);
@@ -1145,7 +1191,7 @@ function isNaW($str)
 	}
 	return false;*/
 }
-
+}
 
 /**
  * PHP内置的strtr函数
@@ -1154,6 +1200,7 @@ function isNaW($str)
  * @param  array $replace_arr  需要替换的数组结构
  * @return string              替换之后的字符串
  */
+if (! function_exists('zend_strtr')) {
 function zend_strtr(&$str, &$replace_arr) {
 	$maxlen = 0;$minlen = 1024*128;
 	if (empty($replace_arr)) return $str;
@@ -1182,6 +1229,7 @@ function zend_strtr(&$str, &$replace_arr) {
 	}
 	return $result;
 }
+}
 
 /**
  * 解析dataURL的每一部分为数组
@@ -1189,6 +1237,7 @@ function zend_strtr(&$str, &$replace_arr) {
  * @param  string $dataurl 数据
  * @return array
  */
+if (! function_exists('parse_dataurl')) {
 function parse_dataurl($dataurl)
 {
 	//data:[<mediatype>][;base64],<data>
@@ -1202,6 +1251,7 @@ function parse_dataurl($dataurl)
 
 	return compact('mime','charset','encode','data');
 }
+}
 
 /**
  * Make the place-holder replacements on a line.
@@ -1210,8 +1260,7 @@ function parse_dataurl($dataurl)
  * @param  array   $replace
  * @return string
  */
-if (!function_exists('__'))
-{
+if (! function_exists('__')) {
 function __($line, array $replace)
 {
 	$replace = array_keyflatten($replace, '.', ':');
@@ -1236,6 +1285,7 @@ function __($line, array $replace)
 * @param array $options
 * @param string|array
 */
+if (! function_exists('hex_dump')) {
 function hex_dump($string, array $options = null) {
     if (!is_scalar($string)) {
         throw new InvalidArgumentException('$string argument must be a string');
@@ -1270,4 +1320,19 @@ function hex_dump($string, array $options = null) {
     }
     $output []= sprintf('%08X', strlen($string));
     return @$options['want_array'] ? $output : join($line_sep, $output) . $line_sep;
+}
+}
+
+if (! function_exists('base64_urlencode'))
+{
+	function base64_urlencode($data) {
+		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+	}
+}
+
+if (! function_exists('base64_urldecode'))
+{
+	function base64_urldecode($data) {
+		return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+	}
 }
