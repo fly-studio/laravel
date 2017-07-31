@@ -67,9 +67,9 @@ function str_split_utf8($str)
 if (! function_exists('str_split_multibyte')) {
 function str_split_multibyte($str, $encode = 'GBK')
 {
-	
+
 	$encode = encoding_aliases($encode);
-	$pattern = '/([\x7f-\xff].+?|.)/';//一般是取双字节	
+	$pattern = '/([\x7f-\xff].+?|.)/';//一般是取双字节
 	switch ($encode) {
 		//EUC-JP以及扩展
 		case 'EUC-JP':  //http://zh.wikipedia.org/wiki/EUC
@@ -94,7 +94,7 @@ function str_split_multibyte($str, $encode = 'GBK')
 		case 'SJIS-win': //在微软及IBM的日语电脑系统中，在0xFA、0xFB及0xFC的两字节区域，加入了388个JIS X 0208没有收录的符号和汉字。
 			$pattern = '/([\x81-\x9F\xE0-\xEF\xFA\xFB\xFC][\x40-\x7E\x80-\xFC]|.)/';
 			break;
-		
+
 		case 'SJIS-Mobile#DOCOMO':
 			break;
 		case 'SJIS-Mobile#KDDI':
@@ -116,7 +116,7 @@ function str_split_multibyte($str, $encode = 'GBK')
 			break;
 		case 'ISO-2022-JP': //http://ja.wikipedia.org/wiki/ISO-2022-JP
 			break;
-		
+
 		case 'CP50222':
 			break;
 		case 'CP50221':
@@ -130,8 +130,8 @@ function str_split_multibyte($str, $encode = 'GBK')
 			break;
 		case 'ISO-2022-JP-MOBILE#KDDI':
 			break;
-		
-		
+
+
 		//汉字以及扩展
 		case 'HZ': //ISO-2022-CN
 			break;
@@ -168,8 +168,8 @@ function str_split_multibyte($str, $encode = 'GBK')
 			break;
 
 
-		
-		
+
+
 		default:
 			return str_split($str);
 	}
@@ -725,7 +725,7 @@ function substr_ansi($string, $offset, $length = 0, $charset = 'utf-8', $ansi_wi
 		$as[$k] = strlen($v) > 1 ? $ansi_width : 1;
 
 	$_as_rev = array_reverse($as,true);
-	$_as = $offset < 0 ? $_as_rev : $as; 
+	$_as = $offset < 0 ? $_as_rev : $as;
 	$n = 0; $_offset = abs($offset);
 	foreach($_as as $k => $v) {
 		if ($n >= $_offset) {
@@ -1020,7 +1020,7 @@ function any2gbk($string) //通过递归转换字符串编码
 if (! function_exists('guid')) {
 function guid()
 {
-	if (! function_exists('com_create_guid'))
+	if (function_exists('com_create_guid'))
 	{
 		return com_create_guid();
 	}
@@ -1112,7 +1112,7 @@ function noscript($string)
 
 /**
  * 将数组转换为XML
- * 
+ *
  * @param  array $data 输入数组
  * @return string       输出XML字符串
  */
@@ -1147,7 +1147,7 @@ function _xml_encode(&$data)
 
 /**
  * 将数组转换为csv(Windows)
- * 
+ *
  * @param  array $data 输入数组
  * @param  array $header 标题栏，默认去读取数组的KEY
  * @return string       输出csv字符串
@@ -1175,16 +1175,16 @@ function csv_encode($data, $header = array())
 
 /**
  * 判断字符是否非英文字符/符号 is not a word
- * 
+ *
  * @param    $str 输入字符串或字
  * @return boolean      输出是否非英文字符/符号
  */
 if (! function_exists('isNaW')) {
-function isNaW($str) 
+function isNaW($str)
 {
 	return preg_match('/[\\x{7F}-\\x{FF}]/', $str);
 	/*for ( $i = 0; $i < strlen($str);++$i ){
-		$value = ord($str[$i]); 
+		$value = ord($str[$i]);
 		if($value > 127){
 			return true;
 		}
@@ -1195,7 +1195,7 @@ function isNaW($str)
 
 /**
  * PHP内置的strtr函数
- * 
+ *
  * @param  string $str         输入字符串
  * @param  array $replace_arr  需要替换的数组结构
  * @return string              替换之后的字符串

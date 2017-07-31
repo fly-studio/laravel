@@ -50,7 +50,6 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 			$this->setAutoEtag();
 		elseif (!empty($etag))
 			$this->setEtag($etag);
-		
 
 		if ($lastModified === true)
 			$this->setAutoLastModified();
@@ -91,7 +90,7 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 		} else {
 			switch (substr($_SERVER['SERVER_SOFTWARE'], 0, (int)strpos($_SERVER['SERVER_SOFTWARE'],'/'))) {
 				case 'nginx':
-					$this->headers->set('X-Accel-Redirect', rtrim(config('session.path'), '\\/').'/'.relative_path($this->file->getPathname(), base_path()));
+					$this->headers->set('X-Accel-Redirect', normalize_path(rtrim(config('session.path'), '\\/').'/'.relative_path($this->file->getPathname(), base_path())));
 					$this->headers->set('X-Accel-Buffering', 'no');
 					//$this->headers->set('X-Accel-Limit-Rate', '102400'); //速度限制 Byte/s
 					//$this->headers('Accept-Ranges', 'none');//单线程 限制多线程
@@ -113,7 +112,7 @@ class BinaryFileResponse extends BaseBinaryFileResponse {
 					$this->maxlen = 0;
 					break;
 			}
-		
+
 		}
 		return $this;
 	}
