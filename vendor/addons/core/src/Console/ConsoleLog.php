@@ -15,7 +15,7 @@ class ConsoleLog {
 	{
 		if (!config('app.debug') && $type == 'debug') return;
 
-		if (static::$daemon)
+		if (static::$daemon || !app()->runningInConsole())
 		{
 			logger()->$type($message);
 		}
