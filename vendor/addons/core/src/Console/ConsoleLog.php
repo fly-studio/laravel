@@ -15,17 +15,21 @@ class ConsoleLog {
 	{
 		if (!config('app.debug') && $type == 'debug') return;
 
-		if (static::$daemon || app()->runningInConsole())
+		if (static::$daemon)
 		{
 			logger()->$type($message);
 		}
-		else
+		else if (app()->runningInConsole())
 		{
 			if (empty(static::$consoleOutput))
 				static::$consoleOutput = new OutputStyle(new ArgvInput(), new ConsoleOutput());
 
 			$type = str_replace(['debug', 'info'], ['text', 'note'], $type);
 			static::$consoleOutput->$type($message);
+		}
+		else
+		{
+			logger()->$type($message);
 		}
 	}
 
