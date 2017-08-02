@@ -21,11 +21,19 @@ class ConsoleLog {
 		}
 		else if (app()->runningInConsole())
 		{
-			if (empty(static::$consoleOutput))
-				static::$consoleOutput = new OutputStyle(new ArgvInput(), new ConsoleOutput());
+			$argv = implode(' ', $_SERVER['argv']);
+			if (strpos($argv, 'queue:')) // in queue
+			{
+				logger()->$type($message);
+			}
+			else // in command
+			{
+				if (empty(static::$consoleOutput))
+					static::$consoleOutput = new OutputStyle(new ArgvInput(), new ConsoleOutput());
 
-			$type = str_replace(['debug', 'info'], ['text', 'note'], $type);
-			static::$consoleOutput->$type($message);
+				$type = str_replace(['debug', 'info'], ['text', 'note'], $type);
+				static::$consoleOutput->$type($message);
+			}
 		}
 		else
 		{
