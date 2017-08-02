@@ -22,7 +22,7 @@ class ConsoleLog {
 		else if (app()->runningInConsole())
 		{
 			$argv = implode(' ', $_SERVER['argv']);
-			if (strpos($argv, 'queue:')) // in queue
+			if (strpos($argv, 'queue:') !== false) // in queue
 			{
 				logger()->$type($message);
 			}
