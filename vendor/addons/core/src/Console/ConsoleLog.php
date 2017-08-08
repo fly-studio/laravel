@@ -32,7 +32,7 @@ class ConsoleLog {
 					static::$consoleOutput = new OutputStyle(new ArgvInput(), new ConsoleOutput());
 
 				$type = str_replace(['debug', 'info'], ['text', 'note'], $type);
-				static::$consoleOutput->$type($message);
+				static::$consoleOutput->$type(sprintf('[%s] %s', date('Y-m-d H:i:s'), $message));
 			}
 		}
 		else
@@ -66,9 +66,9 @@ class ConsoleLog {
 		return static::write('debug', $message);
 	}
 
-	public static function hex($message)
+	public static function hex($message, array $options = [])
 	{
-		return static::debug(hex_dump($message));
+		return static::debug(PHP_EOL.hex_dump($message, $options));
 	}
 
 }
