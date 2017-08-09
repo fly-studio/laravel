@@ -25,7 +25,6 @@
         "jenssegers/agent": "^2.4",
         "mews/captcha": "^2.1",
         "owen-it/laravel-auditing": "^3.1",
-        "php-curl-class/php-curl-class": "^7.2",
         "phpoffice/phpexcel": "^1.8",
         "phpseclib/phpseclib": "^2.0",
         "predis/predis": "^1.1",

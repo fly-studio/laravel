@@ -1,6 +1,8 @@
 <?php
+
 namespace Addons\Download;
 
+//remove Curl;
 use \Curl\Curl;
 use Plugins\Attachment\App\DownloadManager;
 class DownloadThread {
@@ -90,5 +92,5 @@ class DownloadThread {
 	{
 		return $this->completed;
 	}
-	
+
 }

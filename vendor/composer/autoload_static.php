@@ -147,7 +147,6 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         ),
         'C' => 
         array (
-            'Curl\\' => 5,
             'Cron\\' => 5,
             'Carbon\\' => 7,
         ),
@@ -430,10 +429,6 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         array (
             0 => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar',
         ),
-        'Curl\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl',
-        ),
         'Cron\\' => 
         array (
             0 => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron',
@@ -566,6 +561,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Censor\\Validation\\ValidatesRequests' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatesRequests.php',
         'Addons\\Censor\\Validation\\ValidatorEx' => __DIR__ . '/..' . '/addons/censor/src/Validation/ValidatorEx.php',
         'Addons\\Core\\ApiTrait' => __DIR__ . '/..' . '/addons/core/src/ApiTrait.php',
+        'Addons\\Core\\Console\\ConsoleLog' => __DIR__ . '/..' . '/addons/core/src/Console/ConsoleLog.php',
         'Addons\\Core\\Console\\Kernel' => __DIR__ . '/..' . '/addons/core/src/Console/Kernel.php',
         'Addons\\Core\\Contracts\\Events\\ControllerEvent' => __DIR__ . '/..' . '/addons/core/src/Contracts/Events/ControllerEvent.php',
         'Addons\\Core\\Contracts\\Http\\Output\\TipType' => __DIR__ . '/..' . '/addons/core/src/Contracts/Http/Output/TipType.php',
@@ -614,6 +610,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Elasticsearch\\Scout\\Builder' => __DIR__ . '/..' . '/addons/elasticsearch/src/Scout/Builder.php',
         'Addons\\Elasticsearch\\Scout\\Console\\ImportRangeCommand' => __DIR__ . '/..' . '/addons/elasticsearch/src/Scout/Console/ImportRangeCommand.php',
         'Addons\\Elasticsearch\\Scout\\ElasticsearchEngine' => __DIR__ . '/..' . '/addons/elasticsearch/src/Scout/ElasticsearchEngine.php',
+        'Addons\\Elasticsearch\\Scout\\Indexable' => __DIR__ . '/..' . '/addons/elasticsearch/src/Scout/Indexable.php',
         'Addons\\Elasticsearch\\Scout\\Searchable' => __DIR__ . '/..' . '/addons/elasticsearch/src/Scout/Searchable.php',
         'Addons\\Elasticsearch\\ServiceProvider' => __DIR__ . '/..' . '/addons/elasticsearch/src/ServiceProvider.php',
         'Addons\\Entrust\\Commands\\MigrationCommand' => __DIR__ . '/..' . '/addons/entrust/src/Commands/MigrationCommand.php',
@@ -632,6 +629,8 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Entrust\\Traits\\PermissionTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/PermissionTrait.php',
         'Addons\\Entrust\\Traits\\RoleTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/RoleTrait.php',
         'Addons\\Entrust\\Traits\\UserTrait' => __DIR__ . '/..' . '/addons/entrust/src/Traits/UserTrait.php',
+        'Addons\\Func\\Exceptions\\Structs\\EOFException' => __DIR__ . '/..' . '/addons/func/src/Exceptions/Structs/EOFException.php',
+        'Addons\\Func\\Exceptions\\Structs\\SeekException' => __DIR__ . '/..' . '/addons/func/src/Exceptions/Structs/SeekException.php',
         'Addons\\Func\\Exceptions\\Structs\\SizeException' => __DIR__ . '/..' . '/addons/func/src/Exceptions/Structs/SizeException.php',
         'Addons\\Func\\Exceptions\\Structs\\TypeException' => __DIR__ . '/..' . '/addons/func/src/Exceptions/Structs/TypeException.php',
         'Addons\\Func\\GPS' => __DIR__ . '/..' . '/addons/func/src/GPS.php',
@@ -641,6 +640,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Addons\\Func\\SSHClient' => __DIR__ . '/..' . '/addons/func/src/SSHClient.php',
         'Addons\\Func\\SocketLog' => __DIR__ . '/..' . '/addons/func/src/SocketLog.php',
         'Addons\\Func\\Spyc' => __DIR__ . '/..' . '/addons/func/src/Spyc.php',
+        'Addons\\Func\\Structs\\StringIO' => __DIR__ . '/..' . '/addons/func/src/Structs/StringIO.php',
         'Addons\\Func\\Structs\\Struct' => __DIR__ . '/..' . '/addons/func/src/Structs/Struct.php',
         'Addons\\Func\\Structs\\StructItem' => __DIR__ . '/..' . '/addons/func/src/Structs/StructItem.php',
         'Addons\\Smarty\\ServiceProvider' => __DIR__ . '/..' . '/addons/smarty/src/ServiceProvider.php',
@@ -715,11 +715,6 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Cron\\MinutesField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/MinutesField.php',
         'Cron\\MonthField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/MonthField.php',
         'Cron\\YearField' => __DIR__ . '/..' . '/mtdowling/cron-expression/src/Cron/YearField.php',
-        'Curl\\ArrayUtil' => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl/ArrayUtil.php',
-        'Curl\\CaseInsensitiveArray' => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl/CaseInsensitiveArray.php',
-        'Curl\\Curl' => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl/Curl.php',
-        'Curl\\Decoder' => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl/Decoder.php',
-        'Curl\\MultiCurl' => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl/MultiCurl.php',
         'DebugBar\\Bridge\\CacheCacheCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',
         'DebugBar\\Bridge\\DoctrineCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/DoctrineCollector.php',
         'DebugBar\\Bridge\\MonologCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/MonologCollector.php',
