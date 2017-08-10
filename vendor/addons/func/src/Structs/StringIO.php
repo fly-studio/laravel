@@ -2,8 +2,9 @@
 
 namespace Addons\Func\Structs;
 
-use Addons\Func\Exceptions\Structs\EOFException;
-use Addons\Func\Exceptions\Structs\SeekException;
+use OverflowException;
+use UnderflowException;
+use OutOfBoundsException;
 
 class StringIO {
 
@@ -53,7 +54,7 @@ class StringIO {
 				break;
 		}
 		if ($_offset < 0) // it can add size when writing
-			throw new SeekException('Offset < 0, out of string.');
+			throw new UnderflowException('Offset < 0, out of string.');
 
 		$this->offset = $_offset;
 		return $this->offset;
@@ -109,14 +110,14 @@ class StringIO {
 		if (!is_null($offset)) $this->seek($offset);
 
 		if ($this->offset >= $this->length)
-			throw new EOFException('Cannot read, reach EOF of string.', 1);
+			throw new OutOfBoundsException('Cannot read, reach EOF of string.', 1);
 
 		$str = substr($this->data, $this->offset, $length);
 
 		if (empty($length))
 			$this->seek(0, SEEK_END);
 		else if (strlen($str) != $length)
-			throw new EOFException('Read string overflow.');
+			throw new OverflowException('Read string overflow.');
 		else
 			$this->seek($length, SEEK_CUR);
 

@@ -6,9 +6,9 @@ define('MACHINE_ENDIAN', 0);
 define('LITTLE_ENDIAN', 1 << 0);
 define('BIG_ENDIAN', 1 << 1);
 
+use LengthException;
+use InvalidArgumentException;
 use Addons\Func\Structs\StructItem;
-use Addons\Func\Exceptions\Structs\TypeException;
-use Addons\Func\Exceptions\Structs\SizeException;
 
 class Struct implements \ArrayAccess
 {
@@ -56,7 +56,7 @@ class Struct implements \ArrayAccess
 	private function parseStructs($structs, $endianess)
 	{
 		if (empty($structs))
-			throw new TypeException('Empty structs.');
+			throw new InvalidArgumentException('Empty structs.');
 		$this->endianess = $endianess;
 		$this->items = [];
 		$this->structs = [];
@@ -65,16 +65,16 @@ class Struct implements \ArrayAccess
 		foreach($structs as $name => $item)
 		{
 			if (!preg_match($pattern, $item, $matches))
-				throw new TypeException('Struct \''.$name.': '.$item.'\' is invalid.');
+				throw new InvalidArgumentException('Struct \''.$name.': '.$item.'\' is invalid.');
 
 			if (isset($matches['length']) && (empty($matches['length']) || bccomp($matches['length'], PHP_INT_MAX) > 0))
-				throw new TypeException('Struct \''.$name.': '.$item.'\' , length must be > 0 && < PHP_INT_MAX.');
+				throw new InvalidArgumentException('Struct \''.$name.': '.$item.'\' , length must be > 0 && < PHP_INT_MAX.');
 
 			if (($endianess & LITTLE_ENDIAN) == LITTLE_ENDIAN)
 				$type = $this->convertToLE($matches['type']);
 			else if (($endianess & BIG_ENDIAN) == BIG_ENDIAN)
 				$type = $this->convertToBE($matches['type']);
-			else 
+			else
 				$type = $matches['type'];
 
 			$this->items[$name] = new StructItem($name, static::defineds[ $type ], empty($matches['length']) ? 1 : $matches['length']);
@@ -143,7 +143,7 @@ class Struct implements \ArrayAccess
 		// get
 		if (is_null($value))
 			return $this->items[$offset]->data($value, $asRaw);
-		
+
 		// set
 		$this->items[$offset]->data($value, $asRaw);
 		return $this;
@@ -177,8 +177,8 @@ class Struct implements \ArrayAccess
 	public function load($rawData)
 	{
 		if (strlen($rawData) < $this->size())
-			throw new SizeException('parameter#0 must be a '. $this->size(). ' size raw bytes.');
-		
+			throw new LengthException('parameter#0 must be a '. $this->size(). ' size raw bytes.');
+
 		$offset = 0;
 		foreach($this->items as $item)
 		{

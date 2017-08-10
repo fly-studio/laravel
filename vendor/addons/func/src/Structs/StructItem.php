@@ -2,9 +2,9 @@
 
 namespace Addons\Func\Structs;
 
+use LengthException;
+use InvalidArgumentException;
 use Addons\Func\Structs\Struct;
-use Addons\Func\Exceptions\Structs\TypeException;
-use Addons\Func\Exceptions\Structs\SizeException;
 
 class StructItem implements \ArrayAccess
 {
@@ -18,9 +18,9 @@ class StructItem implements \ArrayAccess
 	public function __construct($name, $type, $length = 1)
 	{
 		if (!in_array($type, Struct::defineds))
-			throw new TypeException('Struct `'.$name.'` type: '. $type . ' is not invalid');
+			throw new InvalidArgumentException('Struct `'.$name.'` type: '. $type . ' is not invalid');
 		if (bccomp($length, PHP_INT_MAX) > 0 || $length <= 0)
-			throw new TypeException('Struct `'.$name.'` length must > 0 && < PHP_INT_MAX.');
+			throw new InvalidArgumentException('Struct `'.$name.'` length must > 0 && < PHP_INT_MAX.');
 		$this->name     = $name;
 		$this->type     = $type;
 		$this->length   = $length;
@@ -92,11 +92,11 @@ class StructItem implements \ArrayAccess
 		if ($asRaw)
 		{
 			if (strlen($value) < $this->sizeof())
-				throw new SizeException('Struct `'.$this->name().'['.$offset.']` raw size must be '.$this->sizeof());
+				throw new LengthException('Struct `'.$this->name().'['.$offset.']` raw size must be '.$this->sizeof());
 		}
 		$bytes = $asRaw ? $value : pack($this->type(), $value);
 		for($i = 0; $i < $size; ++$offset)
-			$this->data[$i + $offset] = $bytes[$i]; 
+			$this->data[$i + $offset] = $bytes[$i];
 
 		return $this;
 	}
@@ -125,14 +125,14 @@ class StructItem implements \ArrayAccess
 		if ($asRaw) //二进制
 		{
 			if (strlen($data) < $this->size())
-				throw new SizeException('Struct \''.$this->name().'\' must be a '.$this->size().' size raw bytes');
+				throw new LengthException('Struct \''.$this->name().'\' must be a '.$this->size().' size raw bytes');
 
 			$this->data = substr($data, 0, $this->size());
 		}
 		else
 		{
 			if(($this->length() != 1 && !is_array($data)) || ($this->length() > 1 && count($data) != $this->length()))
-				throw new SizeException('parameter#0 must be '.$this->length().' length array for \''.$this->name().'\'');
+				throw new LengthException('parameter#0 must be '.$this->length().' length array for \''.$this->name().'\'');
 
 			$_d = array_wrap($data);
 			array_unshift($_d, str_repeat($this->type(), $this->length()));
