@@ -7,41 +7,41 @@
  * B类： 172.16.0.0 ～ 172.31.255.255
  * C类： 192.168.0.0 ～ 192.168.255.255
  * 二进制表示：
- * A类： 00001010 00000000 00000000 00000000 ～ 00001010 11111111 11111111 11111111 
+ * A类： 00001010 00000000 00000000 00000000 ～ 00001010 11111111 11111111 11111111
  * B类： 10101100 00010000 00000000 00000000 ～ 10101100 00011111 11111111 11111111
  * C类： 11000000 10101000 00000000 00000000 ～ 11000000 10101000 11111111 11111111
- * 
+ *
  * @param  string  $ip 输入ipv4的ip格式
  * @return boolean     是否为内网IP
  */
 if(! function_exists('is_internal_ip')) {
-function is_internal_ip($ip) { 
-	$ip = ip2long($ip); 
-	$net_a = ip2long('10.255.255.255') >> 24; //A类网预留ip的网络地址 
-	$net_b = ip2long('172.31.255.255') >> 20; //B类网预留ip的网络地址 
+function is_internal_ip($ip) {
+	$ip = ip2long($ip);
+	$net_a = ip2long('10.255.255.255') >> 24; //A类网预留ip的网络地址
+	$net_b = ip2long('172.31.255.255') >> 20; //B类网预留ip的网络地址
 	$net_c = ip2long('192.168.255.255') >> 16; //C类网预留ip的网络地址
-	return $ip >> 24 === $net_a || $ip >> 20 === $net_b || $ip >> 16 === $net_c; 
+	return $ip >> 24 === $net_a || $ip >> 20 === $net_b || $ip >> 16 === $net_c;
 }
 }
 
-/**  
-* 检查ip是否属于某个子网 
-* 
-* @param subnet:子网;如: 10.10.10/24 或 10.10.10.0/24 都是一样的 
-* @return true | false 
+/**
+* 检查ip是否属于某个子网
+*
+* @param subnet:子网;如: 10.10.10/24 或 10.10.10.0/24 都是一样的
+* @return true | false
 */
 if(! function_exists('ip_in_subnet')) {
-function ip_in_subnet($subnet, $ip) 
+function ip_in_subnet($subnet, $ip)
 {
-	$arr = explode('/',trim($subnet)); 
-	if(count($arr) == 1) //支持单个ip的写法 
-		return $ip == $arr[0]; 
+	$arr = explode('/',trim($subnet));
+	if(count($arr) == 1) //支持单个ip的写法
+		return $ip == $arr[0];
 
-	$long_ip = ip2long($ip); 
-	$net = ip2long($arr[0]); 
-	$hosts = pow(2, 32 - $arr[1]) - 1; //主机部分最大值 
+	$long_ip = ip2long($ip);
+	$net = ip2long($arr[0]);
+	$hosts = pow(2, 32 - $arr[1]) - 1; //主机部分最大值
 	$host = $net ^ $long_ip; //客户端ip的主机部分
-	return $host >= 0 && $host <= $hosts; 
+	return $host >= 0 && $host <= $hosts;
 }
 }
 
@@ -55,7 +55,7 @@ if(! function_exists('ip2ulong')) {
 function ip2ulong($ip){
 	if (empty($ip) || $ip == 'unknown') return 0;
 	$i = 0;
-	if (function_exists('ip2long')) 
+	if (function_exists('ip2long'))
 		$i = ip2long($ip);
 	else {
 		list($tmp1,$tmp2,$tmp3,$tmp4) = explode('.',$ip);
@@ -74,7 +74,7 @@ function ip2ulong($ip){
 
 /**
  * 将IP无符号长整型转换成字符串
- * 
+ *
  * @param integer $ip 无符号长整形字符串
  * @return string IP字符串
  */
@@ -83,7 +83,7 @@ function ulong2ip($ip){
 	if (empty($ip)) return 'unknown';
 	$ip = -(4294967296 - $ip);
 	$s = '0.0.0.0';
-	if (function_exists('long2ip')) 
+	if (function_exists('long2ip'))
 		$s = long2ip($ip);
 	else {
 		$tmp[1] = $ip & 0xFF;
@@ -130,7 +130,7 @@ function get_whois_from_server($server , $ip)
 	#Before connecting lets check whether server alive or not
 	#Create the socket and connect
 	$f = fsockopen($server, 43, $errno, $errstr, 3);	//Open a new connection
-	if(!$f)	
+	if(!$f)
 		return NULL;
 	#Set the timeout limit for read
 	stream_set_timeout($f , 3) || die('Unable to set set_timeout');	#Did this solve the problem ?
@@ -154,7 +154,7 @@ function get_whois_from_server($server , $ip)
 /**
  * 函数:获取当前访问者的IP(字符串)
  *
- * @return string 
+ * @return string
  */
 if(! function_exists('get_client_ip')) {
 function get_client_ip($strict = FALSE)
@@ -213,5 +213,40 @@ function get_current_url($flags = HTTP_URL_ALL )
 	($flags & HTTP_URL_PATHINFO) > 0 && $url .= empty($_SERVER['PATH_INFO']) ? '' : $_SERVER["PATH_INFO"];
 	($flags & HTTP_URL_QUERY) > 0 && $url .= empty($_SERVER['QUERY_STRING']) ? '' : '?'.$_SERVER['QUERY_STRING'];
 	return $url;
+}
+}
+
+/**
+ * validate domain
+ *
+ * @example [a]                       Y
+ * @example [0]                       Y
+ * @example [a.b]                     Y
+ * @example [localhost]               Y
+ * @example [google.com]              Y
+ * @example [news.google.co.uk]       Y
+ * @example [xn--fsqu00a.xn--0zwm56d] Y
+ * @example [goo gle.com]             N
+ * @example [google..com]             N
+ * @example [google.com ]             N
+ * @example [google-.com]             N
+ * @example [.google.com]             N
+ * @example [<script]                 N
+ * @example [alert(]                  N
+ * @example [.]                       N
+ * @example [..]                      N
+ * @example [ ]                       N
+ * @example [-]                       N
+ * @example []                        N
+ *
+ * @param  string  $domain
+ * @return boolean
+ */
+if(! function_exists('is_valid_domain')) {
+function is_valid_domain($domain)
+{
+    return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check
+            && preg_match("/^.{1,253}$/", $domain) //overall length check
+            && preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $domain)   ); //length of each label
 }
 }
