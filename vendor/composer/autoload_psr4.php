@@ -73,6 +73,7 @@ return array(
     'DebugBar\\' => array($vendorDir . '/maximebf/debugbar/src/DebugBar'),
     'Cron\\' => array($vendorDir . '/mtdowling/cron-expression/src/Cron'),
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
+    'Barryvdh\\Queue\\' => array($vendorDir . '/barryvdh/laravel-async-queue/src'),
     'Barryvdh\\Debugbar\\' => array($vendorDir . '/barryvdh/laravel-debugbar/src'),
     'Addons\\Ucloud\\' => array($vendorDir . '/addons/ucloud/src'),
     'Addons\\Smarty\\' => array($vendorDir . '/addons/smarty/src'),

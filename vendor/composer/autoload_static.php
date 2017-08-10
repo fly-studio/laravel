@@ -152,6 +152,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         ),
         'B' => 
         array (
+            'Barryvdh\\Queue\\' => 15,
             'Barryvdh\\Debugbar\\' => 18,
         ),
         'A' => 
@@ -437,6 +438,10 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
+        'Barryvdh\\Queue\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/barryvdh/laravel-async-queue/src',
+        ),
         'Barryvdh\\Debugbar\\' => 
         array (
             0 => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src',
@@ -702,6 +707,10 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Barryvdh\\Debugbar\\Twig\\Extension\\Stopwatch' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/Extension/Stopwatch.php',
         'Barryvdh\\Debugbar\\Twig\\Node\\StopwatchNode' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/Node/StopwatchNode.php',
         'Barryvdh\\Debugbar\\Twig\\TokenParser\\StopwatchTokenParser' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/Twig/TokenParser/StopwatchTokenParser.php',
+        'Barryvdh\\Queue\\AsyncQueue' => __DIR__ . '/..' . '/barryvdh/laravel-async-queue/src/AsyncQueue.php',
+        'Barryvdh\\Queue\\AsyncServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-async-queue/src/AsyncServiceProvider.php',
+        'Barryvdh\\Queue\\Connectors\\AsyncConnector' => __DIR__ . '/..' . '/barryvdh/laravel-async-queue/src/Connectors/AsyncConnector.php',
+        'Barryvdh\\Queue\\Console\\AsyncCommand' => __DIR__ . '/..' . '/barryvdh/laravel-async-queue/src/Console/AsyncCommand.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonInterval' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonInterval.php',
         'Carbon\\Exceptions\\InvalidDateException' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Exceptions/InvalidDateException.php',
