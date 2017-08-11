@@ -23,7 +23,7 @@ function smarty_function_pluginclude($params, $template)
 {
 	$_c = config('plugins');
 	if (empty($_c)) return;
-	
+
 	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 	for($i = 1; $i < count($dbt);$i++)
 		if ($dbt[$i]['function'] == __FUNCTION__)
@@ -52,9 +52,9 @@ function smarty_function_pluginclude($params, $template)
 
 	$names = [];
 	foreach ($_c as $k => $v) {
-		if (array_key_exists($file, $v['injectViews']))
+		if (array_key_exists($file, (array)$v['injectViews']))
 			$names[$k] = $v['injectViews'][$file]; //defined order
-		elseif (in_array($file, $v['injectViews']))
+		elseif (in_array($file, (array)$v['injectViews']))
 			$names[$k] = count($names);
 	}
 	asort($names);

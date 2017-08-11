@@ -13,7 +13,7 @@ class Ruler extends Localer {
 		$validations = $this->getLine($key, $locale);
 
 		if (empty($validations))
-			throw new RuleNotFoundException('[Censor] Censor KEY is not exists: ['. $key. ']. You may create it', $this, $key);
+			throw new RuleNotFoundException('[Censor] Censor KEY is not exists: ['. $key. ']. You may create it.', $this, $key);
 
 		$ruleKeys == '*' && $ruleKeys = array_keys($validations);
 		!is_array($ruleKeys) && $ruleKeys = explode(',', $ruleKeys);
