@@ -3,9 +3,6 @@
 namespace Addons\Func\Structs;
 
 use RuntimeException;
-use OverflowException;
-use UnderflowException;
-use OutOfBoundsException;
 use BadMethodCallException;
 
 class Stream {
@@ -68,10 +65,10 @@ class Stream {
 	public function __get($name)
 	{
 		if ($name == 'stream') {
-			throw new \RuntimeException('The stream is detached');
+			throw new RuntimeException('The stream is detached');
 		}
 
-		throw new \BadMethodCallException('No value for ' . $name);
+		throw new BadMethodCallException('No value for ' . $name);
 	}
 
 	/**
@@ -97,7 +94,7 @@ class Stream {
 		$contents = stream_get_contents($this->stream);
 
 		if ($contents === false) {
-			throw new \RuntimeException('Unable to read stream contents');
+			throw new RuntimeException('Unable to read stream contents');
 		}
 
 		return $contents;
@@ -191,7 +188,7 @@ class Stream {
 		$result = ftell($this->stream);
 
 		if ($result === false) {
-			throw new \RuntimeException('Unable to determine stream position');
+			throw new RuntimeException('Unable to determine stream position');
 		}
 
 		return $result;
@@ -200,7 +197,7 @@ class Stream {
 	public function truncate($size)
 	{
 		if (!$this->writable) {
-			throw new \RuntimeException('Cannot write to a non-writable stream');
+			throw new RuntimeException('Cannot write to a non-writable stream');
 		}
 
 		if (is_null($size))
@@ -217,9 +214,9 @@ class Stream {
 	public function seek($offset, $whence = SEEK_SET)
 	{
 		if (!$this->seekable) {
-			throw new \RuntimeException('Stream is not seekable');
+			throw new RuntimeException('Stream is not seekable');
 		} elseif (fseek($this->stream, $offset, $whence) === -1) {
-			throw new \RuntimeException('Unable to seek to stream position '
+			throw new RuntimeException('Unable to seek to stream position '
 				. $offset . ' with whence ' . var_export($whence, true));
 		}
 	}
@@ -227,10 +224,10 @@ class Stream {
 	public function read($length, $offset = null)
 	{
 		if (!$this->readable) {
-			throw new \RuntimeException('Cannot read from non-readable stream');
+			throw new RuntimeException('Cannot read from non-readable stream');
 		}
 		if ($length < 0) {
-			throw new \RuntimeException('Length parameter cannot be negative');
+			throw new RuntimeException('Length parameter cannot be negative');
 		}
 
 		if (!is_null($offset))
@@ -242,7 +239,7 @@ class Stream {
 
 		$string = fread($this->stream, $length);
 		if (false === $string) {
-			throw new \RuntimeException('Unable to read from stream');
+			throw new RuntimeException('Unable to read from stream');
 		}
 
 		return $string;
@@ -251,7 +248,7 @@ class Stream {
 	public function write($string)
 	{
 		if (!$this->writable) {
-			throw new \RuntimeException('Cannot write to a non-writable stream');
+			throw new RuntimeException('Cannot write to a non-writable stream');
 		}
 
 		// We can't know the size after writing anything
@@ -259,7 +256,7 @@ class Stream {
 		$result = fwrite($this->stream, $string);
 
 		if ($result === false) {
-			throw new \RuntimeException('Unable to write to stream');
+			throw new RuntimeException('Unable to write to stream');
 		}
 
 		return $result;
