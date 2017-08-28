@@ -7,6 +7,7 @@
  * @param  [type] $text       [description]
  * @return [type]             [description]
  */
+if (! function_exists('calculate_textbox')) {
 function calculate_textbox($font_size, $font_angle, $font_file, $text) { 
 	$box = imagettfbbox($font_size, $font_angle, $font_file, $text); 
 	if( !$box ) return false; 
@@ -45,7 +46,7 @@ function calculate_textbox($font_size, $font_angle, $font_file, $text) {
 			'width' => $rright - $rleft + 1, 
 			'height' => $rbottom - $rtop + 1 ); 
 }
-
+}
 
 /**
  * 将颜色表达式，转换为RGB数组
@@ -53,6 +54,7 @@ function calculate_textbox($font_size, $font_angle, $font_file, $text) {
  * @param  string $colour 颜色的16进制，比如灰色的值为CCCCCC或CCC
  * @return [type]         [description]
  */
+if (! function_exists('hex2rgb')) {
 function hex2rgb($colour)
 {
 	$colour = preg_replace("/[^abcdef0-9]/i", "", $colour);
@@ -69,6 +71,7 @@ function hex2rgb($colour)
 		'r' => $r, 'g' => $g, 'b' => $b,
 	);
 }
+}
 
 /**
  * [aspect_ratio description]
@@ -78,6 +81,7 @@ function hex2rgb($colour)
  * @param  [type] $newHeight      [description]
  * @return [type]                 [description]
  */
+if (! function_exists('aspect_ratio')) {
 function aspect_ratio($width, $height, $newWidth = NULL, $newHeight = NULL)
 {
 	empty($newWidth) && $newWidth = $width;
@@ -95,4 +99,5 @@ function aspect_ratio($width, $height, $newWidth = NULL, $newHeight = NULL)
 			$height = round($width * $hw_ratio);
 	}
 	return compact('width', 'height');
+}
 }

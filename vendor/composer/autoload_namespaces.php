@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Rap2hpoutre\\LaravelLogViewer\\' => array($vendorDir . '/rap2hpoutre/laravel-log-viewer/src'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
+    'Parsedown' => array($vendorDir . '/erusev/parsedown'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
     'Mockery' => array($vendorDir . '/mockery/mockery/library'),
@@ -18,6 +19,5 @@ return array(
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib'),
     'Doctrine\\Common\\Collections\\' => array($vendorDir . '/doctrine/collections/lib'),
     'Detection' => array($vendorDir . '/mobiledetect/mobiledetectlib/namespaced'),
-    'Cron' => array($vendorDir . '/mtdowling/cron-expression/src'),
     'ApkParser' => array($vendorDir . '/tufanbarisyildirim/php-apk-parser/lib'),
 );

@@ -10,6 +10,7 @@
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Addons\Core\Http\OutputResponseFactory;
 
 class Role
 {
@@ -35,10 +36,8 @@ class Role
 	 */
 	public function handle($request, Closure $next, ...$roles)
 	{
-		if ($this->auth->guest() || !$request->user()->hasRole($roles)) {
-			return (new \Addons\Core\Controllers\Controller())->failure('auth.failure_permission');
-			//abort(403);
-		}
+		if ($this->auth->guest() || !$request->user()->hasRole($roles))
+			return app(OutputResponseFactory::class)->failure('auth.permission_forbidden')->setRequest($request)->setStatusCode(403);
 
 		return $next($request);
 	}

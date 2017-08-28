@@ -1,10 +1,11 @@
 <?php
 namespace Addons\Core\Http;
 
-use Illuminate\Routing\ResponseFactory as FactoryContract;
 use Illuminate\Support\Str;
 use Illuminate\Http\Response;
-use Addons\Core\Http\BinaryFileResponse;
+use Addons\Core\Http\Response\BinaryFileResponse;
+use Illuminate\Routing\ResponseFactory as FactoryContract;
+
 class ResponseFactory extends FactoryContract {
 
 
@@ -34,7 +35,7 @@ class ResponseFactory extends FactoryContract {
 	{
 		$etag = isset($options['etag']) ? $options['etag'] : false;
 		$last_modified = isset($options['last_modified']) ? $options['last_modified'] : true;
-		!empty($options['cache']) && $headers = array_merge($headers, ['Cache-Control' => 'private, max-age=3600, must-revalidate', 'Pragma' => 'cache']);
+		!empty($options['cached']) && $headers = array_merge($headers, ['Cache-Control' => 'private, max-age=3600, must-revalidate', 'Pragma' => 'cache']);
 		!empty($options['mime_type']) && $headers = array_merge($headers, ['Content-Type' => $options['mime_type']]);
 		$response = new BinaryFileResponse($file, 200, $headers, true, $disposition, $etag, $last_modified);
 

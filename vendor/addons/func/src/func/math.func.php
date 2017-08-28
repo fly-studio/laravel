@@ -1,12 +1,15 @@
 <?php
+
 /**
  * 黄金分割
  * 
  * @return float
  */
+if (! function_exists('golden_section')) {
 function golden_section()
 {
 	return (sqrt(5) - 1) / 2;
+}
 }
 
 /* 
@@ -14,8 +17,9 @@ function golden_section()
  value between 0 and 360. 0 will be north, 90 east, 180 south, 270 west 
  Author: Robert Kohr 
 */ 
+if (! function_exists('get_angle')) {
 function get_angle($x1, $y1, $x2, $y2, $negative_y_is_up = 0){ 
-  //differences in x and y 
+	//differences in x and y 
 	$x = $x2 - $x1; 
 	$y = $y2 - $y1; 
 	//y will need to be negated for where + y is down 
@@ -24,8 +28,8 @@ function get_angle($x1, $y1, $x2, $y2, $negative_y_is_up = 0){
 		$y = -$y; 
 	} 
 	return (rad2deg(atan2($x, $y))+360)%360; 
-} 
-
+}
+}
 
 /**
  * 像Excel列头一样返回0 => A,1 => B,26 => AA,27 => AB
@@ -33,6 +37,7 @@ function get_angle($x1, $y1, $x2, $y2, $negative_y_is_up = 0){
  * @param  integer $index 输入数字
  * @return string        返回字母
  */
+if (! function_exists('int_to_words')) {
 function int_to_words($index)
 {
 	$r = 26;
@@ -47,6 +52,7 @@ function int_to_words($index)
 	}
 	return $str;
 }
+}
 
 /**
  * Excel列表号,转化为数字 A => 0 AA =>26 AB => 27
@@ -54,6 +60,7 @@ function int_to_words($index)
  * @param  string $words 输入字母
  * @return integer        返回数字
  */
+if (! function_exists('words_to_int')) {
 function words_to_int($words)
 {
 	$words = strtoupper($words);
@@ -67,6 +74,7 @@ function words_to_int($words)
 	}
 	return $index - 1;
 }
+}
 
 /**
  * 平方根
@@ -74,6 +82,7 @@ function words_to_int($words)
  * @param  float $x 输入
  * @return float    [description]
  */
+if (! function_exists('squareroot')) {
 function squareroot ($x) {
 	/*
 	for ($i = $x / 2.0, $d = 1.0;
@@ -101,6 +110,7 @@ function squareroot ($x) {
 	return 1/x;
 	*/
 }
+}
 
 /**
  * 指数表达式，乘方数只支持正整数
@@ -109,6 +119,7 @@ function squareroot ($x) {
  * @param  integer $exp 乘方数
  * @return number    结果
  */
+if (! function_exists('power')) {
 function power($base, $exp){
 	$result = 1;
 	while($exp > 0){
@@ -118,14 +129,17 @@ function power($base, $exp){
 	}
 	return $result;
 }
+}
 
 /**
  * 是否2的幂，比如 2,4,8,16,32,64,128
  * @return boolean 
  */
+if (! function_exists('is_pow_from_2')) {
 function is_pow_from_2($x)
 {
 	return (($x & ($x - 1)) == 0);
+}
 }
 
 /**
@@ -133,10 +147,12 @@ function is_pow_from_2($x)
  * @param  int $x 
  * @return int
  */
+if (! function_exists('absolute')) {
 function absolute($x)
 {
 	$y = $x >> 31;//>>S
 	return ($x + $y) ^ $y;
+}
 }
 
 /*
@@ -164,6 +180,7 @@ float Q_rsqrt( float number )
  * @param array $a 数字的数组
  * @return double
  */
+if (! function_exists('variation_and_standard_deviation')) {
 function variation_and_standard_deviation(array $a)
 {
 	if (empty($a))
@@ -174,6 +191,7 @@ function variation_and_standard_deviation(array $a)
 		$i += pow($value + 0 - $average, 2);
 	return $i / count($a);
 }
+}
 
 /**
  * 计算标准差
@@ -181,10 +199,12 @@ function variation_and_standard_deviation(array $a)
  * @param array $a 数字的数组
  * @return double
  */
+if (! function_exists('standard_deviation')) {
 function standard_deviation(array $a)
 {
 	$i = variation_and_standard_deviation($a);
 	return is_numeric($i) ? sqrt($i) : FALSE;
+}
 }
 
 /**
@@ -194,10 +214,12 @@ function standard_deviation(array $a)
  * @param  integer  $base 进制
  * @return integer       返回长度
  */
+if (! function_exists('digit_count')) {
 function digit_count($n, $base = 10) {
 	if($n == 0) return 1;
 	// using the built-in log10(x) might be more accurate than log(x)/log(10).
 	return $base == 10 ? 1 + floor(log10(abs($n))) : 1 + floor(log(abs($n), $base));
+}
 }
 
 /**
@@ -209,6 +231,7 @@ function digit_count($n, $base = 10) {
  * @param  integer $scale        精确到小数后面多少位
  * @return integer               0:相等 1:大于 -1:小于
  */
+if (! function_exists('decimal_compare')) {
 function decimal_compare($left_operand , $right_operand, $scale = 0)
 {
 
@@ -219,12 +242,13 @@ function decimal_compare($left_operand , $right_operand, $scale = 0)
 	else
 		return $left_operand > $right_operand ? 1 : -1;
 }
+}
 
-if (!function_exists('bccomp')) {
-	function bccomp($left_operand, $right_operand, $scale = 0)
-	{
-		return decimal_compare($left_operand, $right_operand, $scale);
-	}
+if (! function_exists('bccomp')) {
+function bccomp($left_operand, $right_operand, $scale = 0)
+{
+	return decimal_compare($left_operand, $right_operand, $scale);
+}
 }
 
 /**
@@ -233,9 +257,11 @@ if (!function_exists('bccomp')) {
  * @param  integer $precision 保留小数位数
  * @return float            取得的小数部分
  */
+if (! function_exists('decimal')) {
 function decimal($x, $precision = NULL)
 {
 	return bcsub($x ,floor($x), $precision);
+}
 }
 
 /**
@@ -246,6 +272,7 @@ function decimal($x, $precision = NULL)
  * @param  integer $decimalplace 
  * @return integer               结果
  */
+if (! function_exists('bclog')) {
 function bclog($x, $base = 10, $decimalplace = 12){
 	$integer_value = 0;
 	while($x < 1){
@@ -274,6 +301,7 @@ function bclog($x, $base = 10, $decimalplace = 12){
 	}
 	return $integer_value + $decimal_fraction ;
 }
+}
 
 /**
  * 计算平均数
@@ -281,13 +309,15 @@ function bclog($x, $base = 10, $decimalplace = 12){
  * @param array $x
  * @return double
  */
+if (! function_exists('average')) {
 function average($x)
 {
 	$count = func_num_args();
 	if ($count <= 1)
 		return !is_array($x) ? $x : array_sum($x) / (empty($x) ? 1 : count($x));
- 	$args = func_get_args();
- 	return array_sum($args) / $count;
+	$args = func_get_args();
+	return array_sum($args) / $count;
+}
 }
 
 /**
@@ -298,6 +328,7 @@ function average($x)
  * @param mixed $out 传址进来,返回间距和调整的值
  * @return mixed
  */
+if (! function_exists('equilibria')) {
 function equilibria(array $a, array $b, &$out = NULL)
 {
 	$out = array('difference' => 0, 'adjust' => 0);
@@ -325,6 +356,7 @@ function equilibria(array $a, array $b, &$out = NULL)
 
 	return $c;
 }
+}
 
 /**
  * 概率算法
@@ -334,6 +366,7 @@ function equilibria(array $a, array $b, &$out = NULL)
  * @param  array $list 
  * @return mixed         返回KEY
  */
+if (! function_exists('probability_rand')) {
 function probability_rand($list) { 
 	$result = FALSE; 
 	//概率数组的总概率精度 
@@ -352,7 +385,9 @@ function probability_rand($list) {
 	unset ($list);
  
 	return $result; 
-} 
+}
+}
+
 /**
  * 返回不大于 value 的下一个小数(指定小数位数)
  * 
@@ -360,28 +395,32 @@ function probability_rand($list) {
  * @param  integer $decimals 小数位数
  * @return float
  */
+if (! function_exists('floordec')) {
 function floordec($value, $decimals = 2)
-{    
+{
 	return floor($value * pow(10, $decimals)) / pow(10, $decimals);
 }
+}
+
 /**
  * 返回不小于 value 的下一个小数(指定小数位数)，value 如果有更多的小数部分则进一位
  * @param  float  $value
  * @param  integer $precision 小数位数
  * @return float
  */
+if (! function_exists('ceildec')) {
 function ceildec($value, $precision = 2)
 {
-    return ceil($value * pow(10, $precision)) / pow(10, $precision);
+	return ceil($value * pow(10, $precision)) / pow(10, $precision);
+}
 }
 
 // duplicates m$ excel's ceiling function
-if( !function_exists('ceiling') )
+if(! function_exists('ceiling')) {
+function ceiling($number, $significance = 1)
 {
-    function ceiling($number, $significance = 1)
-    {
-        return ( is_numeric($number) && is_numeric($significance) ) ? (ceil($number / $significance) * $significance) : false;
-    }
+	return ( is_numeric($number) && is_numeric($significance) ) ? (ceil($number / $significance) * $significance) : false;
+}
 }
 
 /**
@@ -390,6 +429,7 @@ if( !function_exists('ceiling') )
  * @param  boolean  $strict  严格判断，如果$x不为数字，则返回FALSE
  * @return boolean    是否是0
  */
+if (! function_exists('is_zero')) {
 function is_zero($x, $strict = FALSE)
 {
 	if (is_array($x))
@@ -407,6 +447,7 @@ function is_zero($x, $strict = FALSE)
 	}
 	return TRUE;
 }
+}
 
 /**
  * 大数字的随机数
@@ -415,10 +456,55 @@ function is_zero($x, $strict = FALSE)
  * @param  string $max 字符串的数字
  * @return string      随机数(字符串)
  */
+if (! function_exists('bc_rand')) {
 function bc_rand($min, $max)
 {
 	//x64 最大数字是9223372036854775807
 	$difference   = bcadd(bcsub($max, $min), 1);
 	$rand_percent = bcdiv(mt_rand(), mt_getrandmax(), 18); // 0 - 1.0
 	return bcadd($min, bcmul($difference, $rand_percent, 18), 0);
+}
+}
+
+/**
+ * 反转一个32位变量(比如int，或1个字符)的所有位，比如二进制：00000000,00000000,10000000,10000001反转为10000001,00000001,00000000,00000000
+ * @param  mixed $x 
+ * @return mixed 
+ */
+if(! function_exists('byterev')) {
+function byterev($x)
+{
+	$x = (($x >>  1) & 0x55555555) | (($x <<  1) & 0xaaaaaaaa) ;
+	$x = (($x >>  2) & 0x33333333) | (($x <<  2) & 0xcccccccc) ;
+	$x = (($x >>  4) & 0x0f0f0f0f) | (($x <<  4) & 0xf0f0f0f0) ;
+	$x = (($x >>  8) & 0x00ff00ff) | (($x <<  8) & 0xff00ff00) ;
+	$x = (($x >> 16) & 0x0000ffff) | (($x << 16) & 0xffff0000) ;
+	return $x;
+}
+}
+
+/**
+ * 计算出一个32位变量的1的个数，比如：十进制 124 的二进制为 1111100，故1的个数为5
+ * @param  mixed $x 
+ * @return int
+ */
+if(! function_exists('byte_pop')) {
+function byte_pop($x)
+{
+	$x = ($x & 0x55555555) + (($x & 0xaaaaaaaa) >> 1);
+	$x = ($x & 0x33333333) + (($x & 0xcccccccc) >> 2);
+	$x = ($x & 0x0f0f0f0f) + (($x & 0xf0f0f0f0) >> 4);
+	$x = ($x & 0x00ff00ff) + (($x & 0xff00ff00) >> 8);
+	$x = ($x & 0x0000ffff) + (($x & 0xffff0000) >> 16);
+
+	//更好的写法是
+	/*
+	$x = $x - (($x>>1) & 0x55555555);
+	$x = ($x & 0x33333333) + (($x >> 2) & 0x33333333);
+	$x = ($x + ($x >> 4)) & 0x0f0f0f0f;
+	$x += $x >> 8;
+	$x += $x >> 16;
+	*/
+	return $x;
+}
 }

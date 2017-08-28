@@ -29,6 +29,20 @@ class ClientRepository
     }
 
     /**
+     * Get a client instance for the given ID and user ID.
+     *
+     * @param  int  $clientId
+     * @param  mixed  $userId
+     * @return Client|null
+     */
+    public function findForUser($clientId, $userId)
+    {
+        return Client::where('id', $clientId)
+                     ->where('user_id', $userId)
+                     ->first();
+    }
+
+    /**
      * Get the client instances for the given user ID.
      *
      * @param  mixed  $userId
@@ -37,7 +51,7 @@ class ClientRepository
     public function forUser($userId)
     {
         return Client::where('user_id', $userId)
-                        ->orderBy('name', 'desc')->get();
+                        ->orderBy('name', 'asc')->get();
     }
 
     /**
@@ -160,8 +174,9 @@ class ClientRepository
      */
     public function revoked($id)
     {
-        return Client::where('id', $id)
-                ->where('revoked', true)->exists();
+        $client = Client::find($id);
+
+        return is_null($client) || $client->revoked;
     }
 
     /**

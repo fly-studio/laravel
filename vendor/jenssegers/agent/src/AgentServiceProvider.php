@@ -4,8 +4,8 @@ namespace Jenssegers\Agent;
 
 use Illuminate\Support\ServiceProvider;
 
-class AgentServiceProvider extends ServiceProvider {
-
+class AgentServiceProvider extends ServiceProvider
+{
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -26,10 +26,8 @@ class AgentServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->app['agent'] = $this->app->share(function ($app)
-        {
+        $this->app->singleton('agent', function ($app) {
             return new Agent($app['request']->server->all());
         });
     }
-
 }

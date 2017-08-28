@@ -4,9 +4,7 @@ namespace Laravel\Passport\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
 class ClientController
@@ -79,7 +77,9 @@ class ClientController
      */
     public function update(Request $request, $clientId)
     {
-        if (! $request->user()->clients->find($clientId)) {
+        $client = $this->clients->findForUser($clientId, $request->user()->getKey());
+
+        if (! $client) {
             return new Response('', 404);
         }
 
@@ -89,8 +89,7 @@ class ClientController
         ])->validate();
 
         return $this->clients->update(
-            $request->user()->clients->find($clientId),
-            $request->name, $request->redirect
+            $client, $request->name, $request->redirect
         );
     }
 
@@ -103,12 +102,14 @@ class ClientController
      */
     public function destroy(Request $request, $clientId)
     {
-        if (! $request->user()->clients->find($clientId)) {
+        $client = $this->clients->findForUser($clientId, $request->user()->getKey());
+
+        if (! $client) {
             return new Response('', 404);
         }
 
         $this->clients->delete(
-            $request->user()->clients->find($clientId)
+            $client
         );
     }
 }

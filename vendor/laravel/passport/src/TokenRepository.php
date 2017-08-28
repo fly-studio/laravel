@@ -8,6 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class TokenRepository
 {
     /**
+     * Creates a new Access Token
+     *
+     * @param  array  $attributes
+     * @return Token
+     */
+    public function create($attributes)
+    {
+        return Token::create($attributes);
+    }
+
+    /**
      * Get a token by the given ID.
      *
      * @param  string  $id
@@ -19,45 +30,95 @@ class TokenRepository
     }
 
     /**
+     * Get a token by the given user ID and token ID.
+     *
+     * @param  string  $id
+     * @param  int  $userId
+     * @return Token|null
+     */
+    public function findForUser($id, $userId)
+    {
+        return Token::where('id', $id)->where('user_id', $userId)->first();
+    }
+
+    /**
+     * Get the token instances for the given user ID.
+     *
+     * @param  mixed  $userId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function forUser($userId)
+    {
+        return Token::where('user_id', $userId)->get();
+    }
+
+    /**
+     * Get a valid token instance for the given user and client.
+     *
+     * @param  Model  $userId
+     * @param  Client  $client
+     * @return Token|null
+     */
+    public function getValidToken($user, $client)
+    {
+        return $client->tokens()
+                    ->whereUserId($user->getKey())
+                    ->whereRevoked(0)
+                    ->where('expires_at', '>', Carbon::now())
+                    ->first();
+    }
+
+    /**
      * Store the given token instance.
      *
      * @param  Token  $token
      * @return void
      */
-    public function save($token)
+    public function save(Token $token)
     {
         $token->save();
     }
 
     /**
+     * Revoke an access token.
+     *
+     * @param string $id
+     */
+    public function revokeAccessToken($id)
+    {
+        return Token::where('id', $id)->update(['revoked' => true]);
+    }
+
+    /**
+     * Check if the access token has been revoked.
+     *
+     * @param string $id
+     *
+     * @return bool Return true if this token has been revoked
+     */
+    public function isAccessTokenRevoked($id)
+    {
+        if ($token = $this->find($id)) {
+            return $token->revoked;
+        }
+
+        return true;
+    }
+
+    /**
      * Find a valid token for the given user and client.
      *
-     * @param  Model  $userId
+     * @param  Model  $user
      * @param  Client  $client
      * @return Token|null
      */
     public function findValidToken($user, $client)
     {
         return $client->tokens()
-                      ->whereUserId($user->id)
+                      ->whereUserId($user->getKey())
                       ->whereRevoked(0)
                       ->where('expires_at', '>', Carbon::now())
                       ->latest('expires_at')
                       ->first();
-    }
-
-    /**
-     * Revoke all of the access tokens for a given user and client.
-     *
-     * @deprecated since 1.0. Listen to Passport events on token creation instead.
-     *
-     * @param  mixed  $clientId
-     * @param  mixed  $userId
-     * @param  bool  $prune
-     * @return void
-     */
-    public function revokeOtherAccessTokens($clientId, $userId, $except = null, $prune = false)
-    {
-        //
     }
 }

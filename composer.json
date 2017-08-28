@@ -6,41 +6,42 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.3.*",
-        "smarty/smarty": "^3.1",
-        "doctrine/dbal": "^2.5",
-        "intervention/image": "^2.3",
-        "mews/captcha": "^2.1",
-        "php-curl-class/php-curl-class": "^4.11",
-        "jenssegers/agent": "^2.3",
-        "phpoffice/phpexcel": "^1.8",
-        "aferrandini/phpqrcode": "^1.0",
-        "predis/predis": "^1.0",
-        "phpseclib/phpseclib": "^2.0",
-        "laravel/scout": "^1.1",
-        "laravel/socialite": "^2.0",
-        "socialiteproviders/weixin-web": "^2.0",
-        "socialiteproviders/weixin": "^3.0",
-        "socialiteproviders/weibo": "^2.0",
-        "socialiteproviders/qq": "^2.0",
-        "laravel/passport": "^1.0",
-        "addons/smarty": "dev-master",
+        "addons/censor": "dev-master",
+        "addons/core": "dev-master",
+        "addons/elasticsearch": "dev-master",
         "addons/entrust": "dev-master",
         "addons/func": "dev-master",
-        "addons/core": "dev-master",
-        "elasticsearch/elasticsearch": "^5.0",
-        "tufanbarisyildirim/php-apk-parser": "dev-master",
+        "addons/smarty": "dev-master",
         "addons/ucloud": "dev-master",
-        "symfony/dom-crawler": "^3.1",
-        "addons/elasticsearch": "dev-master",
-        "rap2hpoutre/laravel-log-viewer": "^0.7.1",
-        "owen-it/laravel-auditing": "^3.1"
+        "aferrandini/phpqrcode": "^1.0",
+        "barryvdh/laravel-async-queue": "^0.6.0",
+        "doctrine/dbal": "^2.5",
+        "elasticsearch/elasticsearch": "^5.1",
+        "intervention/image": "^2.3",
+        "jenssegers/agent": "^2.4",
+        "laravel/framework": "5.4.*",
+        "laravel/passport": "^2.0",
+        "laravel/scout": "^3.0",
+        "laravel/socialite": "^3.0",
+        "laravel/tinker": "~1.0",
+        "mews/captcha": "^2.1",
+        "owen-it/laravel-auditing": "^3.1",
+        "phpoffice/phpexcel": "^1.8",
+        "phpseclib/phpseclib": "^2.0",
+        "predis/predis": "^1.1",
+        "rap2hpoutre/laravel-log-viewer": "^0.8",
+        "smarty/smarty": "^3.1",
+        "socialiteproviders/qq": "^3.0",
+        "socialiteproviders/weibo": "^3.0",
+        "socialiteproviders/weixin": "^4.0",
+        "socialiteproviders/weixin-web": "^3.0",
+        "symfony/dom-crawler": "^3.2",
+        "tufanbarisyildirim/php-apk-parser": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.0",
-        "symfony/css-selector": "3.1.*",
+        "phpunit/phpunit": "~5.7",
         "barryvdh/laravel-debugbar": "^2.3"
     },
     "autoload": {
@@ -52,9 +53,6 @@
         }
     },
     "autoload-dev": {
-        "classmap": [
-
-        ]
     },
     "scripts": {
         "post-root-package-install": [
@@ -67,14 +65,13 @@
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
             "composer dump-autoload --optimize"
         ],
-        "pre-update-cmd": [
-        ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "composer dump-autoload --optimize"
         ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

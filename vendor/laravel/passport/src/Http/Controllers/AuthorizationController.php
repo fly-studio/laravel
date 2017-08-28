@@ -51,7 +51,8 @@ class AuthorizationController
      * @param  ServerRequestInterface  $psrRequest
      * @param  Request  $request
      * @param  ClientRepository  $clients
-     * @return Response
+     * @param  TokenRepository  $tokens
+     * @return \Illuminate\Http\Response
      */
     public function authorize(ServerRequestInterface $psrRequest,
                               Request $request,
@@ -86,7 +87,7 @@ class AuthorizationController
     /**
      * Transform the authorization requests's scopes into Scope instances.
      *
-     * @param  AuthRequest  $request
+     * @param  AuthorizationRequest  $authRequest
      * @return array
      */
     protected function parseScopes($authRequest)
@@ -105,7 +106,7 @@ class AuthorizationController
      * @param  Model  $user
      * @return \Psr\Http\Message\ResponseInterface
      */
-    private function approveRequest($authRequest, $user)
+    protected function approveRequest($authRequest, $user)
     {
         $authRequest->setUser(new User($user->getKey()));
 

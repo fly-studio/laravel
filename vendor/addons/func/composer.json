@@ -18,6 +18,9 @@
         "php": ">=5.1.0"
     },
     "autoload": {
+        "psr-4": {
+            "Addons\\Func\\": "src/"
+        },
         "files": [
             "src/func/helpers.php"
         ]

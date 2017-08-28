@@ -1,25 +1,21 @@
 <?php
 namespace Addons\Core\Controllers;
 
+use Auth;
 use BadMethodCallException;
-//use Illuminate\Http\Exception\HttpResponseException;
+use Addons\Core\Http\OutputResponseFactory;
 use Addons\Core\Exceptions\OutputResponseException;
-use Addons\Core\Http\OutputResponse;
-use Addons\Core\Http\ApiResponse;
-use Addons\Core\Http\OfficeResponse;
-use Auth, Lang;
+
 trait OutputTrait {
 
 	protected $viewData = [];
-	protected $addons = true;
 	protected $outputTable = [
 		'error_param' => 'server.error_param',
 		'success_login' => 'auth.success_login',
 		'success_logout' => 'auth.success_logout',
 		'failure_login' => 'auth.failure_login',
-		'failure_noexists' => 'document.failure_noexist',
-		'failure_owner' => 'document.failure_owner',
-		'failure_post' => 'validation.failure_post',
+		'failure_notexists' => 'document.not_exists',
+		'failure_owner' => 'document.owner_deny',
 	];
 
 	public function __set($key, $value)
@@ -44,53 +40,41 @@ trait OutputTrait {
 
 	protected function subtitle($title, $url = NULL, $target = '_self')
 	{
+		$title = trans($title);
 		$titles = config('settings.subtitles', []);
-		config(['settings.subtitles' => array_merge($titles, compact('title', 'url', 'target'))]);
+		config(['settings.subtitles' => array_merge($titles, [compact('title', 'url', 'target')])]);
 	}
 
 	protected function view($filename, $data = [])
 	{
-		if ($this->addons) $this->viewData['_user'] = Auth::user();
+		if (!$this->disableUser) $this->viewData['_user'] = Auth::user();
 		return view($filename, $data)->with($this->viewData);
 	}
 
 	public function __call($method, $parameters)
 	{
-		list($type) = explode('_', $method);
-		if (in_array($type, ['error', 'failure', 'api', 'export', 'success', 'notice', 'warning']))
+		list($result) = explode('_', $method);
+		//$this->api($data, $encrypted = false);
+		//$this->office($data);
+		if (in_array($result, ['api', 'office']))
 		{
-			if ($method == 'api')
-			{
-				list($data, $encryptd) = $parameters + [[], false];
-				$response = new ApiResponse();
-				return $response->setData($data, $encryptd);
-			}
-			else if ($method == 'export')
-			{
-				list($data) = $parameters + [[]];
-				$response = new OfficeResponse();
-				return $response->setData($data);
-			}
-			// $this->success($message_name = null, $url = true, $data = [], $showData = true);
-			// $this->failure,notice,warning($message_name = null, $url = false, $data = [], $showData = false);
-			// $this->error_param($url = false, $data = [], $showData = false);
-			// $this->success_login($url = true, $data = [], $showData = true);
-			else if ($method == $type || isset($this->outputTable[$method]))
-			{
-				if ($method != $type) array_unshift($parameters, Lang::has($this->outputTable[$method]) ? $this->outputTable[$method] : 'core::common.'.$this->outputTable[$method]);
-
-				list($message_name, $url, $data, $showData) = $parameters + ($type == 'success' ? [null, true, [], true] : [null, false, [], false]);
-
-				$response = new OutputResponse();
-				$response->setResult($type)->setMessage($message_name, $data)->setUrl($url);
-				if ($showData) $response->setData($data);
-
-				if ($type != 'success')
-					throw new OutputResponseException($response); // 如果failure 则直接抛出
-
-				return $response;
-			}
+			return app(OutputResponseFactory::class)->make($result, ...$parameters);
 		}
+		// $this->success($message_name = null, $tipType = true, $data = [], $showData = true);
+		// $this->failure,notice,warning($message_name = null, $tipType = false, $data = [], $showData = false);
+		// $this->error_param($tipType = false, $data = [], $showData = false);
+		// $this->success_login($tipType = true, $data = [], $showData = true);
+		else if (in_array($result, ['error', 'failure', 'success', 'notice', 'warning']))
+		{
+			//将message_name入栈
+			if ($method != $result)
+				array_unshift($parameters, isset($this->outputTable[$method]) ? $this->outputTable[$method] : $method);
+
+			//抛出成功或失败
+			$response = app(OutputResponseFactory::class)->make($result, ...$parameters)->disableUser($this->disableUser);
+			throw new OutputResponseException($response);
+		}
+
         throw new BadMethodCallException("Method [{$method}] does not exist.");
 	}
 

@@ -19,9 +19,7 @@
  * @param array
  * @return string
  */
-function smarty_modifier_attachment($id, $method = NULL, $params = [])
+function smarty_modifier_attachment($id, $params = [], $route = 'attachment')
 {
-	!empty($id) && $params['id'] = $id;
-	$url = url('attachment'.(!empty($method) ? '/'.$method : ''), $params);
-	return $url;
+	return url()->route($route, $params + ['id' => $id]);
 }

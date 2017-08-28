@@ -96,4 +96,12 @@ return [
     |--------------------------------------------------------------------------
     */
     'permission_foreign_key' => 'permission_id',
+
+    'import_fields' => [
+        'view',
+        'create',
+        'edit',
+        'destroy',
+        'export',
+    ]
 ];

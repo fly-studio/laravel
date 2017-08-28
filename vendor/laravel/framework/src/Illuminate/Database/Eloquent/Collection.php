@@ -14,12 +14,20 @@ class Collection extends BaseCollection implements QueueableCollection
      *
      * @param  mixed  $key
      * @param  mixed  $default
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model|static
      */
     public function find($key, $default = null)
     {
         if ($key instanceof Model) {
             $key = $key->getKey();
+        }
+
+        if (is_array($key)) {
+            if ($this->isEmpty()) {
+                return new static;
+            }
+
+            return $this->whereIn($this->first()->getKeyName(), $key);
         }
 
         return Arr::first($this->items, function ($model) use ($key) {
@@ -65,20 +73,21 @@ class Collection extends BaseCollection implements QueueableCollection
      * Determine if a key exists in the collection.
      *
      * @param  mixed  $key
+     * @param  mixed  $operator
      * @param  mixed  $value
      * @return bool
      */
-    public function contains($key, $value = null)
+    public function contains($key, $operator = null, $value = null)
     {
-        if (func_num_args() == 2) {
-            return parent::contains($key, $value);
+        if (func_num_args() > 1 || $this->useAsCallable($key)) {
+            return parent::contains(...func_get_args());
         }
 
-        if ($this->useAsCallable($key)) {
-            return parent::contains($key);
+        if ($key instanceof Model) {
+            return parent::contains(function ($model) use ($key) {
+                return $model->is($key);
+            });
         }
-
-        $key = $key instanceof Model ? $key->getKey() : $key;
 
         return parent::contains(function ($model) use ($key) {
             return $model->getKey() == $key;

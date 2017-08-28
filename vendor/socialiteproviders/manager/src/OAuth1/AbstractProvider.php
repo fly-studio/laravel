@@ -57,6 +57,23 @@ abstract class AbstractProvider extends BaseProvider
 
         return $user;
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function userFromTokenAndSecret($token, $secret)
+    {
+        $tokenCredentials = new TokenCredentials();
+
+        $tokenCredentials->setIdentifier($token);
+        $tokenCredentials->setSecret($secret);
+
+        $user = $this->mapUserToObject((array)$this->server->getUserDetails($tokenCredentials));
+
+        $user->setToken($tokenCredentials->getIdentifier(), $tokenCredentials->getSecret());
+
+        return $user;
+    }
 
     /**
      * Redirect the user to the authentication page for the provider.
@@ -66,12 +83,12 @@ abstract class AbstractProvider extends BaseProvider
     public function redirect()
     {
         if (!$this->isStateless()) {
-            $this->request->getSession()->set(
+            $this->request->getSession()->put(
                 'oauth.temp', $temp = $this->server->getTemporaryCredentials()
             );
         } else {
             $temp = $this->server->getTemporaryCredentials();
-            $this->request->session()->set('oauth_temp', serialize($temp));
+            $this->request->session()->put('oauth_temp', serialize($temp));
         }
 
         return new RedirectResponse($this->server->getAuthorizationUrl($temp));

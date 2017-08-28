@@ -71,6 +71,9 @@ class ClientBuilder
     /** @var array */
     private $hosts;
 
+    /** @var array */
+    private $connectionParams;
+
     /** @var  int */
     private $retries;
 
@@ -86,12 +89,45 @@ class ClientBuilder
     /** @var null|bool|string */
     private $sslVerification = null;
 
+    /** @var bool  */
+    private $allowBadJSON = false;
+
     /**
      * @return ClientBuilder
      */
     public static function create()
     {
         return new static();
+    }
+
+    /**
+     * Can supply first parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->ransport
+     *
+     */
+    public function getTransport()
+    {
+        return $this->transport;
+    }
+
+    /**
+     * Can supply second parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->endpoint
+     *
+     */
+    public function getEndpoint()
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * Can supply third parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->registeredNamespacesBuilders
+     *
+     */
+    public function getRegisteredNamespacesBuilders()
+    {
+        return $this->registeredNamespacesBuilders;
     }
 
     /**
@@ -313,6 +349,17 @@ class ClientBuilder
     }
 
     /**
+     * @param array $params
+     * @return $this
+     */
+    public function setConnectionParams(array $params)
+    {
+        $this->connectionParams = $params;
+
+        return $this;
+    }
+
+    /**
      * @param int $retries
      * @return $this
      */
@@ -381,11 +428,24 @@ class ClientBuilder
         return $this;
     }
 
+    public function allowBadJSONSerialization()
+    {
+        $this->allowBadJSON = true;
+        return $this;
+    }
+
     /**
      * @return Client
      */
     public function build()
     {
+        if(!defined('JSON_PRESERVE_ZERO_FRACTION') && $this->allowBadJSON === false) {
+            throw new RuntimeException("Your version of PHP / json-ext does not support the constant 'JSON_PRESERVE_ZERO_FRACTION',".
+            " which is important for proper type mapping in Elasticsearch. Please upgrade your PHP or json-ext.\n".
+            "If you are unable to upgrade, and are willing to accept the consequences, you may use the allowBadJSONSerialization()".
+            " method on the ClientBuilder to bypass this limitation.");
+        }
+
         $this->buildLoggers();
 
         if (is_null($this->handler)) {
@@ -425,8 +485,27 @@ class ClientBuilder
         }
 
         if (is_null($this->connectionFactory)) {
-            $connectionParams = [];
-            $this->connectionFactory = new ConnectionFactory($this->handler, $connectionParams, $this->serializer, $this->logger, $this->tracer);
+            if (is_null($this->connectionParams)) {
+                $this->connectionParams = [];
+            }
+
+            // Make sure we are setting Content-type and Accept (unless the user has explicitly
+            // overridden it
+            if (isset($this->connectionParams['client']['headers']) === false) {
+                $this->connectionParams['client']['headers'] = [
+                    'Content-type' => ['application/json'],
+                    'Accept' => ['application/json']
+                ];
+            } else {
+                if (isset($this->connectionParams['client']['headers']['Content-type']) === false) {
+                    $this->connectionParams['client']['headers']['Content-type'] = ['application/json'];
+                }
+                if (isset($this->connectionParams['client']['headers']['Accept']) === false) {
+                    $this->connectionParams['client']['headers']['Accept'] = ['application/json'];
+                }
+            }
+
+            $this->connectionFactory = new ConnectionFactory($this->handler, $this->connectionParams, $this->serializer, $this->logger, $this->tracer);
         }
 
         if (is_null($this->hosts)) {

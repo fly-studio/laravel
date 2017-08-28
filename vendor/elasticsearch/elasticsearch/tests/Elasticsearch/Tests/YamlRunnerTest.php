@@ -42,7 +42,7 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
 
     /** @var array A list of supported features */
     private static $supportedFeatures = [
-        'stash_in_path',
+        'stash_in_path', 'warnings'
     ];
 
     /** @var array A mapping for endpoint when there is a reserved keywords for the method / namespace name */
@@ -56,7 +56,8 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
     private static $skippedTest = [
         'cat.nodeattrs/10_basic.yaml' => 'Using java regex fails in PHP',
         'cat.repositories/10_basic.yaml' => 'Using java regex fails in PHP',
-        'indices.shrink/10_basic.yaml' => 'Shrink tests seem to require multiple nodes'
+        'indices.shrink/10_basic.yaml' => 'Shrink tests seem to require multiple nodes',
+        'indices.rollover/10_basic.yaml' => 'Rollover test seems buggy atm'
     ];
 
     /** @var array A list of files to skip completely, due to fatal parsing errors */
@@ -102,7 +103,11 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->clean();
-        $this->client = Elasticsearch\ClientBuilder::create()->setHosts([self::getHost()])->build();
+        $builder = Elasticsearch\ClientBuilder::create()->setHosts([self::getHost()]);
+        if (version_compare(phpversion(), '5.6.6', '<') || ! defined('JSON_PRESERVE_ZERO_FRACTION')) {
+            $builder->allowBadJSONSerialization();
+        }
+        $this->client = $builder->build();
     }
 
     /**
@@ -236,10 +241,17 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
     public function operationDo($operation, $lastOperationResult, &$context, $testName, $async = false)
     {
         $expectedError = null;
+        $expectedWarnings = null;
 
-        // Check if a error must be catched
+        // Check if a error must be caught
         if ('catch' === key($operation)) {
             $expectedError = current($operation);
+            next($operation);
+        }
+
+        // Check if a warning must be caught
+        if ('warnings' === key($operation)) {
+            $expectedWarnings = current($operation);
             next($operation);
         }
 
@@ -258,7 +270,7 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
             $method = Inflector::camelize($endpointInfo[1]);
         }
 
-        if (property_exists($endpointParams, 'ignore')) {
+        if (is_object($endpointParams) === true && property_exists($endpointParams, 'ignore')) {
             $ignore = $endpointParams->ignore;
             unset($endpointParams->ignore);
 
@@ -283,12 +295,17 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
             self::markTestIncomplete(sprintf('Method "%s" not implement in "%s"', $method, get_class($caller)));
         }
 
-        // Exist* methods have to be manually 'unwrapped' into true/false for async
-        if (strpos($method, "exist") !== false && $async === true) {
-            return $this->executeAsyncExistRequest($caller, $method, $endpointParams, $expectedError, $testName);
+        // TODO remove this after cat testing situation resolved
+        if ($caller instanceof Elasticsearch\Namespaces\CatNamespace) {
+            $endpointParams->format = 'text';
         }
 
-        return $this->executeRequest($caller, $method, $endpointParams, $expectedError, $testName);
+        // Exist* methods have to be manually 'unwrapped' into true/false for async
+        if (strpos($method, "exist") !== false && $async === true) {
+            return $this->executeAsyncExistRequest($caller, $method, $endpointParams, $expectedError, $expectedWarnings, $testName);
+        }
+
+        return $this->executeRequest($caller, $method, $endpointParams, $expectedError, $expectedWarnings, $testName);
     }
 
     /**
@@ -304,7 +321,7 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
      *
      * @return array|mixed
      */
-    public function executeRequest($caller, $method, $endpointParams, $expectedError, $testName)
+    public function executeRequest($caller, $method, $endpointParams, $expectedError, $expectedWarnings, $testName)
     {
         try {
             $response = $caller->$method($endpointParams);
@@ -312,6 +329,8 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
             while ($response instanceof FutureArrayInterface) {
                 $response = $response->wait();
             }
+
+            $this->checkForWarnings($expectedWarnings);
 
             return $response;
         } catch (\Exception $exception) {
@@ -340,7 +359,7 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
      *
      * @return bool
      */
-    public function executeAsyncExistRequest($caller, $method, $endpointParams, $expectedError, $testName)
+    public function executeAsyncExistRequest($caller, $method, $endpointParams, $expectedError, $expectedWarnings, $testName)
     {
         try {
 
@@ -349,6 +368,8 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
             while ($response instanceof FutureArrayInterface) {
                 $response = $response->wait();
             }
+
+            $this->checkForWarnings($expectedWarnings);
 
             if ($response['status'] === 200) {
                 return true;
@@ -366,6 +387,45 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
 
             throw $exception;
         }
+    }
+
+    public function checkForWarnings($expectedWarnings) {
+        $last = $this->client->transport->getLastConnection()->getLastRequestInfo();
+
+
+        // We have some warnings to check
+        if ($expectedWarnings !== null) {
+            if (isset($last['response']['headers']['Warning']) === true) {
+                foreach ($last['response']['headers']['Warning'] as $warning) {
+                    //$position = array_search($warning, $expectedWarnings);
+                    $position = false;
+                    foreach ($expectedWarnings as $index => $value) {
+                        if (stristr($warning, $value) !== false) {
+                            $position = $index;
+                            break;
+                        }
+                    }
+                    if ($position !== false) {
+                        // found the warning
+                        unset($expectedWarnings[$position]);
+                    } else {
+                        // didn't find, throw error
+                        //throw new \Exception("Expected to find warning [$warning] but did not.");
+                    }
+                }
+                if (count($expectedWarnings) > 0) {
+                    print_r($last['response']);
+                    throw new \Exception("Expected to find more warnings: ". print_r($expectedWarnings, true));
+                }
+            }
+        }
+
+        // Check to make sure we're adding headers
+        static::assertArrayHasKey('Content-type', $last['request']['headers'], print_r($last['request']['headers'], true));
+        static::assertEquals('application/json', $last['request']['headers']['Content-type'][0], print_r($last['request']['headers'], true));
+        static::assertArrayHasKey('Accept', $last['request']['headers'], print_r($last['request']['headers'], true));
+        static::assertEquals('application/json', $last['request']['headers']['Accept'][0], print_r($last['request']['headers'], true));
+
     }
 
     /**
@@ -523,6 +583,10 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
      */
     public function operationSkip($operation, $lastOperationResult, $testName)
     {
+        if (is_object($operation) !== true ) {
+            return $lastOperationResult;
+        }
+
         if (property_exists($operation, 'features') && !in_array($operation->features, static::$supportedFeatures, true)) {
             static::markTestSkipped(sprintf('Feature(s) %s not supported in test "%s"', json_encode($operation->features), $testName));
         }
@@ -536,15 +600,15 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
                 static::markTestSkipped(sprintf('Skip test "%s", as all versions should be skipped (%s)', $testName, $operation->reason));
             }
 
-            if (!isset($version[0])) {
+            if (!isset($version[0]) || $version[0] === "") {
                 $version[0] = ~PHP_INT_MAX;
             }
 
-            if (!isset($version[1])) {
+            if (!isset($version[1]) || $version[1] === "" ) {
                 $version[1] = PHP_INT_MAX;
             }
 
-            if (version_compare(static::$esVersion, $version[0]) >= 0 && version_compare($version[1], YamlRunnerTest::$esVersion) >= 0) {
+            if (version_compare(static::$esVersion, $version[0], '>=')  && version_compare(static::$esVersion, $version[1], '<=')) {
                 static::markTestSkipped(sprintf('Skip test "%s", as version %s should be skipped (%s)', $testName, static::$esVersion, $operation->reason));
             }
         }
