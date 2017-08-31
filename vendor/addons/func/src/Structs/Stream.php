@@ -4,8 +4,9 @@ namespace Addons\Func\Structs;
 
 use RuntimeException;
 use BadMethodCallException;
+use Psr\Http\Message\StreamInterface;
 
-class Stream {
+class Stream implements StreamInterface {
 
 	private $stream;
 	private $size;
@@ -30,6 +31,12 @@ class Stream {
 			'x+t' => true, 'c+t' => true, 'a' => true, 'a+' => true
 		]
 	];
+
+	public static function create($resource) {
+		$self = new static;
+		$self->load($resource);
+		return $self;
+	}
 
 	/**
 	 * This constructor accepts an associative array of options.
@@ -92,12 +99,21 @@ class Stream {
 	public function getContents()
 	{
 		$contents = stream_get_contents($this->stream);
-
 		if ($contents === false) {
 			throw new RuntimeException('Unable to read stream contents');
 		}
 
 		return $contents;
+	}
+
+	public function getTemporaryContents()
+	{
+		$off = $this->tell();
+		$contents = stream_get_contents($this->stream);
+
+		$this->seek($off);
+
+		return $contents ?: '';
 	}
 
 	public function offset()
@@ -293,21 +309,21 @@ class Stream {
 			$this->close();*/
 			$this->truncate(strlen($resource));
 			$this->write($resource, 0);
-
+			$this->rewind();
 			return true;
 		} else if (is_resource($resource)) {
 			$this->close();
 			$this->stream = $resource;
 			$this->rewind();
-
 			return true;
-		} else if ($resource instanceof static) {
+		} else if ($resource instanceof StreamInterface) {
 			$this->rewind();
-			$stream->rewind();
-			$this->truncate($stream->getSize());
-			while(!$stream->eof())
-				$this->write($stream->read(1024));
+			$resource->rewind();
+			if ($resource->getSize() < $this->getSize()) $this->truncate($resource->getSize());
+			while(!$resource->eof())
+				$this->write($resource->read(1024));
 
+			$this->rewind();
 			return true;
 		}
 
