@@ -2,6 +2,7 @@
 namespace Addons\Core;
 
 use Illuminate\Support\Str;
+use Addons\Core\Cache\RWRedis;
 use Symfony\Component\Finder\Finder;
 use Addons\Core\Http\ResponseFactory;
 use Addons\Core\Events\EventDispatcher;
@@ -22,7 +23,9 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-
+		$this->app->singleton(RWRedis::class, function ($app) {
+			return new RWRedis();
+		});
 		/*$this->app->singleton('Illuminate\Contracts\Routing\ResponseFactory', function ($app) {
 			return new ResponseFactory($app['Illuminate\Contracts\View\Factory'], $app['redirect']);
 		});*/
