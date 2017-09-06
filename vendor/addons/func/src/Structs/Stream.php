@@ -300,34 +300,41 @@ class Stream implements StreamInterface {
 
 	public function apply($resource)
 	{
-		if (is_scalar($resource)) {
-			/*$stream = fopen('php://temp', 'r+');
-			if ($resource !== '') {
-				fwrite($stream, $resource);
-				fseek($stream, 0);
-			}
-			$this->close();*/
+		if (is_null($resource))
+		{
+			$this->truncate(0);
+		}
+		else if (is_scalar($resource))
+		{
+			$resource = strval($resource);
 			$this->truncate(strlen($resource));
-			$this->write($resource, 0);
 			$this->rewind();
-			return true;
-		} else if (is_resource($resource)) {
+			$this->write($resource);
+		}
+		else if (is_resource($resource))
+		{
 			$this->close();
 			$this->stream = $resource;
-			$this->rewind();
-			return true;
-		} else if ($resource instanceof StreamInterface) {
-			$this->rewind();
-			$resource->rewind();
-			if ($resource->getSize() < $this->getSize()) $this->truncate($resource->getSize());
-			while(!$resource->eof())
-				$this->write($resource->read(1024));
-
-			$this->rewind();
-			return true;
+		}
+		else if ($resource instanceof StreamInterface)
+		{
+			if ($resource != $this)
+			{
+				$this->rewind();
+				$resource->rewind();
+				if ($resource->getSize() < $this->getSize()) $this->truncate($resource->getSize());
+				while(!$resource->eof())
+					$this->write($resource->read(1024));
+			}
+		}
+		else
+		{
+			return false;
 		}
 
-		return false;
+		$this->rewind();
+
+		return true;
 	}
 
 	public function load($resource)
