@@ -10,10 +10,11 @@ class ConsoleLog {
 
 	static $consoleOutput;
 	static $daemon = false;
+	static $debug = true;
 
 	public static function write($type, $message)
 	{
-		if (!config('app.debug') && $type == 'debug') return;
+		if (!static::$debug && $type != 'error') return;
 
 		if (static::$daemon)
 		{
