@@ -14,10 +14,9 @@ class ConsoleLog {
 
 	public static function write($type, $message)
 	{
-		if (!static::$debug && $type != 'error') return;
-
 		if (static::$daemon)
 		{
+			if (!static::$debug && $type != 'error') return;
 			logger()->$type($message);
 		}
 		else if (app()->runningInConsole())
