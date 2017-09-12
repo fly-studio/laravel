@@ -51,7 +51,7 @@ class Stream implements StreamInterface {
 	 *
 	 * @throws \InvalidArgumentException if the stream is not a stream resource
 	 */
-	public function __construct($options = [])
+	public function __construct($name = 'php://temp', $options = [])
 	{
 		if (isset($options['size'])) {
 			$this->size = $options['size'];
@@ -61,7 +61,7 @@ class Stream implements StreamInterface {
 			? $options['metadata']
 			: [];
 
-		$this->stream = fopen('php://temp', 'w+');
+		$this->stream = fopen($name, 'w+');
 		$meta = stream_get_meta_data($this->stream);
 		$this->seekable = $meta['seekable'];
 		$this->readable = isset(self::$readWriteHash['read'][$meta['mode']]);
@@ -293,7 +293,7 @@ class Stream implements StreamInterface {
 		return isset($meta[$key]) ? $meta[$key] : null;
 	}
 
-	public function empty()
+	public function clear()
 	{
 		$this->truncate(0);
 	}

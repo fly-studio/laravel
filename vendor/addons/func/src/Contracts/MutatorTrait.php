@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Core;
+namespace Addons\Func\Contracts;
 
 use BadMethodCallException;
 
@@ -11,8 +11,11 @@ trait MutatorTrait {
 		return method_exists($this, $method_name) ? true : property_exists($this, $method_name);
 	}
 
-	public function __call($method, $parameters)
+	public function __call($method, array $parameters)
 	{
+		if (stripos($method, 'set') === 0 || stripos($method, 'get') === 0)
+			$method = lcfirst(substr($method, 3));
+
 		if ($this->method_exists($method))
 		{
 			if (empty($parameters))

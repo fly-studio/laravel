@@ -30,11 +30,10 @@ class RWRedis {
 			foreach($config['clusters'] as $key => $value)
 			{
 				$newKey = $this->newKey($key);
-				if (!array_key_exists($newKey, $config))
+				if (!array_key_exists($newKey, $config['clusters']))
 					$config['clusters'][$newKey] = array_merge($value, $readonly);
 			}
 		}
-
 
 		$this->redis = new RedisManager($driver, $config);
 	}
