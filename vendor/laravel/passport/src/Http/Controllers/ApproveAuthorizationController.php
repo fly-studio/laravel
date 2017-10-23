@@ -13,14 +13,14 @@ class ApproveAuthorizationController
     /**
      * The authorization server.
      *
-     * @var AuthorizationServer
+     * @var \League\OAuth2\Server\AuthorizationServer
      */
     protected $server;
 
     /**
      * Create a new controller instance.
      *
-     * @param  AuthorizationServer  $server
+     * @param  \League\OAuth2\Server\AuthorizationServer  $server
      * @return void
      */
     public function __construct(AuthorizationServer $server)
@@ -31,16 +31,16 @@ class ApproveAuthorizationController
     /**
      * Approve the authorization request.
      *
-     * @param  Request  $request
-     * @return Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function approve(Request $request)
     {
         return $this->withErrorHandling(function () use ($request) {
             $authRequest = $this->getAuthRequestFromSession($request);
 
-            return $this->server->completeAuthorizationRequest(
-                $authRequest, new Psr7Response
+            return $this->convertResponse(
+                $this->server->completeAuthorizationRequest($authRequest, new Psr7Response)
             );
         });
     }

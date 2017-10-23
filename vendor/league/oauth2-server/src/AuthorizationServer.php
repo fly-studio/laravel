@@ -3,7 +3,6 @@
  * @author      Alex Bilbie <hello@alexbilbie.com>
  * @copyright   Copyright (c) Alex Bilbie
  * @license     http://mit-license.org/
- *
  * @link        https://github.com/thephpleague/oauth2-server
  */
 
@@ -25,8 +24,6 @@ use Psr\Http\Message\ServerRequestInterface;
 class AuthorizationServer implements EmitterAwareInterface
 {
     use EmitterAwareTrait;
-
-    const ENCRYPTION_KEY_ERROR = 'You must set the encryption key going forward to improve the security of this library - see this page for more information https://oauth2.thephpleague.com/v5-security-improvements/';
 
     /**
      * @var GrantTypeInterface[]
@@ -80,7 +77,7 @@ class AuthorizationServer implements EmitterAwareInterface
      * @param AccessTokenRepositoryInterface $accessTokenRepository
      * @param ScopeRepositoryInterface       $scopeRepository
      * @param CryptKey|string                $privateKey
-     * @param CryptKey|string                $publicKey
+     * @param string                         $encryptionKey
      * @param null|ResponseTypeInterface     $responseType
      */
     public function __construct(
@@ -88,7 +85,7 @@ class AuthorizationServer implements EmitterAwareInterface
         AccessTokenRepositoryInterface $accessTokenRepository,
         ScopeRepositoryInterface $scopeRepository,
         $privateKey,
-        $publicKey,
+        $encryptionKey,
         ResponseTypeInterface $responseType = null
     ) {
         $this->clientRepository = $clientRepository;
@@ -100,22 +97,8 @@ class AuthorizationServer implements EmitterAwareInterface
         }
         $this->privateKey = $privateKey;
 
-        if ($publicKey instanceof CryptKey === false) {
-            $publicKey = new CryptKey($publicKey);
-        }
-        $this->publicKey = $publicKey;
-
+        $this->encryptionKey = $encryptionKey;
         $this->responseType = $responseType;
-    }
-
-    /**
-     * Set the encryption key
-     *
-     * @param string $key
-     */
-    public function setEncryptionKey($key)
-    {
-        $this->encryptionKey = $key;
     }
 
     /**
@@ -134,14 +117,7 @@ class AuthorizationServer implements EmitterAwareInterface
         $grantType->setClientRepository($this->clientRepository);
         $grantType->setScopeRepository($this->scopeRepository);
         $grantType->setPrivateKey($this->privateKey);
-        $grantType->setPublicKey($this->publicKey);
         $grantType->setEmitter($this->getEmitter());
-
-        if ($this->encryptionKey === null) {
-            // @codeCoverageIgnoreStart
-            trigger_error(self::ENCRYPTION_KEY_ERROR, E_USER_DEPRECATED);
-            // @codeCoverageIgnoreEnd
-        }
         $grantType->setEncryptionKey($this->encryptionKey);
 
         $this->enabledGrantTypes[$grantType->getIdentifier()] = $grantType;
@@ -159,12 +135,6 @@ class AuthorizationServer implements EmitterAwareInterface
      */
     public function validateAuthorizationRequest(ServerRequestInterface $request)
     {
-        if ($this->encryptionKey === null) {
-            // @codeCoverageIgnoreStart
-            trigger_error(self::ENCRYPTION_KEY_ERROR, E_USER_DEPRECATED);
-            // @codeCoverageIgnoreEnd
-        }
-
         foreach ($this->enabledGrantTypes as $grantType) {
             if ($grantType->canRespondToAuthorizationRequest($request)) {
                 return $grantType->validateAuthorizationRequest($request);

@@ -1,21 +1,34 @@
 <?php
+/**
+ * This file is part of the Laravel Auditing package.
+ *
+ * @author     Antério Vieira <anteriovieira@gmail.com>
+ * @author     Quetzy Garcia  <quetzyg@altek.org>
+ * @author     Raphael França <raphaelfrancabsb@gmail.com>
+ * @copyright  2015-2017
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 namespace OwenIt\Auditing;
 
 use Illuminate\Support\ServiceProvider;
-use OwenIt\Auditing\Console\AuditingTableCommand;
-use OwenIt\Auditing\Console\AuditorMakeCommand;
+use OwenIt\Auditing\Console\AuditDriverMakeCommand;
+use OwenIt\Auditing\Console\AuditTableCommand;
 use OwenIt\Auditing\Console\InstallCommand;
-use OwenIt\Auditing\Contracts\Dispatcher;
-use OwenIt\Auditing\Facades\Auditing as AuditingFacade;
+use OwenIt\Auditing\Contracts\Auditor;
 
-/**
- * This is the owen auditing service provider class.
- */
 class AuditingServiceProvider extends ServiceProvider
 {
     /**
-     * Boot the service provider.
+     * {@inheritdoc}
+     */
+    protected $defer = true;
+
+    /**
+     * Bootstrap the service provider.
      *
      * @return void
      */
@@ -33,13 +46,15 @@ class AuditingServiceProvider extends ServiceProvider
      */
     protected function setupConfig($app)
     {
-        $source = realpath(__DIR__.'/../config/auditing.php');
+        $config = realpath(__DIR__.'/../config/audit.php');
 
         if ($app->runningInConsole()) {
-            $this->publishes([$source => config_path('auditing.php')]);
+            $this->publishes([
+                $config => base_path('config/audit.php'),
+            ]);
         }
 
-        $this->mergeConfigFrom($source, 'auditing');
+        $this->mergeConfigFrom($config, 'audit');
     }
 
     /**
@@ -50,31 +65,23 @@ class AuditingServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands([
-            AuditingTableCommand::class,
-            AuditorMakeCommand::class,
+            AuditTableCommand::class,
+            AuditDriverMakeCommand::class,
             InstallCommand::class,
         ]);
 
-        $this->app->bind('OwenIt\Auditing\Auditing', Auditing::class);
-
-        $this->app->singleton(AuditorManager::class, function ($app) {
-            return new AuditorManager($app);
+        $this->app->singleton(Auditor::class, function ($app) {
+            return new \OwenIt\Auditing\Auditor($app);
         });
-
-        $this->app->alias(
-            AuditorManager::class, Dispatcher::class
-        );
-
-        $this->app->alias('Auditing', AuditingFacade::class);
     }
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function provides()
     {
-        return [AuditorManager::class, Dispatcher::class, AuditingFacade::class];
+        return [
+            Auditor::class,
+        ];
     }
 }

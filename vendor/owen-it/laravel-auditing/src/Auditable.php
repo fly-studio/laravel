@@ -1,230 +1,226 @@
 <?php
+/**
+ * This file is part of the Laravel Auditing package.
+ *
+ * @author     Antério Vieira <anteriovieira@gmail.com>
+ * @author     Quetzy Garcia  <quetzyg@altek.org>
+ * @author     Raphael França <raphaelfrancabsb@gmail.com>
+ * @copyright  2015-2017
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE.md file that was distributed
+ * with this source code.
+ */
 
 namespace OwenIt\Auditing;
 
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
-use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
+use OwenIt\Auditing\Contracts\UserResolver;
+use RuntimeException;
+use UnexpectedValueException;
 
 trait Auditable
 {
-    use DatabaseAudits, Auditor;
-
     /**
+     *  Auditable attribute exclusions.
+     *
      * @var array
      */
-    private $doKeep = [];
+    protected $auditableExclusions = [];
 
     /**
-     * @var array
-     */
-    private $dontKeep = [];
-
-    /**
-     * @var array
-     */
-    private $originalData = [];
-
-    /**
-     * @var array
-     */
-    private $updatedData = [];
-
-    /**
-     * @var bool
-     */
-    private $updating = false;
-
-    /**
-     * @var array
-     */
-    protected $dirtyData = [];
-
-    /**
-     * @var array
-     */
-    protected $oldData = [];
-
-    /**
-     * @var array
-     */
-    protected $newData = [];
-
-    /**
+     * Audit event name.
+     *
      * @var string
      */
-    protected $auditType = '';
+    protected $auditEvent;
 
     /**
-     * @var string
-     */
-    protected $auditUserId = '';
-
-    /**
-     * @var string
-     */
-    protected $auditCurrentRoute = '';
-
-    /**
-     * @var string
-     */
-    protected $auditIpAddress = '';
-
-    /**
-     * Init auditing.
+     * Auditable boot logic.
+     *
+     * @return void
      */
     public static function bootAuditable()
     {
-        if (static::isAuditEnabled()) {
-            static::observe(new AuditObserver());
+        if (static::isAuditingEnabled()) {
+            static::observe(new AuditableObserver());
         }
     }
 
     /**
-     * Prepare audit model.
+     * {@inheritdoc}
+     */
+    public function audits()
+    {
+        return $this->morphMany(
+            Config::get('audit.implementation', \OwenIt\Auditing\Models\Audit::class),
+            'auditable'
+        );
+    }
+
+    /**
+     * Update excluded audit attributes.
      *
      * @return void
      */
-    public function prepareAudit()
+    protected function updateAuditExclusions()
     {
-        $this->originalData = $this->original;
+        $this->auditableExclusions = $this->getAuditExclude();
 
-        $this->updatedData = $this->attributes;
+        // When in strict mode, hidden and non visible attributes are excluded
+        if ($this->getAuditStrict()) {
+            // Hidden attributes
+            $this->auditableExclusions = array_merge($this->auditableExclusions, $this->hidden);
 
-        foreach ($this->updatedData as $attribute => $val) {
-            if (gettype($val) == 'object' && !method_exists($val, '__toString')) {
-                unset($this->originalData[$attribute]);
+            // Non visible attributes
+            if (!empty($this->visible)) {
+                $invisible = array_diff(array_keys($this->attributes), $this->visible);
 
-                unset($this->updatedData[$attribute]);
-
-                array_push($this->dontKeep, $attribute);
+                $this->auditableExclusions = array_merge($this->auditableExclusions, $invisible);
             }
         }
 
-        // Dont keep audit of
-        $this->dontKeep = isset($this->dontKeepAuditOf) ?
-            array_merge($this->dontKeepAuditOf, $this->dontKeep)
-            : $this->dontKeep;
+        // Exclude Timestamps
+        if (!$this->getAuditTimestamps()) {
+            array_push($this->auditableExclusions, static::CREATED_AT, static::UPDATED_AT);
 
-        // Keep audit of
-        $this->doKeep = isset($this->keepAuditOf) ?
-            array_merge($this->keepAuditOf, $this->doKeep)
-            : $this->doKeep;
+            if (defined('static::DELETED_AT')) {
+                $this->auditableExclusions[] = static::DELETED_AT;
+            }
+        }
 
-        // Get user id
-        $this->auditUserId = $this->getLoggedInUserId();
+        // Valid attributes are all those that made it out of the exclusion array
+        $attributes = array_except($this->attributes, $this->auditableExclusions);
 
-        // Get curruent route
-        $this->auditCurrentRoute = $this->getCurrentRoute();
-
-        // Get ip address
-        $this->auditIpAddress = $this->getIpAddress();
-
-        // Get changed data
-        $this->dirtyData = $this->getDirty();
-
-        // Tells whether the record exists in the database
-        $this->updating = $this->exists;
+        foreach ($attributes as $attribute => $value) {
+            // Apart from null, non scalar values will be excluded
+            if (is_object($value) && !method_exists($value, '__toString') || is_array($value)) {
+                $this->auditableExclusions[] = $attribute;
+            }
+        }
     }
 
     /**
-     * Audit creation.
+     * Set the old/new attributes corresponding to a created event.
+     *
+     * @param array $old
+     * @param array $new
      *
      * @return void
      */
-    public function auditCreation()
+    protected function auditCreatedAttributes(array &$old, array &$new)
     {
-        // Checks if an auditable type
-        if ($this->isTypeAuditable('created')) {
-            $this->newData = [];
-
-            foreach ($this->updatedData as $attribute => $value) {
-                if ($this->isAttributeAuditable($attribute)) {
-                    $this->newData[$attribute] = $value;
-                }
+        foreach ($this->attributes as $attribute => $value) {
+            if ($this->isAttributeAuditable($attribute)) {
+                $new[$attribute] = $value;
             }
-
-            $this->audit();
         }
     }
 
     /**
-     * Audit updated.
+     * Set the old/new attributes corresponding to an updated event.
+     *
+     * @param array $old
+     * @param array $new
      *
      * @return void
      */
-    public function auditUpdate()
+    protected function auditUpdatedAttributes(array &$old, array &$new)
     {
-        if ($this->isTypeAuditable('updated') && $this->updating) {
-            $changesToTecord = $this->changedAuditingFields();
-
-            if (empty($changesToTecord)) {
-                return;
+        foreach ($this->getDirty() as $attribute => $value) {
+            if ($this->isAttributeAuditable($attribute)) {
+                $old[$attribute] = array_get($this->original, $attribute);
+                $new[$attribute] = array_get($this->attributes, $attribute);
             }
-
-            $this->oldData = [];
-
-            $this->newData = [];
-
-            foreach ($changesToTecord as $attribute => $change) {
-                $this->oldData[$attribute] = array_get($this->originalData, $attribute);
-
-                $this->newData[$attribute] = array_get($this->updatedData, $attribute);
-            }
-
-            $this->audit();
         }
     }
 
     /**
-     * Audit deletion.
+     * Set the old/new attributes corresponding to a deleted event.
+     *
+     * @param array $old
+     * @param array $new
      *
      * @return void
      */
-    public function auditDeletion()
+    protected function auditDeletedAttributes(array &$old, array &$new)
     {
-        // Checks if an auditable type
-        if ($this->isTypeAuditable('deleted') && $this->isAttributeAuditable('deleted_at')) {
-            foreach ($this->updatedData as $attribute => $value) {
-                if ($this->isAttributeAuditable($attribute)) {
-                    $this->oldData[$attribute] = $value;
-                }
+        foreach ($this->attributes as $attribute => $value) {
+            if ($this->isAttributeAuditable($attribute)) {
+                $old[$attribute] = $value;
             }
-
-            $this->audit();
         }
     }
 
     /**
-     * Audit model.
+     * Set the old/new attributes corresponding to a restored event.
      *
-     * @return array
+     * @param array $old
+     * @param array $new
+     *
+     * @return void
+     */
+    protected function auditRestoredAttributes(array &$old, array &$new)
+    {
+        // Apply the same logic as the deleted event,
+        // but with the old/new arguments swapped
+        $this->auditDeletedAttributes($new, $old);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function readyForAuditing()
+    {
+        return $this->isEventAuditable($this->auditEvent);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function toAudit()
     {
+        if (!$this->readyForAuditing()) {
+            throw new RuntimeException('A valid audit event has not been set');
+        }
+
+        $method = 'audit'.Str::studly($this->auditEvent).'Attributes';
+
+        if (!method_exists($this, $method)) {
+            throw new RuntimeException(sprintf(
+                'Unable to handle "%s" event, %s() method missing',
+                $this->auditEvent,
+                $method
+            ));
+        }
+
+        $this->updateAuditExclusions();
+
+        $old = [];
+        $new = [];
+
+        $this->{$method}($old, $new);
+
+        $foreignKey = Config::get('audit.user.foreign_key', 'user_id');
+
         return $this->transformAudit([
-            'id'             => (string) Uuid::uuid4(),
-            'old'            => $this->cleanHiddenAuditAttributes($this->oldData),
-            'new'            => $this->cleanHiddenAuditAttributes($this->newData),
-            'type'           => $this->auditType,
+            'old_values'     => $old,
+            'new_values'     => $new,
+            'event'          => $this->auditEvent,
             'auditable_id'   => $this->getKey(),
             'auditable_type' => $this->getMorphClass(),
-            'user_id'        => $this->auditUserId,
-            'route'          => $this->auditCurrentRoute,
-            'ip_address'     => $this->auditIpAddress,
-            'created_at'     => $this->freshTimestamp(),
+            $foreignKey      => $this->resolveUserId(),
+            'url'            => $this->resolveUrl(),
+            'ip_address'     => $this->resolveIpAddress(),
+            'user_agent'     => $this->resolveUserAgent(),
         ]);
     }
 
     /**
-     * Allows transforming the audit data array
-     * before it is passed into the database.
-     *
-     * @param array $data
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function transformAudit(array $data)
     {
@@ -232,27 +228,33 @@ trait Auditable
     }
 
     /**
-     * Get user id.
+     * Resolve the ID of the logged User.
      *
-     * @return null
+     * @throws UnexpectedValueException
+     *
+     * @return mixed|null
      */
-    protected function getLoggedInUserId()
+    protected function resolveUserId()
     {
-        try {
-            if (Auth::check()) {
-                return Auth::user()->getAuthIdentifier();
-            }
-        } catch (\Exception $e) {
-            return;
+        $userResolver = Config::get('audit.user.resolver');
+
+        if (is_callable($userResolver)) {
+            return $userResolver();
         }
+
+        if (is_subclass_of($userResolver, UserResolver::class)) {
+            return call_user_func([$userResolver, 'resolveId']);
+        }
+
+        throw new UnexpectedValueException('Invalid User resolver, callable or UserResolver FQCN expected');
     }
 
     /**
-     * Get the current request's route if available.
+     * Resolve the current request URL if available.
      *
      * @return string
      */
-    protected function getCurrentRoute()
+    protected function resolveUrl()
     {
         if (App::runningInConsole()) {
             return 'console';
@@ -262,170 +264,146 @@ trait Auditable
     }
 
     /**
-     * Get IP Address.
+     * Resolve the current IP address.
      *
-     * @return mixed
+     * @return string
      */
-    public function getIpAddress()
+    protected function resolveIpAddress()
     {
         return Request::ip();
     }
 
     /**
-     * Fields Changed.
+     * Resolve the current User Agent.
      *
-     * @return array
+     * @return string
      */
-    private function changedAuditingFields()
+    protected function resolveUserAgent()
     {
-        $changesToTecord = [];
-
-        foreach ($this->dirtyData as $attribute => $value) {
-            if ($this->isAttributeAuditable($attribute) && !is_array($value)) {
-                // Check whether the current value is difetente the original value
-                if (!isset($this->originalData[$attribute]) ||
-                    $this->originalData[$attribute] != $this->updatedData[$attribute]) {
-                    $changesToTecord[$attribute] = $value;
-                }
-            } else {
-                unset($this->updatedData[$attribute]);
-
-                unset($this->originalData[$attribute]);
-            }
-        }
-
-        return $changesToTecord;
+        return Request::header('User-Agent');
     }
 
     /**
-     * Determine whether a attribute is auditable for audit manipulation.
+     * Determine if an attribute is eligible for auditing.
      *
-     * @param $attribute
+     * @param string $attribute
      *
      * @return bool
      */
-    private function isAttributeAuditable($attribute)
+    protected function isAttributeAuditable($attribute)
     {
-        // Checks if the field is in the collection of auditable
-        if (isset($this->doKeep) && in_array($attribute, $this->doKeep)) {
-            return true;
-        }
-
-        // Checks if the field is in the collection of non-auditable
-        if (isset($this->dontKeep) && in_array($attribute, $this->dontKeep)) {
+        // The attribute should not be audited
+        if (in_array($attribute, $this->auditableExclusions)) {
             return false;
         }
 
-        // Checks whether the auditable list is clean
-        return empty($this->doKeep);
+        // The attribute is auditable when explicitly
+        // listed or when the include array is empty
+        $include = $this->getAuditInclude();
+
+        return in_array($attribute, $include) || empty($include);
     }
 
     /**
-     *  Determine whether a type is auditable.
+     * Determine whether an event is auditable.
      *
-     * @param string $type
+     * @param string $event
      *
      * @return bool
      */
-    public function isTypeAuditable($type)
+    protected function isEventAuditable($event)
     {
-        // Checks if the type is in the collection of type auditable
-        if (in_array($type, $this->getAuditableTypes())) {
-            $this->setAuditType($type);
-
-            return true;
-        }
-
-        return false;
+        return in_array($event, $this->getAuditableEvents());
     }
 
     /**
-     * Set audit type.
-     *
-     * @param string $type;
+     * {@inheritdoc}
      */
-    public function setAuditType($type)
+    public function setAuditEvent($event)
     {
-        $this->auditType = $type;
+        $this->auditEvent = $this->isEventAuditable($event) ? $event : null;
+
+        return $this;
     }
 
     /**
-     * Get the auditable types.
+     * Get the auditable events.
      *
      * @return array
      */
-    public function getAuditableTypes()
+    public function getAuditableEvents()
     {
-        if (isset($this->auditableTypes)) {
-            return $this->auditableTypes;
+        if (isset($this->auditableEvents)) {
+            return $this->auditableEvents;
         }
 
         return [
-                'created', 'updated', 'deleted',
-                'saved', 'restored',
+            'created',
+            'updated',
+            'deleted',
+            'restored',
         ];
     }
 
     /**
-     * Whether to clean the attributes which are hidden or not visible.
+     * Determine whether auditing is enabled.
      *
      * @return bool
      */
-    public function isAuditRespectsHidden()
+    public static function isAuditingEnabled()
     {
-        return isset($this->auditRespectsHidden) && $this->auditRespectsHidden;
-    }
-
-    /**
-     * Remove the value of attributes which are hidden or not visible on the model.
-     *
-     * @param $attributes
-     *
-     * @return array
-     */
-    public function cleanHiddenAuditAttributes(array $attributes)
-    {
-        if ($this->isAuditRespectsHidden()) {
-
-            // Get hidden and visible attributes from the model
-            $hidden = $this->getHidden();
-            $visible = $this->getVisible();
-
-            // If visible is set, set to null any attributes which are not in visible
-            if (count($visible) > 0) {
-                foreach ($attributes as $attribute => &$value) {
-                    if (!in_array($attribute, $visible)) {
-                        $value = null;
-                    }
-                }
-            }
-
-            unset($value);
-
-            // If hidden is set, set to null any attributes which are in hidden
-            if (count($hidden) > 0) {
-                foreach ($hidden as $attribute) {
-                    if (array_key_exists($attribute, $attributes)) {
-                        $attributes[$attribute] = null;
-                    }
-                }
-            }
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * Determine whether audit enabled.
-     *
-     * @return bool
-     */
-    public static function isAuditEnabled()
-    {
-        if (App::runningInConsole() && !Config::get('auditing.audit_console')) {
-            return false;
+        if (App::runningInConsole()) {
+            return (bool) Config::get('audit.console', false);
         }
 
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditInclude()
+    {
+        return isset($this->auditInclude) ? (array) $this->auditInclude : [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditExclude()
+    {
+        return isset($this->auditExclude) ? (array) $this->auditExclude : [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditStrict()
+    {
+        return isset($this->auditStrict) ? (bool) $this->auditStrict : false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditTimestamps()
+    {
+        return isset($this->auditTimestamps) ? (bool) $this->auditTimestamps : false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditDriver()
+    {
+        return isset($this->auditDriver) ? $this->auditDriver : null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuditThreshold()
+    {
+        return isset($this->auditThreshold) ? $this->auditThreshold : 0;
     }
 }

@@ -4,7 +4,7 @@ namespace Addons\Censor\File;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Translation\LoaderInterface;
+use Illuminate\Contracts\Translation\Loader;
 use Illuminate\Support\NamespacedItemResolver;
 
 class Localer extends NamespacedItemResolver {
@@ -40,11 +40,11 @@ class Localer extends NamespacedItemResolver {
 	/**
 	 * Create a new LocalePool instance.
 	 *
-	 * @param  \Illuminate\Translation\LoaderInterface  $loader
+	 * @param  \Illuminate\Contracts\Translation\Loader  $loader
 	 * @param  string  $locale
 	 * @return void
 	 */
-	public function __construct(LoaderInterface $loader, $locale)
+	public function __construct(Loader $loader, $locale)
 	{
 		$this->loader = $loader;
 		$this->locale = $locale;
@@ -254,7 +254,7 @@ class Localer extends NamespacedItemResolver {
 	/**
 	 * Get the language line loader implementation.
 	 *
-	 * @return \Illuminate\Translation\LoaderInterface
+	 * @return \Illuminate\Contracts\Translation\Loader
 	 */
 	public function getLoader()
 	{

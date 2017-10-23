@@ -1,11 +1,12 @@
 <?php
 namespace Addons\Smarty\View;
 
+use Smarty;
 use Illuminate\View;
-use Illuminate\View\Engines;
 use Illuminate\View\Compilers\CompilerInterface;
-use \Smarty;
-class Engine implements Engines\EngineInterface
+use Illuminate\Contracts\View\Engine as EngineInterface;
+
+class Engine implements EngineInterface
 {
 
 	protected $_config;
@@ -14,7 +15,7 @@ class Engine implements Engines\EngineInterface
 	public function __construct($config)
 	{
 		// Create smarty object.
-		$this->smarty = $smarty = new \Smarty();
+		$this->smarty = $smarty = new Smarty();
 
 		$smarty->setTemplateDir($config['template_path']);
 		$smarty->setCompileDir($config['compile_path']);
