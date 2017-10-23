@@ -198,6 +198,92 @@ function str_split_utf32($str)
 }
 }
 
+if (! function_exists('str_split_ucs2')) {
+function str_split_ucs2($str)
+{
+	$output = [];
+	$size = strlen($str);
+	if ($size % 2 !== 0) throw new \Exception('String must be unicode(ucs-2)');
+	$i = 0;
+	while($i + 1 < $size) {
+		$code = (ord($str{$i}) << 8) + ord($str{$i + 1});
+		$i += 2;
+		// high surrogate, and there is a next character
+		if ($code >= 0xD800 && $code <= 0xDBFF && ($i + 1 < $size))
+		{
+			$extra = (ord($str{$i}) << 8) + ord($str{$i + 1});
+			if (($extra & 0xFC00) == 0xDC00) { // low surrogate
+				$i += 2;
+				$output[] = ((($code & 0x3FF) << 10) + ($extra & 0x3FF) + 0x10000);
+			} else
+				// unmatched surrogate; only append this code unit, in case the next
+				// code unit is the high surrogate of a surrogate pair
+				$output[] = $code;
+		} else
+			$output[] = $code;
+	}
+	return $output;
+}
+}
+
+if (! function_exists('str_join_ucs2')) {
+function str_join_ucs2($array) {
+	$size = count($array);
+	$index = -1;
+	$code;
+	$output = '';
+	while (++$index < $size) {
+		$code = $array[$index];
+		if ($code > 0xFFFF) {
+			$code -= 0x10000;
+			$output .= pack('n', (($code >> 10) & 0x3FF) | 0xD800);
+			$code = 0xDC00 | $code & 0x3FF;
+		}
+		$output .=  pack('n', $code);
+	}
+	return $output;
+}
+}
+
+if (! function_exists('ucs2_check_scalar')) {
+function ucs2_check_scalar($code) {
+	if ($code >= 0xD800 && $code <= 0xDFFF) {
+		throw new \Exception(
+			'Lone surrogate U+' . dechex($code) .
+			' is not a scalar value'
+		);
+	}
+}
+}
+
+if (! function_exists('create_utf8_byte')) {
+function create_utf8_byte($code, $shift) {
+	return chr((($code >> $shift) & 0x3F) | 0x80);
+}
+}
+
+if (! function_exists('ucs2_code_to_utf8')) {
+function ucs2_code_to_utf8($code) {
+	if (($code & 0xFFFFFF80) == 0) // 1-byte sequence
+		return chr($code);
+
+	$symbol = '';
+	if (($code & 0xFFFFF800) == 0) { // 2-byte sequence
+		$symbol = chr((($code >> 6) & 0x1F) | 0xC0);
+	} else if (($code & 0xFFFF0000) == 0) { // 3-byte sequence
+		ucs2_check_scalar($code);
+		$symbol = chr((($code >> 12) & 0x0F) | 0xE0);
+		$symbol .= create_utf8_byte($code, 6);
+	} else if (($code & 0xFFE00000) == 0) { // 4-byte sequence
+		$symbol = chr((($code >> 18) & 0x07) | 0xF0);
+		$symbol .= create_utf8_byte($code, 12);
+		$symbol .= create_utf8_byte($code, 6);
+	}
+	$symbol .= chr(($code & 0x3F) | 0x80);
+	return $symbol;
+}
+}
+
 if (! function_exists('str_split_any')) {
 function str_split_any($str, $encode = NULL)
 {
@@ -935,6 +1021,40 @@ function addBOM($str, $encode = 'UTF-8')
 	return $str;
 }
 }
+
+/**
+ * 将Unicode 转化为 UTF-8 
+ * 无特殊情况请使用 iconv('ucs-2', 'utf-8', $str);
+ * https://github.com/mathiasbynens/utf8.js/blob/master/utf8.js
+ * 
+ * @param  string $str
+ * @return string 
+ */
+if (! function_exists('ucs2_utf8')) {
+function ucs2_utf8($str)
+{
+	$list = str_split_ucs2($str);
+	$result = '';
+	foreach ($list as $v)
+		$result .= ucs2_code_to_utf8($v);
+	return $result;
+}
+}
+
+/**
+ * 将UTF-8 转化为 Unicode
+ * 无特殊情况请使用 iconv( 'utf-8', 'ucs-2', $str);
+ * 
+ * @param  string $str
+ * @return string 
+ */
+if (! function_exists('utf8_ucs2')) {
+function utf8_ucs2($str)
+{
+
+}
+}
+
 
 /**
  * 任意编码的字符串转为UTF-8(non BOM)，支持一些常见东方语言
