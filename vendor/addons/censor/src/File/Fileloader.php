@@ -27,4 +27,5 @@ class FileLoader extends Base {
 			return "{$this->path}/vendor/{$namespace}/{$locale}/{$group}.php";
 		}
 	}
+
 }

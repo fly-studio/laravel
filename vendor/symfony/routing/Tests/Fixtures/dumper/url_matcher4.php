@@ -5,16 +5,11 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\RequestContext;
 
 /**
- * ProjectUrlMatcher.
- *
  * This class has been auto-generated
  * by the Symfony Routing Component.
  */
 class ProjectUrlMatcher extends Symfony\Component\Routing\Matcher\UrlMatcher
 {
-    /**
-     * Constructor.
-     */
     public function __construct(RequestContext $context)
     {
         $this->context = $context;
@@ -56,6 +51,17 @@ class ProjectUrlMatcher extends Symfony\Component\Routing\Matcher\UrlMatcher
             return array('_route' => 'head_and_get');
         }
         not_head_and_get:
+
+        // get_and_head
+        if ('/get_and_head' === $pathinfo) {
+            if ('GET' !== $canonicalMethod) {
+                $allow[] = 'GET';
+                goto not_get_and_head;
+            }
+
+            return array('_route' => 'get_and_head');
+        }
+        not_get_and_head:
 
         // post_and_head
         if ('/post_and_get' === $pathinfo) {

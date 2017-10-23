@@ -245,6 +245,20 @@ if (! function_exists('array_pull')) {
     }
 }
 
+if (! function_exists('array_random')) {
+    /**
+     * Get a random value from an array.
+     *
+     * @param  array  $array
+     * @param  int|null  $num
+     * @return mixed
+     */
+    function array_random($array, $num = null)
+    {
+        return Arr::random($array, $num);
+    }
+}
+
 if (! function_exists('array_set')) {
     /**
      * Set an array item to a given value using "dot" notation.
@@ -903,6 +917,20 @@ if (! function_exists('str_slug')) {
     function str_slug($title, $separator = '-')
     {
         return Str::slug($title, $separator);
+    }
+}
+
+if (! function_exists('str_start')) {
+    /**
+     * Begin a string with a single instance of a given value.
+     *
+     * @param  string  $value
+     * @param  string  $prefix
+     * @return string
+     */
+    function str_start($value, $prefix)
+    {
+        return Str::start($value, $prefix);
     }
 }
 

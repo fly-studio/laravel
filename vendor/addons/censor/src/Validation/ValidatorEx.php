@@ -1,15 +1,17 @@
 <?php
+
 namespace Addons\Censor\Validation;
- 
+
 use BadMethodCallException;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator as BaseValidator;
+
 /**
  * 本Class主要是处理宽字符的长度、Fields检索等
- * 
+ *
  */
 class ValidatorEx extends BaseValidator {
-  
+
 	/**
 	 * Allow only alphabets, spaces and dashes (hyphens and underscores)
 	 *
@@ -24,17 +26,17 @@ class ValidatorEx extends BaseValidator {
 
 	protected function validatePhone($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';
+		$pattern = '/[0-9\-\s]*/i';
 		empty($parameters) && $parameters = ['zh-CN'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
 				break;
 			case 'zh-CN': //cn
 				//如：010-12345678、0912-1234567、(010)-12345678、(0912)1234567、(010)12345678、(0912)-1234567、01012345678、09121234567
-				$patten = '/^(((\+86|086|17951)[\-\s])?1([34578][0-9])[\-\s]?[0-9]{4}[\-\s]?[0-9]{4}|(^0\d{2}-?\d{8}$)|(^0\d{3}-?\d{7}$)|(^\(0\d{2}\)-?\d{8}$)|(^\(0\d{3}\)-?\d{7}$))$/';
+				$pattern = '/^(((\+86|086|17951)[\-\s])?1([34578][0-9])[\-\s]?[0-9]{4}[\-\s]?[0-9]{4}|(^0\d{2}-?\d{8}$)|(^0\d{3}-?\d{7}$)|(^\(0\d{2}\)-?\d{8}$)|(^\(0\d{3}\)-?\d{7}$))$/';
 				break;
 		}
-		return preg_match($patten, $value);
+		return preg_match($pattern, $value);
 	}
 
 	protected function validateNotZero($attribute, $value, $parameters)
@@ -46,14 +48,14 @@ class ValidatorEx extends BaseValidator {
 
 	protected function validateIdCard($attribute, $value, $parameters)
 	{
-		$patten = '/[0-9\-\s]*/i';
+		$pattern = '/[0-9\-\s]*/i';
 		empty($parameters) && $parameters = ['zh-CN'];
 		switch (strtolower($parameters[0])) {
 			case 'us':
-				$patten = '/^\d{6}-\d{2}-\d{4}$/';
+				$pattern = '/^\d{6}-\d{2}-\d{4}$/';
 				break;
 			case 'zh-CN': //cn
-				$patten = '/^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/';
+				$pattern = '/^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/';
 				if(strlen($value) == 18) {
 					$idCardWi = [ 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 ]; //将前17位加权因子保存在数组里
 					$idCardY = [ 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ]; //这是除以11后，可能产生的11位余数、验证码，也保存成数组
@@ -65,17 +67,17 @@ class ValidatorEx extends BaseValidator {
 
 					//如果等于2，则说明校验码是10，身份证号码最后一位应该是X
 					if($idCardMod == 2){
-	 					if(strtolower($idCardLast) != 'x')
+						if(strtolower($idCardLast) != 'x')
 							return false;
 					} else {
-	 					//用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
-	 					if($idCardLast != $idCardY[$idCardMod])
-	  						return false;
-	 				}
- 				}
+						//用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
+						if($idCardLast != $idCardY[$idCardMod])
+							return false;
+					}
+				}
 				break;
 		}
-		return preg_match($patten, $value);
+		return preg_match($pattern, $value);
 	}
 
 	/**
@@ -110,56 +112,53 @@ class ValidatorEx extends BaseValidator {
 	}
 
 	/**
-     * Replace all error message place-holders with actual values.
-     *
-     * @param  string  $message
-     * @param  string  $attribute
-     * @param  string  $rule
-     * @param  array   $parameters
-     * @return string
-     */
-    protected function doReplacements($message, $attribute, $rule, $parameters)
-    {
-        $value = $this->getAttribute($attribute);
+	 * Replace all error message place-holders with actual values.
+	 *
+	 * @param  string  $message
+	 * @param  string  $attribute
+	 * @param  string  $rule
+	 * @param  array   $parameters
+	 * @return string
+	 */
+	protected function doReplacements($message, $attribute, $rule, $parameters)
+	{
+		$value = $this->getAttribute($attribute);
 
-        $message = str_replace(
-            [':attribute', ':ATTRIBUTE', ':Attribute'],
-            [$value, Str::upper($value), Str::ucfirst($value)],
-            $message
-        );
+		$message = str_replace(
+			[':attribute', ':ATTRIBUTE', ':Attribute'],
+			[$value, Str::upper($value), Str::ucfirst($value)],
+			$message
+		);
 
-        if (isset($this->replacers[Str::snake($rule)])) {
-            $message = $this->callReplacer($message, $attribute, Str::snake($rule), $parameters, $this);
-        } elseif (method_exists($this, $replacer = "replace{$rule}")) {
-            $message = $this->$replacer($message, $attribute, $rule, $parameters, $this);
-        }
+		if (isset($this->replacers[Str::snake($rule)])) {
+			$message = $this->callReplacer($message, $attribute, Str::snake($rule), $parameters, $this);
+		} elseif (method_exists($this, $replacer = "replace{$rule}")) {
+			$message = $this->$replacer($message, $attribute, $rule, $parameters, $this);
+		}
 
-        return $message;
-    }
+		return $message;
+	}
 
 	/**
-     * Handle dynamic calls to class methods.
-     *
-     * @param  string  $method
-     * @param  array   $parameters
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
-     */
-    public function __call($method, $parameters)
-    {
-        $rule = Str::snake(substr($method, 8));
+	 * Handle dynamic calls to class methods.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 *
+	 * @throws \BadMethodCallException
+	 */
+	public function __call($method, $parameters)
+	{
+		$rule = Str::snake(substr($method, 8));
 
-        if (method_exists($this, $method))
-        	return $this->$method(...$parameters);
-        else if (isset($this->extensions[$rule])) {
-            return $this->callExtension($rule, $parameters);
-        }
+		if (method_exists($this, $method))
+			return $this->$method(...$parameters);
+		else if (isset($this->extensions[$rule])) {
+			return $this->callExtension($rule, $parameters);
+		}
 
-        throw new BadMethodCallException("Method [$method] does not exist.");
-    }
- 
-}   //end of class
- 
- 
-//EOF
+		throw new BadMethodCallException("Method [$method] does not exist.");
+	}
+
+}

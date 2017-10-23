@@ -4,7 +4,6 @@ namespace Addons\Censor\Ruling;
 
 use Illuminate\Validation\ValidationRuleParser;
 
-
 class Rules {
 
 	protected $attribute;

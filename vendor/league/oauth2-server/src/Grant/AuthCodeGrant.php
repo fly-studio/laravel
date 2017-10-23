@@ -264,6 +264,13 @@ class AuthCodeGrant extends AbstractAuthorizeGrant
                 throw OAuthServerException::invalidRequest('code_challenge');
             }
 
+            if (preg_match('/^[A-Za-z0-9-._~]{43,128}$/', $codeChallenge) !== 1) {
+                throw OAuthServerException::invalidRequest(
+                    'code_challenge',
+                    'The code_challenge must be between 43 and 128 characters'
+                );
+            }
+
             $codeChallengeMethod = $this->getQueryStringParameter('code_challenge_method', $request, 'plain');
             if (in_array($codeChallengeMethod, ['plain', 'S256']) === false) {
                 throw OAuthServerException::invalidRequest(
@@ -304,6 +311,31 @@ class AuthCodeGrant extends AbstractAuthorizeGrant
                 $authorizationRequest->getScopes()
             );
 
+            $payload = [
+                'client_id'               => $authCode->getClient()->getIdentifier(),
+                'redirect_uri'            => $authCode->getRedirectUri(),
+                'auth_code_id'            => $authCode->getIdentifier(),
+                'scopes'                  => $authCode->getScopes(),
+                'user_id'                 => $authCode->getUserIdentifier(),
+                'expire_time'             => (new \DateTime())->add($this->authCodeTTL)->format('U'),
+                'code_challenge'          => $authorizationRequest->getCodeChallenge(),
+                'code_challenge_method  ' => $authorizationRequest->getCodeChallengeMethod(),
+            ];
+
+            if ($this->encryptionKey === null) {
+                // Add padding to vary the length of the payload
+                $payload['_padding'] = base64_encode(random_bytes(mt_rand(8, 256)));
+                // Shuffle the payload so that the structure is no longer know and obvious
+                $keys = array_keys($payload);
+                shuffle($keys);
+                $shuffledPayload = [];
+                foreach ($keys as $key) {
+                    $shuffledPayload[$key] = $payload[$key];
+                }
+            } else {
+                $shuffledPayload = $payload;
+            }
+
             $response = new RedirectResponse();
             $response->setRedirectUri(
                 $this->makeRedirectUri(
@@ -311,16 +343,7 @@ class AuthCodeGrant extends AbstractAuthorizeGrant
                     [
                         'code'  => $this->encrypt(
                             json_encode(
-                                [
-                                    'client_id'               => $authCode->getClient()->getIdentifier(),
-                                    'redirect_uri'            => $authCode->getRedirectUri(),
-                                    'auth_code_id'            => $authCode->getIdentifier(),
-                                    'scopes'                  => $authCode->getScopes(),
-                                    'user_id'                 => $authCode->getUserIdentifier(),
-                                    'expire_time'             => (new \DateTime())->add($this->authCodeTTL)->format('U'),
-                                    'code_challenge'          => $authorizationRequest->getCodeChallenge(),
-                                    'code_challenge_method  ' => $authorizationRequest->getCodeChallengeMethod(),
-                                ]
+                                $shuffledPayload
                             )
                         ),
                         'state' => $authorizationRequest->getState(),

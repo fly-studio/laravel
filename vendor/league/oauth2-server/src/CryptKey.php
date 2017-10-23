@@ -44,6 +44,24 @@ class CryptKey
             throw new \LogicException(sprintf('Key path "%s" does not exist or is not readable', $keyPath));
         }
 
+        // Verify the permissions of the key
+        $keyPathPerms = decoct(fileperms($keyPath) & 0777);
+        if ($keyPathPerms !== '600') {
+            // Attempt to correct the permissions
+            if (chmod($keyPath, 0600) === false) {
+                // @codeCoverageIgnoreStart
+                trigger_error(
+                    sprintf(
+                        'Key file "%s" permissions are not correct, should be 600 instead of %s, unable to automatically resolve the issue',
+                        $keyPath,
+                        $keyPathPerms
+                    ),
+                    E_USER_NOTICE
+                );
+                // @codeCoverageIgnoreEnd
+            }
+        }
+
         $this->keyPath = $keyPath;
         $this->passPhrase = $passPhrase;
     }
@@ -57,7 +75,8 @@ class CryptKey
      */
     private function saveKeyToFile($key)
     {
-        $keyPath = sys_get_temp_dir() . '/' . sha1($key) . '.key';
+        $tmpDir = sys_get_temp_dir();
+        $keyPath = $tmpDir . '/' . sha1($key) . '.key';
 
         if (!file_exists($keyPath) && !touch($keyPath)) {
             // @codeCoverageIgnoreStart
@@ -65,7 +84,17 @@ class CryptKey
             // @codeCoverageIgnoreEnd
         }
 
-        file_put_contents($keyPath, $key);
+        if (file_put_contents($keyPath, $key) === false) {
+            // @codeCoverageIgnoreStart
+            throw new \RuntimeException('Unable to write key file to temporary directory "%s"', $tmpDir);
+            // @codeCoverageIgnoreEnd
+        }
+
+        if (chmod($keyPath, 0600) === false) {
+            // @codeCoverageIgnoreStart
+            throw new \RuntimeException('The key file "%s" file mode could not be changed with chmod to 600', $keyPath);
+            // @codeCoverageIgnoreEnd
+        }
 
         return 'file://' . $keyPath;
     }

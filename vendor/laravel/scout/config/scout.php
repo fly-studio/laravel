@@ -45,6 +45,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Chunk Sizes
+    |--------------------------------------------------------------------------
+    |
+    | These options allow you to control the maximum chunk size when you are
+    | mass importing data into the search engine. This allows you to fine
+    | tune these chunk sizes based on the capabilites of your machines.
+    |
+    */
+
+    'chunk' => [
+        'searchable' => 500,
+        'unsearchable' => 500,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Algolia Configuration
     |--------------------------------------------------------------------------
     |

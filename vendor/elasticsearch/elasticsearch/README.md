@@ -62,7 +62,7 @@ The recommended method to install _Elasticsearch-PHP_ is through [Composer](http
 3. Install your dependencies:
 
     ```bash
-        php composer.phar install --no-dev
+        php composer.phar install
     ```
 
 4. Require Composer's autoloader
@@ -79,8 +79,6 @@ The recommended method to install _Elasticsearch-PHP_ is through [Composer](http
         $client = ClientBuilder::create()->build();
     ```
 You can find out more on how to install Composer, configure autoloading, and other best-practices for defining dependencies at [getcomposer.org](http://getcomposer.org).
-
-You'll notice that the installation command specified `--no-dev`.  This prevents Composer from installing the various testing and development dependencies.  For average users, there is no need to install the test suite (which also includes the complete source code of Elasticsearch).  If you wish to contribute to development, just omit the `--no-dev` flag to be able to run tests.
 
 PHP Version Requirement
 ----
@@ -319,7 +317,27 @@ Array
 )
 ```
 
+Unit Testing using Mock a Elastic Client
+========================================
+```php
+use GuzzleHttp\Ring\Client\MockHandler;
+use Elasticsearch\ClientBuilder;
 
+// The connection class requires 'body' to be a file stream handle
+// Depending on what kind of request you do, you may need to set more values here
+$handler = new MockHandler([
+  'status' => 200,
+  'transfer_stats' => [
+     'total_time' => 100
+  ],
+  'body' => fopen('somefile.json')
+]);
+$builder = ClientBuilder::create();
+$builder->setHosts(['somehost']);
+$builder->setHandler($handler);
+$client = $builder->build();
+// Do a request and you'll get back the 'body' response above
+```
 
 Wrap up
 =======

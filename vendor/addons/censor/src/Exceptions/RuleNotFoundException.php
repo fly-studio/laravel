@@ -12,4 +12,5 @@ class RuleNotFoundException extends RuntimeException {
 		if (!empty($ruler) && !empty($key)) $message .= ' In directory '.$ruler->getPath($key);
 		parent::__construct($message);
 	}
+
 }

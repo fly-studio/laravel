@@ -10,7 +10,6 @@ use ArrayIterator;
 use CachingIterator;
 use JsonSerializable;
 use IteratorAggregate;
-use InvalidArgumentException;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
@@ -32,7 +31,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @var array
      */
     protected static $proxies = [
-        'contains', 'each', 'every', 'filter', 'first', 'flatMap',
+        'average', 'avg', 'contains', 'each', 'every', 'filter', 'first', 'flatMap',
         'map', 'partition', 'reject', 'sortBy', 'sortByDesc', 'sum',
     ];
 
@@ -59,23 +58,23 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     }
 
     /**
-     * Create a new collection by invoking the callback a given amount of times.
+     * Create a new collection by invoking the callback a given number of times.
      *
-     * @param  int  $amount
+     * @param  int  $number
      * @param  callable  $callback
      * @return static
      */
-    public static function times($amount, callable $callback = null)
+    public static function times($number, callable $callback = null)
     {
-        if ($amount < 1) {
+        if ($number < 1) {
             return new static;
         }
 
         if (is_null($callback)) {
-            return new static(range(1, $amount));
+            return new static(range(1, $number));
         }
 
-        return (new static(range(1, $amount)))->map($callback);
+        return (new static(range(1, $number)))->map($callback);
     }
 
     /**
@@ -385,6 +384,19 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     }
 
     /**
+     * Apply the callback if the value is falsy.
+     *
+     * @param  bool  $value
+     * @param  callable  $callback
+     * @param  callable  $default
+     * @return mixed
+     */
+    public function unless($value, callable $callback, callable $default = null)
+    {
+        return $this->when(! $value, $callback, $default);
+    }
+
+    /**
      * Filter items by the given key value pair.
      *
      * @param  string  $key
@@ -663,6 +675,17 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     public function intersect($items)
     {
         return new static(array_intersect($this->items, $this->getArrayableItems($items)));
+    }
+
+    /**
+     * Intersect the collection with the given items by key.
+     *
+     * @param  mixed  $items
+     * @return static
+     */
+    public function intersectKey($items)
+    {
+        return new static(array_intersect_key($this->items, $this->getArrayableItems($items)));
     }
 
     /**
@@ -1046,28 +1069,20 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     }
 
     /**
-     * Get one or more items randomly from the collection.
+     * Get one or a specified number of items randomly from the collection.
      *
-     * @param  int|null  $amount
+     * @param  int|null  $number
      * @return mixed
      *
      * @throws \InvalidArgumentException
      */
-    public function random($amount = 1)
+    public function random($number = null)
     {
-        if ($amount > ($count = $this->count())) {
-            throw new InvalidArgumentException("You requested {$amount} items, but there are only {$count} items in the collection.");
+        if (is_null($number)) {
+            return Arr::random($this->items);
         }
 
-        $keys = array_rand($this->items, $amount);
-
-        if (count(func_get_args()) == 0) {
-            return $this->items[$keys];
-        }
-
-        $keys = array_wrap($keys);
-
-        return new static(array_intersect_key($this->items, array_flip($keys)));
+        return new static(Arr::random($this->items, $number));
     }
 
     /**

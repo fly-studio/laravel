@@ -64,6 +64,8 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
     private static $skippedFiles = [
         'indices.create/10_basic.yaml' => 'Temporary: Yaml parser doesnt support "inline" empty keys',
         'indices.put_mapping/10_basic.yaml' => 'Temporary: Yaml parser doesnt support "inline" empty keys',
+        'search/110_field_collapsing.yaml' => 'Temporary: parse error, malformed inline yaml',
+        'cat.nodes/10_basic.yaml' => 'Temporary: parse error, something about $body: |'
     ];
 
     /**
@@ -208,6 +210,14 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
 
         if ('gt' === $operationName) {
             return $this->operationGreaterThan($operation->{$operationName}, $lastOperationResult, $context, $testName);
+        }
+
+        if ('lte' === $operationName) {
+            return $this->operationLessThanOrEqual($operation->{$operationName}, $lastOperationResult, $context, $testName);
+        }
+
+        if ('t' === $operationName) {
+            return $this->operationLessThan($operation->{$operationName}, $lastOperationResult, $context, $testName);
         }
 
         if ('length' === $operationName) {
@@ -534,6 +544,40 @@ class YamlRunnerTest extends \PHPUnit_Framework_TestCase
         $expected = current($operation);
 
         static::assertGreaterThan($expected, $value, 'Failed to gt in test ' . $testName);
+
+        return $lastOperationResult;
+    }
+
+    /**
+     * Check if a field in the last operation is less than or equal a value
+     *
+     * @param $operation
+     * @param $lastOperationResult
+     * @param $testName
+     */
+    public function operationLessThanOrEqual($operation, $lastOperationResult, &$context, $testName)
+    {
+        $value = $this->resolveValue($lastOperationResult, key($operation), $context);
+        $expected = current($operation);
+
+        static::assertLessThanOrEqual($expected, $value, 'Failed to lte in test ' . $testName);
+
+        return $lastOperationResult;
+    }
+
+    /**
+     * Check if a field in the last operation is less than a value
+     *
+     * @param $operation
+     * @param $lastOperationResult
+     * @param $testName
+     */
+    public function operationLessThan($operation, $lastOperationResult, &$context, $testName)
+    {
+        $value = $this->resolveValue($lastOperationResult, key($operation), $context);
+        $expected = current($operation);
+
+        static::assertLessThan($expected, $value, 'Failed to lt in test ' . $testName);
 
         return $lastOperationResult;
     }

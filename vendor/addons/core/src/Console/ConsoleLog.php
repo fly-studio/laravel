@@ -16,11 +16,11 @@ class ConsoleLog {
 	{
 		if (static::$daemon)
 		{
-			if (!static::$debug && $type != 'error') return;
 			logger()->$type($message);
 		}
 		else if (app()->runningInConsole())
 		{
+			if (!static::$debug && $type == 'debug') return;
 			$argv = implode(' ', $_SERVER['argv']);
 			if (strpos($argv, 'queue:') !== false) // in queue
 			{

@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Censor\Validation;
 
 use Addons\Censor\Factory;
@@ -20,8 +21,8 @@ trait ValidatesRequests
 	}
 
 	/**
-	 * censor a 
-	 * 
+	 * censor a
+	 *
 	 * @param  Request $request
 	 * @param  string  $censorKey
 	 * @param  array  $attributes
@@ -36,26 +37,27 @@ trait ValidatesRequests
 	}
 
 	/**
-     * Throw the failed validation exception.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
-     *
-     * @throws Addons\Censor\Exceptions\CensorException
-     */
-    protected function throwValidationException(Request $request, $validator)
-    {
+	 * Throw the failed validation exception.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Illuminate\Contracts\Validation\Validator  $validator
+	 * @return void
+	 *
+	 * @throws Addons\Censor\Exceptions\CensorException
+	 */
+	protected function throwValidationException(Request $request, $validator)
+	{
 		throw new CensorException($request, $validator);
 	}
 
 	/**
-     * Get a censor factory instance.
-     *
-     * @return \Addons\Censor\Factory
-     */
-    protected function getCensorFactory()
-    {
-        return app(Factory::class);
-    }
+	 * Get a censor factory instance.
+	 *
+	 * @return \Addons\Censor\Factory
+	 */
+	protected function getCensorFactory()
+	{
+		return app(Factory::class);
+	}
+
 }

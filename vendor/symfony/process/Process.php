@@ -134,8 +134,6 @@ class Process implements \IteratorAggregate
     );
 
     /**
-     * Constructor.
-     *
      * @param string|array   $commandline The command line to run
      * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
      * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
@@ -831,7 +829,7 @@ class Process implements \IteratorAggregate
      */
     public function isStarted()
     {
-        return $this->status != self::STATUS_READY;
+        return self::STATUS_READY != $this->status;
     }
 
     /**
@@ -843,7 +841,7 @@ class Process implements \IteratorAggregate
     {
         $this->updateStatus(false);
 
-        return $this->status == self::STATUS_TERMINATED;
+        return self::STATUS_TERMINATED == $this->status;
     }
 
     /**
@@ -1322,7 +1320,7 @@ class Process implements \IteratorAggregate
      */
     public function checkTimeout()
     {
-        if ($this->status !== self::STATUS_STARTED) {
+        if (self::STATUS_STARTED !== $this->status) {
             return;
         }
 
@@ -1513,7 +1511,7 @@ class Process implements \IteratorAggregate
         $callback = $this->callback;
         foreach ($result as $type => $data) {
             if (3 !== $type) {
-                $callback($type === self::STDOUT ? self::OUT : self::ERR, $data);
+                $callback(self::STDOUT === $type ? self::OUT : self::ERR, $data);
             } elseif (!isset($this->fallbackStatus['signaled'])) {
                 $this->fallbackStatus['exitcode'] = (int) $data;
             }
@@ -1633,14 +1631,17 @@ class Process implements \IteratorAggregate
         $varCount = 0;
         $varCache = array();
         $cmd = preg_replace_callback(
-            '/"(
+            '/"(?:(
                 [^"%!^]*+
                 (?:
                     (?: !LF! | "(?:\^[%!^])?+" )
                     [^"%!^]*+
                 )++
-            )"/x',
+            ) | [^"]*+ )"/x',
             function ($m) use (&$envBackup, &$env, &$varCache, &$varCount, $uid) {
+                if (!isset($m[1])) {
+                    return $m[0];
+                }
                 if (isset($varCache[$m[0]])) {
                     return $varCache[$m[0]];
                 }
@@ -1681,7 +1682,7 @@ class Process implements \IteratorAggregate
      *
      * @param string $functionName The function name that was called
      *
-     * @throws LogicException If the process has not run.
+     * @throws LogicException if the process has not run
      */
     private function requireProcessIsStarted($functionName)
     {
@@ -1695,7 +1696,7 @@ class Process implements \IteratorAggregate
      *
      * @param string $functionName The function name that was called
      *
-     * @throws LogicException If the process is not yet terminated.
+     * @throws LogicException if the process is not yet terminated
      */
     private function requireProcessIsTerminated($functionName)
     {
