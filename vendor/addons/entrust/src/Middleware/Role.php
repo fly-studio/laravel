@@ -1,4 +1,6 @@
-<?php namespace Addons\Entrust\Middleware;
+<?php
+
+namespace Addons\Entrust\Middleware;
 
 /**
  * This file is part of Entrust,

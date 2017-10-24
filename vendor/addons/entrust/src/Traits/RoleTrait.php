@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Entrust\Traits;
 
 /**
@@ -21,7 +22,7 @@ trait RoleTrait
 			return $this->perms;
 		});
 	}
-	
+
 	public static function bootRoleTrait()
 	{
 		static::saved(function($item){
@@ -43,7 +44,7 @@ trait RoleTrait
 				Cache::forget('entrust_permissions_for_role_'.$item->getKey());
 			});
 	}
-	
+
 	/**
 	 * Many-to-Many relations with the user model.
 	 *
@@ -65,7 +66,7 @@ trait RoleTrait
 	{
 		return $this->belongsToMany(config('entrust.permission'), config('entrust.permission_role_table'), config('entrust.role_foreign_key'), config('entrust.permission_foreign_key'));
 	}
-	
+
 	/**
 	 * Checks if the role has a permission by its name.
 	 *

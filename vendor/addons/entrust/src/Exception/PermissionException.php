@@ -1,8 +1,9 @@
 <?php
+
 namespace Addons\Entrust\Exception;
 
-use Addons\Entrust\Permission;
 use RuntimeException;
+use Addons\Entrust\Permission;
 
 class PermissionException extends RuntimeException
 {

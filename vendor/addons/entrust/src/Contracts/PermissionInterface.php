@@ -1,4 +1,6 @@
-<?php namespace Addons\Entrust\Contracts;
+<?php
+
+namespace Addons\Entrust\Contracts;
 
 /**
  * This file is part of Entrust,
@@ -10,7 +12,7 @@
 
 interface PermissionInterface
 {
-    
+
     /**
      * Many-to-Many relations with role model.
      *

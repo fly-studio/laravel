@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Entrust;
 
 /**
@@ -9,10 +10,10 @@ namespace Addons\Entrust;
  * @package Addons\Entrust
  */
 
-use Addons\Entrust\Contracts\RoleInterface;
-use Addons\Entrust\Traits\RoleTrait;
 use Addons\Core\Models\Tree;
+use Addons\Entrust\Traits\RoleTrait;
 use Illuminate\Support\Facades\Config;
+use Addons\Entrust\Contracts\RoleInterface;
 
 class Role extends Tree implements RoleInterface
 {

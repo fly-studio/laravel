@@ -1,4 +1,6 @@
-<?php namespace Addons\Entrust\Commands;
+<?php
+
+namespace Addons\Entrust\Commands;
 
 /**
  * This file is part of Entrust,
@@ -8,8 +10,8 @@
  * @package Zizaco\Entrust
  */
 
-use Illuminate\Console\Command;
 use Config;
+use Illuminate\Console\Command;
 
 class MigrationCommand extends Command
 {

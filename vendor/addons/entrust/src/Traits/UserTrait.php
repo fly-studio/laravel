@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Entrust\Traits;
 
 /**
@@ -9,8 +10,8 @@ namespace Addons\Entrust\Traits;
  * @package Zizaco\Entrust
  */
 
-use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Cache;
 
 trait UserTrait
 {
@@ -48,7 +49,7 @@ trait UserTrait
 				Cache::forget('entrust_roles_for_user_'.$item->getKey());
 			});
 	}
-	
+
 	/**
 	 * Many-to-Many relations with Role.
 	 *
@@ -260,7 +261,7 @@ trait UserTrait
 	public function detachRoles($roles=null)
 	{
 		if (!$roles) $roles = $this->roles()->get();
-		
+
 		foreach ($roles as $role) {
 			$this->detachRole($role);
 		}

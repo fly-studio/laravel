@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Entrust;
 
 /**
@@ -9,12 +10,12 @@ namespace Addons\Entrust;
  * @package Addons\Entrust
  */
 
-use Addons\Entrust\Contracts\PermissionInterface;
-use Addons\Entrust\Traits\PermissionTrait;
-use Illuminate\Database\Eloquent\Model;
-use Addons\Core\Models\CacheTrait;
 use Addons\Core\Models\CallTrait;
+use Addons\Core\Models\CacheTrait;
 use Addons\Core\Models\PolyfillTrait;
+use Illuminate\Database\Eloquent\Model;
+use Addons\Entrust\Traits\PermissionTrait;
+use Addons\Entrust\Contracts\PermissionInterface;
 
 class Permission extends Model implements PermissionInterface
 {
@@ -42,7 +43,7 @@ class Permission extends Model implements PermissionInterface
 
     /**
      * import the methods's permission of resource's route
-     * 
+     *
      * @example
      * Permission::import([
      *     'member' => '用户',
@@ -50,9 +51,9 @@ class Permission extends Model implements PermissionInterface
      * ]);
      *
      * see config/entrust.php - import_fields
-     * 
-     * @param  array  $permissions 
-     * @return 
+     *
+     * @param  array  $permissions
+     * @return
      */
     public static function import(array $permissions, $format = '{{name}}.{{key}}')
     {

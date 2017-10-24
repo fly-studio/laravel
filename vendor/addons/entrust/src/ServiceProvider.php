@@ -1,6 +1,9 @@
 <?php
+
 namespace Addons\Entrust;
+
 use Addons\Entrust\Commands\MigrationCommand;
+use Illuminate\Support\ServiceProvider as SP;
 
 /**
  * This file is part of Entrust,
@@ -10,7 +13,6 @@ use Addons\Entrust\Commands\MigrationCommand;
  * @package Addons\Entrust
  */
 
-use Illuminate\Support\ServiceProvider as SP;
 
 class ServiceProvider extends SP
 {
@@ -35,7 +37,7 @@ class ServiceProvider extends SP
 
         // Register commands
         $this->commands('command.entrust.migration');
-        
+
         // Register blade directives
         $this->bladeDirectives();
     }
@@ -99,7 +101,7 @@ class ServiceProvider extends SP
         $this->app->bind('entrust', function ($app) {
             return new Entrust($app);
         });
-        
+
         $this->app->alias('entrust', 'Addons\Entrust\Entrust');
     }
 
