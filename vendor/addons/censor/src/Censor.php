@@ -91,6 +91,21 @@ class Censor {
 		return $messages;
 	}
 
+	public function messageWithTranslate()
+	{
+		$validator = $this->validator();
+		$messages = [];
+		foreach($this->validations as $attribute => $line)
+		{
+			if (!isset($line['message']))
+				continue;
+			foreach($line['message'] as $rule => $text)
+				$messages[$attribute][$rule] = $validator->makeReplacements($text, $line['name'], $rule, $line['rules']->ruleParameters($rule) ?? []);
+		}
+		return $messages;
+
+	}
+
 	public function names()
 	{
 		$names = [];
@@ -131,14 +146,14 @@ class Censor {
 
 	public function validator()
 	{
-		return $this->getValidationFactory()->make($this->data(), $this->originalRules(), $this->messagesWithDot(), $this->names());
+		return $this->getValidationFactory()->make($this->data() ?? [], $this->originalRules(), $this->messagesWithDot(), $this->names());
 	}
 
 	public function js()
 	{
 		return [
 			'rules' => $this->jsRules(),
-			'messages' => $this->messages(),
+			'messages' => $this->messageWithTranslate(),
 		];
 	}
 

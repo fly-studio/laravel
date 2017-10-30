@@ -96,7 +96,7 @@ class ValidatorEx extends BaseValidator {
 		// is the size. If it is a file, we take kilobytes, and for a string the
 		// entire length of the string will be considered the attribute size.
 		if (is_numeric($value) && $hasNumeric) {
-			return array_get($this->data, $attribute);
+			return $value;
 		} elseif (is_array($value)) {
 			return count($value);
 		} elseif ($value instanceof File) {
@@ -109,34 +109,6 @@ class ValidatorEx extends BaseValidator {
 
 		return strlen_ansi($value, NULL, $ansiWidth);
 		//return mb_strlen($value);
-	}
-
-	/**
-	 * Replace all error message place-holders with actual values.
-	 *
-	 * @param  string  $message
-	 * @param  string  $attribute
-	 * @param  string  $rule
-	 * @param  array   $parameters
-	 * @return string
-	 */
-	protected function doReplacements($message, $attribute, $rule, $parameters)
-	{
-		$value = $this->getAttribute($attribute);
-
-		$message = str_replace(
-			[':attribute', ':ATTRIBUTE', ':Attribute'],
-			[$value, Str::upper($value), Str::ucfirst($value)],
-			$message
-		);
-
-		if (isset($this->replacers[Str::snake($rule)])) {
-			$message = $this->callReplacer($message, $attribute, Str::snake($rule), $parameters, $this);
-		} elseif (method_exists($this, $replacer = "replace{$rule}")) {
-			$message = $this->$replacer($message, $attribute, $rule, $parameters, $this);
-		}
-
-		return $message;
 	}
 
 	/**

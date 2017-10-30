@@ -2,6 +2,7 @@
 
 namespace Addons\Censor\Ruling;
 
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationRuleParser;
 
 class Rules {
@@ -24,6 +25,12 @@ class Rules {
 	public function rules()
 	{
 		return $this->rules;
+	}
+
+	public function ruleParameters($ruleName)
+	{
+		$ruleName = Str::snake($ruleName);
+		return $rules[$ruleName] ?? null;
 	}
 
 	public function js()
