@@ -9,7 +9,7 @@
  * @return bool The boolean equivalent or null
  */
 if(! function_exists('boolval')) {
-function boolval($in, $strict = FALSE) 
+function boolval($in, $strict = FALSE)
 {
 	$out = NULL;
 	// if not strict, we only have to check if something is false
@@ -85,10 +85,10 @@ function set_property($class, $variant, $value)
 {
 	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
 
-    $property = (new ReflectionClass($class))->getProperty($variant);
-    $property->setAccessible(true);
+	$property = (new ReflectionClass($class))->getProperty($variant);
+	$property->setAccessible(true);
 
-    return $property->setValue($class, $value);
+	return $property->setValue($class, $value);
 }
 }
 
@@ -104,11 +104,11 @@ if (! function_exists('get_property')) {
 function get_property($class, $variant)
 {
 	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
-	
-    $property = (new ReflectionClass($class))->getProperty($variant);
-    $property->setAccessible(true);
 
-    return $property->getValue($class);
+	$property = (new ReflectionClass($class))->getProperty($variant);
+	$property->setAccessible(true);
+
+	return $property->getValue($class);
 }
 }
 
@@ -126,10 +126,10 @@ function call_class_method_array($class, $method, $parameters)
 {
 	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
 
-    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
-    $reflectionMethod->setAccessible(true);
+	$reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+	$reflectionMethod->setAccessible(true);
 
-    return $reflectionMethod->invokeArgs($class, $parameters);
+	return $reflectionMethod->invokeArgs($class, $parameters);
 }
 }
 
@@ -147,9 +147,9 @@ function call_class_method($class, $method, ...$parameters)
 {
 	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
 
-    $reflectionMethod = (new ReflectionClass($class))->getMethod($method);
-    $reflectionMethod->setAccessible(true);
+	$reflectionMethod = (new ReflectionClass($class))->getMethod($method);
+	$reflectionMethod->setAccessible(true);
 
-    return $reflectionMethod->invokeArgs($class, $parameters);
+	return $reflectionMethod->invokeArgs($class, $parameters);
 }
 }
