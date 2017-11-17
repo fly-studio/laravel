@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Rap2hpoutre\\LaravelLogViewer\\' => array($vendorDir . '/rap2hpoutre/laravel-log-viewer/src'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
+    'Pimple' => array($vendorDir . '/pimple/pimple/src'),
     'Parsedown' => array($vendorDir . '/erusev/parsedown'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
