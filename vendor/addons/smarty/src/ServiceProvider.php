@@ -1,8 +1,10 @@
 <?php
+
 namespace Addons\Smarty;
 
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Addons\Smarty\View\Engine;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+
 class ServiceProvider extends BaseServiceProvider
 {
 

@@ -6,17 +6,12 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
-        "addons/censor": "dev-master",
-        "addons/core": "dev-master",
-        "addons/elasticsearch": "dev-master",
-        "addons/entrust": "dev-master",
-        "addons/func": "dev-master",
-        "addons/smarty": "dev-master",
-        "addons/ucloud": "dev-master",
+        "addons/plugins": "dev-master",
+        "addons/core": "^3.0",
+        "addons/entrust": "^1.0",
+        "addons/elasticsearch": "^1.0",
         "aferrandini/phpqrcode": "^1.0",
-        "barryvdh/laravel-async-queue": "^0.7.0",
         "doctrine/dbal": "^2.5",
-        "elasticsearch/elasticsearch": "^5.1",
         "fideloper/proxy": "^3.3",
         "intervention/image": "^2.3",
         "jenssegers/agent": "^2.4",
@@ -31,20 +26,18 @@
         "phpoffice/phpexcel": "^1.8",
         "phpseclib/phpseclib": "^2.0",
         "predis/predis": "^1.1",
-        "rap2hpoutre/laravel-log-viewer": "^0.10",
-        "smarty/smarty": "^3.1",
+        "rap2hpoutre/laravel-log-viewer": "^0.11",
         "socialiteproviders/qq": "^3.0",
         "socialiteproviders/weibo": "^3.0",
         "socialiteproviders/weixin": "^4.0",
         "socialiteproviders/weixin-web": "^3.0",
-        "symfony/dom-crawler": "^3.2",
-        "tufanbarisyildirim/php-apk-parser": "dev-master"
+        "symfony/dom-crawler": "^3.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "1.*",
         "phpunit/phpunit": "~6.0",
-        "barryvdh/laravel-debugbar": "^2.3"
+        "barryvdh/laravel-debugbar": "^3.1"
     },
     "autoload": {
         "classmap": [

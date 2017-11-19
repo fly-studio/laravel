@@ -1,0 +1,45 @@
+{
+    "name": "addons/plugins",
+    "description": "Laravel's plugins.",
+    "homepage": "https://www.load-page.com/manuals",
+    "keywords": ["L5", "Laravel 5", "Laravel","Addons"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/fly-studio/laravel-addons-plugins/issues",
+        "source": "https://github.com/fly-studio/laravel-addons-plugins"
+    },
+    "authors": [
+        {
+            "name": "Fly",
+            "email": "fly@load-page.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "illuminate/support": "~5.5",
+        "illuminate/translation": "~5.5",
+        "illuminate/database": "~5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Addons\\Plugins\\": "src/"
+        },
+        "classmap": [
+            "src/"
+        ],
+        "files": [
+
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Addons\\Plugins\\ServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "minimum-stability": "dev"
+
+}

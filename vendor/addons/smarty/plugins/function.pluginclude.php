@@ -21,7 +21,7 @@
  */
 function smarty_function_pluginclude($params, $template)
 {
-	$_c = config('plugins');
+	$_c = config('plugins.plugins');
 	if (empty($_c)) return;
 
 	$dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);

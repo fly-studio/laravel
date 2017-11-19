@@ -15,13 +15,6 @@ use Elasticsearch\Common\Exceptions\Serializer\JsonErrorException;
  */
 class SmartSerializer implements SerializerInterface
 {
-    private $PHP_VERSION;
-
-    public function __construct()
-    {
-        $this->PHP_VERSION = phpversion();
-    }
-
     /**
      * Serialize assoc array into JSON string
      *
@@ -34,10 +27,9 @@ class SmartSerializer implements SerializerInterface
         if (is_string($data) === true) {
             return $data;
         } else {
-            if (version_compare($this->PHP_VERSION, '5.6.6', '<') || ! defined('JSON_PRESERVE_ZERO_FRACTION')) {
-                $data = json_encode($data);
-            } else {
-                $data = json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
+            $data = json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
+            if ($data === false) {
+                throw new RuntimeException("Failed to JSON encode: ".json_last_error());
             }
             if ($data === '[]') {
                 return '{}';

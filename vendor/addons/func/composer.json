@@ -5,8 +5,8 @@
     "keywords": ["L5", "Laravel 5", "Laravel", "Function"],
     "license": "MIT",
     "support": {
-        "issues": "https://git.load-page.com/addons/function/issues",
-        "source": "https://git.load-page.com/addons/function"
+        "issues": "https://github.com/fly-studio/laravel-addons-func/issues",
+        "source": "https://github.com/fly-studio/laravel-addons-func"
     },
     "authors": [
         {
@@ -26,5 +26,5 @@
         ]
     },
     "minimum-stability": "dev"
-    
+
 }

@@ -5,8 +5,8 @@
     "keywords": ["L5", "Laravel 5", "Laravel", "Smarty", "Smarty 3", "View", "Templating"],
     "license": "MIT",
     "support": {
-        "issues": "https://git.load-page.com/addons/smarty/issues",
-        "source": "https://git.load-page.com/addons/smarty"
+        "issues": "https://github.com/fly-studio/laravel-addons-smarty/issues",
+        "source": "https://github.com/fly-studio/laravel-addons-smarty"
     },
     "authors": [
         {
@@ -28,6 +28,15 @@
         "classmap": [
             "/src"
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Addons\\Smarty\\ServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
     },
     "minimum-stability": "dev"
 }

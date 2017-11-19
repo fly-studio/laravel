@@ -48,8 +48,12 @@ class Transport
      * @param ConnectionPool\AbstractConnectionPool $connectionPool
      * @param \Psr\Log\LoggerInterface $log    Monolog logger object
      */
+	// @codingStandardsIgnoreStart
+	// "Arguments with default values must be at the end of the argument list" - cannot change the interface
     public function __construct($retries, $sniffOnStart = false, AbstractConnectionPool $connectionPool, LoggerInterface $log)
     {
+	    // @codingStandardsIgnoreEnd
+
         $this->log            = $log;
         $this->connectionPool = $connectionPool;
         $this->retries        = $retries;
@@ -113,14 +117,14 @@ class Transport
                 // Note, this could be a 4xx or 5xx error
             },
             //onFailure
-            function (\Exception $response) {
+            function ($response) {
                 // Ignore 400 level errors, as that means the server responded just fine
-                $code = $response->getCode();
-                if (!(isset($code) && $code >=400 && $code < 500)) {
+                if (!(isset($response['code']) && $response['code'] >=400 && $response['code'] < 500)) {
                     // Otherwise schedule a check
                     $this->connectionPool->scheduleCheck();
                 }
-            });
+            }
+        );
 
         return $future;
     }

@@ -5,8 +5,8 @@
     "keywords": ["laravel","illuminate","auth","roles","acl","permission"],
     "license": "MIT",
     "support": {
-        "issues": "https://git.load-page.com/addons/entrust/issues",
-        "source": "https://git.load-page.com/addons/entrust"
+        "issues": "https://github.com/fly-studio/laravel-addons-entrust/issues",
+        "source": "https://github.com/fly-studio/laravel-addons-entrust"
     },
     "authors": [
         {
@@ -32,15 +32,9 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "illuminate/console": "~5.0",
-        "illuminate/support": "~5.0",
-        "illuminate/cache": "~5.0",
-        "addons/core": "dev-master"
+        "addons/core": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.1",
-        "mockery/mockery": "dev-master",
-        "illuminate/database": "~5.0"
     },
     "autoload": {
         "classmap": [
@@ -48,6 +42,15 @@
         ],
         "psr-4": {
             "Addons\\Entrust\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Addons\\Entrust\\ServiceProvider"
+            ],
+            "aliases": {
+            }
         }
     },
     "minimum-stability": "dev"
