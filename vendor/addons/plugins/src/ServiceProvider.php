@@ -18,12 +18,6 @@ class ServiceProvider extends BaseServiceProvider
 	public function register()
 	{
 		$this->mergeConfigFrom(__DIR__ . '/../config/plugins.php', 'plugins');
-
-		$this->app->bind(\Illuminate\Foundation\PackageManifest::class, function($app) {
-			return new \Illuminate\Foundation\PackageManifest(
-				new Filesystem, realpath(__DIR__.'/../../../../'), $this->app->getCachedPackagesPath()
-			);
-		});
 		$this->registerPlugins();
 	}
 
@@ -148,6 +142,6 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function provides()
 	{
-		return ['core'];
+		return [];
 	}
 }

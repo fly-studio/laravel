@@ -21,7 +21,7 @@
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "mews/captcha": "^2.1",
-        "overtrue/wechat": "^3.3",
+        "overtrue/wechat": "dev-master",
         "owen-it/laravel-auditing": "^4.1",
         "phpoffice/phpexcel": "^1.8",
         "phpseclib/phpseclib": "^2.0",
