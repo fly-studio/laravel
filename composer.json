@@ -18,7 +18,6 @@
         "laravel/framework": "5.5.*",
         "laravel/passport": "^4.0",
         "laravel/scout": "^3.0",
-        "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "mews/captcha": "^2.1",
         "overtrue/wechat": "dev-master",
@@ -27,10 +26,6 @@
         "phpseclib/phpseclib": "^2.0",
         "predis/predis": "^1.1",
         "rap2hpoutre/laravel-log-viewer": "^0.11",
-        "socialiteproviders/qq": "^3.0",
-        "socialiteproviders/weibo": "^3.0",
-        "socialiteproviders/weixin": "^4.0",
-        "socialiteproviders/weixin-web": "^3.0",
         "symfony/dom-crawler": "^3.2"
     },
     "require-dev": {
