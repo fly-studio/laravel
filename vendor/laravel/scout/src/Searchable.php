@@ -9,6 +9,13 @@ use Illuminate\Support\Collection as BaseCollection;
 trait Searchable
 {
     /**
+     * Additional metadata attributes managed by Scout.
+     *
+     * @var array
+     */
+    protected $scoutMetadata = [];
+
+    /**
      * Boot the trait.
      *
      * @return void
@@ -221,5 +228,29 @@ trait Searchable
     public function syncWithSearchUsingQueue()
     {
         return config('scout.queue.queue');
+    }
+
+    /**
+     * Get all Scout related metadata.
+     *
+     * @return array
+     */
+    public function scoutMetadata()
+    {
+        return $this->scoutMetadata;
+    }
+
+    /**
+     * Set a Scout related metadata.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return void
+     */
+    public function withScoutMetadata($key, $value)
+    {
+        $this->scoutMetadata[$key] = $value;
+
+        return $this;
     }
 }
