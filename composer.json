@@ -20,7 +20,7 @@
         "laravel/scout": "^3.0",
         "laravel/tinker": "~1.0",
         "mews/captcha": "^2.1",
-        "overtrue/wechat": "dev-master",
+        "overtrue/wechat": "~4.0",
         "owen-it/laravel-auditing": "^4.1",
         "phpoffice/phpexcel": "^1.8",
         "phpseclib/phpseclib": "^2.0",

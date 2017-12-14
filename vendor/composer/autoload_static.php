@@ -21,15 +21,15 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         '4bcc8d86c9e4c7b037c26c95381f6eeb' => __DIR__ . '/..' . '/addons/func/src/func/helpers.php',
         '32dcc8afd4335739640db7d200c1971d' => __DIR__ . '/..' . '/symfony/polyfill-apcu/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         'd635694d01516539fed9c3958c0179fb' => __DIR__ . '/..' . '/addons/core/src/helpers.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
+        'e7223560d890eab89cda23685e711e2c' => __DIR__ . '/..' . '/psy/psysh/src/Psy/functions.php',
         '5e8fe2a5ffaded85af682684fe3bbf5a' => __DIR__ . '/..' . '/mews/captcha/src/helpers.php',
         '4a1f389d6ce373bda9e57857d3b61c84' => __DIR__ . '/..' . '/barryvdh/laravel-debugbar/src/helpers.php',
-        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
-        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
         'f0e7e63bbb278a92db02393536748c5f' => __DIR__ . '/..' . '/overtrue/wechat/src/Kernel/Support/Helpers.php',
         '6747f579ad6817f318cc3a7e7a0abb93' => __DIR__ . '/..' . '/overtrue/wechat/src/Kernel/Helpers.php',
+        'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
+        '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -139,6 +139,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
             'Elasticsearch\\' => 14,
             'Egulias\\EmailValidator\\' => 23,
             'EasyWeChat\\' => 11,
+            'EasyWeChatComposer\\' => 19,
         ),
         'D' => 
         array (
@@ -411,6 +412,10 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'EasyWeChat\\' => 
         array (
             0 => __DIR__ . '/..' . '/overtrue/wechat/src',
+        ),
+        'EasyWeChatComposer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/easywechat-composer/easywechat-composer',
         ),
         'Dotenv\\' => 
         array (
@@ -1145,6 +1150,9 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Dotenv\\Exception\\ValidationException' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Exception/ValidationException.php',
         'Dotenv\\Loader' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Loader.php',
         'Dotenv\\Validator' => __DIR__ . '/..' . '/vlucas/phpdotenv/src/Validator.php',
+        'EasyWeChatComposer\\Extension' => __DIR__ . '/..' . '/easywechat-composer/easywechat-composer/Extension.php',
+        'EasyWeChatComposer\\ManifestManager' => __DIR__ . '/..' . '/easywechat-composer/easywechat-composer/ManifestManager.php',
+        'EasyWeChatComposer\\Plugin' => __DIR__ . '/..' . '/easywechat-composer/easywechat-composer/Plugin.php',
         'EasyWeChat\\BasicService\\Application' => __DIR__ . '/..' . '/overtrue/wechat/src/BasicService/Application.php',
         'EasyWeChat\\BasicService\\Jssdk\\Client' => __DIR__ . '/..' . '/overtrue/wechat/src/BasicService/Jssdk/Client.php',
         'EasyWeChat\\BasicService\\Jssdk\\ServiceProvider' => __DIR__ . '/..' . '/overtrue/wechat/src/BasicService/Jssdk/ServiceProvider.php',
@@ -2564,6 +2572,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Illuminate\\Events\\CallQueuedListener' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Events/CallQueuedListener.php',
         'Illuminate\\Events\\Dispatcher' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Events/Dispatcher.php',
         'Illuminate\\Events\\EventServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Events/EventServiceProvider.php',
+        'Illuminate\\Filesystem\\Cache' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Filesystem/Cache.php',
         'Illuminate\\Filesystem\\Filesystem' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Filesystem/Filesystem.php',
         'Illuminate\\Filesystem\\FilesystemAdapter' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Filesystem/FilesystemAdapter.php',
         'Illuminate\\Filesystem\\FilesystemManager' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Filesystem/FilesystemManager.php',
@@ -2675,6 +2684,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Illuminate\\Foundation\\Testing\\RefreshDatabaseState' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/RefreshDatabaseState.php',
         'Illuminate\\Foundation\\Testing\\TestCase' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/TestCase.php',
         'Illuminate\\Foundation\\Testing\\TestResponse' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/TestResponse.php',
+        'Illuminate\\Foundation\\Testing\\WithFaker' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/WithFaker.php',
         'Illuminate\\Foundation\\Testing\\WithoutEvents' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/WithoutEvents.php',
         'Illuminate\\Foundation\\Testing\\WithoutMiddleware' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Testing/WithoutMiddleware.php',
         'Illuminate\\Foundation\\Validation\\ValidatesRequests' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/Validation/ValidatesRequests.php',
@@ -2885,6 +2895,7 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Illuminate\\Session\\FileSessionHandler' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/FileSessionHandler.php',
         'Illuminate\\Session\\Middleware\\AuthenticateSession' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/Middleware/AuthenticateSession.php',
         'Illuminate\\Session\\Middleware\\StartSession' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php',
+        'Illuminate\\Session\\NullSessionHandler' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/NullSessionHandler.php',
         'Illuminate\\Session\\SessionManager' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/SessionManager.php',
         'Illuminate\\Session\\SessionServiceProvider' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/SessionServiceProvider.php',
         'Illuminate\\Session\\Store' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Session/Store.php',
@@ -3544,7 +3555,6 @@ class ComposerStaticInitc8873d47254732752c156f2f8c65cbcc
         'Overtrue\\Socialite\\Providers\\GoogleProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/GoogleProvider.php',
         'Overtrue\\Socialite\\Providers\\LinkedinProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/LinkedinProvider.php',
         'Overtrue\\Socialite\\Providers\\QQProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/QQProvider.php',
-        'Overtrue\\Socialite\\Providers\\WeChatOpenPlatformProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/WeChatOpenPlatformProvider.php',
         'Overtrue\\Socialite\\Providers\\WeChatProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/WeChatProvider.php',
         'Overtrue\\Socialite\\Providers\\WeWorkProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/WeWorkProvider.php',
         'Overtrue\\Socialite\\Providers\\WeiboProvider' => __DIR__ . '/..' . '/overtrue/socialite/src/Providers/WeiboProvider.php',

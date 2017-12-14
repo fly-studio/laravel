@@ -104,7 +104,13 @@ trait Searchable
     {
         $self = new static();
 
+        $softDeletes = in_array(SoftDeletes::class, class_uses_recursive(get_called_class())) &&
+                       config('scout.soft_delete', false);
+
         $self->newQuery()
+            ->when($softDeletes, function ($query) {
+                $query->withTrashed();
+            })
             ->orderBy($self->getKeyName())
             ->searchable();
     }
@@ -228,6 +234,16 @@ trait Searchable
     public function syncWithSearchUsingQueue()
     {
         return config('scout.queue.queue');
+    }
+
+    /**
+     * Sync the soft deleted status for this model into the metadata.
+     *
+     * @return $this
+     */
+    public function pushSoftDeleteMetadata()
+    {
+        return $this->withScoutMetadata('__soft_deleted', $this->trashed() ? 1 : 0);
     }
 
     /**
