@@ -112,9 +112,9 @@ abstract class AccessToken implements AccessTokenInterface
      * @param string $token
      * @param int    $lifetime
      *
-     * @return \EasyWeChat\Kernel\AccessToken
+     * @return \EasyWeChat\Kernel\Contracts\AccessTokenInterface
      */
-    public function setToken(string $token, int $lifetime = 7200): self
+    public function setToken(string $token, int $lifetime = 7200): AccessTokenInterface
     {
         $this->getCache()->set($this->getCacheKey(), [
             $this->tokenKey => $token,
@@ -146,7 +146,7 @@ abstract class AccessToken implements AccessTokenInterface
     {
         $response = $this->sendRequest($credentials);
         $result = json_decode($response->getBody()->getContents(), true);
-        $formatted = $this->resolveResponse($response, $this->app['config']->get('response_type', 'array'));
+        $formatted = $this->castResponseToType($response, $this->app['config']->get('response_type'));
 
         if (empty($result[$this->tokenKey])) {
             throw new HttpException('Request access_token fail: '.json_encode($result, JSON_UNESCAPED_UNICODE), $response, $formatted);
@@ -164,6 +164,7 @@ abstract class AccessToken implements AccessTokenInterface
     public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
     {
         parse_str($request->getUri()->getQuery(), $query);
+
         $query = http_build_query(array_merge($this->getQuery(), $query));
 
         return $request->withUri($request->getUri()->withQuery($query));

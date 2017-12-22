@@ -83,7 +83,7 @@ class BaseClient
 
         $response = $this->performRequest($endpoint, $method, $options);
 
-        return $returnResponse ? $response : $this->resolveResponse($response, $this->app->config->get('response_type'));
+        return $returnResponse ? $response : $this->castResponseToType($response, $this->app->config->get('response_type'));
     }
 
     /**
@@ -94,7 +94,7 @@ class BaseClient
      * @param string $method
      * @param array  $options
      *
-     * @return array|Support\Collection|object|ResponseInterface|string
+     * @return ResponseInterface
      */
     protected function requestRaw($endpoint, array $params = [], $method = 'post', array $options = [])
     {

@@ -21,6 +21,7 @@ use EasyWeChat\Kernel\Messages\Raw as RawMessage;
 use EasyWeChat\Kernel\Messages\Text;
 use EasyWeChat\Kernel\Support\XML;
 use EasyWeChat\Kernel\Traits\Observable;
+use EasyWeChat\Kernel\Traits\ResponseCastable;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -33,7 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ServerGuard
 {
-    use Observable;
+    use Observable, ResponseCastable;
 
     /**
      * @var bool
@@ -69,6 +70,8 @@ class ServerGuard
 
     /**
      * Constructor.
+     *
+     * @codeCoverageIgnore
      *
      * @param \EasyWeChat\Kernel\ServiceContainer $app
      */
@@ -129,7 +132,7 @@ class ServerGuard
     /**
      * Get request message.
      *
-     * @return array
+     * @return array|\EasyWeChat\Kernel\Support\Collection|object|string
      *
      * @throws BadRequestException
      */
@@ -156,10 +159,10 @@ class ServerGuard
                 return $dataSet;
             }
 
-            return XML::parse($message);
+            $message = XML::parse($message);
         }
 
-        return $message;
+        return $this->detectAndCastResponseToType($message, $this->app->config->get('response_type'));
     }
 
     /**
@@ -195,7 +198,7 @@ class ServerGuard
      * @param string                                                   $from
      * @param \EasyWeChat\Kernel\Contracts\MessageInterface|string|int $message
      *
-     * @return mixed|string
+     * @return string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */

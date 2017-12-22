@@ -17,6 +17,7 @@ use EasyWeChat\Kernel\Traits\HasHttpRequests;
 use GuzzleHttp\Client;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
+use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -160,7 +161,7 @@ class BaseClient
 
         $response = $this->performRequest($url, $method, $options);
 
-        return $returnRaw ? $response : $this->resolveResponse($response, $this->app->config->get('response_type'));
+        return $returnRaw ? $response : $this->castResponseToType($response, $this->app->config->get('response_type'));
     }
 
     /**
