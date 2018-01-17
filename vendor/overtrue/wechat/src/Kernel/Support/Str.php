@@ -89,6 +89,8 @@ class Str
      * @throws RuntimeException
      *
      * @codeCoverageIgnore
+     *
+     * @throws \Exception
      */
     public static function randomBytes($length = 16)
     {

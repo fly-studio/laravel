@@ -90,6 +90,8 @@ class ServerGuard
      * @return Response
      *
      * @throws BadRequestException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function serve(): Response
     {
@@ -135,6 +137,8 @@ class ServerGuard
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|string
      *
      * @throws BadRequestException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function getMessage()
     {
@@ -169,6 +173,10 @@ class ServerGuard
      * Resolve server request and return the response.
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     protected function resolve(): Response
     {
@@ -232,18 +240,21 @@ class ServerGuard
      *
      * @return array
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     protected function handleRequest(): array
     {
-        $message = $this->getMessage();
+        $castedMessage = $this->getMessage();
 
-        $response = $this->dispatch(self::MESSAGE_TYPE_MAPPING[$message['MsgType'] ?? 'text'], $message);
+        $messageArray = $this->detectAndCastResponseToType($castedMessage, 'array');
+
+        $response = $this->dispatch(self::MESSAGE_TYPE_MAPPING[$messageArray['MsgType'] ?? $messageArray['msg_type'] ?? 'text'], $castedMessage);
 
         return [
-            'to' => $message['FromUserName'] ?? '',
-            'from' => $message['ToUserName'] ?? '',
+            'to' => $messageArray['FromUserName'] ?? '',
+            'from' => $messageArray['ToUserName'] ?? '',
             'response' => $response,
         ];
     }

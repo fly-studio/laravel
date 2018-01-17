@@ -19,11 +19,13 @@ class Paid extends Handler
      * @param \Closure $closure
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
     public function handle(Closure $closure)
     {
         $this->strict(
-            $closure->bindTo($this)->__invoke($this->getMessage(), [$this, 'fail'])
+            \call_user_func($closure, $this->getMessage(), [$this, 'fail'])
         );
 
         return $this->toResponse();

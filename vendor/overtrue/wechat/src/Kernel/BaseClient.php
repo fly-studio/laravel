@@ -64,6 +64,8 @@ class BaseClient
      * @param array  $query
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function httpGet(string $url, array $query = [])
     {
@@ -77,6 +79,8 @@ class BaseClient
      * @param array  $data
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function httpPost(string $url, array $data = [])
     {
@@ -91,6 +95,8 @@ class BaseClient
      * @param array        $query
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function httpPostJson(string $url, array $data = [], array $query = [])
     {
@@ -106,6 +112,8 @@ class BaseClient
      * @param array  $query
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function httpUpload(string $url, array $files = [], array $form = [], array $query = [])
     {
@@ -152,6 +160,8 @@ class BaseClient
      * @param bool   $returnRaw
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function request(string $url, string $method = 'GET', array $options = [], $returnRaw = false)
     {
@@ -170,6 +180,8 @@ class BaseClient
      * @param array  $options
      *
      * @return \EasyWeChat\Kernel\Http\Response
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function requestRaw(string $url, string $method = 'GET', array $options = [])
     {

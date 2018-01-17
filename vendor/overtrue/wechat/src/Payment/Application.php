@@ -29,6 +29,7 @@ use EasyWeChat\OfficialAccount;
  * @property \EasyWeChat\Payment\Redpack\Client            $redpack
  * @property \EasyWeChat\BasicService\Url\Client           $url
  * @property \EasyWeChat\Payment\Transfer\Client           $transfer
+ * @property \EasyWeChat\Payment\Security\Client           $security
  * @property \EasyWeChat\OfficialAccount\Auth\AccessToken  $access_token
  *
  * @method mixed pay(array $attributes)
@@ -53,6 +54,7 @@ class Application extends ServiceContainer
         Reverse\ServiceProvider::class,
         Sandbox\ServiceProvider::class,
         Transfer\ServiceProvider::class,
+        Security\ServiceProvider::class,
     ];
 
     /**
@@ -92,6 +94,8 @@ class Application extends ServiceContainer
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
     public function handlePaidNotify(Closure $closure)
     {
@@ -104,6 +108,8 @@ class Application extends ServiceContainer
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
     public function handleRefundedNotify(Closure $closure)
     {
@@ -116,6 +122,8 @@ class Application extends ServiceContainer
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @codeCoverageIgnore
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
     public function handleScannedNotify(Closure $closure)
     {

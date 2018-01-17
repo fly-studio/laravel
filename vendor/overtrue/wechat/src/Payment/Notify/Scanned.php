@@ -34,10 +34,12 @@ class Scanned extends Handler
      * @param \Closure $closure
      *
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
      */
     public function handle(Closure $closure)
     {
-        $result = $closure->bindTo($this)->__invoke($this->getMessage(), [$this, 'fail'], [$this, 'alert']);
+        $result = \call_user_func($closure, $this->getMessage(), [$this, 'fail'], [$this, 'alert']);
 
         $attributes = [
             'result_code' => is_null($this->alert) && is_null($this->fail) ? static::SUCCESS : static::FAIL,

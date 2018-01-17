@@ -11,7 +11,6 @@
 
 namespace EasyWeChat\Kernel\Traits;
 
-use Closure;
 use EasyWeChat\Kernel\Contracts\EventHandlerInterface;
 use EasyWeChat\Kernel\Decorators\FinallyResult;
 use EasyWeChat\Kernel\Decorators\TerminateResult;
@@ -50,6 +49,8 @@ trait Observable
     /**
      * @param \Closure|EventHandlerInterface|string $handler
      * @param \Closure|EventHandlerInterface|string $condition
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function unshift($handler, $condition = '*')
     {
@@ -65,6 +66,8 @@ trait Observable
     /**
      * @param string                                $condition
      * @param \Closure|EventHandlerInterface|string $handler
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function observe($condition, $handler)
     {
@@ -74,6 +77,8 @@ trait Observable
     /**
      * @param string                                $condition
      * @param \Closure|EventHandlerInterface|string $handler
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function on($condition, $handler)
     {
@@ -132,12 +137,12 @@ trait Observable
     }
 
     /**
-     * @param \Closure $handler
-     * @param array    $payload
+     * @param callable $handler
+     * @param mixed    $payload
      *
      * @return mixed
      */
-    protected function callHandler(Closure $handler, array $payload)
+    protected function callHandler(callable $handler, $payload)
     {
         try {
             return $handler($payload);
@@ -194,6 +199,8 @@ trait Observable
      * @param $condition
      *
      * @return array
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function resolveHandlerAndCondition($handler, $condition): array
     {
