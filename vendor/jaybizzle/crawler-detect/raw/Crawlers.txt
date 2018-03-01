@@ -41,6 +41,7 @@ adbeat
 AddThis
 ADmantX
 adressendeutschland
+adscanner\/
 Advanced Email Extractor v
 agentslug
 AHC
@@ -61,6 +62,7 @@ AngleSharp\/
 Ant\.com
 Anturis Agent
 AnyEvent-HTTP\/
+Apache Droid
 ApacheBench\/
 Apache-HttpAsyncClient\/
 Apache-HttpClient\/
@@ -109,6 +111,7 @@ Branch-Passthrough
 Brodie\/
 Browsershots
 BUbiNG
+Burf Search
 Butterfly\/
 BuzzSumo
 CAAM\/[0-9]
@@ -172,6 +175,7 @@ docoloc
 Dolphin http client\/
 DomainAppender
 Donuts Content Explorer
+dotMailer content retrieval
 dotSemantic
 downforeveryoneorjustme
 downnotifier\.com
@@ -254,6 +258,7 @@ GetURLInfo\/[0-9]
 Ghost Inspector
 GigablastOpenSource
 GIS-LABS
+github-camo
 github\.com\/
 Go [\d\.]* package http
 Go-http-client
@@ -298,6 +303,7 @@ GTmetrix
 GuzzleHttp
 gvfs\/
 HAA(A)?RTLAND http client
+hackney\/
 Hatena
 hawkReader
 HEADMasterSEO
@@ -333,9 +339,7 @@ httrack
 hosterstats
 huaweisymantec
 HubPages.*crawlingpolicy
-HubSpot Connect
-HubSpot Marketing Grader
-HubSpot Page Screenshot Service
+HubSpot 
 HyperZbozi.cz Feeder
 i2kconnect\/
 ichiro
@@ -382,6 +386,7 @@ JobFeed discovery
 Jobg8 URL Monitor
 jobo
 Jobrapido
+Jobsearch1\.5
 JoinVision Generic
 JS-Kit
 Kaspersky Lab CFR link resolver
@@ -449,6 +454,7 @@ Microsoft-WebDAV-MiniRedir
 Microsoft Data Access Internet Publishing Provider Protocol
 Microsoft Office 
 Microsoft Windows Network Diagnostics
+Miniature.io\/
 Mindjet
 Miniflux
 mixdata dot com
@@ -468,6 +474,7 @@ MovableType
 Mrcgiguy
 mShots
 MxToolbox\/
+MuckRack\/
 MVAClient
 nagios
 Najdi\.si\/
@@ -487,11 +494,13 @@ NewsBlur .*Finder
 NewsGator
 newsme
 newspaper\/
+Nexgate Ruby Client
 NG-Search
 nineconnections\.com
 NLNZ_IAHarvester
 Nmap Scripting Engine
 node-superagent
+node-urllib\/
 node\.io
 nominet\.org\.uk
 Norton-Safeweb
@@ -561,6 +570,7 @@ postrank
 PowerPoint\/
 Priceonomics Analysis Engine
 PritTorrent\/[0-9]
+PrintFriendly\.com
 Prlog
 probethenet
 Project 25499
@@ -622,6 +632,7 @@ Seeker
 semanticdiscovery
 semanticjuice
 Semiocast HTTP client
+sentry\/
 SEO Browser
 Seo Servis
 seo-nastroj.cz
@@ -631,6 +642,7 @@ SeoCheck
 SeopultContentAnalyzer
 Server Density Service Monitoring
 servernfo\.com
+SetCronJob\/
 Seznam screenshot-generator
 Shelob
 Shoppimon Analyzer
@@ -642,6 +654,7 @@ SilverReader
 Sideqik
 SimplePie
 SimplyFast
+Sitebulb\/
 SiteIndexed
 Site-Shot\/
 Site24x7
@@ -705,6 +718,7 @@ teoma
 terrainformatica\.com
 Test Certificate Info
 Tetrahedron\/[0-9]
+Thinklab
 The Drop Reaper
 The Expert HTML Source Viewer
 theinternetrules
@@ -721,6 +735,7 @@ TrapitAgent
 trendspottr\.com
 truwoGPS
 TulipChain
+Twisted PageGetter
 tweetedtimes\.com
 Tweetminster
 Tweezler\/
@@ -731,9 +746,11 @@ uclassify
 uCrawlr\/
 UdmSearch
 UniversalFeedParser
+Unshorten\.It\!\/[0-9]
 Untiny
 UnwindFetchor
 updated
+updown\.io daemon
 Upflow
 Uptimia
 URL Verifier

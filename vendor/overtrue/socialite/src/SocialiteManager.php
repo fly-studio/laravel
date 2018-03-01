@@ -48,15 +48,16 @@ class SocialiteManager implements FactoryInterface
      * @var array
      */
     protected $initialDrivers = [
-            'facebook' => 'Facebook',
-            'github' => 'GitHub',
-            'google' => 'Google',
-            'linkedin' => 'Linkedin',
-            'weibo' => 'Weibo',
-            'qq' => 'QQ',
-            'wechat' => 'WeChat',
-            'douban' => 'Douban',
-            'wework' => 'WeWork',
+        'facebook' => 'Facebook',
+        'github' => 'GitHub',
+        'google' => 'Google',
+        'linkedin' => 'Linkedin',
+        'weibo' => 'Weibo',
+        'qq' => 'QQ',
+        'wechat' => 'WeChat',
+        'douban' => 'Douban',
+        'wework' => 'WeWork',
+        'outlook' => 'Outlook',
     ];
 
     /**

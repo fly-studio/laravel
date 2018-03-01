@@ -160,6 +160,11 @@ class Captcha
     protected $sensitive = false;
 
     /**
+     * @var int
+     */
+    protected $textLeftPadding = 4;
+
+    /**
      * Constructor
      *
      * @param Filesystem $files
@@ -314,7 +319,7 @@ class Captcha
         $i = 0;
         foreach(str_split($this->text) as $char)
         {
-            $marginLeft = ($i * $this->image->width() / $this->length);
+            $marginLeft = $this->textLeftPadding +  ($i * ($this->image->width() - $this->textLeftPadding) / $this->length);
 
             $this->image->text($char, $marginLeft, $marginTop, function($font) {
                 $font->file($this->font());
@@ -440,11 +445,21 @@ class Captcha
      * Generate captcha image html tag
      *
      * @param null $config
+     * @param array $attrs HTML attributes supplied to the image tag where key is the attribute
+     * and the value is the attribute value
      * @return string
      */
-    public function img($config = null)
+    public function img($config = null, $attrs = [])
     {
-        return '<img src="' . $this->src($config) . '" alt="captcha">';
+        $attrs_str = '';
+        foreach($attrs as $attr => $value){
+            if ($attr == 'src'){
+                //Neglect src attribute
+                continue;
+            }
+            $attrs_str .= $attr.'="'.$value.'" ';
+        }
+        return '<img src="' . $this->src($config) . '" '. trim($attrs_str).'>';
     }
 
 }

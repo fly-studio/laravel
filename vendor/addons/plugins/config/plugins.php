@@ -1,7 +1,7 @@
 <?php
 
 return [
-	// where are plugins.
+	// where are plugins's path
 	// you can set multi-path
 	'paths' => [
 		base_path('plugins'),

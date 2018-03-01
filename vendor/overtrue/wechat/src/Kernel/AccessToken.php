@@ -81,6 +81,11 @@ abstract class AccessToken implements AccessTokenInterface
 
     /**
      * @return array
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function getRefreshedToken(): array
     {
@@ -91,6 +96,11 @@ abstract class AccessToken implements AccessTokenInterface
      * @param bool $refresh
      *
      * @return array
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function getToken(bool $refresh = false): array
     {
@@ -113,6 +123,8 @@ abstract class AccessToken implements AccessTokenInterface
      * @param int    $lifetime
      *
      * @return \EasyWeChat\Kernel\Contracts\AccessTokenInterface
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function setToken(string $token, int $lifetime = 7200): AccessTokenInterface
     {
@@ -126,6 +138,11 @@ abstract class AccessToken implements AccessTokenInterface
 
     /**
      * @return \EasyWeChat\Kernel\Contracts\AccessTokenInterface
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function refresh(): AccessTokenInterface
     {
@@ -141,6 +158,8 @@ abstract class AccessToken implements AccessTokenInterface
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function requestToken(array $credentials, $toArray = false)
     {
@@ -160,6 +179,11 @@ abstract class AccessToken implements AccessTokenInterface
      * @param array                              $requestOptions
      *
      * @return \Psr\Http\Message\RequestInterface
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
     {
@@ -176,6 +200,8 @@ abstract class AccessToken implements AccessTokenInterface
      * @param array $credentials
      *
      * @return ResponseInterface
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function sendRequest(array $credentials): ResponseInterface
     {
@@ -198,6 +224,11 @@ abstract class AccessToken implements AccessTokenInterface
      * The request query will be used to add to the request.
      *
      * @return array
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function getQuery(): array
     {
