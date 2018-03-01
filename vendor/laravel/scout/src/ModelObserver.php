@@ -49,29 +49,24 @@ class ModelObserver
     }
 
     /**
-     * Handle the created event for the model.
+     * Handle the saved event for the model.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return void
      */
-    public function created($model)
+    public function saved($model)
     {
         if (static::syncingDisabledFor($model)) {
             return;
         }
 
-        $model->searchable();
-    }
+        if (! $model->shouldBeSearchable()) {
+            $model->unsearchable();
 
-    /**
-     * Handle the updated event for the model.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
-     */
-    public function updated($model)
-    {
-        $this->created($model);
+            return;
+        }
+
+        $model->searchable();
     }
 
     /**
@@ -87,7 +82,7 @@ class ModelObserver
         }
 
         if ($this->usesSoftDelete($model) && config('scout.soft_delete', false)) {
-            $this->updated($model);
+            $this->saved($model);
         } else {
             $model->unsearchable();
         }
@@ -116,7 +111,7 @@ class ModelObserver
      */
     public function restored($model)
     {
-        $this->created($model);
+        $this->saved($model);
     }
 
     /**

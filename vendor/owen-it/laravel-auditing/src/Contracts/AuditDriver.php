@@ -5,7 +5,7 @@
  * @author     Antério Vieira <anteriovieira@gmail.com>
  * @author     Quetzy Garcia  <quetzyg@altek.org>
  * @author     Raphael França <raphaelfrancabsb@gmail.com>
- * @copyright  2015-2017
+ * @copyright  2015-2018
  *
  * For the full copyright and license information,
  * please view the LICENSE.md file that was distributed
@@ -23,7 +23,7 @@ interface AuditDriver
      *
      * @return \OwenIt\Auditing\Contracts\Audit
      */
-    public function audit(Auditable $model);
+    public function audit(Auditable $model): Audit;
 
     /**
      * Remove older audits that go over the threshold.
@@ -32,5 +32,5 @@ interface AuditDriver
      *
      * @return bool
      */
-    public function prune(Auditable $model);
+    public function prune(Auditable $model): bool;
 }

@@ -14,8 +14,14 @@ class IsJsonTest extends ConstraintTestCase
 {
     /**
      * @dataProvider evaluateDataprovider
+     *
+     * @param mixed $expected
+     * @param mixed $jsonOther
+     *
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testEvaluate($expected, $jsonOther)
+    public function testEvaluate($expected, $jsonOther): void
     {
         $constraint = new IsJson;
 

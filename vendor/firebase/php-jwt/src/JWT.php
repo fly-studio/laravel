@@ -8,7 +8,7 @@ use \DateTime;
 
 /**
  * JSON Web Token implementation, based on this spec:
- * https://tools.ietf.org/html/rfc7519
+ * http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-06
  *
  * PHP version 5
  *
@@ -42,8 +42,6 @@ class JWT
         'HS512' => array('hash_hmac', 'SHA512'),
         'HS384' => array('hash_hmac', 'SHA384'),
         'RS256' => array('openssl', 'SHA256'),
-        'RS384' => array('openssl', 'SHA384'),
-        'RS512' => array('openssl', 'SHA512'),
     );
 
     /**
@@ -66,12 +64,15 @@ class JWT
      * @uses jsonDecode
      * @uses urlsafeB64Decode
      */
-    public static function decode($jwt, $key, array $allowed_algs = array())
+    public static function decode($jwt, $key, $allowed_algs = array())
     {
         $timestamp = is_null(static::$timestamp) ? time() : static::$timestamp;
 
         if (empty($key)) {
             throw new InvalidArgumentException('Key may not be empty');
+        }
+        if (!is_array($allowed_algs)) {
+            throw new InvalidArgumentException('Algorithm not allowed');
         }
         $tks = explode('.', $jwt);
         if (count($tks) != 3) {
@@ -84,9 +85,8 @@ class JWT
         if (null === $payload = static::jsonDecode(static::urlsafeB64Decode($bodyb64))) {
             throw new UnexpectedValueException('Invalid claims encoding');
         }
-        if (false === ($sig = static::urlsafeB64Decode($cryptob64))) {
-            throw new UnexpectedValueException('Invalid signature encoding');
-        }
+        $sig = static::urlsafeB64Decode($cryptob64);
+        
         if (empty($header->alg)) {
             throw new UnexpectedValueException('Empty algorithm');
         }
@@ -98,9 +98,6 @@ class JWT
         }
         if (is_array($key) || $key instanceof \ArrayAccess) {
             if (isset($header->kid)) {
-                if (!isset($key[$header->kid])) {
-                    throw new UnexpectedValueException('"kid" invalid, unable to lookup correct key');
-                }
                 $key = $key[$header->kid];
             } else {
                 throw new UnexpectedValueException('"kid" empty, unable to lookup correct key');
@@ -228,15 +225,11 @@ class JWT
         switch($function) {
             case 'openssl':
                 $success = openssl_verify($msg, $signature, $key, $algorithm);
-                if ($success === 1) {
-                    return true;
-                } elseif ($success === 0) {
-                    return false;
+                if (!$success) {
+                    throw new DomainException("OpenSSL unable to verify data: " . openssl_error_string());
+                } else {
+                    return $signature;
                 }
-                // returns 1 on success, 0 on failure, -1 on error.
-                throw new DomainException(
-                    'OpenSSL error: ' . openssl_error_string()
-                );
             case 'hash_hmac':
             default:
                 $hash = hash_hmac($algorithm, $msg, $key, true);
@@ -350,10 +343,8 @@ class JWT
     {
         $messages = array(
             JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
-            JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON',
             JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
-            JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
-            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters' //PHP >= 5.3.3
+            JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON'
         );
         throw new DomainException(
             isset($messages[$errno])
