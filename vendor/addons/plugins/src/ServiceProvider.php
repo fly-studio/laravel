@@ -64,8 +64,6 @@ class ServiceProvider extends BaseServiceProvider
 					$GLOBALS['__composer_autoload_files'][$file] = true;
 				}
 			}
-			//add smarty's path
-			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $path.'resources/views']);
 
 			//read configs
 			foreach ($config['configs'] as $file)
@@ -108,6 +106,8 @@ class ServiceProvider extends BaseServiceProvider
 			// 发布config文件
 			foreach (!empty($config['register']['config']) ? $config['configs'] : [] as $file)
 				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
+			//add smarty's path
+			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $config['path'].'resources/views']);
 			//加载
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!is_null($censor) && !empty($config['register']['censor']) && $censor->addNamespace($name, realpath($config['path'].'resources/censors/'));
