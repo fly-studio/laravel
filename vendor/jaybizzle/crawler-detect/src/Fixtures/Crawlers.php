@@ -181,6 +181,7 @@ class Crawlers extends AbstractProvider
         'cuwhois\/[0-9]',
         'cybo\.com',
         'DareBoost',
+        'help@dataminr\.com',
         'DataparkSearch',
         'dataprovider',
         'Daum(oa)?[ \/][0-9]',
@@ -876,6 +877,7 @@ class Crawlers extends AbstractProvider
         'yoogliFetchAgent',
         'YottaaMonitor',
         'yourls\.org',
+        'Your-Website-Sucks\/[0-9]',
         'Zao',
         'Zemanta Aggregator',
         'Zend\\\\Http\\\\Client',
@@ -883,6 +885,6 @@ class Crawlers extends AbstractProvider
         'zgrab',
         'ZnajdzFoto',
         'ZyBorg',
-        '[a-z0-9\-_]*((?<!cu)bot|crawler|archiver|transcoder|spider|uptime|validator|fetcher)',
+        '[a-z0-9\-_]*(bot|crawler|archiver|transcoder|spider|uptime|validator|fetcher)',
     );
 }
