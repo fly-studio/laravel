@@ -103,6 +103,7 @@ class ServiceProvider extends BaseServiceProvider
 
 		foreach($plugins as $name => $config)
 		{
+			if (!$config['enabled']) continue;
 			// 发布config文件
 			foreach (!empty($config['register']['config']) ? $config['configs'] : [] as $file)
 				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
