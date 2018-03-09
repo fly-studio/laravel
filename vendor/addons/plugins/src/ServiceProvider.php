@@ -105,7 +105,7 @@ class ServiceProvider extends BaseServiceProvider
 		{
 			if (!$config['enabled']) continue;
 			// 发布config文件
-			foreach (!empty($config['register']['config']) ? $config['configs'] : [] as $file)
+			foreach ($config['configs'] as $file)
 				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
 			//add smarty's path
 			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $config['path'].'resources/views']);

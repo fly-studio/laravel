@@ -30,6 +30,9 @@
         "phpseclib/phpseclib": "^2.0",
         "predis/predis": "^1.1",
         "rap2hpoutre/laravel-log-viewer": "^0.12.0",
+        "socialiteproviders/qq": "^3.0",
+        "socialiteproviders/weixin": "^4.0",
+        "socialiteproviders/weixin-web": "^3.0",
         "symfony/dom-crawler": "^4.0"
     },
     "require-dev": {

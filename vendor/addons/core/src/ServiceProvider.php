@@ -35,6 +35,8 @@ class ServiceProvider extends BaseServiceProvider
 		$router = $this->app['router'];
 		$router->aliasMiddleware('cross-domain', CrossDomain::class);
 		$router->aliasMiddleware('encrypt', Encrypt::class);
+
+		$this->app->instance('path.vendor', realpath(__DIR__.'/../../../'));
 	}
 
 	/**
