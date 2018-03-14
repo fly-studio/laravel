@@ -52,6 +52,7 @@ function smarty_function_pluginclude($params, $template)
 
 	$names = [];
 	foreach ($_c as $k => $v) {
+		if (!$v['enabled']) continue;
 		if (array_key_exists($file, (array)$v['injectViews']))
 			$names[$k] = $v['injectViews'][$file]; //defined order
 		elseif (in_array($file, (array)$v['injectViews']))

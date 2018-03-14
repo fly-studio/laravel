@@ -178,11 +178,10 @@ abstract class AbstractAopRequest extends AbstractRequest
         $url  = $this->getRequestUrl($data);
         $body = $this->getRequestBody();
 
-        $response = $this->httpClient->post($url)/**/
-        ->setBody($body, 'application/x-www-form-urlencoded')/**/
-        ->send()->getBody();
+        $request = $this->httpClient->post($url, ['form_params' => $body])/**/
+        $response = $request->getBody();
 
-        $response = $this->decode($response);
+        $response = $this->decode((string)$response);
 
         return $response;
     }
@@ -233,13 +232,9 @@ abstract class AbstractAopRequest extends AbstractRequest
      */
     protected function getRequestBody()
     {
-        $params = [
+        return [
             'biz_content' => $this->getBizContent()
         ];
-
-        $body = http_build_query($params);
-
-        return $body;
     }
 
 
