@@ -6,10 +6,10 @@
     "type": "project",
     "require": {
         "php": ">=7.1.3",
-        "addons/core": "^3.0",
+        "addons/core": "^6.0",
         "addons/elasticsearch": "^1.0",
         "addons/entrust": "^1.0",
-        "addons/plugins": "dev-master",
+        "addons/plugins": "^1.0",
         "doctrine/dbal": "^2.6",
         "endroid/qr-code": "^3.2",
         "fideloper/proxy": "~4.0",

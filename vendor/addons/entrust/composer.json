@@ -32,7 +32,7 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "addons/core": "^3.0"
+        "addons/core": ">=3.0"
     },
     "require-dev": {
     },

@@ -62,29 +62,29 @@
     },
     {
         "name": "addons/core",
-        "version": "3.0.0",
-        "version_normalized": "3.0.0.0",
+        "version": "6.0.0",
+        "version_normalized": "6.0.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/fly-studio/laravel-addons-core.git",
-            "reference": "3588dc80c4590071e869f3f917dc5bb4991daea1"
+            "reference": "bf20edbcc9d72b3b4a195952f6c7826bd27477b0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fly-studio/laravel-addons-core/zipball/3588dc80c4590071e869f3f917dc5bb4991daea1",
-            "reference": "3588dc80c4590071e869f3f917dc5bb4991daea1",
+            "url": "https://files.phpcomposer.com/files/fly-studio/laravel-addons-core/bf20edbcc9d72b3b4a195952f6c7826bd27477b0.zip",
+            "reference": "bf20edbcc9d72b3b4a195952f6c7826bd27477b0",
             "shasum": ""
         },
         "require": {
             "addons/censor": "~1.0",
             "addons/func": "~1.0",
             "addons/smarty": "~1.0",
-            "illuminate/database": "~5.5",
-            "illuminate/support": "~5.5",
-            "illuminate/translation": "~5.5",
-            "php": ">=5.6.10"
+            "illuminate/database": "~5.6",
+            "illuminate/support": "~5.6",
+            "illuminate/translation": "~5.6",
+            "php": ">=7.1.3"
         },
-        "time": "2017-11-19T20:43:08+00:00",
+        "time": "2018-04-13T06:19:15+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -189,24 +189,24 @@
     },
     {
         "name": "addons/entrust",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
+        "version": "1.0.3",
+        "version_normalized": "1.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/fly-studio/laravel-addons-entrust.git",
-            "reference": "3fd48c5fc30ddb95b73942e7050aa09bb2534890"
+            "reference": "0c3407576d789c0ff3d2df32b88c8ac708b17b94"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fly-studio/laravel-addons-entrust/zipball/3fd48c5fc30ddb95b73942e7050aa09bb2534890",
-            "reference": "3fd48c5fc30ddb95b73942e7050aa09bb2534890",
+            "url": "https://files.phpcomposer.com/files/fly-studio/laravel-addons-entrust/0c3407576d789c0ff3d2df32b88c8ac708b17b94.zip",
+            "reference": "0c3407576d789c0ff3d2df32b88c8ac708b17b94",
             "shasum": ""
         },
         "require": {
-            "addons/core": "^3.0",
+            "addons/core": ">=3.0",
             "php": ">=5.5.0"
         },
-        "time": "2017-11-19T20:44:01+00:00",
+        "time": "2018-04-13T06:25:05+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -312,17 +312,17 @@
     },
     {
         "name": "addons/plugins",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/fly-studio/laravel-addons-plugins.git",
-            "reference": "09eab0d3c799f2ef74bf86503fe072b4668c51be"
+            "reference": "ffde37470cb436325cd6f1ca01e9f270f31c08f5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fly-studio/laravel-addons-plugins/zipball/09eab0d3c799f2ef74bf86503fe072b4668c51be",
-            "reference": "09eab0d3c799f2ef74bf86503fe072b4668c51be",
+            "url": "https://files.phpcomposer.com/files/fly-studio/laravel-addons-plugins/ffde37470cb436325cd6f1ca01e9f270f31c08f5.zip",
+            "reference": "ffde37470cb436325cd6f1ca01e9f270f31c08f5",
             "shasum": ""
         },
         "require": {
@@ -331,7 +331,7 @@
             "illuminate/translation": "~5.5",
             "php": ">=7.0"
         },
-        "time": "2018-01-17T10:42:44+00:00",
+        "time": "2018-04-13T05:59:23+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -349,7 +349,9 @@
             "classmap": [
                 "src/"
             ],
-            "files": []
+            "files": [
+                "src/helpers.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
