@@ -152,7 +152,7 @@ class Blueprint
     /**
      * Add the commands that are implied by the blueprint's state.
      *
-     * @param  \Illuminate\Database\Grammar  $grammer
+     * @param  \Illuminate\Database\Grammar  $grammar
      * @return void
      */
     protected function addImpliedCommands(Grammar $grammar)
@@ -203,8 +203,8 @@ class Blueprint
     /**
      * Add the fluent commands specified on any columns.
      *
-     * @param  \Illuminate\Database\Grammar  $grammer
-     * @param
+     * @param  \Illuminate\Database\Grammar  $grammar
+     * @return void
      */
     public function addFluentCommands(Grammar $grammar)
     {
@@ -405,6 +405,20 @@ class Blueprint
     public function dropRememberToken()
     {
         $this->dropColumn('remember_token');
+    }
+
+    /**
+     * Indicate that the polymorphic columns should be dropped.
+     *
+     * @param  string  $name
+     * @param  string|null  $indexName
+     * @return void
+     */
+    public function dropMorphs($name, $indexName = null)
+    {
+        $this->dropIndex($indexName ?: $this->createIndexName('index', ["{$name}_type", "{$name}_id"]));
+
+        $this->dropColumn("{$name}_type", "{$name}_id");
     }
 
     /**

@@ -20,7 +20,7 @@ return array(
     '7d460151ef8e4da499d7bd12b8887b94' => $vendorDir . '/addons/censor/src/helpers.php',
     '4bcc8d86c9e4c7b037c26c95381f6eeb' => $vendorDir . '/addons/func/src/func/helpers.php',
     'd635694d01516539fed9c3958c0179fb' => $vendorDir . '/addons/core/src/helpers.php',
-    '626dcc41390ebdaa619faa02d99943b0' => $vendorDir . '/khanamiryan/qrcode-detector-decoder/lib/common/customFunctions.php',
+    'a9ed0d27b5a698798a89181429f162c5' => $vendorDir . '/khanamiryan/qrcode-detector-decoder/lib/Common/customFunctions.php',
     'f0906e6318348a765ffb6eb24e0d0938' => $vendorDir . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
     '58571171fd5812e6e447dce228f52f4d' => $vendorDir . '/laravel/framework/src/Illuminate/Support/helpers.php',
     'decc78cc4436b1292c6c0d151b19445c' => $vendorDir . '/phpseclib/phpseclib/phpseclib/bootstrap.php',

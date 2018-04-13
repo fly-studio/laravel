@@ -1,54 +1,54 @@
 <?php
-function arraycopy($srcArray,$srcPos,$destArray, $destPos, $length){//System.arraycopy
 
-    $srcArrayToCopy = array_slice($srcArray,$srcPos,$length);
-    array_splice($destArray,$destPos,$length,$srcArrayToCopy);
-    return $destArray;
-}
-
-
-function overflow32($value) {//There is no need to overflow 64 bits to 32 bit
-    return $value;
-}
-
-function hashCode( $s )
-{
-    $h = 0;
-    $len = strlen($s);
-    for($i = 0; $i < $len; $i++)
+if (!function_exists('arraycopy')) {
+    function arraycopy($srcArray, $srcPos, $destArray, $destPos, $length)
     {
-        $h = overflow32(31 * $h + ord($s[$i]));
+        $srcArrayToCopy = array_slice($srcArray, $srcPos, $length);
+        array_splice($destArray, $destPos, $length, $srcArrayToCopy);
+
+        return $destArray;
     }
-
-    return $h;
 }
 
+if (!function_exists('hashCode')) {
+    function hashCode($s)
+    {
+        $h   = 0;
+        $len = strlen($s);
+        for ($i = 0; $i < $len; $i++) {
+            $h = (31 * $h + ord($s[$i]));
+        }
 
-function numberOfTrailingZeros($i) {
-    if ($i == 0) return 32;
-    $num = 0;
-    while (($i & 1) == 0) {
-        $i >>= 1;
-        $num++;
+        return $h;
     }
-    return $num;
-}
-function intval32bits($value)
-{
-    $value = ($value & 0xFFFFFFFF);
-
-    if ($value & 0x80000000)
-        $value = -((~$value & 0xFFFFFFFF) + 1);
-
-    return $value;
 }
 
-function uRShift($a, $b)
-{
+if (!function_exists('numberOfTrailingZeros')) {
+    function numberOfTrailingZeros($i)
+    {
+        if ($i == 0) return 32;
+        $num = 0;
+        while (($i & 1) == 0) {
+            $i >>= 1;
+            $num++;
+        }
 
-    if($b == 0) return $a;
-    return ($a >> $b) & ~(1<<(8*PHP_INT_SIZE-1)>>($b-1));
+        return $num;
+    }
 }
+
+if (!function_exists('uRShift')) {
+    function uRShift($a, $b)
+    {
+        static $mask = (8 * PHP_INT_SIZE - 1);
+        if ($b === 0) {
+            return $a;
+        }
+
+        return ($a >> $b) & ~(1 << $mask >> ($b - 1));
+    }
+}
+
 /*
 function sdvig3($num,$count=1){//>>> 32 bit
     $s = decbin($num);
@@ -64,30 +64,38 @@ function sdvig3($num,$count=1){//>>> 32 bit
 }
 */
 
-function sdvig3($a,$b) {
+if (!function_exists('sdvig3')) {
+    function sdvig3($a, $b)
+    {
+        if ($a >= 0) {
+            return bindec(decbin($a >> $b)); //simply right shift for positive number
+        }
 
-    if ($a >= 0) {
-        return bindec(decbin($a>>$b)); //simply right shift for positive number
+        $bin = decbin($a >> $b);
+
+        $bin = substr($bin, $b); // zero fill on the left side
+
+        return bindec($bin);
     }
-
-    $bin = decbin($a>>$b);
-
-    $bin = substr($bin, $b); // zero fill on the left side
-
-    $o = bindec($bin);
-    return $o;
 }
 
-function floatToIntBits($float_val)
-{
-    $int = unpack('i', pack('f', $float_val));
-    return $int[1];
+if (!function_exists('floatToIntBits')) {
+    function floatToIntBits($float_val)
+    {
+        $int = unpack('i', pack('f', $float_val));
+
+        return $int[1];
+    }
 }
 
-function fill_array($index,$count,$value){
-    if($count<=0){
-        return array(0);
-    }else {
+
+if (!function_exists('fill_array')) {
+    function fill_array($index, $count, $value)
+    {
+        if ($count <= 0) {
+            return [0];
+        }
+
         return array_fill($index, $count, $value);
     }
 }
