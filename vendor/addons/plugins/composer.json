@@ -28,7 +28,7 @@
             "src/"
         ],
         "files": [
-
+            "src/helpers.php"
         ]
     },
     "extra": {
