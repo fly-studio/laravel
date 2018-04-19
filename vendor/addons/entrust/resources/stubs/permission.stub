@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace;
+
+use Addons\Entrust\Models\Permission as Base;
+
+class DummyClass extends Base
+{
+    //
+}

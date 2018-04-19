@@ -3,44 +3,32 @@
 namespace Addons\Entrust\Middleware;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
  * @package Addons\Entrust
  */
-
 use Closure;
-use Illuminate\Contracts\Auth\Guard;
-use Addons\Core\Http\OutputResponseFactory;
 
-class Role
+class Role extends Middleware
 {
-	protected $auth;
+    /**
+     * Handle incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Closure $next
+     * @param  string  $roles
+     * @param  string|null  $team
+     * @param  string|null  $options
+     * @return mixed
+     */
+    public function handle($request, Closure $next, $roles, $team = null, $options = '')
+    {
+        if (!$this->authorization('roles', $roles, $team, $options)) {
+            return $this->unauthorized($request);
+        }
 
-	/**
-	 * Creates a new instance of the middleware.
-	 *
-	 * @param Guard $auth
-	 */
-	public function __construct(Guard $auth)
-	{
-		$this->auth = $auth;
-	}
-
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  Closure $next
-	 * @param  $roles
-	 * @return mixed
-	 */
-	public function handle($request, Closure $next, ...$roles)
-	{
-		if ($this->auth->guest() || !$request->user()->hasRole($roles))
-			return app(OutputResponseFactory::class)->failure('auth.permission_forbidden')->setRequest($request)->setStatusCode(403);
-
-		return $next($request);
-	}
+        return $next($request);
+    }
 }

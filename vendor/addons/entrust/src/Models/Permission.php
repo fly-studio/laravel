@@ -1,28 +1,29 @@
 <?php
 
-namespace Addons\Entrust;
+namespace Addons\Entrust\Models;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
  * @package Addons\Entrust
  */
-
-use Addons\Core\Models\CallTrait;
 use Addons\Core\Models\CacheTrait;
+use Addons\Core\Models\BuilderTrait;
 use Addons\Core\Models\PolyfillTrait;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
 use Addons\Entrust\Traits\PermissionTrait;
 use Addons\Entrust\Contracts\PermissionInterface;
 
 class Permission extends Model implements PermissionInterface
 {
-    use CacheTrait, CallTrait, PolyfillTrait;
+    use CacheTrait, BuilderTrait, PolyfillTrait;
     use PermissionTrait;
-    public $fire_caches = ['roles'];
+
     public $guarded = ['id'];
+
     /**
      * The database table used by the model.
      *
@@ -33,12 +34,13 @@ class Permission extends Model implements PermissionInterface
     /**
      * Creates a new instance of the model.
      *
-     * @param array $attributes
+     * @param  array  $attributes
+     * @return void
      */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('entrust.permissions_table');
+        $this->table = Config::get('entrust.tables.permissions');
     }
 
     /**
@@ -64,5 +66,4 @@ class Permission extends Model implements PermissionInterface
                     'display_name' => trans('permission.import.'.$key, compact('key', 'text', 'permission')),
                 ]);
     }
-
 }

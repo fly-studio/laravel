@@ -3,46 +3,51 @@
 namespace Addons\Entrust\Middleware;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
  * @package Addons\Entrust
  */
-
 use Closure;
-use Illuminate\Contracts\Auth\Guard;
-use Addons\Core\Http\OutputResponseFactory;
+use Illuminate\Support\Facades\Auth;
 
-class Ability
+class Ability extends Middleware
 {
-	protected $auth;
 
-	/**
-	 * Creates a new instance of the middleware.
-	 *
-	 * @param Guard $auth
-	 */
-	public function __construct(Guard $auth)
-	{
-		$this->auth = $auth;
-	}
+    /**
+     * Handle incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Closure $next
+     * @param  string  $roles
+     * @param  string  $permissions
+     * @param  string|null  $team
+     * @param  string|null  $options
+     * @return mixed
+     */
+    public function handle($request, Closure $next, $roles, $permissions, $team = null, $options = '')
+    {
+        list($team, $validateAll, $guard) = $this->assignRealValuesTo($team, $options);
 
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param Closure $next
-	 * @param $roles
-	 * @param $permissions
-	 * @param bool $validateAll
-	 * @return mixed
-	 */
-	public function handle($request, Closure $next, $roles, $permissions, $validateAll = false)
-	{
-		if ($this->auth->guest() || !$request->user()->ability(explode('|', $roles), explode('|', $permissions), array('validate_all' => $validateAll)))
-			return app(OutputResponseFactory::class)->failure('auth.permission_forbidden')->setRequest($request)->setStatusCode(403);
+        if (!is_array($roles)) {
+            $roles = explode(self::DELIMITER, $roles);
+        }
 
-		return $next($request);
-	}
+        if (!is_array($permissions)) {
+            $permissions = explode(self::DELIMITER, $permissions);
+        }
+
+        if (
+            Auth::guard($guard)->guest()
+            || !Auth::guard($guard)->user()
+                    ->ability($roles, $permissions, $team, [
+                        'validate_all' => $validateAll
+                    ])
+         ) {
+            return $this->unauthorized($request);
+        }
+
+        return $next($request);
+    }
 }

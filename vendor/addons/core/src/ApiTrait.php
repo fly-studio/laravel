@@ -83,7 +83,7 @@ trait ApiTrait {
 		{
 			$method = 'scope'.ucfirst($key);
 			if (method_exists($builder->getModel(), $method))
-				call_user_func_array([$builder, $key], [$value]);
+				call_user_func_array([$builder, $key], array_wrap($value));
 		}
 		return $queries;
 	}
@@ -188,7 +188,6 @@ trait ApiTrait {
 		$query = $_b->getQuery();
 		if (!empty($query->groups)) //group by
 		{
-
 			return $query->getCountForPagination($query->groups);
 			// or
 			$query->columns = $query->groups;

@@ -3,185 +3,242 @@
 namespace Addons\Entrust\Traits;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
- * @package Zizaco\Entrust
+ * @package Addons\Entrust
  */
-
-use Cache;
+use Addons\Entrust\Helper;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 trait RoleTrait
 {
-	//Big block of caching functionality.
-	public function cachedPermissions()
-	{
-		$cacheKey = 'entrust_permissions_for_role_'.$this->getKey();
-		return Cache::remember($cacheKey, config('cache.ttl'), function () {
-			return $this->perms;
-		});
-	}
+    use DynamicUserRelationsCalls;
+    use HasEvents;
 
-	public static function bootRoleTrait()
-	{
-		static::saved(function($item){
-			Cache::forget('entrust_permissions_for_role_'.$item->getKey());
-		});
-		static::deleting(function($role) {
-			if (!method_exists(config('entrust.role'), 'bootSoftDeletes')) {
-				$role->users()->sync([]);
-				$role->perms()->sync([]);
-			}
+    /**
+     * Boots the role model and attaches event listener to
+     * remove the many-to-many records when trying to delete.
+     * Will NOT delete any records if the role model uses soft deletes.
+     *
+     * @return void|bool
+     */
+    public static function bootRoleTrait()
+    {
+        $flushCache = function ($role) {
+            $role->flushCache();
+        };
 
-			return true;
-		});
-		static::deleted(function($item){
-			Cache::forget('entrust_permissions_for_role_'.$item->getKey());
-		});
-		if (method_exists(static::class, 'restored'))
-			static::restored(function($item){
-				Cache::forget('entrust_permissions_for_role_'.$item->getKey());
-			});
-	}
+        // If the role doesn't use SoftDeletes.
+        if (method_exists(static::class, 'restored')) {
+            static::restored($flushCache);
+        }
 
-	/**
-	 * Many-to-Many relations with the user model.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function users()
-	{
-		return $this->belongsToMany(config('auth.providers.users.model'), config('entrust.role_user_table'), config('entrust.role_foreign_key'),config('entrust.user_foreign_key'));
-	   // return $this->belongsToMany(config('auth.providers.users.model'), config('entrust.role_user_table'));
-	}
+        static::deleted($flushCache);
+        static::saved($flushCache);
 
-	/**
-	 * Many-to-Many relations with the permission model.
-	 * Named "perms" for backwards compatibility. Also because "perms" is short and sweet.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function perms()
-	{
-		return $this->belongsToMany(config('entrust.permission'), config('entrust.permission_role_table'), config('entrust.role_foreign_key'), config('entrust.permission_foreign_key'));
-	}
+        static::deleting(function ($role) {
+            if (method_exists($role, 'bootSoftDeletes') && !$role->forceDeleting) {
+                return;
+            }
 
-	/**
-	 * Checks if the role has a permission by its name.
-	 *
-	 * @param string|array $name       Permission name or array of permission names.
-	 * @param bool         $requireAll All permissions in the array are required.
-	 *
-	 * @return bool
-	 */
-	public function hasPermission($name, $requireAll = false)
-	{
-		if (is_array($name)) {
-			foreach ($name as $permissionName) {
-				$hasPermission = $this->hasPermission($permissionName);
+            $role->permissions()->sync([]);
 
-				if ($hasPermission && !$requireAll) {
-					return true;
-				} elseif (!$hasPermission && $requireAll) {
-					return false;
-				}
-			}
+            foreach (array_keys(Config::get('entrust.user_models')) as $key) {
+                $role->$key()->sync([]);
+            }
+        });
+    }
 
-			// If we've made it this far and $requireAll is FALSE, then NONE of the permissions were found
-			// If we've made it this far and $requireAll is TRUE, then ALL of the permissions were found.
-			// Return the value of $requireAll;
-			return $requireAll;
-		} else {
-			foreach ($this->cachedPermissions() as $permission) {
-				if ($permission->name == $name) {
-					return true;
-				}
-			}
-		}
+    /**
+     * Tries to return all the cached permissions of the role.
+     * If it can't bring the permissions from the cache,
+     * it brings them back from the DB.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function cachedPermissions()
+    {
+        $cacheKey = 'entrust_permissions_for_role_' . $this->getKey();
 
-		return false;
-	}
+        if (! Config::get('entrust.use_cache')) {
+            return $this->permissions()->get();
+        }
 
-	/**
-	 * Save the inputted permissions.
-	 *
-	 * @param mixed $inputPermissions
-	 *
-	 * @return void
-	 */
-	public function savePermissions($inputPermissions)
-	{
-		if (!empty($inputPermissions)) {
-			$this->perms()->sync($inputPermissions);
-		} else {
-			$this->perms()->detach();
-		}
-	}
+        return Cache::remember($cacheKey, Config::get('cache.ttl', 60), function () {
+            return $this->permissions()->get()->toArray();
+        });
+    }
 
-	/**
-	 * Attach permission to current role.
-	 *
-	 * @param object|array $permission
-	 *
-	 * @return void
-	 */
-	public function attachPermission($permission)
-	{
-		if (is_object($permission)) {
-			$permission = $permission->getKey();
-		}
+    /**
+     * Morph by Many relationship between the role and the one of the possible user models.
+     *
+     * @param  string  $relationship
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
+    public function getMorphByUserRelation($relationship)
+    {
+        return $this->morphedByMany(
+            Config::get('entrust.user_models')[$relationship],
+            'user',
+            Config::get('entrust.tables.role_user'),
+            Config::get('entrust.foreign_keys.role'),
+            Config::get('entrust.foreign_keys.user')
+        );
+    }
 
-		if (is_array($permission)) {
-			$permission = $permission['id'];
-		}
+    /**
+     * Many-to-Many relations with the permission model.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(
+            Config::get('entrust.models.permission'),
+            Config::get('entrust.tables.permission_role'),
+            Config::get('entrust.foreign_keys.role'),
+            Config::get('entrust.foreign_keys.permission')
+        );
+    }
 
-		$this->perms()->attach($permission);
-	}
+    /**
+     * Checks if the role has a permission by its name.
+     *
+     * @param  string|array  $permission       Permission name or array of permission names.
+     * @param  bool  $requireAll       All permissions in the array are required.
+     * @return bool
+     */
+    public function hasPermission($permission, $requireAll = false)
+    {
+        if (is_array($permission)) {
+            if (empty($permission)) {
+                return true;
+            }
 
-	/**
-	 * Detach permission from current role.
-	 *
-	 * @param object|array $permission
-	 *
-	 * @return void
-	 */
-	public function detachPermission($permission)
-	{
-		if (is_object($permission))
-			$permission = $permission->getKey();
+            foreach ($permission as $permissionName) {
+                $hasPermission = $this->hasPermission($permissionName);
 
-		if (is_array($permission))
-			$permission = $permission['id'];
+                if ($hasPermission && !$requireAll) {
+                    return true;
+                } elseif (!$hasPermission && $requireAll) {
+                    return false;
+                }
+            }
 
-		$this->perms()->detach($permission);
-	}
+            // If we've made it this far and $requireAll is FALSE, then NONE of the permissions were found.
+            // If we've made it this far and $requireAll is TRUE, then ALL of the permissions were found.
+            // Return the value of $requireAll.
+            return $requireAll;
+        }
 
-	/**
-	 * Attach multiple permissions to current role.
-	 *
-	 * @param mixed $permissions
-	 *
-	 * @return void
-	 */
-	public function attachPermissions($permissions)
-	{
-		foreach ($permissions as $permission) {
-			$this->attachPermission($permission);
-		}
-	}
+        foreach ($this->cachedPermissions() as $perm) {
+            if (str_is($permission, $perm['name'])) {
+                return true;
+            }
+        }
 
-	/**
-	 * Detach multiple permissions from current role
-	 *
-	 * @param mixed $permissions
-	 *
-	 * @return void
-	 */
-	public function detachPermissions($permissions)
-	{
-		foreach ($permissions as $permission) {
-			$this->detachPermission($permission);
-		}
-	}
+        return false;
+    }
+
+    /**
+     * Save the inputted permissions.
+     *
+     * @param  mixed  $permissions
+     * @return array
+     */
+    public function syncPermissions($permissions)
+    {
+        $mappedPermissions = [];
+
+        foreach ($permissions as $permission) {
+            $mappedPermissions[] = Helper::getIdFor($permission, 'permission');
+        }
+
+        $changes = $this->permissions()->sync($mappedPermissions);
+        $this->flushCache();
+        $this->fireEntrustEvent("permission.synced", [$this, $changes]);
+
+        return $this;
+    }
+
+    /**
+     * Attach permission to current role.
+     *
+     * @param  object|array  $permission
+     * @return void
+     */
+    public function attachPermission($permission)
+    {
+        $permission = Helper::getIdFor($permission, 'permission');
+
+        $this->permissions()->attach($permission);
+        $this->flushCache();
+        $this->fireEntrustEvent("permission.attached", [$this, $permission]);
+
+        return $this;
+    }
+
+    /**
+     * Detach permission from current role.
+     *
+     * @param  object|array  $permission
+     * @return void
+     */
+    public function detachPermission($permission)
+    {
+        $permission = Helper::getIdFor($permission, 'permission');
+
+        $this->permissions()->detach($permission);
+        $this->flushCache();
+        $this->fireEntrustEvent("permission.detached", [$this, $permission]);
+
+        return $this;
+    }
+
+    /**
+     * Attach multiple permissions to current role.
+     *
+     * @param  mixed  $permissions
+     * @return void
+     */
+    public function attachPermissions($permissions)
+    {
+        foreach ($permissions as $permission) {
+            $this->attachPermission($permission);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Detach multiple permissions from current role
+     *
+     * @param  mixed  $permissions
+     * @return void
+     */
+    public function detachPermissions($permissions = null)
+    {
+        if (!$permissions) {
+            $permissions = $this->permissions()->get();
+        }
+
+        foreach ($permissions as $permission) {
+            $this->detachPermission($permission);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Flush the role's cache.
+     *
+     * @return void
+     */
+    public function flushCache()
+    {
+        Cache::forget('entrust_permissions_for_role_' . $this->getKey());
+    }
 }

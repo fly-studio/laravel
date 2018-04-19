@@ -1,14 +1,16 @@
 <?php
+
 namespace Addons\Core\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Addons\Core\Models\TreeTrait;
 use Addons\Core\Models\CacheTrait;
-use Addons\Core\Models\CallTrait;
+use Addons\Core\Models\BuilderTrait;
 use Addons\Core\Models\PolyfillTrait;
+use Illuminate\Database\Eloquent\Model;
 
 class Tree extends Model {
-	use CacheTrait, CallTrait, PolyfillTrait;
+
+	use CacheTrait, BuilderTrait, PolyfillTrait;
 	use TreeTrait;
 
 	//不能批量赋值
@@ -113,7 +115,7 @@ class Tree extends Model {
 	}
 
 	/**
-	 * 获得所有子(孙)集，返回一个Collection
+	 * 获得所有子(孙)集，不包含自己，返回一个Collection
 	 *
 	 * @return array 返回数据
 	 */
@@ -153,7 +155,7 @@ class Tree extends Model {
 	{
 		$nodes = $this->getLeaves($columns)->prepend($this)->keyBy($this->getKeyName())->toArray();
 
-		return static::datasetToTree($nodes, $this->getParentKey(), $idAsKey);
+		return static::datasetToTree($nodes, $idAsKey);
 	}
 
 	private function formatColumns(array $columns)

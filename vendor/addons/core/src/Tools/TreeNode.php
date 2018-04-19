@@ -5,6 +5,7 @@ namespace Addons\Core\Tools;
 use Closure;
 use ArrayAccess;
 use JsonSerializable;
+use BadMethodCallException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Support\Jsonable;
@@ -13,19 +14,16 @@ use Illuminate\Contracts\Support\Arrayable;
 class TreeNode implements ArrayAccess, JsonSerializable, Jsonable, Arrayable {
 
 	protected $items = [];
+	protected $prev = null;
+	protected $next = null;
+	protected $parent = null;
 	protected $children;
 
 	public function __construct(array $attributes = [])
 	{
 		$this->children = new Collection();
 
-		$this->fill($attributes);
-	}
-
-	public function fill(array $attributes = [])
-	{
-		$this->items = array_except($attributes, 'children');
-		isset($attributes['children']) && $this->offsetSet('children', $attributes['children']);
+		$this->attributes($attributes);
 	}
 
 	public function compare($key, $value)
@@ -44,16 +42,14 @@ class TreeNode implements ArrayAccess, JsonSerializable, Jsonable, Arrayable {
 		}
 
 		$dot = strpos($key, '.');
+		$dot === false && $dot = strlen($key);
 
-		if ($dot !== false)
+		$segment = substr($key, 0,  $dot);
+
+		foreach($this->children as $node)
 		{
-			$segment = substr($key, 0, $dot);
-
-			foreach($this->children() as $node)
-			{
-				if ($node->compare($searchField, $segment))
-					return $node->search(substr($key, $dot + 1), $defaultValue, $searchField);
-			}
+			if ($node->compare($searchField, $segment))
+				return $node->search(substr($key, $dot + 1), $defaultValue, $searchField);
 		}
 
 		return value($defaultValue);
@@ -67,14 +63,59 @@ class TreeNode implements ArrayAccess, JsonSerializable, Jsonable, Arrayable {
 		return $this->children[$key];
 	}
 
+	public function hasChildren()
+	{
+		return count($this->children) > 0;
+	}
+
 	public function children()
 	{
 		return $this->children;
 	}
 
-	public function attributes()
+	public function leaves(Collection $leaves = null)
 	{
-		return $this->items;
+		is_null($leaves) && $leaves = new Collection();
+
+		foreach($this->children as $key => $node)
+		{
+			$leaves[$key] = $node;
+			if ($node->hasChildren())
+				$node->leaves($leaves);
+		}
+		return $leaves;
+	}
+
+	public function attributes(array $attributes = null)
+	{
+		if (is_null($attributes)) return $this->items;
+
+		$this->items = array_except($attributes, 'children');
+		return $this;
+	}
+
+	public function prev(TreeNode $node = null)
+	{
+		if (is_null($node)) return $this->prev;
+
+		$this->prev = $node;
+		return $this;
+	}
+
+	public function next(TreeNode $node = null)
+	{
+		if (is_null($node)) return $this->next;
+
+		$this->next = $node;
+		return $this;
+	}
+
+	public function parent(TreeNode $node = null)
+	{
+		if (is_null($node)) return $this->parent;
+
+		$this->parent = $node;
+		return $this;
 	}
 
 	public function offsetExists($key)
@@ -106,7 +147,7 @@ class TreeNode implements ArrayAccess, JsonSerializable, Jsonable, Arrayable {
 	public function __get($method)
 	{
 		if ($this->offsetExists($method))
-			$this->offsetGet($method);
+			return $this->offsetGet($method);
 
 		throw new BadMethodCallException(sprintf(
 			'Method %s::%s does not exist.', static::class, $method
@@ -116,7 +157,7 @@ class TreeNode implements ArrayAccess, JsonSerializable, Jsonable, Arrayable {
 	public function __set($method, $value)
 	{
 		if ($this->offsetExists($method))
-			$this->offsetSet($method, $value);
+			return $this->offsetSet($method, $value);
 
 		throw new BadMethodCallException(sprintf(
 			'Method %s::%s does not exist.', static::class, $method

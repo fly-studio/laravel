@@ -6,16 +6,21 @@ use DB;
 
 trait TreeTrait{
 
+	public function hasChildren()
+	{
+		return $this->children()->count() > 0;
+	}
+
 	/**
 	 * 将二维dataset数组生成tree，必须是ID为KEY的二维数组
 	 *
 	 * @param mixed $items ID为KEY的二维数组
-	 * @param integer|string $root_id 提供此二维数组中的根节点ID
 	 * @param bool 返回的children中，是否以ID为Key
 	 */
-	public static function datasetToTree(array $items, $root_id = 0, bool $idAsKey = true)
+	public static function datasetToTree(array $items, bool $idAsKey = true)
 	{
 		$node = new static;
+		$ids = [];
 
 		if ($idAsKey)
 		{
@@ -23,6 +28,7 @@ trait TreeTrait{
 			{
 				if ($item[$node->getKeyName()] == $item[$node->parentKey]) continue; //如果父ID等于自己，避免死循环，跳过
 
+				$ids[] = $item[$node->getKeyName()];
 				$items[ ($item[$node->parentKey]) ][ 'children' ][ ($item[$node->getKeyName()]) ] = &$items[ ($item[$node->getKeyName()]) ];
 			}
 		}
@@ -32,11 +38,13 @@ trait TreeTrait{
 			{
 				if ($item[$node->getKeyName()] == $item[$node->parentKey]) continue; //如果父ID等于自己，避免死循环，跳过
 
+				$ids[] = $item[$node->getKeyName()];
 				$items[ ($item[$node->parentKey]) ][ 'children' ][] = &$items[ ($item[$node->getKeyName()]) ];
 			}
 		}
 
-	 	return isset($items[ $root_id ][ 'children' ]) ? $items[ $root_id ][ 'children' ] : [];
+		$result = array_except($items, $ids);
+		return count($result) === 1 ? array_get(array_pop($result), 'children', []) : $result;
 	}
 
 	/**

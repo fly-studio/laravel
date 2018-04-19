@@ -1,11 +1,21 @@
-.git
-/node_modules
-/public/storage
-/.idea
-_ide_helper.php
-_ide_helper_models.php
-.phpstorm.meta.php
-Homestead.json
-Homestead.yaml
-/.tags
-/.tags_sorted_by_file
+### Docs ###
+build/
+cache/
+
+### PHP ###
+
+/bootstrap/compiled.php
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+Thumbs.db
+
+/conf
+.idea
+/.settings
+.env.*.php
+.env.php
+
+# sublime phpintel plugin
+/.phpintel

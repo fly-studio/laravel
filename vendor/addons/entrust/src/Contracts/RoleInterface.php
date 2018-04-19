@@ -3,53 +3,58 @@
 namespace Addons\Entrust\Contracts;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
  * @package Addons\Entrust
  */
-
 interface RoleInterface
 {
     /**
-     * Many-to-Many relations with the user model.
+     * Morph by Many relationship between the role and the one of the possible user models.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @param  string  $relationship
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
      */
-    public function users();
+    public function getMorphByUserRelation($relationship);
 
     /**
      * Many-to-Many relations with the permission model.
-     * Named "perms" for backwards compatibility. Also because "perms" is short and sweet.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function perms();
+    public function permissions();
+
+    /**
+     * Checks if the role has a permission by its name.
+     *
+     * @param  string|array  $permission       Permission name or array of permission names.
+     * @param  bool  $requireAll       All permissions in the array are required.
+     * @return bool
+     */
+    public function hasPermission($permission, $requireAll);
 
     /**
      * Save the inputted permissions.
      *
-     * @param mixed $inputPermissions
-     *
-     * @return void
+     * @param  mixed  $permissions
+     * @return array
      */
-    public function savePermissions($inputPermissions);
+    public function syncPermissions($permissions);
 
-     /**
+    /**
      * Attach permission to current role.
      *
-     * @param object|array $permission
-     *
+     * @param  object|array  $permission
      * @return void
      */
     public function attachPermission($permission);
 
     /**
-     * Detach permission form current role.
+     * Detach permission from current role.
      *
-     * @param object|array $permission
-     *
+     * @param  object|array  $permission
      * @return void
      */
     public function detachPermission($permission);
@@ -57,8 +62,7 @@ interface RoleInterface
     /**
      * Attach multiple permissions to current role.
      *
-     * @param mixed $permissions
-     *
+     * @param  mixed  $permissions
      * @return void
      */
     public function attachPermissions($permissions);
@@ -66,8 +70,7 @@ interface RoleInterface
     /**
      * Detach multiple permissions from current role
      *
-     * @param mixed $permissions
-     *
+     * @param  mixed  $permissions
      * @return void
      */
     public function detachPermissions($permissions);

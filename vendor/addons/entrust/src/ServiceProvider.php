@@ -2,9 +2,6 @@
 
 namespace Addons\Entrust;
 
-use Addons\Entrust\Commands\MigrationCommand;
-use Illuminate\Support\ServiceProvider as SP;
-
 /**
  * This file is part of Entrust,
  * a role & permission management solution for Laravel.
@@ -12,9 +9,10 @@ use Illuminate\Support\ServiceProvider as SP;
  * @license MIT
  * @package Addons\Entrust
  */
+use Illuminate\Support\ServiceProvider as Base;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
-
-class ServiceProvider extends SP
+class ServiceProvider extends Base
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -24,22 +22,90 @@ class ServiceProvider extends SP
     protected $defer = false;
 
     /**
+     * The commands to be registered.
+     *
+     * @var array
+     */
+    protected $commands = [
+        'Migration' => 'command.entrust.migration',
+        'MakeRole' => 'command.entrust.role',
+        'MakePermission' => 'command.entrust.permission',
+        'MakeTeam' => 'command.entrust.team',
+        'Setup' => 'command.entrust.setup',
+        'SetupTeams' => 'command.entrust.setup-teams',
+        'MakeSeeder' => 'command.entrust.seeder',
+    ];
+
+    /**
+     * The middlewares to be registered.
+     *
+     * @var array
+     */
+    protected $middlewares = [
+        'role' => \Addons\Entrust\Middleware\Role::class,
+        'permission' => \Addons\Entrust\Middleware\Permission::class,
+        'ability' => \Addons\Entrust\Middleware\Ability::class,
+    ];
+
+    /**
      * Bootstrap the application events.
      *
      * @return void
      */
     public function boot()
     {
-        // Publish config files
+        $this->mergeConfigFrom(__DIR__.'/../config/entrust.php', 'entrust');
+
         $this->publishes([
             __DIR__.'/../config/entrust.php' => config_path('entrust.php'),
-        ]);
+            __DIR__. '/../config/entrust_seeder.php' => config_path('entrust_seeder.php'),
+        ], 'entrust');
 
-        // Register commands
-        $this->commands('command.entrust.migration');
+        $this->useMorphMapForRelationships();
 
-        // Register blade directives
-        $this->bladeDirectives();
+        $this->registerMiddlewares();
+
+        if (class_exists('\Blade')) {
+            $this->registerBladeDirectives();
+        }
+    }
+
+    /**
+     * If the user wants to use the morphMap it uses the morphMap.
+     *
+     * @return void
+     */
+    protected function useMorphMapForRelationships()
+    {
+        if ($this->app['config']->get('entrust.use_morph_map')) {
+            Relation::morphMap($this->app['config']->get('entrust.user_models'));
+        }
+    }
+
+    /**
+     * Register the middlewares automatically.
+     *
+     * @return void
+     */
+    protected function registerMiddlewares()
+    {
+        if (!$this->app['config']->get('entrust.middleware.register')) {
+            return;
+        }
+
+        $router = $this->app['router'];
+
+        if (method_exists($router, 'middleware')) {
+            $registerMethod = 'middleware';
+        } elseif (method_exists($router, 'aliasMiddleware')) {
+            $registerMethod = 'aliasMiddleware';
+        } else {
+            return;
+        }
+
+        foreach ($this->middlewares as $key => $class) {
+            $router->$registerMethod($key, $class);
+        }
     }
 
     /**
@@ -52,43 +118,16 @@ class ServiceProvider extends SP
         $this->registerEntrust();
 
         $this->registerCommands();
-
-        $this->mergeConfig();
     }
 
     /**
-     * Register the blade directives
+     * Register the blade directives.
      *
      * @return void
      */
-    private function bladeDirectives()
+    private function registerBladeDirectives()
     {
-        // Call to Entrust::hasRole
-        \Blade::directive('role', function($expression) {
-            return "<?php if (\\Entrust::hasRole{$expression}) : ?>";
-        });
-
-        \Blade::directive('endrole', function($expression) {
-            return "<?php endif; // Entrust::hasRole ?>";
-        });
-
-        // Call to Entrust::can
-        \Blade::directive('permission', function($expression) {
-            return "<?php if (\\Entrust::can{$expression}) : ?>";
-        });
-
-        \Blade::directive('endpermission', function($expression) {
-            return "<?php endif; // Entrust::can ?>";
-        });
-
-        // Call to Entrust::ability
-        \Blade::directive('ability', function($expression) {
-            return "<?php if (\\Entrust::ability{$expression}) : ?>";
-        });
-
-        \Blade::directive('endability', function($expression) {
-            return "<?php endif; // Entrust::ability ?>";
-        });
+        (new RegistersBladeDirectives)->handle($this->app->version());
     }
 
     /**
@@ -106,27 +145,68 @@ class ServiceProvider extends SP
     }
 
     /**
-     * Register the artisan commands.
+     * Register the given commands.
      *
      * @return void
      */
-    private function registerCommands()
+    protected function registerCommands()
     {
-        $this->app->singleton('command.entrust.migration', function ($app) {
-            return new MigrationCommand();
+        foreach (array_keys($this->commands) as $command) {
+            $method = "register{$command}Command";
+
+            call_user_func_array([$this, $method], []);
+        }
+
+        $this->commands(array_values($this->commands));
+    }
+
+    protected function registerMigrationCommand()
+    {
+        $this->app->singleton('command.entrust.migration', function () {
+            return new \Addons\Entrust\Commands\MigrationCommand();
         });
     }
 
-    /**
-     * Merges user's and entrust's configs.
-     *
-     * @return void
-     */
-    private function mergeConfig()
+    protected function registerMakeRoleCommand()
     {
-        $this->mergeConfigFrom(
-            __DIR__.'/../config/entrust.php', 'entrust'
-        );
+        $this->app->singleton('command.entrust.role', function ($app) {
+            return new \Addons\Entrust\Commands\MakeRoleCommand($app['files']);
+        });
+    }
+
+    protected function registerMakePermissionCommand()
+    {
+        $this->app->singleton('command.entrust.permission', function ($app) {
+            return new \Addons\Entrust\Commands\MakePermissionCommand($app['files']);
+        });
+    }
+
+    protected function registerMakeTeamCommand()
+    {
+        $this->app->singleton('command.entrust.team', function ($app) {
+            return new \Addons\Entrust\Commands\MakeTeamCommand($app['files']);
+        });
+    }
+
+    protected function registerSetupCommand()
+    {
+        $this->app->singleton('command.entrust.setup', function () {
+            return new \Addons\Entrust\Commands\SetupCommand();
+        });
+    }
+
+    protected function registerSetupTeamsCommand()
+    {
+        $this->app->singleton('command.entrust.setup-teams', function () {
+            return new \Addons\Entrust\Commands\SetupTeamsCommand();
+        });
+    }
+
+    protected function registerMakeSeederCommand()
+    {
+        $this->app->singleton('command.entrust.seeder', function () {
+            return new \Addons\Entrust\Commands\MakeSeederCommand();
+        });
     }
 
     /**
@@ -136,8 +216,6 @@ class ServiceProvider extends SP
      */
     public function provides()
     {
-        return [
-            'command.entrust.migration'
-        ];
+        return array_values($this->commands);
     }
 }

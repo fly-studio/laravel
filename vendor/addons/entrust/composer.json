@@ -2,7 +2,7 @@
     "name": "addons/entrust",
     "description": "This package provides a flexible way to add Role-based Permissions to Laravel",
     "homepage": "https://www.load-page.com",
-    "keywords": ["laravel","illuminate","auth","roles","acl","permission"],
+    "keywords": ["acl", "authorization", "laravel","laratrust","permissions","php", "rbac","roles", "multiusers", "teams"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/fly-studio/laravel-addons-entrust/issues",
@@ -10,20 +10,8 @@
     },
     "authors": [
         {
-            "name": "Zizaco Zizuini",
-            "email": "zizaco@gmail.com"
-        },
-        {
-            "name": "Andrew Elkins",
-            "homepage": "http://andrewelkins.com"
-        },
-        {
-            "name": "Ben Batschelet",
-            "homepage": "http://github.com/bbatsche"
-        },
-        {
-            "name": "Michele Angioni",
-            "email": "michele.angioni@gmail.com"
+            "name": "Santiago Garcia",
+            "homepage": "http://santigarcor.me"
         },
         {
             "name": "Fly",
@@ -32,26 +20,41 @@
     ],
     "require": {
         "php": ">=5.5.0",
+        "illuminate/auth": "~5.2",
+        "illuminate/cache": "~5.2",
+        "illuminate/console": "~5.2",
+        "illuminate/database": "^5.2.32",
+        "illuminate/support": "~5.2",
         "addons/core": ">=3.0"
     },
     "require-dev": {
+        "mockery/mockery": ">=0.9.9",
+        "phpunit/phpunit": ">=4.1",
+        "orchestra/testbench": "~3.2"
     },
     "autoload": {
-        "classmap": [
-            "src/"
-        ],
         "psr-4": {
             "Addons\\Entrust\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Addons\\Entrust\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "extra": {
         "laravel": {
             "providers": [
                 "Addons\\Entrust\\ServiceProvider"
             ],
             "aliases": {
+                "Entrust": "Addons\\Entrust\\Facade"
             }
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

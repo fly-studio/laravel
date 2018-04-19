@@ -28,13 +28,18 @@ class TreeCollection extends Collection {
 
 	public function makeNodes(array $tree, TreeNode $node)
 	{
+		$prev = null;
 		foreach($tree as $key => $value)
 		{
 			$children = $value['children'] ?? [];
 
+
 			$n = $node->childSet($key, $value);
+			$n->parent($node)->prev($prev);
 
 			$this[$key] = $n;
+			!empty($prev) && $prev->next($n);
+			$prev = $n;
 
 			if (!empty($children))
 				$this->makeNodes($children, $node->childGet($key));

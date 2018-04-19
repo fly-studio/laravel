@@ -1,15 +1,14 @@
 <?php
 
-namespace Addons\Entrust;
+namespace Addons\Entrust\Models;
 
 /**
- * This file is part of Entrust,
+ * This file is part of Addons\Entrust,
  * a role & permission management solution for Laravel.
  *
  * @license MIT
  * @package Addons\Entrust
  */
-
 use Addons\Core\Models\Tree;
 use Addons\Entrust\Traits\RoleTrait;
 use Illuminate\Support\Facades\Config;
@@ -23,8 +22,7 @@ class Role extends Tree implements RoleInterface
     public $pathKey = NULL;
     public $levelKey = NULL;
 
-    public $fire_caches = ['roles'];
-    protected $touches = ['perms'];
+    protected $touches = ['permissions'];
 
     /**
      * The database table used by the model.
@@ -35,27 +33,15 @@ class Role extends Tree implements RoleInterface
 
     public $guarded = ['id'];
 
-
     /**
      * Creates a new instance of the model.
      *
-     * @param array $attributes
+     * @param  array  $attributes
+     * @return void
      */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->table = config('entrust.roles_table');
+        $this->table = Config::get('entrust.tables.roles');
     }
-
-    public function getRoles()
-    {
-        $roles = [];
-        $_roles = Cache::remember('roles', config('cache.ttl'), function() {return $this->with('perms')->orderBy('id', 'ASC')->get();});
-        foreach ($_roles->toArray() as $role) {
-            $role['prems'] = array_map(function($v) { return $v['name']; }, $role['perms']);
-            $roles[$role['name']] = $role;
-        }
-        return $roles;
-    }
-
 }

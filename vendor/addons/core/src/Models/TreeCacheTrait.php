@@ -42,12 +42,12 @@ trait TreeCacheTrait{
 
 			$data = $builder->get()->keyBy($model->getKeyName())->toArray();
 
-			$tree = static::datasetToTree($data, 0);
+			$tree = static::datasetToTree($data);
 
 			$collection = TreeCollection::make($tree);
 
 			if (!empty($zero = static::find(0))) {
-				$collection->root()->fill($zero->toArray());
+				$collection->root()->attributes($zero->toArray());
 				$collection[0] = $collection->root();
 			}
 

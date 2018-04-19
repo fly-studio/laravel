@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace;
+
+use Addons\Entrust\Models\Role as Base;
+
+class DummyClass extends Base
+{
+    //
+}
