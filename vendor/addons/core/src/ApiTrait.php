@@ -81,8 +81,7 @@ trait ApiTrait {
 		$queries = $this->_getQueries($request);
 		foreach ($queries as $key => $value)
 		{
-			$method = 'scope'.ucfirst($key);
-			if (method_exists($builder->getModel(), $method))
+			if (($value === '0' || !empty($value)) && method_exists($builder->getModel(), 'scope'.ucfirst($key)))
 				call_user_func_array([$builder, $key], array_wrap($value));
 		}
 		return $queries;
