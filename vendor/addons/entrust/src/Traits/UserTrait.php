@@ -10,8 +10,10 @@ namespace Addons\Entrust\Traits;
  * @package Addons\Entrust
  */
 use Addons\Entrust\Helper;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Addons\Entrust\Models\Role;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
@@ -191,8 +193,22 @@ trait UserTrait
 
         $team = Helper::fetchTeam($team);
 
+        //check subRoles
+        if (Str::endsWith($name, ['.*', '.**'])) // end with .* .**
+        {
+            $node = Role::getTreeCache()->search(substr($name, 0, Str::endsWith($name, '.*') ? -2 : -3), null, 'name');
+            if (empty($node))
+                return false;
+
+            if (Str::endsWith($name, '.**')) // end with .**
+                $name = $node->leaves()->prepend($node)->pluck('name')->toArray();
+            else if (Str::endsWith($name, '.*')) // end with .*
+                $name = $node->children()->prepend($node)->pluck('name')->toArray();
+        }
+
+        $name = Arr::wrap($name);
         foreach ($this->cachedRoles() as $role) {
-            if ($role['name'] == $name && Helper::isInSameTeam($role, $team)) {
+            if (in_array($role['name'], $name) && Helper::isInSameTeam($role, $team)) {
                 return true;
             }
         }

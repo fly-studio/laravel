@@ -45,7 +45,7 @@ class Ability extends Middleware
                         'validate_all' => $validateAll
                     ])
          ) {
-            return $this->unauthorized($request);
+            return $this->unauthorized();
         }
 
         return $next($request);

@@ -11,12 +11,13 @@ namespace Addons\Entrust\Models;
  */
 use Addons\Core\Models\Tree;
 use Addons\Entrust\Traits\RoleTrait;
+use Addons\Core\Models\TreeCacheTrait;
 use Illuminate\Support\Facades\Config;
 use Addons\Entrust\Contracts\RoleInterface;
 
 class Role extends Tree implements RoleInterface
 {
-    use RoleTrait;
+    use RoleTrait, TreeCacheTrait;
 
     public $orderKey = NULL;
     public $pathKey = NULL;

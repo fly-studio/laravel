@@ -5,7 +5,7 @@ namespace Addons\Core\Models;
 use Cache;
 use Addons\Core\Tools\TreeCollection;
 
-trait TreeCacheTrait{
+trait TreeCacheTrait {
 
 	protected static function bootTreeCacheTrait()
 	{

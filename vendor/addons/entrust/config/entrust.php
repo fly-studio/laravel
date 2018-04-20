@@ -18,7 +18,7 @@ return [
     | are going to be used are the ones inside the 'user_models' array.
     |
     */
-    'use_morph_map' => false,
+    'use_morph_map' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -186,9 +186,9 @@ return [
 
         /**
          * Method to be called in the middleware return case.
-         * Available: abort|redirect
+         * Available: abort|redirect|exception
          */
-        'handling' => 'abort',
+        'handling' => 'exception',
 
         /**
          * Parameter passed to the middleware_handling method

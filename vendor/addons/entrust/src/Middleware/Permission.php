@@ -26,7 +26,7 @@ class Permission extends Middleware
     public function handle($request, Closure $next, $permissions, $team = null, $options = '')
     {
         if (!$this->authorization('permissions', $permissions, $team, $options)) {
-            return $this->unauthorized($request);
+            return $this->unauthorized();
         }
 
         return $next($request);

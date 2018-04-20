@@ -1,11 +1,9 @@
 <?php
 
-namespace Addons\Core\Controllers;
+namespace Addons\Entrust\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Addons\Entrust\Exception\PermissionException;
-
-use App\User;
 
 trait PermissionTrait {
 
@@ -60,11 +58,11 @@ trait PermissionTrait {
 
 		if (empty($permissionTable)) return true;
 
-		$user = Auth::check() ? Auth::user() : new User;
+		$user = Auth::check() ? Auth::user() : Auth::getProvider()->createModel();
 		$method = strtolower($method);
 		!isset($permissionTable[$method]) && $method = '*';
 
-		if (array_key_exists($method, $permissionTable) && !$user->can($permissionTable[$method], true))
+		if (array_key_exists($method, $permissionTable) && !$user->can($permissionTable[$method], null, true))
 		{
 			if ($return_result)
 				return false;

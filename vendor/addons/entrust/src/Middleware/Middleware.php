@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Addons\Core\Http\OutputResponseFactory;
+use Addons\Entrust\Exception\PermissionException;
 
 class Middleware
 {
@@ -41,19 +41,18 @@ class Middleware
      *
      * @return \Illuminate\Http\Response
      */
-    protected function unauthorized($request)
+    protected function unauthorized()
     {
-        return app(OutputResponseFactory::class)->failure('auth.permission_forbidden')->setRequest($request)->setStatusCode(403);
+        $handle = Config::get('entrust.middleware.handling');
+        $parameter = Config::get('entrust.middleware.params');
 
-        /*
-         $parameter = Config::get('entrust.middleware.params');
-
-        if (Config::get('entrust.middleware.handling') == 'abort') {
+        if ($handle == 'abort') {
             return App::abort($parameter);
+        } else if ($handle == 'redirect')  {
+            return Redirect::to($parameter);
         }
 
-        return Redirect::to($parameter);
-        */
+        throw new PermissionException();
     }
 
     /**
