@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Smarty\View;
 
 use Smarty;
@@ -9,7 +10,6 @@ use Illuminate\Contracts\View\Engine as EngineInterface;
 class Engine implements EngineInterface
 {
 
-	protected $_config;
 	protected $smarty;
 
 	public function __construct($config)
@@ -21,12 +21,11 @@ class Engine implements EngineInterface
 		$smarty->setCompileDir($config['compile_path']);
 		$smarty->setCacheDir($config['cache_path']);
 
-		foreach ($config['plugins_paths'] as $path) {
+		foreach ($config['plugins_paths'] as $path)
 			$smarty->addPluginsDir($path);
-		}
-		foreach ($config['config_paths'] as $path) {
+
+		foreach ($config['config_paths'] as $path)
 			$smarty->setConfigDir($path);
-		}
 
 		$smarty->debugging = $config['debugging'];
 		$smarty->caching = $config['caching'];
@@ -50,7 +49,7 @@ class Engine implements EngineInterface
 	 * @param array $data
 	 * @return string
 	 */
-	public function get($path, array $data = array())
+	public function get($path, array $data = [])
 	{
 		return $this->evaluatePath($path, $data);
 	}
@@ -73,16 +72,6 @@ class Engine implements EngineInterface
 	public function getSmarty()
 	{
 		return $this->smarty;
-	}
-
-	/**
-	 * Get the compiler implementation.
-	 *
-	 * @return Illuminate\View\Compilers\CompilerInterface
-	 */
-	public function getCompiler()
-	{
-		return $this->compiler;
 	}
 
 }

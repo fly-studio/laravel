@@ -7,15 +7,13 @@
 
 
 /**
- * Smarty cutstr modifier plugin
+ * Smarty width_truncate modifier plugin
  *
  * Type:     modifier<br>
- * Name:     cutstr<br>
- * Purpose:  cutstr a string to a certain length if necessary,
+ * Name:     width_truncate<br>
+ * Purpose:  width_truncate a string to a certain length if necessary,
  *           optionally splitting in the middle of a word, and
  *           appending the $etc string or inserting $etc into the middle.
- * @link http://smarty.php.net/manual/en/language.modifier.cutstr.php
- *          cutstr (Smarty online manual)
  * @author   Monte Ohrt <monte at ohrt dot com>
  * @param string
  * @param integer
@@ -24,6 +22,9 @@
  * @param boolean
  * @return string
  */
+
+use Smarty;
+
 function smarty_modifier_width_truncate($string, $length = 80, $etc = '...', $break_words = false, $middle = false)
 {
 	if ($length == 0)
@@ -35,7 +36,7 @@ function smarty_modifier_width_truncate($string, $length = 80, $etc = '...', $br
 			$string = preg_replace('/\s+?(\S+)?$/' . Smarty::$_UTF8_MODIFIER, '', substr_ansi($string, 0, $length+1, Smarty::$_CHARSET, $ansi_as));
 		}
 		if(!$middle) {
-		   return substr_ansi($string, 0, $length,  Smarty::$_CHARSET, $ansi_as) . $etc;
+			return substr_ansi($string, 0, $length,  Smarty::$_CHARSET, $ansi_as) . $etc;
 		} else {
 			return substr_ansi($string, 0, $length/2, Smarty::$_CHARSET,$ansi_as) . $etc . substr_ansi($string, -$length/2, 0, Smarty::$_CHARSET, $ansi_as);
 		}
@@ -45,4 +46,3 @@ function smarty_modifier_width_truncate($string, $length = 80, $etc = '...', $br
 }
 
 /* vim: set expandtab: */
-

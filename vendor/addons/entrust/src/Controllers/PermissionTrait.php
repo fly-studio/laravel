@@ -26,13 +26,19 @@ trait PermissionTrait {
 	 */
 	protected $permissions = [];
 
-	private function getPermissionTable()
+	/**
+	 * 不要重写本变量，除非你明确知道它的结构
+	 * @var null
+	 */
+	protected $permissionTable = null;
+
+	protected function getPermissionTable()
 	{
-		$permissionTable = [];
+		$table = [];
 		foreach($this->permissions as $k => $v)
 		{
 			if (is_numeric($k))
-				$permissionTable += [
+				$table += [
 					'index' => $v.'.view',
 					'show' => $v.'.view',
 					'data' => $v.'.view',
@@ -46,23 +52,32 @@ trait PermissionTrait {
 				];
 			else
 				foreach(explode(',', $k) as $key)
-					$permissionTable[strtolower($key)] = $v;
+					$table[strtolower($key)] = $v;
 		}
 
-		return $permissionTable;
+		return $this->permissionTable = $table;
 	}
 
-	private function checkPermission($method, $return_result = false)
+	public function checkMethodPermission($method)
 	{
-		$permissionTable = $this->getPermissionTable();
+		$permissionTable = is_null($this->permissionTable) ? $this->getPermissionTable() : $this->permissionTable;
+		if (empty($permissionTable)) return true; // 权限表为空，放行
 
-		if (empty($permissionTable)) return true;
-
-		$user = Auth::check() ? Auth::user() : Auth::getProvider()->createModel();
 		$method = strtolower($method);
 		!isset($permissionTable[$method]) && $method = '*';
 
-		if (array_key_exists($method, $permissionTable) && !$user->can($permissionTable[$method], null, true))
+		return !isset($permissionTable[$method]) ? true : $this->checkUserPermission($permissionTable[$method]);
+	}
+
+	public function checkUserPermission($permission)
+	{
+		$user = Auth::check() ? Auth::user() : Auth::getProvider()->createModel();
+		return $user->can($permission, null, true);
+	}
+
+	public function checkPermission($method, $return_result = false)
+	{
+		if (!$this->checkMethodPermission($method))
 		{
 			if ($return_result)
 				return false;

@@ -20,6 +20,9 @@ class Controller extends BaseController {
 		// check current user's permissions
 		if (!$this->disableUser) $this->checkPermission($method);
 
+		$this->viewData['_controller'] = $this;
+		$this->viewData['_method'] = $method;
+
 		$response = call_user_func_array([$this, $method], $parameters);
 		//event successful
 		event('controller.after: '.get_class($this).'@'.$method, [new ControllerEvent($this, $method, null, $response)]);
