@@ -2,7 +2,7 @@
 
 namespace Addons\Entrust\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use Addons\Entrust\Controllers\PermissionTable;
 use Addons\Entrust\Exception\PermissionException;
 
 trait PermissionTrait {
@@ -25,59 +25,13 @@ trait PermissionTrait {
 	 * @var array
 	 */
 	protected $permissions = [];
-
-	/**
-	 * 不要重写本变量，除非你明确知道它的结构
-	 * @var null
-	 */
-	protected $permissionTable = null;
-
-	protected function getPermissionTable()
-	{
-		$table = [];
-		foreach($this->permissions as $k => $v)
-		{
-			if (is_numeric($k))
-				$table += [
-					'index' => $v.'.view',
-					'show' => $v.'.view',
-					'data' => $v.'.view',
-					'export' => $v.'.export',
-					'print' => $v.'.export',
-					'edit' => $v.'.edit',
-					'update' => $v.'.edit',
-					'create' => $v.'.create',
-					'store' => $v.'.create',
-					'destroy' => $v.'.destroy',
-				];
-			else
-				foreach(explode(',', $k) as $key)
-					$table[strtolower($key)] = $v;
-		}
-
-		return $this->permissionTable = $table;
-	}
-
-	public function checkMethodPermission($method)
-	{
-		$permissionTable = is_null($this->permissionTable) ? $this->getPermissionTable() : $this->permissionTable;
-		if (empty($permissionTable)) return true; // 权限表为空，放行
-
-		$method = strtolower($method);
-		!isset($permissionTable[$method]) && $method = '*';
-
-		return !isset($permissionTable[$method]) ? true : $this->checkUserPermission($permissionTable[$method]);
-	}
-
-	public function checkUserPermission($permission)
-	{
-		$user = Auth::check() ? Auth::user() : Auth::getProvider()->createModel();
-		return $user->can($permission, null, true);
-	}
+	private $permissionTable = null;
 
 	public function checkPermission($method, $return_result = false)
 	{
-		if (!$this->checkMethodPermission($method))
+		is_null($this->permissionTable) && $this->permissionTable = PermissionTable::make($this->permissions);
+
+		if (!$this->permissionTable->checkMethodPermission($method))
 		{
 			if ($return_result)
 				return false;
