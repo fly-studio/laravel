@@ -59,7 +59,7 @@ class PermissionTable {
 	public function checkUserRole(...$roles)
 	{
 		$user = $this->getUser(true);
-		if (emtpy($user)) return false;
+		if (empty($user)) return false;
 
 		$requireAll = true;
 		if (func_num_args() >= 2 && is_bool(func_get_arg(func_num_args()-1))) //last parameter is bool
