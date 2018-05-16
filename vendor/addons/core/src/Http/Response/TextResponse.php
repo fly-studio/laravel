@@ -247,10 +247,14 @@ class TextResponse extends Response {
 	 */
 	protected function makeReplacements($line, array $replace)
 	{
+		if (empty($replace)) {
+			return $line;
+		}
 		$replace = $this->sortReplacements($replace);
 		$replace = Arr::dot($replace);
 
 		foreach ($replace as $key => $value) {
+			if (is_array($value)) continue;
 			$line = str_replace(
 				[':'.$key, ':'.Str::upper($key), ':'.Str::ucfirst($key)],
 				[$value, Str::upper($value), Str::ucfirst($value)],
