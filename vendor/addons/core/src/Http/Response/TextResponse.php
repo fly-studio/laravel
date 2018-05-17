@@ -158,7 +158,11 @@ class TextResponse extends Response {
 	public function getMessage()
 	{
 		$code = $this->getStatusCode();
-		return empty($this->message) ? ($code != 200 && Lang::has('exception.http.'.$code) ? trans('exception.http.'.$code) : trans('core::common.default.' . $this->getResult())) : $this->message;
+		return empty($this->message) ? (
+			$code != 200 && Lang::has('exception.http.'.$code) ? trans('exception.http.'.$code) : (
+				Lang::has('default.' . $this->getResult() ) ? trans('default.' . $this->getResult()) : trans('core::common.default.' . $this->getResult())
+			)
+		) : $this->message;
 	}
 
 	public function getOutputData()
