@@ -1,10 +1,12 @@
 <?php
 namespace Addons\Censor;
 
+use Event;
 use Addons\Censor\Factory;
 use Addons\Censor\Ruling\Ruler;
 use Addons\Censor\File\FileLoader;
 use Addons\Censor\Validation\ValidatorEx;
+use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -64,6 +66,10 @@ class ServiceProvider extends BaseServiceProvider
 		});
 
 		$this->loadTranslationsFrom(realpath(__DIR__.'/../resources/lang/'), 'censor');
+
+		Event::listen(LocaleUpdated::class, function(LocaleUpdated $locale){
+			$this->app['ruler']->setLocale($locale->locale);
+		});
 	}
 
 	/**
