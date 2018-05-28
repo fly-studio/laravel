@@ -142,7 +142,7 @@ trait Audit
 
         // Honour DateTime attribute
         if ($value !== null && in_array($key, $model->getDates(), true)) {
-            return $this->asDateTime($value);
+            return $model->asDateTime($value);
         }
 
         return $value;
@@ -224,8 +224,8 @@ trait Audit
      *
      * @return array
      */
-    public function getTagsAttribute(): array
+    public function getTags(): array
     {
-        return preg_split('/,/', $this->attributes['tags'], null, PREG_SPLIT_NO_EMPTY);
+        return preg_split('/,/', $this->tags, null, PREG_SPLIT_NO_EMPTY);
     }
 }

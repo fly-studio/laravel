@@ -163,6 +163,22 @@ trait Searchable
     }
 
     /**
+     * Get the requested models from an array of object IDs;
+     *
+     * @param  array  $ids
+     * @return mixed
+     */
+    public function getScoutModelsByIds(array $ids)
+    {
+        $builder = in_array(SoftDeletes::class, class_uses_recursive($this))
+                            ? $this->withTrashed() : $this->newQuery();
+
+        return $builder->whereIn(
+            $this->getScoutKeyName(), $ids
+        )->get();
+    }
+
+    /**
      * Enable search syncing for this model.
      *
      * @return void
@@ -291,5 +307,15 @@ trait Searchable
     public function getScoutKey()
     {
         return $this->getKey();
+    }
+
+    /**
+     * Get the key name used to index the model.
+     *
+     * @return mixed
+     */
+    public function getScoutKeyName()
+    {
+        return $this->getQualifiedKeyName();
     }
 }

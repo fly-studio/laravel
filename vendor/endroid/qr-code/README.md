@@ -7,9 +7,11 @@
 [![Total Downloads](http://img.shields.io/packagist/dt/endroid/qr-code.svg)](https://packagist.org/packages/endroid/qr-code)
 [![Monthly Downloads](http://img.shields.io/packagist/dm/endroid/qr-code.svg)](https://packagist.org/packages/endroid/qr-code)
 [![License](http://img.shields.io/packagist/l/endroid/qr-code.svg)](https://packagist.org/packages/endroid/qr-code)
-[![Donate](https://img.shields.io/badge/donate-paypal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RGH86QN825TWN)
 
-This library helps you generate QR codes in a jiffy.
+This library helps you generate QR codes in a jiffy. Makes use of [bacon/bacon-qr-code](https://github.com/Bacon/BaconQrCode)
+to generate the matrix and [khanamiryan/qrcode-detector-decoder](https://github.com/khanamiryan/php-qrcode-detector-decoder)
+for validating generated QR codes. Further extended with Twig extensions, generation routes, a factory and a
+Symfony bundle for easy installation and configuration.
 
 ## Installation
 
@@ -106,9 +108,3 @@ Lock your dependencies for production and test your code when upgrading.
 
 This bundle is under the MIT license. For the full copyright and license
 information please view the LICENSE file that was distributed with this source code.
-
-## Donation
-
-If this project help you reduce time to develop, you can buy me a Tesla :)
-
-[![paypal](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/btn_donate_92x26.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RGH86QN825TWN)

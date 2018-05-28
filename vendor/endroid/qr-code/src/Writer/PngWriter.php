@@ -13,7 +13,7 @@ use Endroid\QrCode\Exception\MissingFunctionException;
 use Endroid\QrCode\Exception\ValidationException;
 use Endroid\QrCode\LabelAlignment;
 use Endroid\QrCode\QrCodeInterface;
-use QrReader;
+use Zxing\QrReader;
 
 class PngWriter extends AbstractWriter
 {
@@ -21,20 +21,7 @@ class PngWriter extends AbstractWriter
     {
         $data = $this->getData($qrCode);
 
-        $image = imagecreatetruecolor($data['outer_width'], $data['outer_height']);
-        $foregroundColor = imagecolorallocatealpha($image, $qrCode->getForegroundColor()['r'], $qrCode->getForegroundColor()['g'], $qrCode->getForegroundColor()['b'], $qrCode->getForegroundColor()['a']);
-        $backgroundColor = imagecolorallocatealpha($image, $qrCode->getBackgroundColor()['r'], $qrCode->getBackgroundColor()['g'], $qrCode->getBackgroundColor()['b'], $qrCode->getBackgroundColor()['a']);
-        imagefill($image, 0, 0, $backgroundColor);
-
-        foreach ($data['matrix'] as $row => $values) {
-            foreach ($values as $column => $value) {
-                if (1 === $value) {
-                    $x = $data['margin_left'] + $data['block_size'] * $column;
-                    $y = $data['margin_left'] + $data['block_size'] * $row;
-                    imagefilledrectangle($image, $x, $y, $x + $data['block_size'], $y + $data['block_size'], $foregroundColor);
-                }
-            }
-        }
+        $image = $this->createImage($data, $qrCode);
 
         if ($qrCode->getLogoPath()) {
             $image = $this->addLogo($image, $qrCode->getLogoPath(), $qrCode->getLogoWidth());
@@ -57,6 +44,44 @@ class PngWriter extends AbstractWriter
         }
 
         return $string;
+    }
+
+    private function createImage(array $data, QrCodeInterface $qrCode)
+    {
+        $baseSize = $qrCode->getRoundBlockSize() ? $data['block_size'] : 25;
+
+        $baseImage = $this->createBaseImage($baseSize, $data, $qrCode);
+        $interpolatedImage = $this->createInterpolatedImage($baseImage, $data, $qrCode);
+
+        return $interpolatedImage;
+    }
+
+    private function createBaseImage(int $baseSize, array $data, QrCodeInterface $qrCode)
+    {
+        $image = imagecreatetruecolor($data['block_count'] * $baseSize, $data['block_count'] * $baseSize);
+        $foregroundColor = imagecolorallocatealpha($image, $qrCode->getForegroundColor()['r'], $qrCode->getForegroundColor()['g'], $qrCode->getForegroundColor()['b'], $qrCode->getForegroundColor()['a']);
+        $backgroundColor = imagecolorallocatealpha($image, $qrCode->getBackgroundColor()['r'], $qrCode->getBackgroundColor()['g'], $qrCode->getBackgroundColor()['b'], $qrCode->getBackgroundColor()['a']);
+        imagefill($image, 0, 0, $backgroundColor);
+
+        foreach ($data['matrix'] as $row => $values) {
+            foreach ($values as $column => $value) {
+                if (1 === $value) {
+                    imagefilledrectangle($image, $column * $baseSize, $row * $baseSize, ($column + 1) * $baseSize, ($row + 1) * $baseSize, $foregroundColor);
+                }
+            }
+        }
+
+        return $image;
+    }
+
+    private function createInterpolatedImage($baseImage, array $data, QrCodeInterface $qrCode)
+    {
+        $image = imagecreatetruecolor($data['outer_width'], $data['outer_height']);
+        $backgroundColor = imagecolorallocatealpha($image, $qrCode->getBackgroundColor()['r'], $qrCode->getBackgroundColor()['g'], $qrCode->getBackgroundColor()['b'], $qrCode->getBackgroundColor()['a']);
+        imagefill($image, 0, 0, $backgroundColor);
+        imagecopyresampled($image, $baseImage, $data['margin_left'], $data['margin_left'], 0, 0, $data['inner_width'], $data['inner_height'], imagesx($baseImage), imagesy($baseImage));
+
+        return $image;
     }
 
     private function addLogo($sourceImage, string $logoPath, int $logoWidth = null)
