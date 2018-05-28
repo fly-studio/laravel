@@ -554,6 +554,60 @@
         ]
     },
     {
+        "name": "clue/stream-filter",
+        "version": "v1.4.0",
+        "version_normalized": "1.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/clue/php-stream-filter.git",
+            "reference": "d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/clue/php-stream-filter/d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0.zip",
+            "reference": "d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^5.0 || ^4.8"
+        },
+        "time": "2017-08-18T09:54:01+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Clue\\StreamFilter\\": "src/"
+            },
+            "files": [
+                "src/functions.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Christian Lück",
+                "email": "christian@lueck.tv"
+            }
+        ],
+        "description": "A simple and modern approach to stream filtering in PHP",
+        "homepage": "https://github.com/clue/php-stream-filter",
+        "keywords": [
+            "bucket brigade",
+            "callback",
+            "filter",
+            "php_user_filter",
+            "stream",
+            "stream_filter_append",
+            "stream_filter_register"
+        ]
+    },
+    {
         "name": "defuse/php-encryption",
         "version": "v2.2.0",
         "version_normalized": "2.2.0.0",
@@ -2135,54 +2189,6 @@
         ]
     },
     {
-        "name": "ignited/laravel-omnipay",
-        "version": "2.3.0",
-        "version_normalized": "2.3.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ignited/laravel-omnipay.git",
-            "reference": "3983e274613074adfaf6948cf3495703100f19a5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ignited/laravel-omnipay/zipball/3983e274613074adfaf6948cf3495703100f19a5",
-            "reference": "3983e274613074adfaf6948cf3495703100f19a5",
-            "shasum": ""
-        },
-        "require": {
-            "illuminate/support": "~5",
-            "omnipay/common": "2.5.*",
-            "php": ">=5.4.0"
-        },
-        "time": "2017-02-08T19:23:44+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Ignited\\LaravelOmnipay": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "authors": [
-            {
-                "name": "Alex Whiteside",
-                "email": "alexwhiteside@ignitedlabs.com.au"
-            }
-        ],
-        "description": "Integerates Omnipay with Laravel and provides an easy configuration.",
-        "keywords": [
-            "laravel",
-            "laravel5",
-            "omnipay",
-            "payments"
-        ]
-    },
-    {
         "name": "intervention/image",
         "version": "2.4.1",
         "version_normalized": "2.4.1.0",
@@ -3261,26 +3267,28 @@
     },
     {
         "name": "lokielse/omnipay-alipay",
-        "version": "v2.3.6",
-        "version_normalized": "2.3.6.0",
+        "version": "v3.0.3",
+        "version_normalized": "3.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/lokielse/omnipay-alipay.git",
-            "reference": "bff18827298add9f383846f471e7727da7e280f7"
+            "reference": "c4c5d4dad887e1f29f50f7d03f48012ea2271c59"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/lokielse/omnipay-alipay/zipball/bff18827298add9f383846f471e7727da7e280f7",
-            "reference": "bff18827298add9f383846f471e7727da7e280f7",
+            "url": "https://files.phpcomposer.com/files/lokielse/omnipay-alipay/c4c5d4dad887e1f29f50f7d03f48012ea2271c59.zip",
+            "reference": "c4c5d4dad887e1f29f50f7d03f48012ea2271c59",
             "shasum": ""
         },
         "require": {
-            "omnipay/common": "~2.0"
+            "omnipay/common": "^3.0",
+            "php-http/guzzle6-adapter": "*"
         },
         "require-dev": {
-            "omnipay/tests": "~2.0"
+            "omnipay/tests": "^3.0",
+            "squizlabs/php_codesniffer": "3.*"
         },
-        "time": "2017-12-24T04:53:14+00:00",
+        "time": "2018-05-21T13:54:22+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -3316,26 +3324,28 @@
     },
     {
         "name": "lokielse/omnipay-wechatpay",
-        "version": "v1.0.23",
-        "version_normalized": "1.0.23.0",
+        "version": "v3.0.3",
+        "version_normalized": "3.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/lokielse/omnipay-wechatpay.git",
-            "reference": "d16156fc5086124cbaadbefa5b7e23e5d5fef757"
+            "reference": "71c773da5eaeae75cdb87ed92561b7889e004426"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/lokielse/omnipay-wechatpay/zipball/d16156fc5086124cbaadbefa5b7e23e5d5fef757",
-            "reference": "d16156fc5086124cbaadbefa5b7e23e5d5fef757",
+            "url": "https://files.phpcomposer.com/files/lokielse/omnipay-wechatpay/71c773da5eaeae75cdb87ed92561b7889e004426.zip",
+            "reference": "71c773da5eaeae75cdb87ed92561b7889e004426",
             "shasum": ""
         },
         "require": {
-            "omnipay/common": "~2.0"
+            "omnipay/common": "^3.0",
+            "php-http/guzzle6-adapter": "*"
         },
         "require-dev": {
-            "omnipay/tests": "~2.0"
+            "omnipay/tests": "^3.0",
+            "squizlabs/php_codesniffer": "3.*"
         },
-        "time": "2018-01-25T02:37:49+00:00",
+        "time": "2018-05-21T14:28:43+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -3620,6 +3630,88 @@
             "test",
             "test double",
             "testing"
+        ]
+    },
+    {
+        "name": "moneyphp/money",
+        "version": "v3.1.3",
+        "version_normalized": "3.1.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/moneyphp/money.git",
+            "reference": "5e6a3c98ba2cb190d48d35656967eacf30716034"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/moneyphp/money/5e6a3c98ba2cb190d48d35656967eacf30716034.zip",
+            "reference": "5e6a3c98ba2cb190d48d35656967eacf30716034",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.6"
+        },
+        "require-dev": {
+            "cache/taggable-cache": "^0.4.0",
+            "doctrine/instantiator": "^1.0.5",
+            "ext-bcmath": "*",
+            "ext-gmp": "*",
+            "ext-intl": "*",
+            "florianv/swap": "^3.0",
+            "leanphp/phpspec-code-coverage": "^3.0 || ^4.0",
+            "moneyphp/iso-currencies": "^3.0",
+            "php-http/message": "^1.4",
+            "php-http/mock-client": "^0.3.3",
+            "phpspec/phpspec": "^3.0",
+            "phpunit/phpunit": "^5",
+            "psr/cache": "^1.0",
+            "sllh/php-cs-fixer-styleci-bridge": "^2.1",
+            "symfony/phpunit-bridge": "^4"
+        },
+        "suggest": {
+            "ext-bcmath": "Calculate without integer limits",
+            "ext-gmp": "Calculate without integer limits",
+            "ext-intl": "Format Money objects with intl",
+            "florianv/swap": "Exchange rates library for PHP",
+            "psr/cache-implementation": "Used for Currency caching"
+        },
+        "time": "2018-02-16T11:04:16+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Money\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Mathias Verraes",
+                "email": "mathias@verraes.net",
+                "homepage": "http://verraes.net"
+            },
+            {
+                "name": "Frederik Bosch",
+                "email": "f.bosch@genkgo.nl"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagi-kazar@gmail.com"
+            }
+        ],
+        "description": "PHP implementation of Fowler's Money pattern",
+        "homepage": "http://verraes.net/2011/04/fowler-money-pattern-in-php/",
+        "keywords": [
+            "Value Object",
+            "money",
+            "vo"
         ]
     },
     {
@@ -3969,71 +4061,53 @@
     },
     {
         "name": "omnipay/common",
-        "version": "2.5.2",
-        "version_normalized": "2.5.2.0",
+        "version": "v3.0.2",
+        "version_normalized": "3.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/thephpleague/omnipay-common.git",
-            "reference": "54910f2ece6b1be64f5e53e2111dd1254d50ee49"
+            "reference": "66b7934abd2d54cde8b24c5d0b1a5e733339a7e9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/thephpleague/omnipay-common/66b7934abd2d54cde8b24c5d0b1a5e733339a7e9.zip",
+            "reference": "66b7934abd2d54cde8b24c5d0b1a5e733339a7e9",
+            "shasum": ""
         },
         "require": {
-            "guzzlehttp/guzzle": "~6.0",
-            "php": ">=5.3.2",
-            "symfony/http-foundation": "~2.1|~3.0|~4.0"
+            "moneyphp/money": "^3.1",
+            "php": "^5.6|^7",
+            "php-http/client-implementation": "^1",
+            "php-http/discovery": "^1.2.1",
+            "php-http/message": "^1.5",
+            "symfony/http-foundation": "^2.1|^3|^4"
         },
         "require-dev": {
-            "omnipay/tests": "~2.0",
-            "squizlabs/php_codesniffer": "~1.5"
+            "omnipay/tests": "^3",
+            "php-http/mock-client": "^1",
+            "phpro/grumphp": "^0.14",
+            "squizlabs/php_codesniffer": "^3"
         },
+        "suggest": {
+            "league/omnipay": "The default Omnipay package provides a default HTTP Adapter."
+        },
+        "time": "2018-05-15T08:36:43+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.5.x-dev"
-            },
-            "gateways": [
-                "AuthorizeNet_AIM",
-                "AuthorizeNet_SIM",
-                "Buckaroo_CreditCard",
-                "Buckaroo_Ideal",
-                "Buckaroo_PayPal",
-                "CardSave",
-                "Coinbase",
-                "Dummy",
-                "Eway_Rapid",
-                "FirstData_Connect",
-                "GoCardless",
-                "Manual",
-                "Migs_ThreeParty",
-                "Migs_TwoParty",
-                "Mollie",
-                "MultiSafepay",
-                "Netaxept",
-                "NetBanx",
-                "PayFast",
-                "Payflow_Pro",
-                "PaymentExpress_PxPay",
-                "PaymentExpress_PxPost",
-                "PayPal_Express",
-                "PayPal_Pro",
-                "Pin",
-                "SagePay_Direct",
-                "SagePay_Server",
-                "SecurePay_DirectPost",
-                "Stripe",
-                "TargetPay_Directebanking",
-                "TargetPay_Ideal",
-                "TargetPay_Mrcash",
-                "WorldPay"
-            ]
+                "dev-master": "3.0.x-dev"
+            }
         },
+        "installation-source": "dist",
         "autoload": {
-            "psr-0": {
-                "Omnipay\\Common\\": "src/"
+            "psr-4": {
+                "Omnipay\\Common\\": "src/Common"
             },
             "classmap": [
-                "src/Omnipay/Omnipay.php"
+                "src/Omnipay.php"
             ]
         },
+        "notification-url": "https://packagist.org/downloads/",
         "license": [
             "MIT"
         ],
@@ -4043,8 +4117,19 @@
                 "email": "adrian@adrianmacneil.com"
             },
             {
+                "name": "Barry vd. Heuvel",
+                "email": "barryvdh@gmail.com"
+            },
+            {
                 "name": "Omnipay Contributors",
                 "homepage": "https://github.com/thephpleague/omnipay-common/contributors"
+            },
+            {
+                "name": "Jason Judge",
+                "email": "jason.judge@consil.co.uk"
+            },
+            {
+                "name": "Del"
             }
         ],
         "description": "Common components for Omnipay payment processing library",
@@ -4177,17 +4262,17 @@
     },
     {
         "name": "owen-it/laravel-auditing",
-        "version": "v6.1.1",
-        "version_normalized": "6.1.1.0",
+        "version": "v7.0.0",
+        "version_normalized": "7.0.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/owen-it/laravel-auditing.git",
-            "reference": "ec2e490d77f4e030f296e90b944c07deb10bef2e"
+            "reference": "803b18a7ff3891bf4198279d52ffa65a34d666f0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://files.phpcomposer.com/files/owen-it/laravel-auditing/ec2e490d77f4e030f296e90b944c07deb10bef2e.zip",
-            "reference": "ec2e490d77f4e030f296e90b944c07deb10bef2e",
+            "url": "https://files.phpcomposer.com/files/owen-it/laravel-auditing/803b18a7ff3891bf4198279d52ffa65a34d666f0.zip",
+            "reference": "803b18a7ff3891bf4198279d52ffa65a34d666f0",
             "shasum": ""
         },
         "require": {
@@ -4205,7 +4290,7 @@
         "suggest": {
             "laravelista/lumen-vendor-publish": "Needed to publish the package configuration in Lumen"
         },
-        "time": "2018-04-27T10:42:41+00:00",
+        "time": "2018-05-12T09:59:34+00:00",
         "type": "package",
         "extra": {
             "branch-alias": {
@@ -4415,6 +4500,368 @@
             }
         ],
         "description": "Library for handling version information and constraints"
+    },
+    {
+        "name": "php-http/discovery",
+        "version": "1.4.0",
+        "version_normalized": "1.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/discovery.git",
+            "reference": "9a6cb24de552bfe1aa9d7d1569e2d49c5b169a33"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/discovery/9a6cb24de552bfe1aa9d7d1569e2d49c5b169a33.zip",
+            "reference": "9a6cb24de552bfe1aa9d7d1569e2d49c5b169a33",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.5 || ^7.0"
+        },
+        "require-dev": {
+            "henrikbjorn/phpspec-code-coverage": "^2.0.2",
+            "php-http/httplug": "^1.0",
+            "php-http/message-factory": "^1.0",
+            "phpspec/phpspec": "^2.4",
+            "puli/composer-plugin": "1.0.0-beta10"
+        },
+        "suggest": {
+            "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories",
+            "puli/composer-plugin": "Sets up Puli which is recommended for Discovery to work. Check http://docs.php-http.org/en/latest/discovery.html for more details."
+        },
+        "time": "2018-02-06T10:55:24+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.3-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Discovery\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            }
+        ],
+        "description": "Finds installed HTTPlug implementations and PSR-7 message factories",
+        "homepage": "http://php-http.org",
+        "keywords": [
+            "adapter",
+            "client",
+            "discovery",
+            "factory",
+            "http",
+            "message",
+            "psr7"
+        ]
+    },
+    {
+        "name": "php-http/guzzle6-adapter",
+        "version": "v1.1.1",
+        "version_normalized": "1.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/guzzle6-adapter.git",
+            "reference": "a56941f9dc6110409cfcddc91546ee97039277ab"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/guzzle6-adapter/a56941f9dc6110409cfcddc91546ee97039277ab.zip",
+            "reference": "a56941f9dc6110409cfcddc91546ee97039277ab",
+            "shasum": ""
+        },
+        "require": {
+            "guzzlehttp/guzzle": "^6.0",
+            "php": ">=5.5.0",
+            "php-http/httplug": "^1.0"
+        },
+        "provide": {
+            "php-http/async-client-implementation": "1.0",
+            "php-http/client-implementation": "1.0"
+        },
+        "require-dev": {
+            "ext-curl": "*",
+            "php-http/adapter-integration-tests": "^0.4"
+        },
+        "time": "2016-05-10T06:13:32+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.2-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Adapter\\Guzzle6\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            },
+            {
+                "name": "David de Boer",
+                "email": "david@ddeboer.nl"
+            }
+        ],
+        "description": "Guzzle 6 HTTP Adapter",
+        "homepage": "http://httplug.io",
+        "keywords": [
+            "Guzzle",
+            "http"
+        ]
+    },
+    {
+        "name": "php-http/httplug",
+        "version": "v1.1.0",
+        "version_normalized": "1.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/httplug.git",
+            "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/httplug/1c6381726c18579c4ca2ef1ec1498fdae8bdf018.zip",
+            "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4",
+            "php-http/promise": "^1.0",
+            "psr/http-message": "^1.0"
+        },
+        "require-dev": {
+            "henrikbjorn/phpspec-code-coverage": "^1.0",
+            "phpspec/phpspec": "^2.4"
+        },
+        "time": "2016-08-31T08:30:17+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Eric GELOEN",
+                "email": "geloen.eric@gmail.com"
+            },
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            }
+        ],
+        "description": "HTTPlug, the HTTP client abstraction for PHP",
+        "homepage": "http://httplug.io",
+        "keywords": [
+            "client",
+            "http"
+        ]
+    },
+    {
+        "name": "php-http/message",
+        "version": "1.6.0",
+        "version_normalized": "1.6.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/message.git",
+            "reference": "2edd63bae5f52f79363c5f18904b05ce3a4b7253"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/message/2edd63bae5f52f79363c5f18904b05ce3a4b7253.zip",
+            "reference": "2edd63bae5f52f79363c5f18904b05ce3a4b7253",
+            "shasum": ""
+        },
+        "require": {
+            "clue/stream-filter": "^1.3",
+            "php": ">=5.4",
+            "php-http/message-factory": "^1.0.2",
+            "psr/http-message": "^1.0"
+        },
+        "provide": {
+            "php-http/message-factory-implementation": "1.0"
+        },
+        "require-dev": {
+            "akeneo/phpspec-skip-example-extension": "^1.0",
+            "coduo/phpspec-data-provider-extension": "^1.0",
+            "ext-zlib": "*",
+            "guzzlehttp/psr7": "^1.0",
+            "henrikbjorn/phpspec-code-coverage": "^1.0",
+            "phpspec/phpspec": "^2.4",
+            "slim/slim": "^3.0",
+            "zendframework/zend-diactoros": "^1.0"
+        },
+        "suggest": {
+            "ext-zlib": "Used with compressor/decompressor streams",
+            "guzzlehttp/psr7": "Used with Guzzle PSR-7 Factories",
+            "slim/slim": "Used with Slim Framework PSR-7 implementation",
+            "zendframework/zend-diactoros": "Used with Diactoros Factories"
+        },
+        "time": "2017-07-05T06:40:53+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.6-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Message\\": "src/"
+            },
+            "files": [
+                "src/filters.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            }
+        ],
+        "description": "HTTP Message related tools",
+        "homepage": "http://php-http.org",
+        "keywords": [
+            "http",
+            "message",
+            "psr-7"
+        ]
+    },
+    {
+        "name": "php-http/message-factory",
+        "version": "v1.0.2",
+        "version_normalized": "1.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/message-factory.git",
+            "reference": "a478cb11f66a6ac48d8954216cfed9aa06a501a1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/message-factory/a478cb11f66a6ac48d8954216cfed9aa06a501a1.zip",
+            "reference": "a478cb11f66a6ac48d8954216cfed9aa06a501a1",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4",
+            "psr/http-message": "^1.0"
+        },
+        "time": "2015-12-19T14:08:53+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Message\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            }
+        ],
+        "description": "Factory interfaces for PSR-7 HTTP Message",
+        "homepage": "http://php-http.org",
+        "keywords": [
+            "factory",
+            "http",
+            "message",
+            "stream",
+            "uri"
+        ]
+    },
+    {
+        "name": "php-http/promise",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-http/promise.git",
+            "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/php-http/promise/dc494cdc9d7160b9a09bd5573272195242ce7980.zip",
+            "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980",
+            "shasum": ""
+        },
+        "require-dev": {
+            "henrikbjorn/phpspec-code-coverage": "^1.0",
+            "phpspec/phpspec": "^2.4"
+        },
+        "time": "2016-01-26T13:27:02+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Http\\Promise\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Márk Sági-Kazár",
+                "email": "mark.sagikazar@gmail.com"
+            },
+            {
+                "name": "Joel Wurtz",
+                "email": "joel.wurtz@gmail.com"
+            }
+        ],
+        "description": "Promise used for asynchronous HTTP requests",
+        "homepage": "http://httplug.io",
+        "keywords": [
+            "promise"
+        ]
     },
     {
         "name": "phpdocumentor/reflection-common",

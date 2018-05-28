@@ -2,7 +2,7 @@
 
 namespace Omnipay\WechatPay\Message;
 
-use GuzzleHttp\Client;
+use Guzzle\Http\Client;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Message\ResponseInterface;
 use Omnipay\WechatPay\Helper;

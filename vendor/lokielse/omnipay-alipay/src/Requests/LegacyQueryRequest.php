@@ -21,12 +21,14 @@ class LegacyQueryRequest extends AbstractLegacyRequest
      * @param  mixed $data The data to send
      *
      * @return ResponseInterface
+     * @throws \Psr\Http\Client\Exception\NetworkException
+     * @throws \Psr\Http\Client\Exception\RequestException
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function sendData($data)
     {
         $url = sprintf('%s?%s', $this->getEndpoint(), http_build_query($this->getData()));
-
-        $result = $this->httpClient->get($url)->send()->getBody();
+        $result = $this->httpClient->request('GET', $url, [], '')->getBody();
 
         $xml  = simplexml_load_string($result);
         $json = json_encode($xml);
@@ -41,6 +43,7 @@ class LegacyQueryRequest extends AbstractLegacyRequest
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
      *
      * @return mixed
+     * @throws \Omnipay\Common\Exception\InvalidRequestException
      */
     public function getData()
     {
@@ -51,7 +54,8 @@ class LegacyQueryRequest extends AbstractLegacyRequest
             'partner'        => $this->getPartner(),
             'trade_no'       => $this->getTradeNo(),
             'out_trade_no'   => $this->getOutTradeNo(),
-            '_input_charset' => $this->getInputCharset()
+            '_input_charset' => $this->getInputCharset(),
+            'sign_type'      => $this->getSignType()
         ];
         $data['sign'] = $this->sign($data, $this->getSignType());
         
