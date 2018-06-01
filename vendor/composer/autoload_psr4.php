@@ -108,6 +108,7 @@ return array(
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Barryvdh\\Debugbar\\' => array($vendorDir . '/barryvdh/laravel-debugbar/src'),
     'Addons\\Smarty\\' => array($vendorDir . '/addons/smarty/src'),
+    'Addons\\Server\\' => array($vendorDir . '/addons/server/src'),
     'Addons\\Plugins\\' => array($vendorDir . '/addons/plugins/src'),
     'Addons\\Func\\' => array($vendorDir . '/addons/func/src'),
     'Addons\\Entrust\\' => array($vendorDir . '/addons/entrust/src'),

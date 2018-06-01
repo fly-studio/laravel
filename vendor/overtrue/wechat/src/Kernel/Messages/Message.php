@@ -178,6 +178,8 @@ abstract class Message implements MessageInterface
      * @param array $aliases
      *
      * @return array|mixed
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function propertiesToArray(array $data, array $aliases = []): array
     {

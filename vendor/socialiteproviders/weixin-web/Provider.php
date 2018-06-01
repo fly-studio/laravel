@@ -2,9 +2,10 @@
 
 namespace SocialiteProviders\WeixinWeb;
 
-use SocialiteProviders\Manager\OAuth2\User;
+use Illuminate\Support\Arr;
 use Laravel\Socialite\Two\ProviderInterface;
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
+use SocialiteProviders\Manager\OAuth2\User;
 
 class Provider extends AbstractProvider implements ProviderInterface
 {
@@ -61,10 +62,10 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function getCodeFields($state = null)
     {
         return [
-            'appid' => $this->clientId, 'redirect_uri' => $this->redirectUrl,
+            'appid'         => $this->clientId, 'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
-            'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator),
-            'state' => $state,
+            'scope'         => $this->formatScopes($this->scopes, $this->scopeSeparator),
+            'state'         => $state,
         ];
     }
 
@@ -84,8 +85,8 @@ class Provider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get('https://api.weixin.qq.com/sns/userinfo', [
             'query' => [
                 'access_token' => $token,
-                'openid' => $this->openId,
-                'lang' => 'zh_CN',
+                'openid'       => $this->openId,
+                'lang'         => 'zh_CN',
             ],
         ]);
 
@@ -98,7 +99,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id' => array_get($user, 'openid'), 'nickname' => $user['nickname'],
+            'id'     => Arr::get($user, 'openid'), 'nickname' => $user['nickname'],
             'avatar' => $user['headimgurl'], 'name' => null, 'email' => null,
         ]);
     }
@@ -110,7 +111,7 @@ class Provider extends AbstractProvider implements ProviderInterface
     {
         return [
             'appid' => $this->clientId, 'secret' => $this->clientSecret,
-            'code' => $code, 'grant_type' => 'authorization_code',
+            'code'  => $code, 'grant_type' => 'authorization_code',
         ];
     }
 

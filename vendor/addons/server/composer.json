@@ -1,0 +1,39 @@
+{
+    "name": "addons/server",
+    "description": "A MVC socket server via Swoole.",
+    "homepage": "https://www.load-page.com",
+    "keywords": ["L5", "Laravel 5", "Laravel", "Swoole", "MVC", "socket"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/fly-studio/laravel-addons-server/issues",
+        "source": "https://github.com/fly-studio/laravel-addons-server"
+    },
+    "authors": [
+        {
+            "name": "Fly",
+            "email": "fly@load-page.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "addons/func": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Addons\\Server\\": "src/"
+        },
+        "files": [
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Addons\\Server\\ServiceProvider"
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "minimum-stability": "dev"
+
+}

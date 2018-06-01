@@ -1,0 +1,3 @@
+[submodule "src/function"]
+	path = src/function
+	url = https://git.load-page.com/r/function.git
