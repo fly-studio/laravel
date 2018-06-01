@@ -1,4 +1,6 @@
 <?php
+
+if (! function_exists('color_similar')) {
 /**
  * 颜色是否相似
  * @param  integer  $rgb1  颜色1
@@ -6,7 +8,6 @@
  * @param  integer $allowance 误差范围 正数
  * @return boolean
  */
-if (! function_exists('color_similar')) {
 function color_similar($rgb1, $rgb2, $allowance = 10) {
 	$r1 = ($rgb1 >> 16) & 0xFF;
 	$g1 = ($rgb1 >> 8) & 0xFF;
@@ -17,6 +18,8 @@ function color_similar($rgb1, $rgb2, $allowance = 10) {
 	return abs($r1 - $r2) < $value && abs($b1 - $b2) < $value && abs($g1 - $g2) < $value;
 }
 }
+
+if (! function_exists('calculate_textbox')) {
 /**
  * 计算使用指定字体渲染一段文本所需的rectangle
  * @param  integer $font_size 字体size
@@ -25,7 +28,6 @@ function color_similar($rgb1, $rgb2, $allowance = 10) {
  * @param  string $text 文本
  * @return array
  */
-if (! function_exists('calculate_textbox')) {
 function calculate_textbox($font_size, $font_angle, $font_file, $text) {
 	$box = imagettfbbox($font_size, $font_angle, $font_file, $text);
 	if( !$box ) return false;
@@ -66,13 +68,13 @@ function calculate_textbox($font_size, $font_angle, $font_file, $text) {
 }
 }
 
+if (! function_exists('hex2rgb')) {
 /**
  * 将颜色表达式，转换为RGB数组
  *
  * @param  string $colour 颜色的16进制，比如灰色的值为CCCCCC或CCC
  * @return [type]         [description]
  */
-if (! function_exists('hex2rgb')) {
 function hex2rgb($colour)
 {
 	$colour = preg_replace("/[^abcdef0-9]/i", "", $colour);
@@ -91,6 +93,7 @@ function hex2rgb($colour)
 }
 }
 
+if (! function_exists('aspect_ratio')) {
 /**
  * 等比缩放尺寸
  *
@@ -100,7 +103,6 @@ function hex2rgb($colour)
  * @param  float $newHeight      需要缩放的高
  * @return array                 返回等比缩放之后的宽高
  */
-if (! function_exists('aspect_ratio')) {
 function aspect_ratio($width, $height, $newWidth = NULL, $newHeight = NULL)
 {
 	empty($newWidth) && $newWidth = $width;

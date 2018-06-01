@@ -1,10 +1,11 @@
 <?php
+
 namespace Addons\Func;
 /**
  * @example
  * echo '<style type="text/css">ins {	background-color: #cfc;	text-decoration: none;}del {	color: #999;	background-color:#FEC8C8;}</style>';
  * $a = HTMLDiff::instance();
- * 
+ *
  * echo $a->compare(
  * "<p>This is some sample text to demonstrate the capability of the <strong>HTML diff tool</strong>.</p>
  *                     <p>It is based on the Ruby implementation found <a href='http://github.com/myobie/htmldiff'>here</a>. Note how the link has no tooltip</p>
@@ -55,22 +56,22 @@ class HTMLDiff {
 			$result |= preg_match('/'.$v.'/', $subject);
 		return $result;
 	}
-	
+
 	public function compare($oldText,$newText)
 	{
 		$this->content = array();
 		$this->wordIndices = array();
-		
+
 		$this->oldWords = $this->ConvertHtmlToListOfWords(str_split_utf8($oldText));
 		$this->newWords = $this->ConvertHtmlToListOfWords(str_split_utf8($newText));
-		
+
 		$this->wordIndices = $this->IndexNewWords($this->newWords);
 		$operations = $this->Operations();
 		//print_r($this->wordIndices);
 		//print_r($this->newWords);
 		foreach ($operations as $item)
 			$this->PerformOperation($item);
-		
+
 		return implode('',$this->content);
 	}
 
@@ -217,15 +218,15 @@ class HTMLDiff {
 		$this->content[] = implode('', $result);
 	}
 	/**
-	 * This method encloses words within a specified tag (ins or del), and adds this into "content", 
-	 * with a twist: if there are words contain tags, it actually creates multiple ins or del, 
+	 * This method encloses words within a specified tag (ins or del), and adds this into "content",
+	 * with a twist: if there are words contain tags, it actually creates multiple ins or del,
 	 * so that they don't include any ins or del. This handles cases like
 	 * old: '<p>a</p>'
 	 * new: '<p>ab</p><p>c</b>'
 	 * diff result: '<p>a<ins>b</ins></p><p><ins>c</ins></p>'
 	 * this still doesn't guarantee valid HTML (hint: think about diffing a text containing ins or
 	 * del tags), but handles correctly more cases than the earlier version.
-	 * 
+	 *
 	 * P.S.: Spare a thought for people who write HTML browsers. They live in this ... every day.
 	 * @param $tag string
 	 * @param $cssClass string
@@ -413,7 +414,7 @@ class HTMLDiff {
 
 		//Dictionary<int, int> matchLengthAt = new Dictionary<int, int>();
 		$matchLengthAt = array();
-		
+
 		for ($indexInOld = $startInOld; $indexInOld < $endInOld; $indexInOld++)
 		{
 			//var newMatchLengthAt = new Dictionary<int, int>();
@@ -458,7 +459,7 @@ class HTMLDiff {
 class HTMLDiff_Match {
 	public $StartInOld,$StartInNew,$Size;
 	//public $EndInOld,$EndInNew;
-	
+
 	public function __construct($startInOld, $startInNew, $size)
 	{
 		$this->StartInOld = $startInOld;

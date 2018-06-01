@@ -1,4 +1,6 @@
 <?php
+
+if (! function_exists('mb_basename')) {
 /**
  * 支持多语言的basename，原basename无法支持中文等其它语言
  *
@@ -6,7 +8,6 @@
  * @param  string $suffix 如果文件名是以 suffix 结束的，那这一部分也会被去掉
  * @return string         返回文件名
  */
-if (! function_exists('mb_basename')) {
 function mb_basename($param, $suffix = NULL) {
 	$param = str_replace('\\', '/', $param);
 	if ( $suffix ) {
@@ -22,6 +23,7 @@ function mb_basename($param, $suffix = NULL) {
 }
 }
 
+if (! function_exists('relative_path')) {
 /**
  * 根据base_path，取出target_path相对路径
  * @example
@@ -32,7 +34,6 @@ function mb_basename($param, $suffix = NULL) {
  * @param  string $base_path   根目录路径
  * @return string              输出相对路径
  */
-if (! function_exists('relative_path')) {
 function relative_path($target_path, $base_path = __FILE__ )
 {
 	// some compatibility fixes for Windows paths
@@ -67,6 +68,7 @@ function relative_path($target_path, $base_path = __FILE__ )
 }
 }
 
+if (! function_exists('normalize_path')) {
 /**
  * 去掉路径中多余的..或/
  * @example
@@ -76,7 +78,6 @@ function relative_path($target_path, $base_path = __FILE__ )
  * @param  string $path 输入路径
  * @return string       输出格式化之后的路径
  */
-if (! function_exists('normalize_path')) {
 function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
 {
 	$parts = array();// Array to build a new path from the good parts
@@ -110,6 +111,7 @@ function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
 }
 }
 
+if (! function_exists('rmdir_recursive')) {
 /**
  * recursively remove a directory
  *
@@ -117,7 +119,6 @@ function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
  * @param boolean $retain_parent_directory 是否保留父目录
  * @return string
  */
-if (! function_exists('rmdir_recursive')) {
 function rmdir_recursive($dir, $retain_parent_directory = FALSE)
 {
 	foreach(glob($dir . '/*') as $file) {
@@ -131,12 +132,12 @@ function rmdir_recursive($dir, $retain_parent_directory = FALSE)
 }
 }
 
+if (! function_exists('fileext')) {
 /**
  * 获取文件的扩展名(比如：jpg、php，无句号)
  * @param  string $basename 文件名称或路径
  * @return string           返回不带.的扩展名
  */
-if (! function_exists('fileext')) {
 function fileext($basename)
 {
 	return pathinfo($basename, PATHINFO_EXTENSION);
@@ -154,6 +155,7 @@ function fnmatch($pattern, $string, $flags = 0) {
 }
 }
 
+if (! function_exists('pcre_fnmatch')) {
 /**
  * 同fnmatch函数，用于支持低版本的PHP
  *
@@ -162,7 +164,6 @@ function fnmatch($pattern, $string, $flags = 0) {
  * @param  integer $flags   参数：FNM_PATHNAME FNM_NOESCAPE FNM_PERIOD FNM_CASEFOLD
  * @return boolean          是否匹配
  */
-if (! function_exists('pcre_fnmatch')) {
 function pcre_fnmatch($pattern, $string, $flags = 0) {
 	//return preg_match("#^".strtr(preg_quote($pattern, '#'), array('\*' => '.*', '\?' => '.'))."$#i", $string);
 	$modifiers = null;
@@ -204,13 +205,13 @@ function pcre_fnmatch($pattern, $string, $flags = 0) {
 }
 }
 
+if (! function_exists('fileinfo')) {
 /**
  * 返回文件的一些基本属性
  *
  * @param  string $path 文件路径
  * @return array        返回属性数组
  */
-if (! function_exists('fileinfo')) {
 function fileinfo($path)
 {
 	$stat = /*array(
@@ -238,6 +239,7 @@ function fileinfo($path)
 }
 }
 
+if (! function_exists('file_list')) {
 /**
  * 返回某目录下的所有文件，支持过滤
  *
@@ -253,7 +255,6 @@ function fileinfo($path)
  * @param  boolean $setting   FILE_LIST_FILE_KEY | FILE_LIST_DEBUG_PATH | FILE_LIST_FILE_INFO | FILE_LIST_FOLDER | FILE_LIST_SUBFOLDER
  * @return array                 返回所有文件(夹)数组
  */
-if (! function_exists('file_list')) {
 define('FILE_LIST_FILE_KEY', 1); // 使用文件路径作为KEY
 define('FILE_LIST_HIDDEN_BASE', 3); // 隐藏KEY的真实路径，将路径转化为base_path的相对路径
 define('FILE_LIST_FILE_INFO', 4); //返回文件信息
@@ -422,12 +423,12 @@ function fileperms_string($perms)
 }
 }
 
+if (! function_exists('format_bytes')) {
 /**
  * 字节转化为单位
  * @param  int $size 输入字节数
  * @return string    返回带单位的字节数
  */
-if (! function_exists('format_bytes')) {
 function format_bytes($size, $standard_unit = FALSE)
 {
 	$arr = $standard_unit ? array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB') : array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB');

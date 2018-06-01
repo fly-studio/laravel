@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Func;
 /**
  * github: https://github.com/luofei614/SocketLog

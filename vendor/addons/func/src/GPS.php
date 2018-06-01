@@ -1,4 +1,5 @@
 <?php
+
 namespace Addons\Func;
 
 class GPS {
@@ -24,7 +25,7 @@ class GPS {
 		//if ($this->outOfChina($gcjLat, $gcjLon))
 		if (!$this->isInChina($gcjLat, $gcjLon))
 			return array('lat' => $gcjLat, 'lon' => $gcjLon);
-		
+
 		$d = $this->delta($gcjLat, $gcjLon);
 		return array('lat' => $gcjLat - $d['lat'], 'lon' => $gcjLon - $d['lon']);
 	}
@@ -55,19 +56,19 @@ class GPS {
 	}
 	//GCJ-02 to BD-09
 	public function bd_encrypt($gcjLat, $gcjLon) {
-		$x = $gcjLon; $y = $gcjLat;  
-		$z = sqrt($x * $x + $y * $y) + 0.00002 * sin($y * $this->x_pi);  
-		$theta = atan2($y, $x) + 0.000003 * cos($x * $this->x_pi);  
-		$bdLon = $z * cos($theta) + 0.0065;  
-		$bdLat = $z * sin($theta) + 0.006; 
+		$x = $gcjLon; $y = $gcjLat;
+		$z = sqrt($x * $x + $y * $y) + 0.00002 * sin($y * $this->x_pi);
+		$theta = atan2($y, $x) + 0.000003 * cos($x * $this->x_pi);
+		$bdLon = $z * cos($theta) + 0.0065;
+		$bdLat = $z * sin($theta) + 0.006;
 		return array('lat' => $bdLat,'lon' => $bdLon);
 	}
 	//BD-09 to GCJ-02
 	public function bd_decrypt($bdLat, $bdLon)
 	{
-		$x = $bdLon - 0.0065; $y = $bdLat - 0.006;  
-		$z = sqrt($x * $x + $y * $y) - 0.00002 * sin($y * $this->x_pi);  
-		$theta = atan2($y, $x) - 0.000003 * cos($x * $this->x_pi);  
+		$x = $bdLon - 0.0065; $y = $bdLat - 0.006;
+		$z = sqrt($x * $x + $y * $y) - 0.00002 * sin($y * $this->x_pi);
+		$theta = atan2($y, $x) - 0.000003 * cos($x * $this->x_pi);
 		$gcjLon = $z * cos($theta);
 		$gcjLat = $z * sin($theta);
 		return array('lat' => $gcjLat, 'lon' => $gcjLon);
@@ -121,22 +122,22 @@ class GPS {
 		$distance = $alpha * $earthR;
 		return $distance;
 		/*
-		$earthRadius = 6367000; //approximate radius of earth in meters  
+		$earthRadius = 6367000; //approximate radius of earth in meters
 
-		$latA = ($latA * $this->PI ) / 180;  
-		$lonA = ($lonA * $this->PI ) / 180;  
+		$latA = ($latA * $this->PI ) / 180;
+		$lonA = ($lonA * $this->PI ) / 180;
 
-		$latA = ($latA * $this->PI ) / 180;  
-		$lonB = ($lonB * $this->PI ) / 180;  
+		$latA = ($latA * $this->PI ) / 180;
+		$lonB = ($lonB * $this->PI ) / 180;
 
 
-		$calcLongitude = $lonB - $lonA;  
-		$calcLatitude = $latA - $latA;  
-		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($latA) * cos($latA) * pow(sin($calcLongitude / 2), 2);    
-		$stepTwo = 2 * asin(min(1, sqrt($stepOne)));  
-		$calculatedDistance = $earthRadius * $stepTwo;  
+		$calcLongitude = $lonB - $lonA;
+		$calcLatitude = $latA - $latA;
+		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($latA) * cos($latA) * pow(sin($calcLongitude / 2), 2);
+		$stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+		$calculatedDistance = $earthRadius * $stepTwo;
 
-		return round($calculatedDistance);  
+		return round($calculatedDistance);
 		 */
 	}
 

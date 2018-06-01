@@ -1,5 +1,6 @@
 <?php
 
+if(! function_exists('is_internal_ip')) {
 /**
  * 是否是内网IP
  * ip地址中预留的内网ip地址如下：
@@ -14,7 +15,6 @@
  * @param  string  $ip 输入ipv4的ip格式
  * @return boolean     是否为内网IP
  */
-if(! function_exists('is_internal_ip')) {
 function is_internal_ip($ip) {
 	$ip = ip2long($ip);
 	$net_a = ip2long('10.255.255.255') >> 24; //A类网预留ip的网络地址
@@ -24,13 +24,13 @@ function is_internal_ip($ip) {
 }
 }
 
+if(! function_exists('ip_in_subnet')) {
 /**
 * 检查ip是否属于某个子网
 *
 * @param subnet:子网;如: 10.10.10/24 或 10.10.10.0/24 都是一样的
 * @return true | false
 */
-if(! function_exists('ip_in_subnet')) {
 function ip_in_subnet($subnet, $ip)
 {
 	$arr = explode('/',trim($subnet));
@@ -45,13 +45,13 @@ function ip_in_subnet($subnet, $ip)
 }
 }
 
+if(! function_exists('ip2ulong')) {
 /**
  * 将IP字符串转换为无符号长整型
  *
  * @param string $ip IP字符串
  * @return integer 无符号长整形IP
  */
-if(! function_exists('ip2ulong')) {
 function ip2ulong($ip){
 	if (empty($ip) || $ip == 'unknown') return 0;
 	$i = 0;
@@ -72,13 +72,13 @@ function ip2ulong($ip){
 }
 }
 
+if(! function_exists('ulong2ip')) {
 /**
  * 将IP无符号长整型转换成字符串
  *
  * @param integer $ip 无符号长整形字符串
  * @return string IP字符串
  */
-if(! function_exists('ulong2ip')) {
 function ulong2ip($ip){
 	if (empty($ip)) return 'unknown';
 	$ip = -(4294967296 - $ip);
@@ -100,6 +100,7 @@ function ulong2ip($ip){
 }
 }
 
+if(! function_exists('get_whois')) {
 /**
  *	Program to perform ip whois
  *	Silver Moon
@@ -107,7 +108,6 @@ function ulong2ip($ip){
  *
  *	Get the whois content of an ip by selecting the correct server
  */
-if(! function_exists('get_whois')) {
 function get_whois($ip){
 	$w = get_whois_from_server('whois.iana.org' , $ip);
 	preg_match('@whois\.[\w\.]*@si' , $w , $data);
@@ -119,11 +119,11 @@ function get_whois($ip){
 }
 }
 
+if(! function_exists('get_whois_from_server')) {
 /**
  *	Get the whois result from a whois server
  *	return text
  */
-if(! function_exists('get_whois_from_server')) {
 function get_whois_from_server($server , $ip)
 {
 	$data = '';
@@ -151,12 +151,12 @@ function get_whois_from_server($server , $ip)
 }
 }
 
+if(! function_exists('get_client_ip')) {
 /**
  * 函数:获取当前访问者的IP(字符串)
  *
  * @return string
  */
-if(! function_exists('get_client_ip')) {
 function get_client_ip($strict = FALSE)
 {
 	if ($strict)
@@ -190,13 +190,13 @@ function get_client_ip($strict = FALSE)
 }
 }
 
+if(! function_exists('get_current_url')) {
 /**
  * 获取当前的页面万维网地址
  *
  * @param boolean $
  * @return string 按条件返回url
  */
-if(! function_exists('get_current_url')) {
 define('HTTP_URL_SCHEME', 1);
 define('HTTP_URL_PATH', 2);
 define('HTTP_URL_SCRIPT', 4);
@@ -216,6 +216,7 @@ function get_current_url($flags = HTTP_URL_ALL )
 }
 }
 
+if(! function_exists('is_valid_domain')) {
 /**
  * validate domain
  *
@@ -242,7 +243,6 @@ function get_current_url($flags = HTTP_URL_ALL )
  * @param  string  $domain
  * @return boolean
  */
-if(! function_exists('is_valid_domain')) {
 function is_valid_domain($domain)
 {
     return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $domain) //valid chars check

@@ -1,10 +1,11 @@
 <?php
+
 namespace Addons\Func;
 /**
  * SSH Library includes the ability to connect to a host and verify its key, login with a username/password or a ssh key.
  * Currently capable of SCP, directory navigation, and directory listing
- * 
- * 
+ *
+ *
  * @package    Jexmex/SSH
  * @author     Jexmex <sparks.craig@gmail.com>
  * @copyright  (c) 2011 Jexmex
@@ -14,16 +15,16 @@ class SSHClient
 {
 	/**/
 	protected $_connected = FALSE;
-	
+
 	protected $_conn_link;
 
 	private $_sftp;
-	
+
 	protected $_config = array(
 		'host' => 'SSH\'s ip',
 		'host_fingerprint' => NULL,
 		'port' => 22,
-		'authentication_method' => 'PASS', //PASS KEY 
+		'authentication_method' => 'PASS', //PASS KEY
 		'user' => NULL, //set it if authentication_method == 'PASS'
 		'password' => NULL, //set it if authentication_method == 'PASS'
 		'pub_key' => NULL, //set it if authentication_method == 'KEY'
@@ -31,12 +32,12 @@ class SSHClient
 		'passphrase' => NULL, //set it if authentication_method == 'KEY'
 		'auto_connect' => TRUE,
 	);
-	
+
 	/**
 	 * The constructor method that initiates the class
-	 * 
+	 *
 	 * Pass a configuration array with the following values
-	 * 
+	 *
 	 * array (
 	 *      'host' => 'THE.HOST.TO.CONNECT.TO', //IP or Hostname
 	 *      'host_fingerprint' => 'HOSTFINGERPRINT', //The fingerprint of the host to authenticate with.  If this is NULL no check will be done (but this is not recommened)
@@ -49,35 +50,35 @@ class SSHClient
 	 *      'passphrase' => 'thisismypassphrase', //The passphrase for the ssh key, if there is not one, set to NULL
 	 *      'auto_connect' => TRUE, //Should the server be auto-connected to during class initialization (defaults to TRUE)
 	 * )
-	 * 
+	 *
 	 * @param $config array Array of configuration items
 	 */
 	public function __construct(array $config)
 	{
 		$this->_config = $config + $this->_config;
-		
+
 		//This ensures the fingerprint is formatted the same as the way ssh2_fingerprint returns it
 		!is_null($this->_config['host_fingerprint']) && $this->_config['host_fingerprint'] = strtoupper(str_replace(':', '', $this->_config['host_fingerprint']));
-		
+
 		if($this->_config['auto_connect'] == TRUE)
 		{
 			$this->connect();
 		}
 	}
-	
+
 	/**
 	 * Connect to host
-	 * 
+	 *
 	 * Connects to the host.  Throws exception if the host is unable to be connected to.  Will automatically
 	 * verify the host fingerprint, if one was provided, and throw an exception if the fingerprint is not
 	 * verified.
-	 * 
+	 *
 	 */
 	public function connect()
 	{
 		//Attempt to connect to host
 		$link = ssh2_connect($this->_config['host'], $this->_config['port']);
-		
+
 		//If host connection fails, throw exception
 		if(!$link)
 		{
@@ -87,12 +88,12 @@ class SSHClient
 		{
 			//Assign the connection link to the class property
 			$this->_conn_link = $link;
-			
+
 			//If host fingerprint is not NULL, attempt to verify fingerprint
-			if(!is_null($this->_config['host_fingerprint'])) 
+			if(!is_null($this->_config['host_fingerprint']))
 			{
 				$verify = $this->verify_host_fingerprint();
-				
+
 				//If the fingerprint is not verified, throw exception
 				if(!$verify)
 				{
@@ -100,7 +101,7 @@ class SSHClient
 				}
 			}
 		}
-		
+
 		//Attempt to login user
 		if($this->_config['authentication_method'] == 'KEY')
 		{
@@ -113,13 +114,13 @@ class SSHClient
 
 		$this->_connected && $this->_sftp = ssh2_sftp($link);
 	}
-	
+
 	/**
 	 * Connection check
-	 * 
+	 *
 	 * This method is suppose to check to see if the host is still connected to, but at this time,
 	 * I am unaware of a way to do this with SSH2 functions.
-	 * 
+	 *
 	 * @ignore This is currently unused and should be ignored
 	 */
 	public function check_connection()
@@ -127,12 +128,12 @@ class SSHClient
 		/* AS OF THIS TIME, I DO NOT THINK ITS POSSIBLE TO CHECK THE CONNECTION*/
 		return $this->_connected;
 	}
-	
+
 	/**
 	 * Verify host fingerprint
-	 * 
+	 *
 	 * Verifies the host fingerprint.
-	 * 
+	 *
 	 * @return TRUE on success, FALSE on failure
 	 */
 	protected function verify_host_fingerprint()
@@ -150,25 +151,25 @@ class SSHClient
 			return FALSE;
 		}
 	}
-	
+
 	/**
 	 * Login using a key
-	 * 
+	 *
 	 * This will attempt to login using the provided user and a hash key.
-	 * 
-	 * @return bool TRUE on success, FALSE on failure 
+	 *
+	 * @return bool TRUE on success, FALSE on failure
 	 */
 	public function login_key()
 	{
 		//TODO: add location for pub/private key files
 		return ssh2_auth_pubkey_file($this->_conn_link, $this->_config['pub_key'], $this->_config['private_key'], $this->_config['passphrase']);
 	}
-	
+
 	/**
 	 * Login using password
-	 * 
+	 *
 	 * Attempts to login using the provided user and a password
-	 * 
+	 *
 	 * @return bool TRUE on success, FALSE on failure
 	 */
 	public function login_password()
@@ -179,26 +180,26 @@ class SSHClient
 	/**
 	 * Exec a command
 	 *
-	 * 
+	 *
 	 * @param $command string 命令
-	 * @param 
+	 * @param
 	 */
 	public function exec($command, $pty = NULL, $env = array(), $width = 80, $height = 25, $width_height_type = SSH2_TERM_UNIT_CHARS)
 	{
 		return ssh2_exec($this->_conn_link, $command);
 	}
-	
+
 	/**
 	 * Sends a file to the remote server using scp
-	 * 
+	 *
 	 * Attempts to send a file via SCP to the remote server currently connected to
-	 * 
+	 *
 	 * @param $local_filepath string The path to the file to send
 	 * @param $remote_filepath string The path to the remote location to save the file
 	 */
 	public function send_file($local_filepath, $remote_filepath, $create_mode = 0644)
 	{
-		
+
 		$local_filepath = $this->format_path($local_filepath);
 		$remote_filepath = $this->format_path($remote_filepath);
 
@@ -208,13 +209,13 @@ class SSHClient
 
 	/**
 	 * Requests a file from the remote server using SCP
-	 * 
+	 *
 	 * Attempts to request and save a file from the currently connected to server using SCP.
-	 * 
+	 *
 	 * @param $local_filepath string The path to save the file to on local server
 	 * @param $remote_filepath string The path to the remote file that is being requested
 	 */
-	 
+
 	public function receive_file($remote_filepath, $local_filepath)
 	{
 		$local_filepath = $this->format_path($local_filepath);
@@ -280,7 +281,7 @@ class SSHClient
 			$link = $this->format_sftp_path($link);
 			return link($target, $link);
 		}
-		
+
 	}
 
 	public function mv($from, $to)
@@ -324,8 +325,8 @@ class SSHClient
 				'filesize' => 'size','fileowner' => 'uid','filegroup' => 'gid','fileperms' => 'mode','fileatime' => 'atime','filemtime' => 'mtime',
 				'file_exists' => 'file_exists','is_dir' => 'is_dir','is_file' => 'is_file','is_link' => 'is_link','is_executable' => 'is_executable','is_readable' => 'is_readable','is_writable' => 'is_writable','is_writeable' => 'is_writable','filetype' => 'filetype'
 			);
-			
-			if (!array_key_exists($name, $list)) 
+
+			if (!array_key_exists($name, $list))
 				throw new \Exception('"allow_url_fopen" is off!');
 
 			$data = @ssh2_sftp_stat($arguments[0]);
@@ -355,7 +356,7 @@ class SSHClient
 
 			return $data[($list[$name])];
 		}
-		
+
 		//需要转换路径的的函数
 		$list = array(
 			'file_exists','is_dir','is_executable','is_file','is_link','is_readable','is_writable','is_writeable',
@@ -374,19 +375,19 @@ class SSHClient
 		return call_user_func_array($name, $arguments);
 	}
 
-	
+
 	/**
 	 * Disconnects from the connected server
 	 */
 	public function disconnect()
-	{    	
+	{
 		$this->exec('echo "EXITING" && exit;');
-		
+
 		$this->_conn_link = NULL;
 		$this->_connected = FALSE;
 		$this->_sftp = NULL;
 	}
-	
+
 	/**
 	 * Deconstructor called when class instance is destroyed
 	 */
