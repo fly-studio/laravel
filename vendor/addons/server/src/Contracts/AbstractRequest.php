@@ -12,8 +12,6 @@ abstract class AbstractRequest {
 
 	protected $options;
 	protected $raw;
-	protected $header;
-	protected $body;
 
 	protected $routeResolver;
 	protected $userResolver;
@@ -23,8 +21,7 @@ abstract class AbstractRequest {
 		$this->options = $options;
 
 		$this->raw = $raw;
-		$this->header = $this->parseHeader($raw);
-		$this->body = $this->parseBody($raw);
+		$this->parse($raw);
 
 		$this->boot();
 	}
@@ -34,19 +31,8 @@ abstract class AbstractRequest {
 		return new static(...$args);
 	}
 
-	abstract protected function parseHeader(?string $raw);
-	abstract protected function parseBody(?string $raw);
+	abstract protected function parse(?string $raw);
 	abstract public function eigenvalue(): string;
-
-	public function header()
-	{
-		return $this->header;
-	}
-
-	public function body()
-	{
-		return $this->body;
-	}
 
 	public function raw()
 	{

@@ -4,7 +4,7 @@ namespace Addons\Server\Contracts;
 
 use Addons\Server\Servers\Server;
 use Addons\Server\Structs\ServerOptions;
-use Addons\Server\Protocols\TextResponse;
+use Addons\Server\Response\TextResponse;
 use Addons\Server\Contracts\AbstractRequest;
 use Addons\Server\Contracts\AbstractResponse;
 
@@ -40,7 +40,7 @@ abstract class AbstractFire {
 		else if (empty($response) && !is_numeric($response))
 			return null;
 		else
-			$response = TextResponse($options, @strval($response));
+			$response = new TextResponse($request->options(), @strval($response));
 
 		$response->prepare($request);
 

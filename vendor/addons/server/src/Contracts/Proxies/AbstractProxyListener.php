@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Server\Contracts;
+namespace Addons\Server\Contracts\Proxies;
 
 use Addons\Func\Structs\StreamChunks;
 use Addons\Server\Structs\ServerOptions;

@@ -13,14 +13,14 @@ abstract class AbstractResponse {
 
 	protected $nextAction;
 
-	protected $raw;
+	protected $content;
 	protected $header = null;
 	protected $body = null;
 
-	public function __construct(ServerOptions $options, $raw = null)
+	public function __construct(ServerOptions $options, $content = null)
 	{
 		$this->options = $options;
-		$this->raw = $raw;
+		$this->content = $content;
 		$this->boot();
 	}
 
@@ -34,9 +34,9 @@ abstract class AbstractResponse {
 		return $this->options;
 	}
 
-	public function raw()
+	public function content()
 	{
-		return $this->raw;
+		return $this->content;
 	}
 
 	public function server()
@@ -68,9 +68,9 @@ abstract class AbstractResponse {
 		return $this->server()->send($this->options->file_descriptor(), $_data);
 	}
 
-	public function prepare(AbstractRequest $request): AbstractResponse
+	public function prepare(AbstractRequest $request)
 	{
-		$this->body = $this->raw;
+		$this->body = $this->content();
 		return $this;
 	}
 

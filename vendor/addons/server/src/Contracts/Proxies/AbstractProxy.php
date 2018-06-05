@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Server\Contracts;
+namespace Addons\Server\Contracts\Proxies;
 
 use Addons\Server\Console\ConsoleLog;
 use Addons\Server\Structs\ServerOptions;

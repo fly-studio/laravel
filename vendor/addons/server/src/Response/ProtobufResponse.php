@@ -4,15 +4,13 @@ namespace Addons\Server\Response;
 
 use Google\Protobuf\Internal\Message;
 use Addons\Server\Contracts\AbstractResponse;
+use Addons\Server\Contracts\AbstractRequest;
 
 class ProtobufResponse extends AbstractResponse {
 
-	protected function prepare()
+	public function prepare(AbstractRequest $request)
 	{
-		if ($this->content instanceof Message)
-			return $this->content->serializeToJsonString();
-		else
-			return $this->content;
+		$this->body = $this->content instanceof Message ? $this->content->serializeToString() : $this->content;
 	}
 
 }

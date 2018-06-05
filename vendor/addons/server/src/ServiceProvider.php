@@ -19,7 +19,8 @@ class ServiceProvider extends BaseServiceProvider
 		if ($this->app->runningInConsole())
 		{
 			$this->commands([
-				\Addons\Server\Example\Console\StartCommand::class,
+				\Addons\Server\Example\Console\TagCommand::class,
+				\Addons\Server\Example\Console\RawCommand::class,
 			]);
 		}
 
