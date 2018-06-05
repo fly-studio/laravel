@@ -16,7 +16,7 @@ class AbstractHttpListener extends AbstractProtocolListener {
 	 * @param  [type]  $raw     [description]
 	 * @return [type]           [description]
 	 */
-	protected function analyze(ServerOptions $options, $raw, \swoole_http_request $request, \swoole_http_response $response) : AbstractRequest
+	protected function analyze(ServerOptions $options, $raw, \swoole_http_request $request, \swoole_http_response $response) : AbstractService
 	{
 		return new RawRequest($options, $raw);
 	}

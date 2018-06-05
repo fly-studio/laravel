@@ -6,6 +6,7 @@ use RuntimeException;
 use Addons\Server\Servers\Server;
 use Addons\Server\Console\ConsoleLog;
 use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Protocols\Analyzers\ServiceFactory;
 use Addons\Server\Contracts\Listeners\AbstractProtocolListener;
 
 class Observer {
@@ -16,12 +17,17 @@ class Observer {
 	public function __construct(Server $server)
 	{
 		$this->server = $server;
-		$this->listener = null;
 	}
 
-	public function setProtocolListener(AbstractProtocolListener $listener)
+	public function setListener(AbstractProtocolListener $listener)
 	{
 		$this->listener = $listener;
+		return false;
+	}
+
+	public function getListener() : ?AbstractProtocolListener
+	{
+		return $this->listener;
 	}
 
 	/**

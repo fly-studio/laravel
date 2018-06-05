@@ -2,23 +2,29 @@
 
 namespace Addons\Server\Contracts;
 
+use Closure;
 use Addons\Func\Contracts\BootTrait;
 use Addons\Server\Structs\ServerOptions;
-use Addons\Server\Contracts\AbstractService;
 
 abstract class AbstractRequest {
 
 	use BootTrait;
 
 	protected $options;
-	protected $service;
-	protected $data;
+	protected $raw;
+	protected $header;
+	protected $body;
 
-	public function __construct(ServerOptions $options, ?AbstractService $service, ?string $data)
+	protected $routeResolver;
+	protected $userResolver;
+
+	public function __construct(ServerOptions $options, ?string $raw)
 	{
 		$this->options = $options;
-		$this->service = $service;
-		$this->data = $data;
+
+		$this->raw = $raw;
+		$this->header = $this->parseHeader($raw);
+		$this->body = $this->parseBody($raw);
 
 		$this->boot();
 	}
@@ -28,24 +34,82 @@ abstract class AbstractRequest {
 		return new static(...$args);
 	}
 
+	abstract protected function parseHeader(?string $raw);
+	abstract protected function parseBody(?string $raw);
+	abstract public function eigenvalue(): string;
+
+	public function header()
+	{
+		return $this->header;
+	}
+
+	public function body()
+	{
+		return $this->body;
+	}
+
+	public function raw()
+	{
+		return $this->raw;
+	}
+
 	public function options()
 	{
 		return $this->options;
 	}
 
-	public function server()
+	/**
+	 * Get the route resolver callback.
+	 *
+	 * @return \Closure
+	 */
+	public function getRouteResolver()
 	{
-		return $this->options->server();
+		return $this->routeResolver ?: function () {
+			//
+		};
 	}
 
-	public function data()
+	public function setRouteResolver(Closure $callback)
 	{
-		return $this->data;
+		$this->routeResolver = $callback;
+		return $this;
 	}
 
-	public function service()
+	/**
+     * Get the user making the request.
+     *
+     * @param  string|null  $guard
+     * @return mixed
+     */
+    public function user($guard = null)
+    {
+        return call_user_func($this->getUserResolver(), $guard);
+    }
+
+	/**
+	 * Get the user resolver callback.
+	 *
+	 * @return \Closure
+	 */
+	public function getUserResolver()
 	{
-		return $this->service;
+		return $this->userResolver ?: function () {
+			//
+		};
+	}
+
+	/**
+	 * Set the user resolver callback.
+	 *
+	 * @param  \Closure  $callback
+	 * @return $this
+	 */
+	public function setUserResolver(Closure $callback)
+	{
+		$this->userResolver = $callback;
+
+		return $this;
 	}
 
 }

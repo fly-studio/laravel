@@ -1,19 +1,16 @@
 <?php
 
-namespace Addons\Server\Protocols\GRPC;
+namespace Addons\Server\Protocols\GPRC;
 
-use Addons\Server\Structs\ServerOptions;
-use Addons\Server\Protocols\GRPC\Request;
-use Addons\Server\Protocols\GRPC\Response;
-use Addons\Server\Contracts\AbstractRequest;
-use Addons\Server\Contracts\AbstractResponse;
-use Addons\Server\Contracts\Listeners\AbstractHttpListener;
+use Addons\Server\Protocols\GPRC\Fire;
+use Addons\Server\Contracts\AbstractFire;
+use Addons\Server\Contracts\Listeners\AbstractProtocolListener;
 
-class Listener extends AbstractHttpListener {
+class Listener extends AbstractProtocolListener {
 
-	public function doRequest(ServerOptions $options, ?string $raw): AbstractRequest
+	protected function makeFire(): AbstractFire
 	{
-		$server = $options->server();
+		return new Fire($this->server);
 	}
 
 }

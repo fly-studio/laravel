@@ -4,6 +4,7 @@ namespace Addons\Server\Servers;
 
 use RuntimeException;
 use BadMethodCallException;
+use Addons\Server\Routing\Router;
 use Addons\Server\Console\ConsoleLog;
 use Addons\Server\Servers\Observer\Observer;
 use Addons\Server\Structs\Config\ServerConfig;
@@ -14,13 +15,13 @@ class Server {
 	protected $server;
 	protected $observer;
 	protected $config;
-	protected $protocolListener = null;
-	protected $services = [];
+	protected $router;
 	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Connect', 'Receive', 'Packet', 'Close', 'BufferFull', 'BufferEmpty', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop'];
 
 	public function __construct(ServerConfig $config)
 	{
 		$this->config = $config;
+		$this->router = new Router(app('events'), app());
 
 		$this->validateConfig($config);
 
@@ -71,21 +72,28 @@ class Server {
 			$this->server->on($method, [$this->observer, 'on'.$method]);
 	}
 
-	public function use(AbstractProtocolListener $protocolListener)
+	public function capture(AbstractProtocolListener $protocolListener)
 	{
-		$this->protocolListener = $protocolListener;
+		$this->observer->setListener($protocolListener);
 		return $this;
 	}
 
-	public function addService(AbstractService $servie)
+	/**
+	 * 注册 特征值 和 service类名
+	 * 在protocolListener中的analyzing分析其匹配情况
+	 *
+	 * @param string          $eigenvalue 特征值
+	 * @param stromg $servie  Service class     服务
+	 */
+	public function registerRoute(string $eigenvalue, $action)
 	{
-		$this->servies[] = $servie;
+		$this->router->register($eigenvalue, $action);
 		return $this;
 	}
 
-	public function getProtocolListener()
+	public function loadRoutes(string $file_path, string $namespace)
 	{
-		return $this->protocolListener;
+		$this->router->load($file_path, $namespace);
 	}
 
 	public function getNativeServer()
@@ -93,17 +101,26 @@ class Server {
 		return $this->server;
 	}
 
+	public function getRouter()
+	{
+		return $this->router;
+	}
+
 	public function getConfig()
 	{
 		return $this->config;
 	}
 
+	public function getProtocolListener()
+	{
+		return $this->observer->getListener();
+	}
+
 	public function run()
 	{
-		if (empty($this->protocolListener))
-			throw new RuntimeException('set a Protocol Listener first: $server->use(new SomeProtocolListener).');
+		if (empty($this->getProtocolListener()))
+			throw new RuntimeException('Capture a Protocol Listener before run: $server->capture(new SomeProtocolListener).');
 
-		$this->observer->setProtocolListener($this->protocolListener);
 		$this->server->start();
 	}
 

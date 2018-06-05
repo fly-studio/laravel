@@ -2,9 +2,9 @@
 
 namespace Addons\Server\Example\Console;
 
+use Addons\Server\Kernel;
 use Illuminate\Console\Command;
 use Addons\Server\Servers\Server;
-use Addons\Server\Console\ConsoleLog;
 use Addons\Server\Structs\Config\Listen;
 use Addons\Server\Protocols\Raw\Listener;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -29,13 +29,14 @@ class StartCommand extends Command {
 		$port = $this->option('port');
 		list($user, $group) = explode(':', $this->option('user')) + [null, null];
 
+		$server = new Server(ServerConfig::build(Listen::build($port, $host), compact('daemon', 'user', 'group')));
+		$server->loadRoutes(__DIR__.'/../sockets.php', 'Addons\\Server\\Example\\Raw');
+		$this->info('Create a tcp server with: ' . $port);
 
-		$this->info('Create a tcp server with: ' .$port);
-		$example = new Server(ServerConfig::build(Listen::build($port, $host), compact('daemon', 'user', 'group')));
-		$this->info('Via a raw Listener.');
-		$example->use(new Listener($example));
+		$kernel = app(Kernel::class);
+		$kernel->handle($server->capture(new Listener($server)));
 		$this->info('Run it.');
-		$example->run();
+		$kernel->run();
 
 		return 0;
 	}

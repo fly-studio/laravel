@@ -6,26 +6,25 @@ use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Event;
+use Addons\Func\Contracts\AbstractGroupLoader;
 
-class EventDispatcher {
+class EventDispatcher extends AbstractGroupLoader {
 
-	/**
-	 * The route group attribute stack.
-	 *
-	 * @var array
-	 */
-	protected $groupStack = [];
+	public function __construct()
+	{
+		$this->setLoadResolver(function($file_path, $eventer) {
+			require realpath($file_path);
+		});
+	}
 
 	public function execute($prefix, $class, $listener)
 	{
-		$attributes = $this->mergeWithLastGroup(compact('class', 'listener', 'prefix', 'priority'));
+		$attributes = $this->mergeWithLastGroup(compact('class', 'listener', 'prefix'));
 
 		extract($attributes);
 
-		if (strpos($class, '\\') !== 0)
-			$class = $namespace.'\\'.$class;
+		$class = $this->prependGroupNamespace($class);
 
-		$class = ltrim($class, '\\');
 		Event::listen($prefix.$class, $listener);
 	}
 
@@ -57,93 +56,6 @@ class EventDispatcher {
 	{
 		foreach ($controllers as $controller => $listener)
 			$this->controller($controller, $listener, $type);
-	}
-
-	public function group($attributes, Closure $callback)
-	{
-		$this->updateGroupStack($attributes);
-
-		call_user_func($callback, $this);
-
-		array_pop($this->groupStack);
-	}
-
-	/**
-	 * Update the group stack with the given attributes.
-	 *
-	 * @param  array  $attributes
-	 * @return void
-	 */
-	protected function updateGroupStack(array $attributes)
-	{
-		if (! empty($this->groupStack)) {
-			$attributes = $this->mergeGroup($attributes, end($this->groupStack));
-		}
-
-		$this->groupStack[] = $attributes;
-	}
-
-	/**
-	 * Merge the given array with the last group stack.
-	 *
-	 * @param  array  $new
-	 * @return array
-	 */
-	public function mergeWithLastGroup($new)
-	{
-		return $this->mergeGroup($new, end($this->groupStack));
-	}
-
-	/**
-	 * Merge the given group attributes.
-	 *
-	 * @param  array  $new
-	 * @param  array  $old
-	 * @return array
-	 */
-	public static function mergeGroup($new, $old)
-	{
-		$new['namespace'] = static::formatUsesPrefix($new, $old);
-
-		return array_merge_recursive(Arr::except($old, ['namespace']), $new);
-	}
-
-	/**
-	 * Determine if the eventer currently has a group stack.
-	 *
-	 * @return bool
-	 */
-	public function hasGroupStack()
-	{
-		return ! empty($this->groupStack);
-	}
-
-	/**
-	 * Get the current group stack for the eventer.
-	 *
-	 * @return array
-	 */
-	public function getGroupStack()
-	{
-		return $this->groupStack;
-	}
-
-	/**
-	 * Format the uses prefix for the new group attributes.
-	 *
-	 * @param  array  $new
-	 * @param  array  $old
-	 * @return string|null
-	 */
-	protected static function formatUsesPrefix($new, $old)
-	{
-		if (isset($new['namespace'])) {
-			return isset($old['namespace'])
-					? trim($old['namespace'], '\\').'\\'.trim($new['namespace'], '\\')
-					: trim($new['namespace'], '\\');
-		}
-
-		return isset($old['namespace']) ? $old['namespace'] : null;
 	}
 
 }

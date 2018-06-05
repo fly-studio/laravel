@@ -8,36 +8,23 @@ use Addons\Server\Servers\Server;
 use Addons\Server\Console\ConsoleLog;
 use Addons\Server\Structs\ConnectPool;
 use Addons\Server\Structs\ServerOptions;
-use Addons\Server\Contracts\AbstractRequest;
-use Addons\Server\Contracts\AbstractResponse;
-use Addons\Server\Contracts\Listeners\IListener;
+use Addons\Server\Contracts\AbstractFire;
 
-abstract class AbstractProtocolListener implements IListener {
+abstract class AbstractProtocolListener {
 
 	protected $server;
-	protected $pool = null;
+	protected $pool;
+	protected $fire;
 	protected $logPrefix = '[Server]';
 
 	public function __construct(Server $server)
 	{
 		$this->server = $server;
 		$this->pool = new ConnectPool();
+		$this->fire = $this->makeFire();
 	}
 
-	/**
-	 * 可自定义该方法，分析数据之后返回不同的Request
-	 *
-	 * @param  ServerOptions $options [description]
-	 * @param  [type]  $raw     [description]
-	 * @return [type]           [description]
-	 */
-	abstract public function doRequest(ServerOptions $options, ?string $raw) : AbstractRequest;
-	abstract public function doResponse(ServerOptions $options, AbstractRequest $request, ?string $raw) : AbstractResponse;
-
-	protected function makeFire(ServerOptions $options)
-	{
-		return new Fire($options, [$this, 'doRequest'], [$this, 'doResponse']);
-	}
+	abstract protected function makeFire(): AbstractFire;
 
 	protected function makeServerOptions($fd, $reactor_id)
 	{
@@ -249,8 +236,19 @@ abstract class AbstractProtocolListener implements IListener {
 
 	protected function fire(ServerOptions $options, ?string $raw)
 	{
-		$fire = $this->makeFire($options);
-		$fire->handle($raw);
+		try {
+			$service = $this->fire->analyzing($options, $raw);
+			if (empty($service))
+				return;
+			$response = $this->fire->handle($service);
+			if (empty($response))
+				return;
+			$response->send();
+			if (is_callable($response->nextAction()))
+				call_user_func($response->nextAction(), $response);
+		} catch (\Exception $e) {
+			$this->fire->failed($options, $e);
+		}
 	}
 
 }
