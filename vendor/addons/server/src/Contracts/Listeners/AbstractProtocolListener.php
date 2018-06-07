@@ -5,7 +5,7 @@ namespace Addons\Server\Contracts\Listeners;
 use RuntimeException;
 use Addons\Server\Servers\Fire;
 use Addons\Server\Servers\Server;
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Structs\ConnectPool;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Contracts\AbstractFire;

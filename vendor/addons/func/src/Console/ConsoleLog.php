@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Core\Console;
+namespace Addons\Func\Console;
 
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArgvInput;

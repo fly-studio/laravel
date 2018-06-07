@@ -5,7 +5,7 @@ namespace Addons\Server\Servers;
 use RuntimeException;
 use BadMethodCallException;
 use Addons\Server\Routing\Router;
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Servers\Observer\Observer;
 use Addons\Server\Structs\Config\ServerConfig;
 use Addons\Server\Contracts\Listeners\AbstractProtocolListener;

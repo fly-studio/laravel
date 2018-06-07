@@ -10,6 +10,11 @@ class Request extends AbstractRequest {
 	protected $protocol = null;
 	protected $body = null;
 
+	protected function bootRequest()
+	{
+		$this->parse($this->raw);
+	}
+
 	protected function parse(?string $raw)
 	{
 		if (is_null($raw))

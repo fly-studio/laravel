@@ -10,6 +10,12 @@ class Listener extends AbstractProtocolListener {
 
 	protected function makeFire(): AbstractFire
 	{
+		$this->server->set([
+			'open_length_check' => true,
+			'package_length_type' => 'N',
+			'package_length_offset' => 2,
+			'package_body_offset' => 6,
+		]);
 		return new Fire($this->server);
 	}
 

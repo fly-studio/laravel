@@ -3,7 +3,7 @@
 namespace Addons\Server\Structs;
 
 use Addons\Server\Servers\Server;
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Addons\Func\Contracts\MutatorTrait;
 
 class ServerOptions {

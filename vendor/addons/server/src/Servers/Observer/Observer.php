@@ -4,7 +4,7 @@ namespace Addons\Server\Servers\Observer;
 
 use RuntimeException;
 use Addons\Server\Servers\Server;
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Protocols\Analyzers\ServiceFactory;
 use Addons\Server\Contracts\Listeners\AbstractProtocolListener;

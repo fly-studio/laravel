@@ -2,7 +2,7 @@
 
 namespace Addons\Server\Proxies;
 
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Contracts\AbstractProxy;
 

@@ -1,7 +1,7 @@
 <?php
 namespace Plugins\Utils\App\Proxies;
 
-use Addons\Server\Console\ConsoleLog;
+use Addons\Func\Console\ConsoleLog;
 use Plugins\Utils\App\Structs\ServerOptions;
 use Plugins\Utils\App\Contracts\AbstractProxy;
 

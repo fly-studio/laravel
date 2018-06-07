@@ -21,7 +21,6 @@ abstract class AbstractRequest {
 		$this->options = $options;
 
 		$this->raw = $raw;
-		$this->parse($raw);
 
 		$this->boot();
 	}
@@ -31,7 +30,6 @@ abstract class AbstractRequest {
 		return new static(...$args);
 	}
 
-	abstract protected function parse(?string $raw);
 	abstract public function eigenvalue(): string;
 
 	public function raw()
