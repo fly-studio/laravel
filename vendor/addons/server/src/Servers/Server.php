@@ -35,14 +35,14 @@ class Server {
 
 	protected function createServer()
 	{
-		$this->server = new \swoole_server($this->config->listen()->host(), $this->config->listen()->port(), $this->config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, $this->config->listen()->protocol());
+		$this->server = new \swoole_server($this->config->host()->host(), $this->config->host()->port(), $this->config->daemhost() ? SWOOLE_PROCESS : SWOOLE_BASE, $this->config->host()->protocol());
 	}
 
 	protected function validateConfig(ServerConfig $config)
 	{
-		if (!is_numeric($config->listen()->port()))
+		if (!is_numeric($config->host()->port()))
 			throw new RuntimeException('Server port required.');
-		if (empty($config->listen()->protocol()))
+		if (empty($config->host()->protocol()))
 			throw new RuntimeException('Server protocol required');
 	}
 
@@ -96,29 +96,29 @@ class Server {
 		$this->router->load($file_path, $namespace);
 	}
 
-	public function getNativeServer()
+	public function nativeServer()
 	{
 		return $this->server;
 	}
 
-	public function getRouter()
+	public function router()
 	{
 		return $this->router;
 	}
 
-	public function getConfig()
+	public function config()
 	{
 		return $this->config;
 	}
 
-	public function getProtocolListener()
+	public function protocolListener()
 	{
 		return $this->observer->getListener();
 	}
 
 	public function run()
 	{
-		if (empty($this->getProtocolListener()))
+		if (empty($this->protocolListener()))
 			throw new RuntimeException('Capture a Protocol Listener before run: $server->capture(new SomeProtocolListener).');
 
 		$this->server->start();

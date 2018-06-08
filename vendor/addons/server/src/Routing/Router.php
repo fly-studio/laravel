@@ -35,7 +35,7 @@ class Router extends AbstractGroupLoader {
         $this->events = $events;
         $this->container = $container ?: new Container;
         $this->setLoadResolver(function($file_path, $router) {
-			require realpath($file_path);
+			require $file_path;
 		});
     }
 

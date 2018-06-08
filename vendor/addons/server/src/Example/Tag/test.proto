@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package Addons.Server.Example.Tag;
-
-message MyMessage {
-	int32 id = 1;
-	string content = 2;
-	int64 timestamp = 3;
-}

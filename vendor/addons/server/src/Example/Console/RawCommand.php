@@ -5,7 +5,7 @@ namespace Addons\Server\Example\Console;
 use Addons\Server\Kernel;
 use Illuminate\Console\Command;
 use Addons\Server\Servers\Server;
-use Addons\Server\Structs\Config\Listen;
+use Addons\Server\Structs\Config\Host;
 use Addons\Server\Protocols\Raw\Listener;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Structs\Config\ServerConfig;
@@ -19,7 +19,7 @@ class RawCommand extends Command {
 			{--user=nobody:nobody : (string) the user:group of swoole\'s process}
 			';
 
-	protected $description = 'Start a Example Server.';
+	protected $description = 'Start a RAW Example Server.';
 
 
 	public function handle(Dispatcher $events)
@@ -29,7 +29,7 @@ class RawCommand extends Command {
 		$port = $this->option('port');
 		list($user, $group) = explode(':', $this->option('user')) + [null, null];
 
-		$server = new Server(ServerConfig::build(Listen::build($port, $host), compact('daemon', 'user', 'group')));
+		$server = new Server(ServerConfig::build(Host::build($port, $host), compact('daemon', 'user', 'group')));
 		$server->loadRoutes(__DIR__.'/../raw.php', 'Addons\\Server\\Example\\Raw');
 		$this->info('Create a tcp server with: ' . $port);
 

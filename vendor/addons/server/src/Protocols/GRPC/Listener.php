@@ -1,12 +1,12 @@
 <?php
 
-namespace Addons\Server\Protocols\GPRC;
+namespace Addons\Server\Protocols\GRPC;
 
-use Addons\Server\Protocols\GPRC\Fire;
+use Addons\Server\Protocols\GRPC\Fire;
 use Addons\Server\Contracts\AbstractFire;
-use Addons\Server\Contracts\Listeners\AbstractProtocolListener;
+use Addons\Server\Protocols\Http\Listener as HttpListener;
 
-class Listener extends AbstractProtocolListener {
+class Listener extends HttpListener {
 
 	protected function makeFire(): AbstractFire
 	{

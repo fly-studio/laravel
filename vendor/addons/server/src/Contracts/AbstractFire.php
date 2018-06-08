@@ -33,7 +33,7 @@ abstract class AbstractFire {
 
 	public function handle(AbstractRequest $request): ?AbstractResponse
 	{
-		$response = $this->server()->getRouter()->dispatchToRoute($request);
+		$response = $this->server()->router()->dispatchToRoute($request);
 
 		if ($response instanceof AbstractResponse)
 			$response = $response;

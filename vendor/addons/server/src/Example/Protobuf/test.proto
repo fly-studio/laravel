@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package Addons.Server.Example.Protobuf;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc Say (SendMessage) returns (ReplyMessage) {}
+}
+
+message SendMessage {
+	int32 id = 1;
+	string content = 2;
+	int64 timestamp = 3;
+}
+
+message ReplyMessage {
+	int32 id = 1;
+	string content = 2;
+	int64 timestamp = 3;
+}

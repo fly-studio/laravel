@@ -13,9 +13,7 @@ abstract class AbstractResponse {
 
 	protected $nextAction;
 
-	protected $content;
-	protected $header = null;
-	protected $body = null;
+	protected $content = null;
 
 	public function __construct(ServerOptions $options, $content = null)
 	{
@@ -34,7 +32,13 @@ abstract class AbstractResponse {
 		return $this->options;
 	}
 
-	public function content()
+	public function setContent($content)
+	{
+		$this->content = $content;
+		return $this;
+	}
+
+	public function getContent()
 	{
 		return $this->content;
 	}
@@ -70,13 +74,12 @@ abstract class AbstractResponse {
 
 	public function prepare(AbstractRequest $request)
 	{
-		$this->body = $this->content();
 		return $this;
 	}
 
-	public function send()
+	public function sendContent()
 	{
-		$data = ($this->header ?? '').$this->body;
+		$data = $this->content;
 
 		if (empty($data) && !is_numeric($data))
 			return;
@@ -90,7 +93,11 @@ abstract class AbstractResponse {
 				$this->sendTCP($data);
 				break;
 		}
+	}
 
+	public function send()
+	{
+		$this->sendContent();
 	}
 
 }

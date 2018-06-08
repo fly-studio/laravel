@@ -3,13 +3,13 @@
 namespace Addons\Server\Structs\Config;
 
 use Addons\Func\Contracts\MutatorTrait;
-use Addons\Server\Structs\Config\Listen;
+use Addons\Server\Structs\Config\Host;
 
 class ServerConfig {
 
 	use MutatorTrait;
 
-	protected $listen;
+	protected $host;
 
 	public $daemon = false;
 	public $worker_num = 1;
@@ -18,15 +18,16 @@ class ServerConfig {
 	public $max_connection = null;
 	public $user = null;
 	public $group = null;
-	public $sub_listens = []; // array<Listen>
+	public $sub_listens = []; // array<Host>
 	public $backlog = 128;
 	public $heartbeat_check_interval = 5;
 	public $heartbeat_idle_time = 60;
 
 	//SSL
 	public $ssl_cert_file = null;
-	public $ssl_ciphers = 'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
-	public $ssl_method = SWOOLE_SSLv3_CLIENT_METHOD;
+	public $ssl_key_file = null;
+	public $ssl_ciphers = 'EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5';//'EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH';
+	public $ssl_method = SWOOLE_SSLv3_METHOD;
 
 	//HTTP
 	public $upload_tmp_dir = null;
@@ -36,18 +37,18 @@ class ServerConfig {
 	public $enable_static_handler = true;
 	public $open_http2_protocol = false; // HTTP2
 
-	public function __construct(Listen $listen, array $config)
+	public function __construct(Host $host, array $config)
 	{
 		$this->initDefault();
 
-		$this->listen = $listen;
-		foreach (array_except($config, ['listen']) as $key => $val)
+		$this->host = $host;
+		foreach (array_except($config, ['on']) as $key => $val)
 			$this->{$key} = $val;
 	}
 
-	public static function build(Listen $listen, array $config)
+	public static function build(Host $host, array $config)
 	{
-		return new static($listen, $config);
+		return new static($host, $config);
 	}
 
 	protected function initDefault()

@@ -1456,3 +1456,17 @@ if (! function_exists('base64_urldecode'))
 		return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
 	}
 }
+
+if (! function_exists('dd_r'))
+{
+function dd_r($args, $output = null, string $mode = null)
+{
+	if (class_exists(\Symfony\Component\VarDumper\Dumper\CliDumper::class)) {
+		$dumper = in_array(is_null($mode) ? PHP_SAPI : $mode, ['cli', 'phpdbg']) ? new \Symfony\Component\VarDumper\Dumper\CliDumper : new \Illuminate\Support\Debug\HtmlDumper;
+
+		return $dumper->dump((new \Symfony\Component\VarDumper\Cloner\VarCloner)->cloneVar($args), $output);
+	} else {
+		return print_r($args, $output);
+	}
+}
+}

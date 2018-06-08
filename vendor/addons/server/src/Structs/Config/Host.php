@@ -4,7 +4,7 @@ namespace Addons\Server\Structs\Config;
 
 use Addons\Func\Contracts\MutatorTrait;
 
-class Listen {
+class Host {
 
 	use MutatorTrait;
 

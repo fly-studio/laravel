@@ -26,21 +26,35 @@ abstract class AbstractProtocolListener {
 
 	abstract protected function makeFire(): AbstractFire;
 
-	protected function makeServerOptions($fd, $reactor_id)
+	protected function makeServerOptions($fd)
 	{
 		//TCP only
-		$client_info = $this->server->getClientInfo($fd, $reactor_id);
+		$client_info = $this->server->getClientInfo($fd);
 
 		$options = new ServerOptions($this->server);
 		$options
 			->unique($fd)
 			->file_descriptor($fd)
 			->socket_type($client_info['socket_type'])
-			->reactor_id($reactor_id)
+			->reactor_id($client_info['reactor_id'])
 			->server_port($client_info['server_port'])
 			->client_ip($client_info['remote_ip'])
-			->client_port($client_info['remote_port']);
+			->client_port($client_info['remote_port'])
+			->connect_time($client_info['connect_time'])
+			->last_time($client_info['last_time'])
+			->close_errno($client_info['close_errno'])
+			;
 		return $options;
+	}
+
+	protected function updateServerOptions(ServerOptions $options, $fd)
+	{
+		// TCP only
+		$client_info = $this->server->getClientInfo($fd);
+		$options
+			->last_time($client_info['last_time'])
+			->close_errno($client_info['close_errno'])
+			;
 	}
 
 	/**
@@ -90,7 +104,7 @@ abstract class AbstractProtocolListener {
 	 */
 	public function onConnect($fd, $reactor_id)
 	{
-		$options = $this->makeServerOptions($fd, $reactor_id);
+		$options = $this->makeServerOptions($fd);
 
 		$this->pool->set($options->unique(), $options);
 
@@ -108,6 +122,8 @@ abstract class AbstractProtocolListener {
 		$options = $this->pool->get($fd);
 		if (empty($options))
 			return;
+
+		$this->updateServerOptions($options, $fd);
 
 		$options->logger('info', $this->logPrefix.' TCP receive: ');
 		$options->logger('debug', print_r($options->toArray(), true));
@@ -137,7 +153,9 @@ abstract class AbstractProtocolListener {
 			->reactor_id($reactor_id)
 			->server_port($client_info['server_port'])
 			->client_ip($client_info['address'])
-			->client_port($client_info['port']);
+			->client_port($client_info['port'])
+			->connect_time(time())
+			;
 
 		$options->logger('info', $this->logPrefix.' UDP receive: ');
 		$options->logger('debug', print_r($options->toArray(), true));
@@ -237,15 +255,19 @@ abstract class AbstractProtocolListener {
 	protected function fire(ServerOptions $options, ?string $raw)
 	{
 		try {
-			$service = $this->fire->analyzing($options, $raw);
-			if (empty($service))
+			$request = $this->fire->analyzing($options, $raw);
+			if (empty($request))
 				return;
-			$response = $this->fire->handle($service);
+
+			$response = $this->fire->handle($request);
 			if (empty($response))
 				return;
+
 			$response->send();
+
 			if (is_callable($response->nextAction()))
 				call_user_func($response->nextAction(), $response);
+
 		} catch (\Exception $e) {
 			$this->fire->failed($options, $e);
 		}
