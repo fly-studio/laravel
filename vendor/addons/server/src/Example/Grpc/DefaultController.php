@@ -1,10 +1,10 @@
 <?php
 
-namespace Addons\Server\Example\GRPC;
+namespace Addons\Server\Example\Grpc;
 
 use Illuminate\Routing\Controller;
-use Addons\Server\Protocols\GRPC\Request;
-use Addons\Server\Protocols\GRPC\Response;
+use Addons\Server\Protocols\Grpc\Request;
+use Addons\Server\Protocols\Grpc\Response;
 
 class DefaultController extends Controller {
 

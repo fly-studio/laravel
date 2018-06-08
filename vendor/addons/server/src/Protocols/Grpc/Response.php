@@ -1,6 +1,6 @@
 <?php
 
-namespace Addons\Server\Protocols\GRPC;
+namespace Addons\Server\Protocols\Grpc;
 
 use Google\Protobuf\Internal\Message;
 use Addons\Server\Contracts\AbstractRequest;

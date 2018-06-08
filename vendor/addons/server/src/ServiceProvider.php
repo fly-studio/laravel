@@ -21,7 +21,7 @@ class ServiceProvider extends BaseServiceProvider
 			$this->commands([
 				\Addons\Server\Example\Console\TagCommand::class,
 				\Addons\Server\Example\Console\RawCommand::class,
-				\Addons\Server\Example\Console\GRPCCommand::class,
+				\Addons\Server\Example\Console\GrpcCommand::class,
 			]);
 		}
 

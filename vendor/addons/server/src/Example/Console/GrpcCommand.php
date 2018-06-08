@@ -6,11 +6,11 @@ use Addons\Server\Kernel;
 use Illuminate\Console\Command;
 use Addons\Server\Servers\Http2Server;
 use Addons\Server\Structs\Config\Host;
-use Addons\Server\Protocols\GRPC\Listener;
+use Addons\Server\Protocols\Grpc\Listener;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Structs\Config\ServerConfig;
 
-class GRPCCommand extends Command {
+class GrpcCommand extends Command {
 
 	/**
 	 * The name and signature of the console command.
@@ -32,7 +32,7 @@ class GRPCCommand extends Command {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Start a GRPC Example Server.';
+	protected $description = 'Start a Grpc Example Server.';
 
 	public function handle(Dispatcher $events)
 	{
@@ -46,7 +46,7 @@ class GRPCCommand extends Command {
 		$ssl_method = SWOOLE_TLSv1_2_SERVER_METHOD;
 
 		$server = new Http2Server(ServerConfig::build(Host::build($port, $host), compact('daemon', 'user', 'group', 'worker_num', 'ssl_cert_file', 'ssl_key_file', 'ssl_method')));
-		$server->loadRoutes(__DIR__.'/../grpc.php', 'Addons\\Server\\Example\\GRPC');
+		$server->loadRoutes(__DIR__.'/../grpc.php', 'Addons\\Server\\Example\\Grpc');
 		$this->info('Create a http2 server with: ' . $port);
 
 		$kernel = app(Kernel::class);
