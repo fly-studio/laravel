@@ -46,9 +46,9 @@ class ServerConfig {
 			$this->{$key} = $val;
 	}
 
-	public static function build(Host $host, array $config)
+	public static function build($host, $port, int $protocol = SWOOLE_SOCK_TCP, array $config = [])
 	{
-		return new static($host, $config);
+		return new static(Host::build($host, $port, $protocol), $config);
 	}
 
 	protected function initDefault()

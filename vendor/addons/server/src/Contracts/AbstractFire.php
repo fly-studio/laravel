@@ -40,15 +40,18 @@ abstract class AbstractFire {
 		else if (empty($response) && !is_numeric($response))
 			return null;
 		else
-			$response = new TextResponse($request->options(), @strval($response));
+			$response = new TextResponse(@strval($response));
 
+		$response->options($request->options());
+		$response->boot();
 		$response->prepare($request);
 
 		return $response;
 	}
 
 
-	public function failed(ServerOptions $options, \Exception $e) {
+	public function failed(ServerOptions $options, \Exception $e)
+	{
 		$options->logger('error', $e->getMessage());
 		$options->logger('debug', $e->getTraceAsString());
 	}

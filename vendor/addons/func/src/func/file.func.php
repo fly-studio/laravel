@@ -438,15 +438,20 @@ function format_bytes($size, $standard_unit = FALSE)
 }
 
 if (! function_exists('create_file')) {
+/**
+ * 创建一个空白全是0的文件
+ *
+ * @param  [type]  $filename 文件名
+ * @param  integer $size     大小
+ * @return [bool] 正确返回true，失败抛出错误
+ */
 function create_file($filename, $size = 0)
 {
 	$dirname = dirname($filename);
 	@mkdir($dirname, 0777, true);
 	if (disk_free_space($dirname) < $size)
-	{
 		throw new \Exception('[Warnning] Free space less than '.format_bytes($size));
-		return false;
-	}
+
 	$fp = fopen($filename, 'wb');
 	if ($size > 0)
 	{
@@ -455,5 +460,43 @@ function create_file($filename, $size = 0)
 	}
 	fclose($fp);
 	return true;
+}
+}
+
+if (! function_exists('filepos')) {
+/**
+ * 在文件中查找指定的字符串，可用于二进制查找
+ * 使用strpos做对比，和fopen('r')不同是，\r\n会严格匹配，并不会适配系统
+ *
+ * @param  string $file   文件路径
+ * @param  string $needle 被查找的字符串
+ * @param  callable $callback 查找用的函数，默认是strpos
+ * @return int/bool       返回offset，没找到返回false
+ */
+function filepos(string $file, string $needle, callable $callback = null)
+{
+	$needleLen = strlen($needle);
+	$size = intval(1024 * ceil($needleLen / 1024) * 1.5);
+	$fp = fopen($file, 'rb');
+	$offset = 0;
+
+	$callback = is_callable($callback) ? $callback : function($haystack, $needle) {
+		return strpos($haystack, $needle);
+	};
+
+	while(!feof($fp)){
+		fseek($fp, $offset);
+		$data = fread($fp, $size);
+		if (($i = $callback($data, $needle)) !== false)
+		{
+			fclose($fp);
+			return $offset + $i;
+		}
+
+		$offset += strlen($data) - $needleLen + 1;
+	}
+
+	fclose($fp);
+	return false;
 }
 }

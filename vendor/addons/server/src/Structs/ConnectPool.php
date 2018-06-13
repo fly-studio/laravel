@@ -7,19 +7,6 @@ use Addons\Server\Structs\ServerOptions;
 class ConnectPool implements \ArrayAccess {
 
 	protected $items = [];
-	/*private $booted = false;
-
-	final public function boot(): void
-	{
-		if ($this->booted)
-			return;
-
-		if (method_exists($this, 'boot'.static::class)){
-			$this->{'boot'.static::class()};
-		}
-
-		$this->booted = true;
-	}*/
 
 	public function set($fd, ServerOptions $options): ServerOptions
 	{

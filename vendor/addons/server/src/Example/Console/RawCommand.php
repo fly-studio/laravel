@@ -29,7 +29,7 @@ class RawCommand extends Command {
 		$port = $this->option('port');
 		list($user, $group) = explode(':', $this->option('user')) + [null, null];
 
-		$server = new Server(ServerConfig::build(Host::build($port, $host), compact('daemon', 'user', 'group')));
+		$server = new Server(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group')));
 		$server->loadRoutes(__DIR__.'/../raw.php', 'Addons\\Server\\Example\\Raw');
 		$this->info('Create a tcp server with: ' . $port);
 

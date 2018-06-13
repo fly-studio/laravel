@@ -40,7 +40,7 @@ class TagCommand extends Command {
 		$daemon = $this->option('daemon');
 		list($user, $group) = explode(':', $this->option('user')) + [null, null];
 
-		$server = new Server(ServerConfig::build(Host::build($port, $host), compact('daemon', 'user', 'group', 'worker_num')));
+		$server = new Server(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group', 'worker_num')));
 		$server->loadRoutes(__DIR__.'/../tag.php', 'Addons\\Server\\Example\\Tag');
 		$this->info('Create a tcp server with: ' . $port);
 

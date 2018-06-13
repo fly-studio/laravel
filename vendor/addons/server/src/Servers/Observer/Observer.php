@@ -36,8 +36,7 @@ class Observer {
 	 */
 	public function onStart(\swoole_server $server)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onStart();
+		$this->listener->onStart();
 	}
 
 	/**
@@ -46,8 +45,7 @@ class Observer {
 	 */
 	public function onShutdown(\swoole_server $server)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onShutdown();
+		$this->listener->onShutdown();
 	}
 
 	/**
@@ -57,8 +55,7 @@ class Observer {
 	 */
 	public function onWorkerStart(\swoole_server $server, $worker_id)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onWorkerStart($worker_id);
+		$this->listener->onWorkerStart($worker_id);
 	}
 
 	/**
@@ -68,8 +65,7 @@ class Observer {
 	 */
 	public function onWorkerStop(\swoole_server $server, $worker_id)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onWorkerStop($worker_id);
+		$this->listener->onWorkerStop($worker_id);
 	}
 
 	/**
@@ -80,8 +76,7 @@ class Observer {
 	 */
 	public function onConnect(\swoole_server $server, $fd, $reactor_id)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onConnect($fd, $reactor_id);
+		$this->listener->onConnect($fd, $reactor_id);
 	}
 
 	/**
@@ -93,8 +88,7 @@ class Observer {
 	 */
 	public function onReceive(\swoole_server $server, $fd, $reactor_id, $data)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onReceive($fd, $reactor_id, $data);
+		$this->listener->onReceive($fd, $reactor_id, $data);
 	}
 
 	/**
@@ -105,8 +99,7 @@ class Observer {
 	 */
 	public function onPacket(\swoole_server $server, $data, $client_info)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onPacket($data, $client_info);
+		$this->listener->onPacket($data, $client_info);
 	}
 
 	/**
@@ -117,8 +110,7 @@ class Observer {
 	 */
 	public function onClose(\swoole_server $server, $fd, $reactor_id)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onClose($fd, $reactor_id);
+		$this->listener->onClose($fd, $reactor_id);
 	}
 
 	/**
@@ -128,8 +120,7 @@ class Observer {
 	 */
 	public function onBufferFull(\Swoole\Server $server, $fd)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onBufferFull($fd);
+		$this->listener->onBufferFull($fd);
 	}
 
 	/**
@@ -139,8 +130,7 @@ class Observer {
 	 */
 	public function onBufferEmpty(\Swoole\Server $serv, $fd)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onBufferEmpty($fd);
+		$this->listener->onBufferEmpty($fd);
 	}
 
 	/**
@@ -152,8 +142,7 @@ class Observer {
 	 */
 	public function onTask(\swoole_server $server, $task_id, $src_worker_id, $data)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onTask($task_id, $src_worker_id, $data);
+		$this->listener->onTask($task_id, $src_worker_id, $data);
 	}
 
 	/**
@@ -164,8 +153,7 @@ class Observer {
 	 */
 	public function onFinish(\swoole_server $server, $task_id, $data)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onFinish($task_id, $data);
+		$this->listener->onFinish($task_id, $data);
 	}
 
 	/**
@@ -176,8 +164,7 @@ class Observer {
 	 */
 	public function onPipeMessage(\swoole_server $server, $from_worker_id, $message)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onPipeMessage($from_worker_id, $message);
+		$this->listener->onPipeMessage($from_worker_id, $message);
 	}
 
 	/**
@@ -190,8 +177,7 @@ class Observer {
 	 */
 	public function onWorkerError(\swoole_server $server, $worker_id, $worker_pid, $exit_code, $signal)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onWorkerError($worker_id, $worker_pid, $exit_code, $signal);
+		$this->listener->onWorkerError($worker_id, $worker_pid, $exit_code, $signal);
 	}
 
 	/**
@@ -200,8 +186,7 @@ class Observer {
 	 */
 	public function onManagerStart(\swoole_server $server)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onManagerStart();
+		$this->listener->onManagerStart();
 	}
 
 	/**
@@ -210,8 +195,7 @@ class Observer {
 	 */
 	public function onManagerStop(\swoole_server $server)
 	{
-		if ($this->listener instanceof AbstractProtocolListener)
-			$this->listener->onManagerStop();
+		$this->listener->onManagerStop();
 	}
 
 }

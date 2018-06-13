@@ -44,6 +44,8 @@ abstract class AbstractProtocolListener {
 			->last_time($client_info['last_time'])
 			->close_errno($client_info['close_errno'])
 			;
+		if (isset($client_info['websocket_status']))
+			$options->websocket_status(true);
 		return $options;
 	}
 
@@ -55,6 +57,8 @@ abstract class AbstractProtocolListener {
 			->last_time($client_info['last_time'])
 			->close_errno($client_info['close_errno'])
 			;
+		if (isset($client_info['websocket_status']))
+			$options->websocket_status(true);
 	}
 
 	/**

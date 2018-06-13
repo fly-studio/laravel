@@ -1,10 +1,10 @@
 <?php
 
-namespace Addons\Server\Protocols\Http\Responses;
+namespace Addons\Server\Protocols\WebSocket\Responses;
 
 use Closure;
 use Addons\Func\Structs\WrapperClass;
-use Addons\Server\Protocols\Http\Response;
+use Addons\Server\Protocols\WebSocket\Response;
 
 class ChunkedResponse extends Response {
 
@@ -18,14 +18,12 @@ class ChunkedResponse extends Response {
 		return $this;
 	}
 
-	public function send(\swoole_http_response $nativeResponse)
+	public function send()
 	{
-		$this->sendMeta($nativeResponse);
-
-		$inner = new WrapperClass($nativeResponse);
+		$inner = new WrapperClass($this);
 
 		if(!empty($this->content) || is_numeric($this->content))
-			$inner->write($this->content);
+			$inner->push($this->content, $this->opcode);
 
 		if (is_callable($this->callback))
 			call_user_func($this->callback, $inner);

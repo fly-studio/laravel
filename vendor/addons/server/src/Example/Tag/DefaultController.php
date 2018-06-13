@@ -16,7 +16,7 @@ class DefaultController extends Controller {
 		$request->options()->logger('hex', $request->body());
 
 		return $request->attachToMessage($message) ? $message->serializeToJsonString() : null;
-		//return new ProtobufResponse($request->options(), $otherMessage);
+		//return new ProtobufResponse($otherMessage);
 	}
 
 }

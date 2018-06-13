@@ -91,7 +91,7 @@ class Server {
 		return $this;
 	}
 
-	public function loadRoutes(string $file_path, string $namespace)
+	public function loadRoutes(string $file_path, string $namespace = 'App\\Tcp\\Controllers')
 	{
 		$this->router->load($file_path, $namespace);
 	}

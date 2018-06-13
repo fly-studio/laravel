@@ -30,7 +30,10 @@ class Fire extends AbstractFire {
 		if ($response instanceof Response)
 			$response = $response;
 		else
-			$response = new Response($request->options(), @strval($response));
+			$response = new Response(@strval($response));
+
+		$response->options($request->options());
+		$response->boot();
 
 		$response->prepare($request);
 

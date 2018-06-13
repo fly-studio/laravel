@@ -14,8 +14,7 @@ class HttpObserver extends Observer {
 
 	public function onRequest(\swoole_http_request $request, \swoole_http_response $response)
 	{
-		if ($this->listener instanceof AbstractHttpListener)
-			$this->listener->onRequest($request, $response);
+		$this->listener->onRequest($request, $response);
 	}
 
 }

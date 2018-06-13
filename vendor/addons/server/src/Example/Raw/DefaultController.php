@@ -10,7 +10,7 @@ class DefaultController extends Controller {
 
 	public function reply(Request $request)
 	{
-		return new Response($request->options(), $request->raw());
+		return new Response($request->raw());
 	}
 
 }

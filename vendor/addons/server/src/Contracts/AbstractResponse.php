@@ -3,6 +3,7 @@
 namespace Addons\Server\Contracts;
 
 use Closure;
+use RuntimeException;
 use Addons\Func\Contracts\BootTrait;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Contracts\AbstractRequest;
@@ -15,11 +16,9 @@ abstract class AbstractResponse {
 
 	protected $content = null;
 
-	public function __construct(ServerOptions $options, $content = null)
+	public function __construct($content = null)
 	{
-		$this->options = $options;
 		$this->content = $content;
-		$this->boot();
 	}
 
 	public static function build(...$args)
@@ -27,9 +26,12 @@ abstract class AbstractResponse {
 		return new static(...$args);
 	}
 
-	public function options()
+	public function options(ServerOptions $options = null)
 	{
-		return $this->options;
+		if (is_null($options)) return $this->options;
+
+		$this->options = $options;
+		return $this;
 	}
 
 	public function setContent($content)
@@ -45,10 +47,12 @@ abstract class AbstractResponse {
 
 	public function server()
 	{
+		$this->throwNullServerOptions();
+
 		return $this->options->server();
 	}
 
-	public function nextAction(Closure $callback = null)
+	public function nextAction(callable $callback = null)
 	{
 		if (is_null($callback)) return $this->nextAction;
 
@@ -66,7 +70,8 @@ abstract class AbstractResponse {
 		return $this->server()->send($fd, $_data, $reactor_id);
 	}
 
-	protected function sendTCP(string $_data) {
+	protected function sendTCP(string $_data)
+	{
 		$this->options->logger('info', 'TCP reply: ', 'send');
 		$this->options->logger('hex', $_data);
 		return $this->server()->send($this->options->file_descriptor(), $_data);
@@ -97,7 +102,16 @@ abstract class AbstractResponse {
 
 	public function send()
 	{
+		$this->throwNullServerOptions();
+
 		$this->sendContent();
+	}
+
+	protected function throwNullServerOptions()
+	{
+		if (empty($this->options))
+			throw new RuntimeException('Set a valid ServerOptions before this booted.');
+
 	}
 
 }
