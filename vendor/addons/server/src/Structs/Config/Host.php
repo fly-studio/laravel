@@ -21,6 +21,6 @@ class Host {
 
 	public static function build(string $host, int $port, int $protocol = SWOOLE_SOCK_TCP)
 	{
-		return new static($port, $host, $protocol);
+		return new static($host, $port, $protocol);
 	}
 }

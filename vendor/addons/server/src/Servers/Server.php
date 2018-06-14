@@ -35,7 +35,7 @@ class Server {
 
 	protected function createServer()
 	{
-		$this->server = new \swoole_server($this->config->host()->host(), $this->config->host()->port(), $this->config->daemhost() ? SWOOLE_PROCESS : SWOOLE_BASE, $this->config->host()->protocol());
+		$this->server = new \swoole_server($this->config->host()->host(), $this->config->host()->port(), $this->config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, $this->config->host()->protocol());
 	}
 
 	protected function validateConfig(ServerConfig $config)
