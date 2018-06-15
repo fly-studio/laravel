@@ -43,7 +43,7 @@ class GrpcCommand extends Command {
 		list($user, $group) = explode(':', $this->option('user')) + [null, null];
 		$ssl_cert_file = $this->option('cert');
 		$ssl_key_file = $this->option('key');
-		$ssl_method = SWOOLE_TLSv1_2_SERVER_METHOD;
+		$ssl_method = SWOOLE_TLSv1_2_METHOD;
 
 		$server = new Http2Server(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group', 'worker_num', 'ssl_cert_file', 'ssl_key_file', 'ssl_method')));
 		$server->loadRoutes(__DIR__.'/../grpc.php', 'Addons\\Server\\Example\\Grpc');

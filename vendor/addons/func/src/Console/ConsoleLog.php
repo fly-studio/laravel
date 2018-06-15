@@ -68,6 +68,7 @@ class ConsoleLog {
 
 	public static function hex($message, array $options = [])
 	{
+		if (!static::$debug && static::$daemon) return;
 		return static::debug(PHP_EOL.hex_dump($message, $options));
 	}
 
