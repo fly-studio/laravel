@@ -1,16 +1,12 @@
 <?php
 
-namespace Addons\Server\Protocols\Grpc;
+namespace Addons\Server\Responses;
 
 use Google\Protobuf\Internal\Message;
 use Addons\Server\Contracts\AbstractRequest;
-use Addons\Server\Protocols\Http\Responses\Response as HttpResponse;
+use Addons\Server\Contracts\AbstractResponse;
 
-class Response extends HttpResponse {
-
-	protected $headers = [
-		'grpc-status' => [0, false]
-	];
+class ProtobufResponse extends AbstractResponse {
 
 	public function prepare(AbstractRequest $request)
 	{

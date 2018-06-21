@@ -3,27 +3,13 @@
 namespace Addons\Server\Contracts;
 
 use Closure;
-use Addons\Func\Contracts\BootTrait;
 use Addons\Server\Structs\ServerOptions;
 
 abstract class AbstractRequest {
 
-	use BootTrait;
-
 	protected $options;
-	protected $raw;
-
 	protected $routeResolver;
 	protected $userResolver;
-
-	public function __construct(ServerOptions $options, ?string $raw)
-	{
-		$this->options = $options;
-
-		$this->raw = $raw;
-
-		$this->boot();
-	}
 
 	public static function build(...$args)
 	{
@@ -32,14 +18,15 @@ abstract class AbstractRequest {
 
 	abstract public function eigenvalue(): string;
 
-	public function raw()
-	{
-		return $this->raw;
-	}
-
 	public function options()
 	{
 		return $this->options;
+	}
+
+	public function with(ServerOptions $options)
+	{
+		$this->options = $options;
+		return $this;
 	}
 
 	/**

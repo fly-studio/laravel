@@ -6,7 +6,7 @@ use Addons\Server\Kernel;
 use Illuminate\Console\Command;
 use Addons\Server\Servers\Server;
 use Addons\Server\Structs\Config\Host;
-use Addons\Server\Protocols\Raw\Listener;
+use Addons\Server\Protocols\Raw\Protocol;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Structs\Config\ServerConfig;
 
@@ -31,10 +31,11 @@ class RawCommand extends Command {
 
 		$server = new Server(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group')));
 		$server->loadRoutes(__DIR__.'/../raw.php', 'Addons\\Server\\Example\\Raw');
+		$server->capture(new Protocol());
 		$this->info('Create a tcp server with: ' . $port);
 
 		$kernel = app(Kernel::class);
-		$kernel->handle($server->capture(new Listener($server)));
+		$kernel->handle($server);
 		$this->info('Run it.');
 		$kernel->run();
 

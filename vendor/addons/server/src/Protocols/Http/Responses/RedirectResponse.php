@@ -2,22 +2,21 @@
 
 namespace Addons\Server\Protocols\Http\Responses;
 
-use Addons\Server\Protocols\Http\Response;
+use Addons\Server\Protocols\Http\Responses\Response;
 
 class RedirectResponse extends Response {
 
 	protected $url = null;
 	protected $http_code = null;
 
-	public function redirect(string $url, int $http_code = 302)
+	public function __construct(string $url, int $http_code = 302)
 	{
 		$this->url = $url;
 		$this->http_code = $http_code;
-		return $this;
 	}
 
-	public function send(\swoole_http_response $nativeResponse)
+	public function send()
 	{
-		return $nativeResponse->redirect($this->url, $this->http_code);
+		return $this->sender->redirect($this->url, $this->http_code);
 	}
 }

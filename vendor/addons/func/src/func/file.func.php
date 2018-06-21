@@ -487,6 +487,7 @@ function filepos(string $file, string $needle, callable $callback = null)
 	while(!feof($fp)){
 		fseek($fp, $offset);
 		$data = fread($fp, $size);
+		if (strlen($data) <= 0) break;
 		if (($i = $callback($data, $needle)) !== false)
 		{
 			fclose($fp);

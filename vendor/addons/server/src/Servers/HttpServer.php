@@ -3,31 +3,37 @@
 namespace Addons\Server\Servers;
 
 use Addons\Server\Servers\Server;
-use Addons\Server\Servers\Observer\HttpObserver;
+use Addons\Server\Senders\HttpSender;
+use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Observers\HttpObserver;
+use Addons\Server\Listeners\HttpListener;
+use Addons\Server\Contracts\AbstractSender;
+use Addons\Server\Contracts\AbstractObserver;
+use Addons\Server\Structs\Config\ServerConfig;
 
 class HttpServer extends Server {
 
-	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Request', 'Close', 'BufferFull', 'BufferEmpty', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop', 'Connect']; // no Recive/Pack add Request
+	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Request', 'Close', 'BufferFull', 'BufferEmpty', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop', 'Connect'];
 
-	protected function createServer()
+	protected function createServer(ServerConfig $config): \swoole_server
 	{
-		$this->server = new \swoole_http_server($this->config->host()->host(), $this->config->host()->port(), $this->config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, SWOOLE_SOCK_TCP | (!empty($this->config->ssl_cert_file()) && !empty($this->config->ssl_key_file()) ? SWOOLE_SSL : 0));
+		return new \swoole_http_server($config->host()->host(), $config->host()->port(), $config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, SWOOLE_SOCK_TCP | (!empty($config->ssl_cert_file()) && !empty($config->ssl_key_file()) ? SWOOLE_SSL : 0));
 	}
 
-	protected function initServer()
+	protected function initServer(\swoole_server $server, ServerConfig $config)
 	{
 		//extra http config
-		$config = $this->config;
-		if (!empty($this->config->ssl_cert_file()) && !empty($config->ssl_key_file()))
+		if (!empty($config->ssl_cert_file()) && !empty($config->ssl_key_file()))
 		{
-			$this->server->set([
+			$server->set([
 				'ssl_cert_file' => $config->ssl_cert_file(),
 				'ssl_key_file' => $config->ssl_key_file(),
 				'ssl_ciphers' => $config->ssl_ciphers(),
 				'ssl_method' => $config->ssl_method(),
 			]);
 		}
-		$this->server->set([
+
+		$server->set([
 			'upload_tmp_dir' => $config->upload_tmp_dir(),
 			'http_parse_post' => $config->http_parse_post(),
 			'package_max_length' => $config->package_max_length(),
@@ -35,14 +41,23 @@ class HttpServer extends Server {
 			'enable_static_handler' => $config->enable_static_handler(),
 		]);
 
-		parent::initServer();
+		parent::initServer($server, $config);
 	}
 
-	protected function observe()
+	protected function makeSender(ServerOptions $options, ...$args): AbstractSender
 	{
-		$this->observer = new HttpObserver($this);
+		return $this->pool->getBindIf($options->unique(), 'http-sender', function() use($options, $args) {
+			return new HttpSender($options, ...$args);
+		});
+	}
 
-		foreach($this->observerListeners as $method)
-			$this->server->on($method, [$this->observer, 'on'.$method]);
+	protected function createObserver(): AbstractObserver
+	{
+		return new HttpObserver($this);
+	}
+
+	protected function getAutoListeners(): array
+	{
+		return [HttpListener::class];
 	}
 }

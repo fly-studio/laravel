@@ -2,17 +2,17 @@
 
 namespace Addons\Server\Servers;
 
-use RuntimeException;
 use Addons\Server\Servers\HttpServer;
 use Addons\Server\Structs\Config\ServerConfig;
-use Addons\Server\Servers\Observer\HttpObserver;
+use Addons\Server\Servers\Observers\HttpObserver;
 
 class Http2Server extends HttpServer {
 
-	protected function initServer()
+	protected function initServer(\swoole_server $server, ServerConfig $config)
 	{
-		parent::initServer();
-		$this->server->set([
+		parent::initServer($server, $config);
+
+		$server->set([
 			'open_http2_protocol' => true,
 		]);
 	}

@@ -1,11 +1,10 @@
 <?php
 
-namespace Addons\Server\Protocols\Http\Responses;
+namespace Addons\Server\Responses;
+;
+use Addons\Server\Contracts\AbstractResponse;
 
-use Closure;
-use Addons\Server\Protocols\Http\Responses\Response;
-
-class FileResponse extends Response {
+class FileResponse extends AbstractResponse {
 
 	protected $file_path = null;
 	protected $offset = null;
@@ -20,8 +19,6 @@ class FileResponse extends Response {
 
 	public function send()
 	{
-		$this->sendMeta();
-
 		$this->sender->file($this->file_path, $this->offset, $this->length);
 	}
 

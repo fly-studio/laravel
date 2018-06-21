@@ -18,7 +18,7 @@ class ServerConfig {
 	public $max_connection = null;
 	public $user = null;
 	public $group = null;
-	public $sub_listens = []; // array<Host>
+	public $sub_hosts = []; // array<Host>
 	public $backlog = 128;
 	public $heartbeat_check_interval = 5;
 	public $heartbeat_idle_time = 60;

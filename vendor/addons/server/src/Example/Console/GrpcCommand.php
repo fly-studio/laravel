@@ -6,7 +6,7 @@ use Addons\Server\Kernel;
 use Illuminate\Console\Command;
 use Addons\Server\Servers\Http2Server;
 use Addons\Server\Structs\Config\Host;
-use Addons\Server\Protocols\Grpc\Listener;
+use Addons\Server\Protocols\Grpc\Protocol;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Structs\Config\ServerConfig;
 
@@ -47,10 +47,11 @@ class GrpcCommand extends Command {
 
 		$server = new Http2Server(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group', 'worker_num', 'ssl_cert_file', 'ssl_key_file', 'ssl_method')));
 		$server->loadRoutes(__DIR__.'/../grpc.php', 'Addons\\Server\\Example\\Grpc');
+		$server->capture(new Protocol());
 		$this->info('Create a http2 server with: ' . $port);
 
 		$kernel = app(Kernel::class);
-		$kernel->handle($server->capture(new Listener($server)));
+		$kernel->handle($server);
 		$this->info('Run it.');
 		$kernel->run();
 
