@@ -21,14 +21,15 @@ class WebSocketSender extends AbstractSender {
 		return $this->options;
 	}
 
-	public function send(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT): int
+	public function send(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): int
 	{
 		if (($len = strlen($data)) > $this->buffer_output_size)
 		{
 			for($i = 0; $i < ceil($len / $this->buffer_output_size); ++$i)
-				$this->options->server()->push($this->options->file_descriptor(), substr($data, $i * $this->buffer_output_size, $this->buffer_output_size));
+				$this->options->server()->push($this->options->file_descriptor(), substr($data, $i * $this->buffer_output_size, $this->buffer_output_size), false);
+			$this->options->server()->push($this->options->file_descriptor(), '', $opcode, $finish);
 		} else {
-			$this->options->server()->push($this->options->file_descriptor(), $data);
+			$this->options->server()->push($this->options->file_descriptor(), $data, $opcode, $finish);
 		}
 		return $this->getLastError();
 	}
@@ -50,15 +51,20 @@ class WebSocketSender extends AbstractSender {
 			$len = 0;
 			while(!feof($fp) && $len <= $length)
 			{
-				$this->send($data = fread($fp, $this->buffer_output_size), $opcode);
+				$this->send($data = fread($fp, $this->buffer_output_size), $opcode, false);
 				$len += strlen($data);
 			}
 			fclose($fp);
 		} else {
-			$this->send(file_get_contents($path, false, null, $offset, $length), $opcode);
+			$this->send(file_get_contents($path, false, null, $offset, $length), $opcode, true);
 		}
-
+		$this->end($opcode);
 		return $this->getLastError();
+	}
+
+	public function end(int $opcode = WEBSOCKET_OPCODE_TEXT): int
+	{
+		return $this->send('', $opcode);
 	}
 
 	protected function getLastError()

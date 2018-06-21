@@ -3,10 +3,10 @@
 namespace Addons\Server\Responses;
 
 use Google\Protobuf\Internal\Message;
+use Addons\Server\Responses\RawResponse;
 use Addons\Server\Contracts\AbstractRequest;
-use Addons\Server\Contracts\AbstractResponse;
 
-class ProtobufResponse extends AbstractResponse {
+class ProtobufResponse extends RawResponse {
 
 	public function prepare(AbstractRequest $request)
 	{

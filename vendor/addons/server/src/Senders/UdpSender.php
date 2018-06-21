@@ -41,6 +41,8 @@ class UdpSender extends Sender {
 			$this->send(file_get_contents($path, false, null, $offset, $length));
 		}
 
+		$this->end();
+
 		return $this->getLastError();
 	}
 }

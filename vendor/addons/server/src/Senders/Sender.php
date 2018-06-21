@@ -43,6 +43,11 @@ abstract class Sender extends AbstractSender {
 		return $this->send($data);
 	}
 
+	public function end(): int
+	{
+		return 0;
+	}
+
 	protected function getLastError()
 	{
 		return $this->options->server()->getLastError();

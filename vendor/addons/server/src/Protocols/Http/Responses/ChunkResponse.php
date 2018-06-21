@@ -24,7 +24,7 @@ class ChunkResponse extends Response {
 		if (is_callable($this->callback))
 			call_user_func($this->callback, $this->sender);
 
-		$this->sender->send(''); // the end
+		$this->sender->end();
 	}
 
 }

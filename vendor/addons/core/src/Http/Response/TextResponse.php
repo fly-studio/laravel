@@ -3,6 +3,7 @@
 namespace Addons\Core\Http\Response;
 
 use Lang, Auth;
+use JsonSerializable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Addons\Core\File\Mimes;
@@ -10,11 +11,18 @@ use Illuminate\Http\Response;
 use Addons\Core\Tools\Output;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Addons\Core\Contracts\Protobufable;
+use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Contracts\Support\Arrayable;
 use Addons\Core\Http\Output\TipTypeManager;
 use Symfony\Component\HttpFoundation\Request;
 use Addons\Core\Contracts\Http\Output\TipType;
 
-class TextResponse extends Response {
+use Addons\Core\Http\Protobuf\Output as OutputProto;
+use Addons\Core\Http\Protobuf\OutputMessage as MessageProto;
+use Addons\Core\Http\Protobuf\OutputTipType as TipTypeProto;
+
+class TextResponse extends Response implements Protobufable, Jsonable, Arrayable, JsonSerializable {
 
 	protected $request = null;
 	protected $data = null;
@@ -167,19 +175,7 @@ class TextResponse extends Response {
 
 	public function getOutputData()
 	{
-		$result = $this->outputRaw ? $this->getData() : [
-			'result' => $this->getResult(),
-			'status_code' => $this->getStatusCode(),
-			'uid' => $this->disableUser ? null : (Auth::check() ? Auth::user()->getKey() : null),
-			'debug' => config('app.debug'),
-			'message' => $this->getMessage(),
-			'tipType' => $this->getTipType(),
-			'data' => $this->getData(),
-			'time' => time(),
-			'duration' => microtime(true) - LARAVEL_START,
-			'body' => strval($this->original),
-		];
-		return $result;
+		return $this->toArray();
 	}
 
 	public function prepare(Request $request)
@@ -219,6 +215,80 @@ class TextResponse extends Response {
 		$this->prepare($this->getRequest());
 
 		return parent::send();
+	}
+
+	public function toProtobuf(): \Google\Protobuf\Internal\Message
+	{
+		$data = $this->toArray();
+
+		$o = new OutputProto();
+		$o->setResult($data['result']);
+		$o->setStatusCode($data['status_code']);
+		!empty($data['uid']) && $o->setUid($data['uid']);
+		$o->setDebug($data['debug']);
+
+		if (!empty($data['message']))
+		{
+			$m = new MessageProto();
+			if (is_array($data['message']))
+			{
+				$m->setTitle($data['message']['title'] ?? null);
+				$m->setContent($data['message']['content'] ?? null);
+			} else if (is_string($message))
+				$m->setContent($data['message'] ?? null);
+			$o->setMessage($m);
+		}
+
+		if (!empty($data['tipType']))
+		{
+			$t = new TipTypeProto();
+			!empty($data['tipType']['type']) && $t->setType($data['tipType']['type']);
+			!empty($data['tipType']['timeout']) && $t->setTimeout($data['tipType']['timeout']);
+			!empty($data['tipType']['url']) && $t->setUrl($data['tipType']['url']);
+			$o->setTipType($t);
+		}
+
+		$o->setData(json_encode($data['data']));
+		$o->setTime($data['time']);
+		$o->setDuration($data['duration']);
+		$o->setBody($data['body']);
+
+		return $o;
+	}
+
+	public function toArray()
+	{
+		$result = $this->outputRaw ? $this->getData() : [
+			'result' => $this->getResult(),
+			'status_code' => $this->getStatusCode(),
+			'uid' => $this->disableUser ? null : (Auth::check() ? Auth::user()->getKey() : null),
+			'debug' => config('app.debug'),
+			'message' => $this->getMessage(),
+			'tipType' => $this->getTipType(),
+			'data' => $this->getData(),
+			'time' => time(),
+			'duration' => microtime(true) - LARAVEL_START,
+			'body' => strval($this->original),
+		];
+		return $result;
+	}
+
+	public function jsonSerialize()
+	{
+		return $this->toArray();
+	}
+
+	/**
+	 * Convert the model instance to JSON.
+	 *
+	 * @param  int  $options
+	 * @return string
+	 *
+	 * @throws \Illuminate\Database\Eloquent\JsonEncodingException
+	 */
+	public function toJson($options = 0)
+	{
+		return json_encode($this->jsonSerialize(), $options);
 	}
 
 	/**

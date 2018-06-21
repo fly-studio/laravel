@@ -57,6 +57,11 @@ class HttpSender extends AbstractSender {
 		return $this->getLastError();
 	}
 
+	public function end(): int
+	{
+		return $this->end('');
+	}
+
 	protected function getLastError()
 	{
 		return $this->options->server()->getLastError();
