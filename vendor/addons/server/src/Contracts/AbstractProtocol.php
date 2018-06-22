@@ -4,10 +4,13 @@ namespace Addons\Server\Contracts;
 
 use Addons\Server\Response\RawResponse;
 use Addons\Server\Structs\ServerOptions;
+use Addons\Func\Contracts\TraitsBootTrait;
 use Addons\Server\Contracts\AbstractRequest;
 use Addons\Server\Contracts\AbstractResponse;
 
 abstract class AbstractProtocol {
+
+	use TraitsBootTrait;
 
 	/**
 	 * 自定义该方法，分析数据之后返回不同的Request

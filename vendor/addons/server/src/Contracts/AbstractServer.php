@@ -69,6 +69,7 @@ abstract class AbstractServer {
 	public function capture(AbstractProtocol $protocol)
 	{
 		$this->protocol = $protocol;
+		$protocol->bootIfNotBooted($this);
 		return $this;
 	}
 

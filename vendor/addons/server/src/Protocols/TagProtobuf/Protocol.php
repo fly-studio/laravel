@@ -14,6 +14,8 @@ use Addons\Server\Protocols\TagProtobuf\Response;
 
 class Protocol extends AbstractProtocol {
 
+	use PackageOffsetTrait;
+
 	public function decode(ServerOptions $options , ...$args) : ?AbstractRequest
 	{
 		$raw = $args[0];
