@@ -19,7 +19,7 @@ abstract class AbstractServer {
 	protected $server;
 	protected $observer;
 	protected $router;
-	protected $protocol;
+	protected $capture;
 	protected $observerListeners = [];
 
 	public function __construct(ServerConfig $config)
@@ -63,13 +63,13 @@ abstract class AbstractServer {
 	/**
 	 * 分析的协议
 	 *
-	 * @param  AbstractProtocol $protocol 协议实例
+	 * @param  AbstractProtocol $capture 捕获的协议实例
 	 * @return [this]                     $this
 	 */
-	public function capture(AbstractProtocol $protocol)
+	public function capture(AbstractProtocol $capture)
 	{
-		$this->protocol = $protocol;
-		$protocol->bootIfNotBooted($this);
+		$this->capture = $capture;
+		$capture->bootIfNotBooted($this);
 		return $this;
 	}
 
@@ -127,7 +127,7 @@ abstract class AbstractServer {
 
 	public function protocol(): AbstractProtocol
 	{
-		return $this->protocol;
+		return $this->capture;
 	}
 
 	/**
@@ -139,19 +139,19 @@ abstract class AbstractServer {
 	 */
 	public function handle(ServerOptions $options, ...$args)
 	{
-		if (empty($this->protocol))
+		if (empty($this->capture))
 			return;
 
 		try {
 
-			$request = $this->protocol->decode($options, ...$args);
+			$request = $this->capture->decode($options, ...$args);
 			if (empty($request))
 				return;
 
 			$request->with($options);
 			$result = $this->router->dispatchToRoute($request);
 
-			$response = $this->protocol->encode($request, $result, ...$args);
+			$response = $this->capture->encode($request, $result, ...$args);
 			if (empty($response))
 				return;
 
@@ -161,7 +161,7 @@ abstract class AbstractServer {
 			$response->send();
 
 		} catch (\Exception $e) {
-			$this->protocol->failed($options, $e);
+			$this->capture->failed($options, $e);
 		}
 	}
 

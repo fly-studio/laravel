@@ -15,7 +15,7 @@ trait NewTrait {
 	 * @param  mixed  $action
 	 * @return \Addons\Server\Routing\Route
 	 */
-	protected function createRoute($action)
+	protected function createRoute(int $type, $eigenvalue, $action)
 	{
 		// If the route is routing to a controller we will parse the route action into
 		// an acceptable array format before registering it and creating this route
@@ -25,6 +25,8 @@ trait NewTrait {
 		}
 
 		$route = $this->newRoute(
+			$type,
+			$eigenvalue,
 			$action
 		);
 
@@ -46,9 +48,9 @@ trait NewTrait {
 	 * @param  mixed  $action
 	 * @return \Addons\Server\Routing\Route
 	 */
-	protected function newRoute($action)
+	protected function newRoute(int $type, $eigenvalue, $action)
 	{
-		return (new Route($action))
+		return (new Route($type, $eigenvalue, $action))
 					->setRouter($this)
 					->setContainer($this->container);
 	}

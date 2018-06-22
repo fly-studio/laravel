@@ -11,12 +11,24 @@ use Addons\Server\Routing\Router;
 use Illuminate\Container\Container;
 use Illuminate\Routing\RouteAction;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Routing\Matching\RawValidator;
+use Addons\Server\Routing\Matching\RegexpValidator;
+use Addons\Server\Routing\Matching\CallableValidator;
+use Addons\Server\Routing\Matching\RemoteIpValidator;
+use Addons\Server\Routing\Matching\ServerPortValidator;
 use Addons\Server\Routing\RouteDependencyResolverTrait;
+use Addons\Server\Routing\Matching\ServerProtocolValidator;
+use Addons\Server\Routing\Matching\CaptureProtocolValidator;
 use Addons\Server\Routing\ControllerDispatcher as ControllerDispatcherContract;
 
 class Route {
 
 	use RouteDependencyResolverTrait;
+
+	const TYPE_RAW = 1;
+	const TYPE_MATCH = 2;
+	const TYPE_REGEX = 3;
+	const TYPE_CALL = 4;
 
 	/**
 	 * The route action array.
@@ -37,17 +49,30 @@ class Route {
 	 */
 	protected $container;
 	/**
+	 * The compiled version of the route.
+	 *
+	 * @var \Symfony\Component\Routing\CompiledRoute
+	 */
+	public $compiled;
+	/**
 	 * The array of matched parameters.
 	 *
 	 * @var array
 	 */
 	public $parameters = [];
 	/**
-     * The controller instance.
-     *
-     * @var mixed
-     */
-    public $controller;
+	 * The controller instance.
+	 *
+	 * @var mixed
+	 */
+	public $controller;
+
+	/**
+	 * The validators used by the routes.
+	 *
+	 * @var array
+	 */
+	public static $validators;
 
 	/**
 	 * The computed gathered middleware.
@@ -56,9 +81,41 @@ class Route {
 	 */
 	public $computedMiddleware;
 
-	public function __construct($action)
+	public function __construct(int $type, $eigenvalue, $action)
 	{
+		$this->type = $type;
+		$this->eigenvalue = $eigenvalue;
 		$this->action = $this->parseAction($action);
+	}
+
+	/**
+	 * 匹配路由
+	 * @param  [type] $request
+	 * @return [bool]
+	 */
+	public function matches(AbstractRequest $request): bool
+	{
+		$this->compileRoute();
+
+		foreach ($this->getValidators() as $validator) {
+			if (! $validator->matches($this, $request)) {
+				return false;
+			}
+		}
+
+		switch($type)
+		{
+			case static::TYPE_MATCH:
+			case static::TYPE_REGEX:
+				return (new RegexpValidator)->matches($this, $request);
+			case static::TYPE_CALL:
+				return (new CallableValidator)->matches($this, $request);
+			case static::TYPE_RAW:
+			default:
+				return (new RawValidator)->matches($this, $request);
+		}
+
+		return false;
 	}
 
 	/**
@@ -98,6 +155,11 @@ class Route {
 		return Arr::get($this->action, $key);
 	}
 
+	public function actionExists($key)
+	{
+		return isset($this->action[$key]);
+	}
+
 	/**
 	 * Set the action array for the route.
 	 *
@@ -109,6 +171,45 @@ class Route {
 		$this->action = $action;
 
 		return $this;
+	}
+
+	public function eigenvalue()
+	{
+		return $this->eigenvalue;
+	}
+
+	public function type()
+	{
+		return $this->type;
+	}
+
+	protected function compileRoute()
+	{
+		if (! $this->compiled) {
+			$this->compiled = (new RouteCompiler($this))->compile();
+		}
+
+		return $this->compiled;
+	}
+
+	/**
+	 * Get the route validators for the instance.
+	 *
+	 * @return array
+	 */
+	public static function getValidators()
+	{
+		if (isset(static::$validators)) {
+			return static::$validators;
+		}
+
+		// To match the route, we will use a chain of responsibility pattern with the
+		// validator implementations. We will spin through each one making sure it
+		// passes and then we will know if the route as a whole matches request.
+		return static::$validators = [
+			new CaptureProtocolValidator, new RemoteIpValidator,
+			new ServerPortValidator, new ServerProtocolValidator,
+		];
 	}
 
 	/**
