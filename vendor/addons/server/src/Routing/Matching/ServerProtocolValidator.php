@@ -4,8 +4,9 @@ namespace Addons\Server\Routing\Matching;
 
 use Addons\Server\Routing\Route;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Contracts\RouteValidatorInterface;
 
-class ServerProtocolValidator implements ValidatorInterface
+class ServerProtocolValidator implements RouteValidatorInterface
 {
 	/**
 	 * 匹配协议是否是TCP、UDP

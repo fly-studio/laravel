@@ -4,11 +4,11 @@ namespace Addons\Server\Routing;
 
 use Illuminate\Container\Container;
 use Addons\Server\Contracts\AbstractRequest;
-use Addons\Server\Routing\RouteDependencyResolverTrait;
+use Addons\Server\Routing\Route\DependencyResolverTrait;
 
 class ControllerDispatcher
 {
-    use RouteDependencyResolverTrait;
+    use DependencyResolverTrait;
 
     /**
      * The container instance.

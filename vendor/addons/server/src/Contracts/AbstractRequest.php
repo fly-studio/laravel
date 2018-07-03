@@ -16,7 +16,7 @@ abstract class AbstractRequest {
 		return new static(...$args);
 	}
 
-	abstract public function eigenvalue(): string;
+	abstract public function keywords(): string;
 
 	public function options()
 	{

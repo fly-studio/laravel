@@ -1,3 +1,3 @@
 <?php
 
-$router->registerRegex('/.*/', 'DefaultController@reply');
+$router->regex('/.*/', 'DefaultController@reply');

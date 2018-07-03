@@ -4,8 +4,9 @@ namespace Addons\Server\Routing\Matching;
 
 use Addons\Server\Routing\Route;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Contracts\RouteValidatorInterface;
 
-class CaptureProtocolValidator implements ValidatorInterface
+class CaptureProtocolValidator implements RouteValidatorInterface
 {
 	/**
 	 * 上层协议是否匹配

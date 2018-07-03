@@ -4,8 +4,9 @@ namespace Addons\Server\Routing\Matching;
 
 use Addons\Server\Routing\Route;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Contracts\RouteValidatorInterface;
 
-class ServerPortValidator implements ValidatorInterface
+class ServerPortValidator implements RouteValidatorInterface
 {
 	/**
 	 * 匹配服务端口

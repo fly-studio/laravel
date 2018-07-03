@@ -74,20 +74,6 @@ abstract class AbstractServer {
 	}
 
 	/**
-	 * 注册 特征值 和 service类名
-	 * 在protocolListener中的analyzing分析其匹配情况
-	 *
-	 * @param string          $eigenvalue 特征值
-	 * @param mixed           $action 字符串、匿名函数：路由的执行方法
-	 * @return [this]         $this
-	 */
-	public function registerRoute(string $eigenvalue, $action)
-	{
-		$this->router->register($eigenvalue, $action);
-		return $this;
-	}
-
-	/**
 	 * 读取一个路由文件
 	 *
 	 * @param  string $file_path 文件绝对路径

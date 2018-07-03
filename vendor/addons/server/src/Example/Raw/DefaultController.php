@@ -8,8 +8,9 @@ use Addons\Server\Protocols\Raw\Request;
 
 class DefaultController extends Controller {
 
-	public function reply(Request $request)
+	public function reply(Request $request, $content11)
 	{
+		dd($content11);
 		return new Response($request->raw());
 	}
 

@@ -4,8 +4,6 @@ namespace Addons\Server\Routing;
 
 use Addons\Server\Routing\Route;
 use Illuminate\Container\Container;
-use Addons\Server\Structs\ServerOptions;
-use Addons\Server\Structs\ServiceCallable;
 use Addons\Server\Routing\Router\NewTrait;
 use Addons\Server\Routing\Router\RunTrait;
 use Addons\Server\Routing\Router\BindTrait;
@@ -16,9 +14,16 @@ use Addons\Server\Routing\Router\MiddlewareTrait;
 
 class Router extends AbstractGroupLoader {
 
-	use BindTrait, MiddlewareTrait, RunTrait, NewTrait;
+	use BindTrait, MiddlewareTrait, NewTrait, RunTrait;
 
 	protected $routes = [];
+
+	/**
+	 * The globally available parameter patterns.
+	 *
+	 * @var array
+	 */
+	protected $patterns = [];
 
 	/**
 	 * Create a new Router instance.
@@ -38,48 +43,84 @@ class Router extends AbstractGroupLoader {
 
 	public function findRoute(AbstractRequest $request) : ?Route
 	{
-		$route = $this->matchAgainstRoutes($this->routes, $request);
-		if (! is_null($route))
-			return $route->bind($request); // bind the request to route
-
-		return null;
+		return $this->matchAgainstRoutes($this->routes, $request);
 	}
 
-	protected function matchAgainstRoutes(array $routes, $request)
+	protected function matchAgainstRoutes(array $routes, AbstractRequest $request)
 	{
 		// sort by type
 		$routes = collect($routes)->sortBy(function ($route) {
-			return $route->type();
+			return $route->getType();
 		});
 
 		//find the first route
 		return $routes->first(function($route) use($request){
-			return $route->match($request);
+			return $route->matches($request);
 		});
 	}
 
-	public function raw(string $eigenvalue, $action)
+	public function raw(string $pattern, $action)
 	{
-		$this->routes[] = $this->createRoute(Route::TYPE_RAW, $eigenvalue, $action);
+		$this->routes[] = $this->createRoute(Route::TYPE_RAW, $pattern, $action);
 		return $this;
 	}
 
-	public function match(string $eigenvalue, $action)
+	public function param(string $pattern, $action)
 	{
-		$this->routes[] = $this->createRoute(Route::TYPE_MATCH, $eigenvalue, $action);
+		$this->routes[] = $this->createRoute(Route::TYPE_PARAM, $pattern, $action);
 		return $this;
 	}
 
-	public function regex(string $eigenvalue, $action)
+	public function regex(string $pattern, $action)
 	{
-		$this->routes[] = $this->createRoute(Route::TYPE_REGEX, $eigenvalue, $action);
+		$this->routes[] = $this->createRoute(Route::TYPE_REGEX, $pattern, $action);
 		return $this;
 	}
 
 	public function callable(callable $callable, $action)
 	{
-		$this->routes[] = $this->createRoute(Route::TYPE_CALL, $eigenvalue, $action);
+		$this->routes[] = $this->createRoute(Route::TYPE_CALL, $pattern, $action);
 		return $this;
+	}
+
+	/**
+	 * Get the global "where" patterns.
+	 *
+	 * @return array
+	 */
+	public function getPatterns()
+	{
+		return $this->patterns;
+	}
+
+	public function getRoutes()
+	{
+		return $this->routes;
+	}
+
+	/**
+	 * Set a global where pattern on all routes.
+	 *
+	 * @param  string  $key
+	 * @param  string  $pattern
+	 * @return void
+	 */
+	public function pattern($key, $pattern)
+	{
+		$this->patterns[$key] = $pattern;
+	}
+
+	/**
+	 * Set a group of global where patterns on all routes.
+	 *
+	 * @param  array  $patterns
+	 * @return void
+	 */
+	public function patterns($patterns)
+	{
+		foreach ($patterns as $key => $pattern) {
+			$this->pattern($key, $pattern);
+		}
 	}
 
 }

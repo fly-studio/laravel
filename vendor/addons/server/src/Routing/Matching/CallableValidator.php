@@ -4,8 +4,9 @@ namespace Addons\Server\Routing\Matching;
 
 use Addons\Server\Routing\Route;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Contracts\RouteValidatorInterface;
 
-class CallableValidator implements ValidatorInterface
+class CallableValidator implements RouteValidatorInterface
 {
 	/**
 	 * 执行callback之后是否匹配
@@ -16,6 +17,8 @@ class CallableValidator implements ValidatorInterface
 	 */
 	public function matches(Route $route, AbstractRequest $request): bool
 	{
-		return call_user_func($route->eigenvalue(), $request);
+		if ($route->getType() == Route::TYPE_CALL)
+			return call_user_func($route->getPattern(), $request);
+		return true;
 	}
 }

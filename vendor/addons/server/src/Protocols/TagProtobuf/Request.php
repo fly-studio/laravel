@@ -26,7 +26,7 @@ class Request extends AbstractRequest {
 		return $this->body;
 	}
 
-	public function eigenvalue(): string
+	public function keywords(): string
 	{
 		return $this->protocol;
 	}

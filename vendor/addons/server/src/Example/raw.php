@@ -1,3 +1,4 @@
 <?php
 
-$router->registerRegex('/.*/', 'DefaultController@reply');
+$router->param('{content}', 'DefaultController@reply');
+//$router->regex('/^(?<content>.*)$/', 'DefaultController@reply');

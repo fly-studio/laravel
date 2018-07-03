@@ -4,8 +4,9 @@ namespace Addons\Server\Routing\Matching;
 
 use Addons\Server\Routing\Route;
 use Addons\Server\Contracts\AbstractRequest;
+use Addons\Server\Contracts\RouteValidatorInterface;
 
-class RawValidator implements ValidatorInterface
+class RegexValidator implements RouteValidatorInterface
 {
 	/**
 	 * 原始内容是否匹配
@@ -16,6 +17,8 @@ class RawValidator implements ValidatorInterface
 	 */
 	public function matches(Route $route, AbstractRequest $request): bool
 	{
-		return preg_match($route->compileRoute()->getRegex(), $request->eigenvalue());
+		if (!empty($route->compiled))
+			return preg_match($route->compiled->getRegex(), $request->keywords());
+		return true;
 	}
 }

@@ -15,7 +15,7 @@ trait NewTrait {
 	 * @param  mixed  $action
 	 * @return \Addons\Server\Routing\Route
 	 */
-	protected function createRoute(int $type, $eigenvalue, $action)
+	protected function createRoute(int $type, $pattern, $action)
 	{
 		// If the route is routing to a controller we will parse the route action into
 		// an acceptable array format before registering it and creating this route
@@ -26,7 +26,7 @@ trait NewTrait {
 
 		$route = $this->newRoute(
 			$type,
-			$eigenvalue,
+			$pattern,
 			$action
 		);
 
@@ -36,6 +36,8 @@ trait NewTrait {
 		if ($this->hasGroupStack()) {
 			$this->mergeGroupAttributesIntoRoute($route);
 		}
+
+		$this->addWhereClausesToRoute($route);
 
 		return $route;
 	}
@@ -48,9 +50,9 @@ trait NewTrait {
 	 * @param  mixed  $action
 	 * @return \Addons\Server\Routing\Route
 	 */
-	protected function newRoute(int $type, $eigenvalue, $action)
+	protected function newRoute(int $type, $pattern, $action)
 	{
-		return (new Route($type, $eigenvalue, $action))
+		return (new Route($type, $pattern, $action))
 					->setRouter($this)
 					->setContainer($this->container);
 	}
@@ -106,5 +108,20 @@ trait NewTrait {
 		$action['controller'] = $action['uses'];
 
 		return $action;
+	}
+
+	/**
+	 * Add the necessary where clauses to the route based on its initial registration.
+	 *
+	 * @param  \Addons\Server\Routing\Route  $route
+	 * @return \Addons\Server\Routing\Route
+	 */
+	protected function addWhereClausesToRoute($route)
+	{
+		$route->where(array_merge(
+			$this->patterns, $route->getAction()['where'] ?? []
+		));
+
+		return $route;
 	}
 }

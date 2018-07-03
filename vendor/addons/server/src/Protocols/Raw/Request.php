@@ -18,7 +18,7 @@ class Request extends AbstractRequest {
 		return $this->raw;
 	}
 
-	public function eigenvalue(): string
+	public function keywords(): string
 	{
 		return $this->raw;
 	}

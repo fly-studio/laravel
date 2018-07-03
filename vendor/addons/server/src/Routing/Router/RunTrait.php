@@ -18,7 +18,7 @@ trait RunTrait {
 	 */
 	public function dispatchToRoute(AbstractRequest $request)
 	{
-		$route = $this->findRoute($request->eigenvalue());
+		$route = $this->findRoute($request);
 
 		if (empty($route))
 			return null;
@@ -78,49 +78,49 @@ trait RunTrait {
 	}
 
 	/**
-     * Call the terminate method on any terminable middleware.
-     *
-     * @param  \Addons\Server\Contracts\AbstractRequest  $request
-     * @param  \Addons\Server\Contracts\AbstractReponse  $response
-     * @return void
-     */
-    protected function terminateMiddleware($request, $response)
-    {
-    	$shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
+	 * Call the terminate method on any terminable middleware.
+	 *
+	 * @param  \Addons\Server\Contracts\AbstractRequest  $request
+	 * @param  \Addons\Server\Contracts\AbstractReponse  $response
+	 * @return void
+	 */
+	protected function terminateMiddleware($request, $response)
+	{
+		$shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
 								$this->container->make('middleware.disable') === true;
 
 		$middlewares = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
 
-        foreach ($middlewares as $middleware) {
-            if (! is_string($middleware)) {
-                continue;
-            }
+		foreach ($middlewares as $middleware) {
+			if (! is_string($middleware)) {
+				continue;
+			}
 
-            list($name) = $this->parseMiddleware($middleware);
+			list($name) = $this->parseMiddleware($middleware);
 
-            $instance = $this->container->make($name);
+			$instance = $this->container->make($name);
 
-            if (method_exists($instance, 'terminate')) {
-                $instance->terminate($request, $response);
-            }
-        }
-    }
+			if (method_exists($instance, 'terminate')) {
+				$instance->terminate($request, $response);
+			}
+		}
+	}
 
-    /**
-     * Parse a middleware string to get the name and parameters.
-     *
-     * @param  string  $middleware
-     * @return array
-     */
-    protected function parseMiddleware($middleware)
-    {
-        list($name, $parameters) = array_pad(explode(':', $middleware, 2), 2, []);
+	/**
+	 * Parse a middleware string to get the name and parameters.
+	 *
+	 * @param  string  $middleware
+	 * @return array
+	 */
+	protected function parseMiddleware($middleware)
+	{
+		list($name, $parameters) = array_pad(explode(':', $middleware, 2), 2, []);
 
-        if (is_string($parameters)) {
-            $parameters = explode(',', $parameters);
-        }
+		if (is_string($parameters)) {
+			$parameters = explode(',', $parameters);
+		}
 
-        return [$name, $parameters];
-    }
+		return [$name, $parameters];
+	}
 
 }

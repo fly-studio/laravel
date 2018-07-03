@@ -7,7 +7,7 @@ use Addons\Server\Contracts\AbstractRequest;
 
 class Request extends AbstractRequest {
 
-	public function eigenvalue(): string
+	public function keywords(): string
 	{
 		return $this->server['request_uri'];
 	}
