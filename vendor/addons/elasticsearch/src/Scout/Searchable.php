@@ -2,6 +2,8 @@
 
 namespace Addons\Elasticsearch\Scout;
 
+use Laravel\Scout\ModelObserver;
+use Laravel\Scout\SearchableScope;
 use Addons\Elasticsearch\Scout\Builder;
 use Laravel\Scout\Searchable as BaseSearchable;
 
