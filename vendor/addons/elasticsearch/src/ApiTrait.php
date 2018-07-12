@@ -11,7 +11,7 @@ trait ApiTrait {
 
 	protected $apiOperators = [
 		'in' => 'terms', 'nin' => 'not terms',
-		'min' => '>=', 'gte' => '>=', 'max' => '<=', 'lte' => '<=', 'gt' => '>', 'lt' => '<',
+		'min' => 'gte', 'max' => 'lte',
 		'neq' => 'not =', 'ne' => 'not =', 'eq' => '=', 'equal' => '=',
 		'lk' => 'wildcard', 'like' => 'wildcard',
 		'nlk' => 'not wildcard',
@@ -32,7 +32,6 @@ trait ApiTrait {
 
 		foreach ($filters as $key => $filter)
 		{
-
 			foreach ($filter as $method => $value)
 			{
 				if (empty($value) && !is_numeric($value)) continue; //''不做匹配
@@ -43,6 +42,12 @@ trait ApiTrait {
 				if (strpos($operator, 'not') === 0){
 					$condition = 'whereNot';
 					$operator = trim(substr($operator, 3));
+				}
+
+				if(in_array($operator, ['gt', 'gte', 'lt', 'lte']))
+				{
+					$value = [$operator => $value];
+					$operator = 'range';
 				}
 
 				if ($operator == 'wildcard')
