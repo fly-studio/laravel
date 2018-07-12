@@ -46,7 +46,7 @@ trait ApiTrait {
 				}
 
 				if ($operator == 'wildcard')
-					$value = strpos($value, '*') !== false ? $value : '*'.$value.'*'; //如果开头结尾有 % 则以用户的为准
+					$value = '*'.trim($value, '*').'*'; //添加开头结尾的*
 
 				$builder->$condition($key, $operator ?: '=' , $value);
 			}

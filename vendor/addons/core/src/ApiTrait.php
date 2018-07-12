@@ -69,7 +69,7 @@ trait ApiTrait {
 				$operator = $this->apiOperators[$method];
 
 				if (in_array($operator, ['like', 'like binary', 'not like', 'not like binary']))
-					$value = strpos($value, '%') !== false ? $value : '%'.$value.'%'; //如果开头结尾有 % 则以用户的为准
+					$value = '%'.trim($value, '%').'%'; //添加开头结尾的*
 
 				if ($operator == 'in')
 					$builder->whereIn($key, $value);
