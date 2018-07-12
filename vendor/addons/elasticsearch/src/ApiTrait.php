@@ -130,10 +130,7 @@ trait ApiTrait {
 	{
 		$_b = clone $builder;
 		if ($enable_filters)
-		{
 			$this->_doFilters($request, $_b);
-			$this->_doQueries($request, $_b);
-		}
 
 		return $_b->count();
 	}

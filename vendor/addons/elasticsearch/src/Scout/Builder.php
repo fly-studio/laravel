@@ -8,7 +8,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 // see Laravel\Scout\Builder
 class Builder extends \Laravel\Scout\Builder {
@@ -331,26 +330,15 @@ class Builder extends \Laravel\Scout\Builder {
 	 * @param  int|null  $page
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null)
+	public function paginate($perPage = null, $columns = ['*'], $pageName = 'page', $page = null, bool $existsInDB = false)
 	{
 		$this->_source = $columns;
-
-		$engine = $this->engine();
 
 		$page = $page ?: Paginator::resolveCurrentPage($pageName);
 
 		$perPage = $perPage ?: $this->model->getPerPage();
 
-		$results = Collection::make($engine->map(
-			$rawResults = $engine->paginate($this, $perPage, $page), $this->model
-		));
-
-		$paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
-			'path' => Paginator::resolveCurrentPath(),
-			'pageName' => $pageName,
-		]));
-
-		return $paginator;
+		return $this->engine()->paginate($this, $perPage, $pageName, $page, $existsInDB);
 	}
 
 	/**

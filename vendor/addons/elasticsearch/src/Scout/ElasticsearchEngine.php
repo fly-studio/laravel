@@ -2,10 +2,12 @@
 
 namespace Addons\Elasticsearch\Scout;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
 use Addons\Elasticsearch\Scout\Builder;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection as BaseCollection;
 
 class ElasticsearchEngine {
@@ -126,11 +128,9 @@ class ElasticsearchEngine {
 	 * @param  Addons\ElasticSearch\Scout\Builder  $builder
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function get(Builder $builder, bool $existsInDB = false)
+	public function get(Builder $builder, bool $existsInDB = false) : Collection
 	{
-		$collect = $this->map($this->execute($builder), $builder->model, $existsInDB);
-
-		return Collection::make($collect);
+		return $this->map($this->execute($builder), $builder->model, $existsInDB);
 	}
 
 	/**
@@ -155,16 +155,19 @@ class ElasticsearchEngine {
 	 * @param  int  $page
 	 * @return mixed
 	 */
-	public function paginate(Builder $query, $perPage, $page)
+	public function paginate(Builder $builder, int $perPage = null, string $pageName = 'page', $page = null, bool $existsInDB = false) : LengthAwarePaginator
 	{
-		$result = $this->performSearch($query, [
+		$result = $this->performSearch($builder, [
 			'size' => $perPage,
 			'from' => (($page * $perPage) - $perPage),
 		]);
 
-		$result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
+		//$result['nbPages'] = (int) ceil($result['hits']['total'] / $perPage);
 
-		return $result;
+		return (new LengthAwarePaginator($this->map($result, $builder->model, $existsInDB), $this->getTotalCount($result), $perPage, $page, [
+			'path' => Paginator::resolveCurrentPath(),
+			'pageName' => $pageName,
+		]));
 	}
 
 	private function parseBody(Builder $builder)
@@ -239,7 +242,7 @@ class ElasticsearchEngine {
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
 	 * @return Collection
 	 */
-	public function map($results, Model $model, bool $existsInDB = false)
+	public function map($results, Model $model, bool $existsInDB = false) : Collection
 	{
 		if (count($results['hits']) === 0) {
 			return Collection::make();
