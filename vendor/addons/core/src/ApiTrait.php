@@ -1,7 +1,8 @@
 <?php
+
 namespace Addons\Core;
 
-use Closure, Schema, DB;
+use Schema, DB;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
@@ -9,12 +10,24 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait ApiTrait {
 
+	protected $apiOperators = [
+		'in' => 'in', 'nin' => 'not in', 'is' => 'is',
+		'min' => '>=', 'gte' => '>=', 'max' => '<=', 'lte' => '<=', 'btw' => 'between', 'nbtw' => 'not between', 'gt' => '>', 'lt' => '<',
+		'neq' => '<>', 'ne' => '<>', 'eq' => '=', 'equal' => '=',
+		'lk' => 'like', 'like' => 'like', 'lkb' => 'like binary',
+		'nlk' => 'not like', 'nlkb' => 'not like binary',
+		'rlk' => 'rlike', 'ilk' => 'ilike',
+		'and' => '&', 'or' => '|', 'xor' => '^', 'left_shift' => '<<', 'right_shift' => '>>', 'bitwise_not' => '~', 'bitwise_not_any' => '~*', 'not_bitwise_not' => '!~', 'not_bitwise_not_any' => '!~*',
+		'regexp' => 'regexp', 'not_regexp' => 'not regexp', 'similar_to' => 'similar to', 'not_similar_to' => 'not similar to',
+	];
+
 	public function _getColumns(Builder $builder)
 	{
 		static $table_columns;
 
 		$query = $builder->getQuery();
 		$tables = [$query->from];
+
 		if (!empty($query->joins))
 			foreach ($query->joins as $v)
 				$tables[] = $v->table;
@@ -45,25 +58,18 @@ trait ApiTrait {
 	private function _doFilters(Request $request, Builder $builder, $columns = [])
 	{
 		$filters = $this->_getFilters($request);
-		$operators = [
-			'in' => 'in', 'nin' => 'not in', 'is' => 'is',
-			'min' => '>=', 'gte' => '>=', 'max' => '<=', 'lte' => '<=', 'btw' => 'between', 'nbtw' => 'not between', 'gt' => '>', 'lt' => '<',
-			'neq' => '<>', 'ne' => '<>', 'eq' => '=', 'equal' => '=',
-			'lk' => 'like', 'like' => 'like', 'lkb' => 'like binary',
-			'nlk' => 'not like', 'nlkb' => 'not like binary',
-			'rlk' => 'rlike', 'ilk' => 'ilike',
-			'and' => '&', 'or' => '|', 'xor' => '^', 'left_shift' => '<<', 'right_shift' => '>>', 'bitwise_not' => '~', 'bitwise_not_any' => '~*', 'not_bitwise_not' => '!~', 'not_bitwise_not_any' => '!~*',
-			'regexp' => 'regexp', 'not_regexp' => 'not regexp', 'similar_to' => 'similar to', 'not_similar_to' => 'not similar to',
-		];
+
 		foreach ($filters as $key => $filter)
 		{
 			$key = !empty($columns[$key]) ? $columns[$key] : $key;
 			foreach ($filter as $method => $value)
 			{
-				$operator = $operators[$method];
-				if (empty($value) && $value !== '0') continue; //''不做匹配
-				else if (in_array($operator, ['like', 'like binary', 'not like', 'not like binary']))
-					$value = trim($value, '%') != $value ? $value : '%'.$value.'%'; //如果开头结尾有 % 则以用户的为准
+				if (empty($value) && !is_numeric($value)) continue; //''不做匹配
+
+				$operator = $this->apiOperators[$method];
+
+				if (in_array($operator, ['like', 'like binary', 'not like', 'not like binary']))
+					$value = strpos($value, '%') !== false ? $value : '%'.$value.'%'; //如果开头结尾有 % 则以用户的为准
 
 				if ($operator == 'in')
 					$builder->whereIn($key, $value);
@@ -79,19 +85,21 @@ trait ApiTrait {
 	private function _doQueries(Request $request, Builder $builder)
 	{
 		$queries = $this->_getQueries($request);
+
 		foreach ($queries as $key => $value)
-		{
-			if (($value === '0' || !empty($value)) && method_exists($builder->getModel(), 'scope'.ucfirst($key)))
+			if ((!empty($value) && !is_numeric($value)) && method_exists($builder->getModel(), 'scope'.ucfirst($key)))
 				call_user_func_array([$builder, $key], array_wrap($value));
-		}
+
 		return $queries;
 	}
 
 	private function _doOrders(Request $request, Builder $builder, $columns = [])
 	{
 		$orders = $this->_getOrders($request, $builder);
+
 		foreach ($orders as $k => $v)
 			$builder->orderBy(isset($columns[$k]) ? $columns[$k] : $k, $v);
+
 		return $orders;
 	}
 	/**
@@ -147,6 +155,7 @@ trait ApiTrait {
 	{
 		$size = $request->input('size') ?: config('size.models.'.$builder->getModel()->getTable(), config('size.common'));
 		$page = $request->input('page', 1);
+
 		if ($request->input('all') == 'true') $size = 10000;//$builder->count(); //为统一使用paginate输出数据格式,这里需要将size设置为整表数量
 
 		$tables_columns = $this->_getColumns($builder);
@@ -165,11 +174,11 @@ trait ApiTrait {
 		return $paginate;
 	}
 
-	public function _getData(Request $request, Builder $builder, Closure $callback = null, array $columns = ['*'])
+	public function _getData(Request $request, Builder $builder, callable $callback = null, array $columns = ['*'])
 	{
 		$paginate = $this->_getPaginate($request, $builder, $columns);
 
-		if (!empty($callback) && is_callable($callback))
+		if (is_callable($callback))
 			call_user_func_array($callback, [$paginate]); //reference Objecy
 
 		return $paginate->toArray() + ['filters' => $paginate->filters, 'queries' => $paginate->queries, 'orders' => $paginate->orders];
@@ -178,13 +187,16 @@ trait ApiTrait {
 	public function _getCount(Request $request, Builder $builder, $enable_filters = true)
 	{
 		$_b = clone $builder;
+
 		if ($enable_filters)
 		{
 			$tables_columns = $this->_getColumns($builder);
 			$this->_doFilters($request, $_b, $tables_columns);
 			$this->_doQueries($request, $_b);
 		}
+
 		$query = $_b->getQuery();
+
 		if (!empty($query->groups)) //group by
 		{
 			return $query->getCountForPagination($query->groups);
@@ -197,19 +209,27 @@ trait ApiTrait {
 			return $_b->count();
 	}
 
-	public function _getExport(Request $request, Builder $builder, Closure $callback = null, array $columns = ['*']) {
+	public function _getExport(Request $request, Builder $builder, callable $callback = null, array $columns = ['*'])
+	{
 		set_time_limit(600); //10min
 
 		$size = $request->input('size') ?: config('size.export', 1000);
+
 		$tables_columns = $this->_getColumns($builder);
 		$this->_doFilters($request, $builder, $tables_columns);
 		$this->_doQueries($request, $builder);
+
 		$paginate = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($size, $columns);
-		if (!empty($callback) && is_callable($callback))
+
+		if (is_callable($callback))
 			call_user_func_array($callback, [&$paginate]);
+
 		$data = $paginate->toArray();
+
 		!empty($data['data']) && Arr::isAssoc($data['data'][0]) && array_unshift($data['data'], array_keys($data['data'][0]));
+
 		array_unshift($data['data'], [$builder->getModel()->getTable(), $data['from']. '-'. $data['to'].'/'. $data['total'], date('Y-m-d h:i:s')]);
+
 		return $data['data'];
 	}
 }

@@ -2,12 +2,12 @@
 
 namespace Addons\Elasticsearch\Scout;
 
+use Illuminate\Database\Eloquent\Model;
 use Addons\Elasticsearch\Scout\Builder;
 use Elasticsearch\Client as Elasticsearch;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 
-//see Laravel\Scout\Engines\ElasticsearchEngine;
 class ElasticsearchEngine {
 
 	/**
@@ -18,23 +18,14 @@ class ElasticsearchEngine {
 	protected $elasticsearch;
 
 	/**
-	 * The index name.
-	 *
-	 * @var string
-	 */
-	protected $index;
-
-	/**
 	 * Create a new engine instance.
 	 *
 	 * @param  \Elasticsearch\Client  $elasticsearch
 	 * @return void
 	 */
-	public function __construct(Elasticsearch $elasticsearch, $index)
+	public function __construct(Elasticsearch $elasticsearch)
 	{
 		$this->elasticsearch = $elasticsearch;
-
-		$this->index = $index;
 	}
 
 	/**
@@ -56,8 +47,7 @@ class ElasticsearchEngine {
 
 			$body->push([
 				'index' => [
-					'_index' => $this->index,
-					'_type' => $model->searchableAs(),
+					'_index' => $model->searchableAs(),
 					'_id' => $model->getKey(),
 				],
 			]);
@@ -84,8 +74,7 @@ class ElasticsearchEngine {
 		$models->each(function ($model) use ($body) {
 			$body->push([
 				'delete' => [
-					'_index' => $this->index,
-					'_type' => $model->searchableAs(),
+					'_index' => $model->searchableAs(),
 					'_id'  => $model->getKey(),
 				],
 			]);
@@ -137,11 +126,11 @@ class ElasticsearchEngine {
 	 * @param  Addons\ElasticSearch\Scout\Builder  $builder
 	 * @return \Illuminate\Database\Eloquent\Collection
 	 */
-	public function get(Builder $builder)
+	public function get(Builder $builder, bool $existsInDB = false)
 	{
-		return Collection::make($this->map(
-			$this->execute($builder), $builder->model
-		));
+		$collect = $this->map($this->execute($builder), $builder->model, $existsInDB);
+
+		return Collection::make($collect);
 	}
 
 	/**
@@ -200,8 +189,8 @@ class ElasticsearchEngine {
 	protected function performCount(Builder $builder, array $options = [])
 	{
 		$query = [
-			'index' =>  $this->index,
-			'type'  =>  $builder->model->searchableAs(),
+			'index' =>  $builder->model->searchableAs(),
+			'type' => '_doc',
 			'body' => $this->parseBody($builder),
 		];
 		return $this->elasticsearch->count($query);
@@ -218,10 +207,11 @@ class ElasticsearchEngine {
 	protected function performSearch(Builder $builder, array $options = [])
 	{
 		$query = [
-			'index' =>  $this->index,
-			'type' =>  $builder->model->searchableAs(),
-			'body' => $this->parseBody($builder),
-			'sort' => $builder->orders,
+			'index' =>  $builder->model->searchableAs(),
+			'type' => '_doc',
+			'body' => $this->parseBody($builder) + [
+				'sort' => $builder->orders,
+			],
 		];
 
 		if (array_key_exists('size', $options))
@@ -249,25 +239,38 @@ class ElasticsearchEngine {
 	 * @param  \Illuminate\Database\Eloquent\Model  $model
 	 * @return Collection
 	 */
-	public function map($results, $model)
+	public function map($results, Model $model, bool $existsInDB = false)
 	{
 		if (count($results['hits']) === 0) {
 			return Collection::make();
 		}
 
-		$keys = collect($results['hits']['hits'])
-					->pluck('_id')
-					->values()
-					->all();
+		if ($existsInDB)
+		{
+			$keys = collect($results['hits']['hits'])
+				->pluck('_id')
+				->map(function($v){
+					return ($pos = strpos($v, ':')) !== false ? substr($v, 0, $pos) : $v;
+				})->values()
+				->all();
 
-		$models = $model->whereIn(
-			$model->getQualifiedKeyName(), $keys
-		)->get()->keyBy($model->getKeyName());
+			$models = $model->whereIn(
+				$model->getQualifiedKeyName(), $keys
+			)->get()->keyBy($model->getKeyName());
 
-		return Collection::make($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
-				return isset($models[$hit['_source'][$model->getKeyName()]])
-										? $models[$hit['_source'][$model->getKeyName()]] : null;
-		})->filter()->values();
+			return Collection::make($results['hits']['hits'])->map(function ($hit) use ($model, $models) {
+					return isset($models[$hit['_source'][$model->getKeyName()]])
+											? $models[$hit['_source'][$model->getKeyName()]] : null;
+			})->filter()->values();
+
+		} else {
+
+			$newModel = new $model;
+			$newModel->setDateFormat(\DateTime::W3C);
+			return Collection::make($results['hits']['hits'])->map(function ($hit) use ($newModel) {
+					return (clone $newModel)->forceFill($hit['_source'])->syncOriginal();
+			})->filter()->values();
+		}
 	}
 
 	/**

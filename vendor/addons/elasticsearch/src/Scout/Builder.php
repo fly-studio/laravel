@@ -257,19 +257,25 @@ class Builder extends \Laravel\Scout\Builder {
 		if (is_null($direction))
 			$this->orders[] = $column;
 		else
+		{
 			$this->orders[$column] = [
 				'order' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
-				'mode' => $mode,
 			] + $options;
+
+			if (!is_null($mode)) $this->orders[$columns] += [
+				'mode' => $mode,
+			];
+		}
+
 
 		return $this;
 	}
 
-	public function get($columns = ['*'])
+	public function get(array $columns = ['*'], bool $existsInDB = false)
 	{
 		$this->set_source($columns);
 		!is_null($this->limit) && $this->take(2000);
-		return $this->engine()->get($this);
+		return $this->engine()->get($this, $existsInDB);
 	}
 
 	/**
@@ -310,10 +316,10 @@ class Builder extends \Laravel\Scout\Builder {
 	 *
 	 * @return mixed
 	 */
-	public function aggregations($key = null)
+	public function aggregations($projectionKey = null, $noSource = true)
 	{
-		$this->take(0)->set_source(false);
-		return $this->engine()->aggregations($this, $key);
+		if ($noSource) $this->take(0)->set_source(false);
+		return $this->engine()->aggregations($this, $projectionKey);
 	}
 
 	/**
