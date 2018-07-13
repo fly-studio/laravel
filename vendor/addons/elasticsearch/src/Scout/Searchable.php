@@ -28,7 +28,7 @@ trait Searchable {
 	 * @param Closure        $callback
 	 * @return \Addons\Elasticsearch\Scout\Builder
 	 */
-	public static function search($boolOccur = 'must', $callback = null)
+	public static function search(string $boolOccur = 'must', callable $callback = null)
 	{
 		$builder = new Builder(new static, $callback);
 		$builder->setBool($boolOccur);
@@ -44,8 +44,8 @@ trait Searchable {
 	{
 		static::addGlobalScope(new SearchableScope);
 
-		if (!config('scout.disable_observer', false))
-			static::observe(new ModelObserver);
+		if (($observer = config('scout.observer', false)) !== false)
+			static::observe(new $observer);
 
 		(new static)->registerSearchableMacros();
 	}
