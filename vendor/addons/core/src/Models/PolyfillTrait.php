@@ -3,6 +3,7 @@
 namespace Addons\Core\Models;
 
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 trait PolyfillTrait {
 
@@ -107,11 +108,9 @@ trait PolyfillTrait {
 		return parent::setAttribute($key, $value);
 	}
 
-	public function toArrayWith(array $with = [], $recover = true)
+	public function toArray(bool $recover = false, string $dateFormat = null)
 	{
-		!empty($with) && $this->loadMissing($with);
-
-		$data = $this->toArray();
+		$data = $this->attributesToArray();
 
 		if ($recover)
 		{
@@ -119,11 +118,54 @@ trait PolyfillTrait {
 			{
 				if (!in_array($type, $this->originalCastTypes) && isset($data[$key]) && method_exists($this, $method = 'un'.Str::studly($type)))
 					$data[$key] = call_user_func([$this, $method], $data[$key], $key, $type);
-
 			}
 		}
 
-		return $data;
+		if (!empty($dateFormat))
+		{
+			foreach ($this->getDates() as $key) {
+				if (! isset($data[$key]) || empty($data[$key])) {
+					continue;
+				}
+
+				$data[$key] = $this->asDateTime($data[$key])->format($dateFormat);
+			}
+		}
+
+		$attributes = [];
+
+		foreach ($this->getArrayableRelations() as $key => $value) {
+
+			if ($value instanceof Model) {
+				$relation = $value->toArray($recover, $dateFormat);
+			} else if ($value instanceof Arrayable) {
+				$relation = $value->toArray();
+			} else if (is_null($value)) {
+				$relation = $value;
+			}
+
+			if (static::$snakeAttributes) {
+				$key = Str::snake($key);
+			}
+
+			// If the relation value has been set, we will set it on this attributes
+			// list for returning. If it was not arrayable or null, we'll not set
+			// the value on the array because it is some type of invalid value.
+			if (isset($relation) || is_null($value)) {
+				$attributes[$key] = $relation;
+			}
+
+			unset($relation);
+		}
+
+		return $data + $attributes;
+	}
+
+	public function toArrayWith(array $with = [], bool $recover = false, string $dateFormat = null)
+	{
+		!empty($with) && $this->loadMissing($with);
+
+		return $this->toArray($recover, $dateFormat);
 	}
 
 }
