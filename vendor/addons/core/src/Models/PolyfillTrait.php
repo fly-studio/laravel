@@ -4,9 +4,9 @@ namespace Addons\Core\Models;
 
 use Illuminate\Support\Str;
 
-trait PolyfillTrait{
+trait PolyfillTrait {
 
-	protected $originalCastTypes = ['int','integer','real','float','double','string','bool','boolean','object','array','json','collection','date','datetime','timestamp', 'custom_datetime'];
+	protected $originalCastTypes = ['int', 'integer', 'real' ,'float', 'double', 'string', 'bool', 'boolean', 'object', 'array', 'json', 'collection', 'date', 'datetime', 'timestamp', 'custom_datetime'];
 
 	public static function insertUpdate(array $attributes)
 	{
@@ -105,6 +105,25 @@ trait PolyfillTrait{
 				$value = call_user_func([$this, $method], $value, $key, $type);
 		}
 		return parent::setAttribute($key, $value);
+	}
+
+	public function toArrayWith(array $with = [], $recover = true)
+	{
+		!empty($with) && $this->loadMissing($with);
+
+		$data = $this->toArray();
+
+		if ($recover)
+		{
+			foreach($this->casts as $key => $type)
+			{
+				if (!in_array($type, $this->originalCastTypes) && isset($data[$key]) && method_exists($this, $method = 'un'.Str::studly($type)))
+					$data[$key] = call_user_func([$this, $method], $data[$key], $key, $type);
+
+			}
+		}
+
+		return $data;
 	}
 
 }
