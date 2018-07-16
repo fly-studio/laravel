@@ -19,7 +19,7 @@ class Collection extends BaseCollection {
 	public function asModels() : ModelCollection
 	{
 		$collection = $this->map(function($v) {
-			return $v instanceof Model ? $v : (new $this->model)->forceFill($v)->syncOriginal()->setDateFormat(\DateTime::W3C);
+			return $v instanceof Model ? $v : (new $this->model)->setDateFormat(\DateTime::W3C)->forceFill($v)->syncOriginal();
 		});
 
 		return ModelCollection::make($collection->all());
