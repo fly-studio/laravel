@@ -5,6 +5,7 @@ namespace Addons\Elasticsearch\Scout;
 use Laravel\Scout\ModelObserver;
 use Laravel\Scout\SearchableScope;
 use Addons\Elasticsearch\Scout\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable as BaseSearchable;
 
 trait Searchable {
@@ -55,16 +56,20 @@ trait Searchable {
 	 *
 	 * @return void
 	 */
-	public static function makeAllSearchable($min = 0, $max = 0)
+	public static function makeAllSearchable(array $with = [], $min = 0, $max = 0)
 	{
 		$self = new static();
 
-		$builder = $self->newQuery();
+		$softDeletes = in_array(SoftDeletes::class, class_uses_recursive(get_called_class())) &&
+					   config('scout.soft_delete', false);
+
+		$builder = $self->newQuery()->with($with);
 		if (!empty($min)) $builder->where($self->getKeyName(), '>=', $min);
 		if (!empty($max) && $max >= $min) $builder->where($self->getKeyName(), '<=', $max);
 
-		$builder->orderBy($self->getKeyName())
-			->searchable();
+		$builder->when($softDeletes, function ($query) {
+			$query->withTrashed();
+		})->orderBy($self->getKeyName())->searchable();
 	}
 
 }

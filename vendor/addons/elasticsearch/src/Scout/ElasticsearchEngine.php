@@ -49,6 +49,7 @@ class ElasticsearchEngine {
 			$body->push([
 				'index' => [
 					'_index' => $model->searchableAs(),
+					'_type' => '_doc',
 					'_id' => $model->getKey(),
 				],
 			]);
@@ -76,6 +77,7 @@ class ElasticsearchEngine {
 			$body->push([
 				'delete' => [
 					'_index' => $model->searchableAs(),
+					'_type' => '_doc',
 					'_id'  => $model->getKey(),
 				],
 			]);

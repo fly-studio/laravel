@@ -578,20 +578,6 @@ function array_keyflatten(array $data, $delimiter = '/', $prefix_key = '')
 }
 }
 
-if (! function_exists('array_flatten')) {
-/**
- * 使用$delimiter 扁平化为一维数组
- * @param  array  $data       数组
- * @param  string $delimiter  分隔符
- * @param  string $prefix_key 每个KEY的前缀
- * @return array
- */
-function array_flatten(array $data, $delimiter = '/', $prefix_key = '')
-{
-	return array_keyflatten($data, $delimiter, $prefix_key);
-}
-}
-
 if (! function_exists('array_flatten_selector')) {
 /**
  * 根据表达式，提取第几层的数据，并把数据提到一维，如果$overwrite为TRUE，则相同的键值，后者会覆盖前者

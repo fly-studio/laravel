@@ -6,21 +6,24 @@ use Illuminate\Console\Command;
 use Laravel\Scout\Events\ModelsImported;
 use Illuminate\Contracts\Events\Dispatcher;
 
-class ImportRangeCommand extends Command
+class ImportWithCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'scout:import-range {model} {--min=0 : (number) the min ID, negative number is valid, 0 for the first ID} {--max=0: (number) the max ID, 0 for the last ID}';
+    protected $signature = 'scout:import-with {model}
+                {--with= : with Model\'s relationship. use "," separator to connect array. eg: users,comments }
+                {--min=0 : (number) the min ID, negative number is valid, 0 for the first ID}
+                {--max=0: (number) the max ID, 0 for the last ID}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import the given model of range into the search index';
+    protected $description = 'Import the model with relationship into the ES index';
 
     /**
      * Execute the console command.
@@ -34,8 +37,14 @@ class ImportRangeCommand extends Command
 
         $model = new $class;
 
+        if (!$model->shouldBeSearchable())
+            return $this->error('The '.$class.'::shouldBeSearchable() returns false. Nothing to do.');
+
         $min = $this->option('min');
         $max = $this->option('max');
+        $with = $this->option('with');
+
+        $with = !empty($with) ? explode(',', $with) : [];
 
         (!is_numeric($min)) && $min = 0;
         (!is_numeric($max)) && $max = 0;
@@ -46,7 +55,9 @@ class ImportRangeCommand extends Command
             $this->line('<comment>Imported ['.$class.'] models up to ID:</comment> '.$key);
         });
 
-        $model::makeAllSearchable($min, $max);
+        $model::makeAllSearchable($with, $min, $max);
+
+        $events->forget(ModelsImported::class);
 
         $this->info('All ['.$class.'] records from '.$min.'-'.$max.' have been imported.');
     }

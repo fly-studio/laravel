@@ -10,7 +10,7 @@ use Monolog\Handler\ElasticSearchHandler;
 use Elasticsearch\ClientBuilder as Elasticsearch;
 use Addons\Elasticsearch\Console\MapIndexCommand;
 use Addons\Elasticsearch\Scout\ElasticsearchEngine;
-use Addons\Elasticsearch\Console\ImportRangeCommand;
+use Addons\Elasticsearch\Console\ImportWithCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
@@ -81,7 +81,7 @@ class ServiceProvider extends BaseServiceProvider
 		if ($this->app->runningInConsole())
 		{
 			$this->commands([
-				ImportRangeCommand::class,
+				ImportWithCommand::class,
 				MapIndexCommand::class,
 			]);
 		}
