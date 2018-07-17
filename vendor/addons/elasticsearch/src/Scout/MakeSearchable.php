@@ -17,6 +17,7 @@ class MakeSearchable implements ShouldQueue
      * @var \Illuminate\Database\Eloquent\Collection
      */
     public $models;
+    public $refresh;
 
     /**
      * Create a new job instance.
@@ -24,9 +25,10 @@ class MakeSearchable implements ShouldQueue
      * @param  \Illuminate\Database\Eloquent\Collection  $models
      * @return void
      */
-    public function __construct($models)
+    public function __construct($models, bool $refresh = true)
     {
         $this->models = $models;
+        $this->refresh = $refresh;
     }
 
     /**
@@ -36,12 +38,17 @@ class MakeSearchable implements ShouldQueue
      */
     public function handle()
     {
+        $t = microtime(true);
         if (count($this->models) === 0) {
             return;
         }
 
         $this->models->loadMissing($this->models->first()->searchableWith());
 
-        $this->models->first()->searchableUsing()->update($this->models);
+        echo PHP_EOL,(microtime(true) - $t), PHP_EOL;
+
+        $this->models->first()->searchableUsing()->update($this->models, $this->refresh);
+        echo (microtime(true) - $t), PHP_EOL;
+
     }
 }

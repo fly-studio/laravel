@@ -35,7 +35,7 @@ class ElasticsearchEngine {
 	 * @param  Collection  $models
 	 * @return void
 	 */
-	public function update($models)
+	public function update($models, bool $refresh = true)
 	{
 		$body = new Collection();
 
@@ -58,7 +58,7 @@ class ElasticsearchEngine {
 		});
 
 		$this->elasticsearch->bulk([
-			'refresh' => true,
+			'refresh' => $refresh,
 			'body' => $body->all(),
 		]);
 	}
@@ -69,7 +69,7 @@ class ElasticsearchEngine {
 	 * @param  Collection  $models
 	 * @return void
 	 */
-	public function delete($models)
+	public function delete($models, bool $refresh = true)
 	{
 		$body = new Collection();
 
@@ -84,7 +84,7 @@ class ElasticsearchEngine {
 		});
 
 		$this->elasticsearch->bulk([
-			'refresh' => true,
+			'refresh' => $refresh,
 			'body' => $body->all(),
 		]);
 	}

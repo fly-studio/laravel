@@ -108,64 +108,98 @@ trait PolyfillTrait {
 		return parent::setAttribute($key, $value);
 	}
 
-	public function toArray(bool $recover = false, string $dateFormat = null)
+	public function toArray(array $options = [])
 	{
-		$data = $this->attributesToArray();
+		$options += [
+			'cast' => true,
+			'append' => true,
+			'relations' => true,
+			'dateFormat' => null,
+		];
 
-		if ($recover)
-		{
-			foreach($this->casts as $key => $type)
-			{
-				if (!in_array($type, $this->originalCastTypes) && isset($data[$key]) && method_exists($this, $method = 'un'.Str::studly($type)))
-					$data[$key] = call_user_func([$this, $method], $data[$key], $key, $type);
-			}
-		}
+		$data = $this->getArrayableAttributes();
 
-		if (!empty($dateFormat))
+		$data = $this->addMutatedAttributesToArray(
+			$data, $mutatedAttributes = $this->getMutatedAttributes()
+		);
+
+		if ($options['cast'])
 		{
-			foreach ($this->getDates() as $key) {
-				if (! isset($data[$key]) || empty($data[$key])) {
+			foreach ($this->getCasts() as $key => $value) {
+
+				if (! isset($data[$key]) || in_array($key, $mutatedAttributes)) {
 					continue;
 				}
 
-				$data[$key] = $this->asDateTime($data[$key])->format($dateFormat);
+				$data[$key] = $this->castAttribute(
+					$key, $data[$key]
+				);
+
+				if ($data[$key] &&
+					($value === 'date' || $value === 'datetime')) {
+					$data[$key] = $this->serializeDate($data[$key]);
+				}
+
+				if ($data[$key] && $this->isCustomDateTimeCast($value)) {
+					$data[$key] = $data[$key]->format(explode(':', $value, 2)[1]);
+				}
 			}
+		}
+
+		if ($options['append'])
+		{
+			foreach ($this->getArrayableAppends() as $key) {
+				$data[$key] = $this->mutateAttributeForArray($key, null);
+			}
+		}
+
+		$dateFormat = !empty($options['dateFormat']) ? $options['dateFormat'] : $this->getDateFormat();
+
+		foreach ($this->getDates() as $key) {
+			if (! isset($data[$key]) || empty($data[$key])) {
+				continue;
+			}
+
+			$data[$key] = $this->asDateTime($data[$key])->format($dateFormat);
 		}
 
 		$attributes = [];
 
-		foreach ($this->getArrayableRelations() as $key => $value) {
+		if ($options['relations'])
+		{
+			foreach ($this->getArrayableRelations() as $key => $value) {
 
-			if ($value instanceof Model) {
-				$relation = $value->toArray($recover, $dateFormat);
-			} else if ($value instanceof Arrayable) {
-				$relation = $value->toArray();
-			} else if (is_null($value)) {
-				$relation = $value;
+				if ($value instanceof Model) {
+					$relation = $value->toArray($options);
+				} else if ($value instanceof Arrayable) {
+					$relation = $value->toArray();
+				} else if (is_null($value)) {
+					$relation = $value;
+				}
+
+				if (static::$snakeAttributes) {
+					$key = Str::snake($key);
+				}
+
+				// If the relation value has been set, we will set it on this attributes
+				// list for returning. If it was not arrayable or null, we'll not set
+				// the value on the array because it is some type of invalid value.
+				if (isset($relation) || is_null($value)) {
+					$attributes[$key] = $relation;
+				}
+
+				unset($relation);
 			}
-
-			if (static::$snakeAttributes) {
-				$key = Str::snake($key);
-			}
-
-			// If the relation value has been set, we will set it on this attributes
-			// list for returning. If it was not arrayable or null, we'll not set
-			// the value on the array because it is some type of invalid value.
-			if (isset($relation) || is_null($value)) {
-				$attributes[$key] = $relation;
-			}
-
-			unset($relation);
 		}
 
 		return $data + $attributes;
 	}
 
-	public function toArrayWith(array $with = [], bool $recover = false, string $dateFormat = null)
+	public function toArrayWith(array $with = [], array $options = [])
 	{
 		!empty($with) && $this->loadMissing($with);
 
-		return $this->toArray($recover, $dateFormat);
+		return $this->toArray($options);
 	}
 
 }
