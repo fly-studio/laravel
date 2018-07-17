@@ -38,17 +38,12 @@ class MakeSearchable implements ShouldQueue
      */
     public function handle()
     {
-        $t = microtime(true);
         if (count($this->models) === 0) {
             return;
         }
 
         $this->models->loadMissing($this->models->first()->searchableWith());
 
-        echo PHP_EOL,(microtime(true) - $t), PHP_EOL;
-
         $this->models->first()->searchableUsing()->update($this->models, $this->refresh);
-        echo (microtime(true) - $t), PHP_EOL;
-
     }
 }
