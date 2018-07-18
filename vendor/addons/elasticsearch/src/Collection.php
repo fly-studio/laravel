@@ -9,54 +9,59 @@ use Illuminate\Database\Eloquent\Collection as ModelCollection;
 
 class Collection extends BaseCollection {
 
-	protected $model = null;
-
-	public function setModelName($model)
+	public function asDepthArray()
 	{
-		$this->model = is_string($model) ? $model : get_class($model);
+		foreach($this->items as $k => $v)
+		{
+			$r = [];
+			foreach($v as $key => $value)
+				array_set($r, $key, $value);
+
+			$this->items[$k] = $r;
+		}
+
 		return $this;
 	}
 
-	public function asModels() : ModelCollection
+	public function toModels($model, array $relations = [])
 	{
-		$collection = $this->map(function($v) {
-			if ($v instanceof Model)
-				return $v;
+		$model = is_string($model) ? $model : get_class($model);
 
-			$model = new $this->model;
+		$results = [];
 
-			foreach ($model->getDates() as $key) {
-				if (! isset($v[$key]) || empty($v[$key]))
-					continue;
+		foreach($this->items as $k => $v)
+		{
+			if (!($v instanceof Model))
+			{
+				$model = new $this->model;
 
-				$time = strtotime($v[$key]);
+				foreach ($model->getDates() as $key) {
+					if (! isset($v[$key]) || empty($v[$key]))
+						continue;
 
-				$v[$key] = $time === false ? $v[$key] : Carbon::createFromTimestamp($time);
+					$time = strtotime($v[$key]);
+
+					$v[$key] = $time === false ? $v[$key] : Carbon::createFromTimestamp($time);
+				}
+
+				$model->setRawAttributes(array_except($v, $relations));
+
+				foreach($relations as $relation)
+					$model->setRelation($relation, array_get($v, $relation));
+
+				$results[$k] = $model;
+			} else {
+				$results[$k] = $v;
 			}
+		}
 
-			$raw = [];
-			foreach($v as $key => $value)
-				if (strpos($key, '.') === false)
-					$raw[$key] = $value;
-
-			$model->setRawAttributes($raw);
-
-			$data = [];
-
-			foreach(array_except($v, array_keys($raw)) as $key => $value)
-				array_set($data, $key, $value);
-
-			foreach($data as $key => $value)
-				$model->setRelation($key, $value);
-
-			return $model;
-		});
-
-		return ModelCollection::make($collection->all());
+		return ModelCollection::make($results);
 	}
 
-	public function existsInDB(): Collection
+	public function filterWithDB($model): Collection
 	{
+		$model = is_string($model) ? $model : get_class($model);
+
 		$keys = $this->pluck('id');
 
 		if (empty($keys)) return new static();
@@ -68,11 +73,6 @@ class Collection extends BaseCollection {
 		return $this->filter(function($v){
 			return in_array($v['id'], $models);
 		});
-	}
-
-	public function load($relations)
-	{
-		return $this->asModels()->load($relations);
 	}
 
 }
