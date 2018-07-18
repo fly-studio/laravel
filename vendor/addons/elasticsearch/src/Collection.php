@@ -33,9 +33,9 @@ class Collection extends BaseCollection {
 		{
 			if (!($v instanceof Model))
 			{
-				$model = new $this->model;
+				$instance = new $model;
 
-				foreach ($model->getDates() as $key) {
+				foreach ($instance->getDates() as $key) {
 					if (! isset($v[$key]) || empty($v[$key]))
 						continue;
 
@@ -44,12 +44,12 @@ class Collection extends BaseCollection {
 					$v[$key] = $time === false ? $v[$key] : Carbon::createFromTimestamp($time);
 				}
 
-				$model->setRawAttributes(array_except($v, $relations));
+				$instance->setRawAttributes(array_except($v, $relations));
 
 				foreach($relations as $relation)
-					$model->setRelation($relation, array_get($v, $relation));
+					$instance->setRelation($relation, array_get($v, $relation));
 
-				$results[$k] = $model;
+				$results[$k] = $instance;
 			} else {
 				$results[$k] = $v;
 			}
@@ -58,7 +58,7 @@ class Collection extends BaseCollection {
 		return ModelCollection::make($results);
 	}
 
-	public function filterWithDB($model): Collection
+	public function filterWithDB($model)
 	{
 		$model = is_string($model) ? $model : get_class($model);
 
@@ -66,9 +66,9 @@ class Collection extends BaseCollection {
 
 		if (empty($keys)) return new static();
 
-		$model = new $this->model;
+		$instance = new $model;
 
-		$models = $model->newQuery()->whereIn($model->getKeyName(), $keys)->get([$model->getKeyName()])->modelKeys();
+		$models = $instance->newQuery()->whereIn($instance->getKeyName(), $keys)->get([$instance->getKeyName()])->modelKeys();
 
 		return $this->filter(function($v){
 			return in_array($v['id'], $models);
