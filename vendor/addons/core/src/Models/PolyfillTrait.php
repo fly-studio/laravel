@@ -3,7 +3,9 @@
 namespace Addons\Core\Models;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Support\Arrayable;
 
 trait PolyfillTrait {
 
@@ -172,7 +174,7 @@ trait PolyfillTrait {
 				if ($value instanceof Model) {
 					$relation = $value->toArray($options);
 				} else if ($value instanceof Arrayable) {
-					$relation = $value->toArray();
+					$relation = $value->toArray($options);
 				} else if (is_null($value)) {
 					$relation = $value;
 				}
