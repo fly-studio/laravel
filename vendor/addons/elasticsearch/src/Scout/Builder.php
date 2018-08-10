@@ -286,7 +286,7 @@ class Builder extends \Laravel\Scout\Builder {
 				'order' => strtolower($direction) == 'asc' ? 'asc' : 'desc',
 			] + $options;
 
-			if (!is_null($mode)) $this->orders[$columns] += [
+			if (!is_null($mode)) $this->orders[$column] += [
 				'mode' => $mode,
 			];
 		}
@@ -585,9 +585,9 @@ class Builder extends \Laravel\Scout\Builder {
 		else if (is_array($column) && is_null($value) && is_null($operator)) //array, append data
 		{
 			if (!Arr::isAssoc($column))
-				$pointer->merge($columns);
+				$pointer->merge($column);
 			else
-				$pointer[] = $columns;
+				$pointer[] = $column;
 		}
 		else
 		{
