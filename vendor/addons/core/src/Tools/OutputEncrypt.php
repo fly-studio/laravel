@@ -32,16 +32,16 @@ class OutputEncrypt {
 		return $key ? base64_encode($key) : false;
 	}
 
-	public function encode($data)
+	public function encode($data, $serialize = true)
 	{
 		$e = new Encrypter($this->getAesKey(), config('app.cipher'));
-		return $e->encrypt($data);
+		return $e->encrypt($data, $serialize);
 	}
 
-	public function decode($data)
+	public function decode($data, $unserialize = true)
 	{
 		$e = new Encrypter($this->getAesKey(), config('app.cipher'));
-		return $e->decrypt($data);
+		return $e->decrypt($data, $unserialize);
 	}
 
 	public function getAesKey()

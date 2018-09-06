@@ -32,15 +32,15 @@ class ApiResponse extends TextResponse {
 
 	public function setData($data, $encrypted = false)
 	{
-		$data = json_decode(json_encode($data), true); //turn Object to Array
 		$this->encrypted = $encrypted;
-		$this->data = $data;
 
 		if ($encrypted)
 		{
 			$encrypt = new OutputEncrypt;
 			$this->encryptedKey = $encrypt->getClientEncryptedKey();
-			$this->data = empty($this->encryptedKey) ? null : $encrypt->encode($data); //如果key不对,就不用耗费资源加密了
+			$this->data = empty($this->encryptedKey) ? null : $encrypt->encode(json_encode($data), false); //如果key不对,就不用耗费资源加密了
+		} else {
+			$this->data = json_decode(json_encode($data), true); //turn Object to Array
 		}
 		return $this;
 	}
