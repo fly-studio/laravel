@@ -46,9 +46,10 @@ class HttpServer extends Server {
 
 	protected function makeSender(ServerOptions $options, ...$args): AbstractSender
 	{
-		return $this->pool->getBindIf($options->unique(), 'http-sender', function() use($options, $args) {
+		//One tunnel has multi-http-stream
+		//return $this->pool->getBindIf($options->unique(), 'http-sender', function() use($options, $args) {
 			return new HttpSender($options, ...$args);
-		});
+		//});
 	}
 
 	protected function createObserver(): AbstractObserver

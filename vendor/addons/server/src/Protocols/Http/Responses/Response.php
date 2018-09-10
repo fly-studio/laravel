@@ -4,9 +4,9 @@ namespace Addons\Server\Protocols\Http\Responses;
 
 use Closure;
 use RuntimeException;
-use Addons\Server\Senders\HttpSender;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Contracts\AbstractResponse;
+use Addons\Server\Contracts\AbstractSender;
 
 class Response extends AbstractResponse {
 
@@ -15,7 +15,7 @@ class Response extends AbstractResponse {
 	protected $status = 200;
 	protected $gzip = null;
 
-	public function with(ServerOptions $options, HttpSender $sender)
+	public function with(ServerOptions $options, AbstractSender $sender)
 	{
 		$this->options = $options;
 		$this->sender = $sender;
@@ -65,6 +65,11 @@ class Response extends AbstractResponse {
 
 	public function send()
 	{
+		static $i;
+		if (empty($i)) $i =0;
+
+		echo ++$i, PHP_EOL;
+
 		$this->sendMeta();
 
 		$this->sender->send($this->getContent());

@@ -7,9 +7,23 @@ use Addons\Server\Contracts\AbstractRequest;
 
 class Request extends AbstractRequest {
 
+	protected $request;
+	protected $response;
+
+	public function __construct($request, $response)
+	{
+		$this->request = $request;
+		$this->response = $response;
+	}
+
 	public function keywords(): string
 	{
-		return $this->server['request_uri'];
+		return $this->request->server['request_uri'];
+	}
+
+	public function raw(): string
+	{
+		return $this->request->rawContent();
 	}
 
 }
