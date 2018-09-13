@@ -33,10 +33,15 @@ class Request extends AbstractRequest {
 
 	public function attachToMessage(Message $message)
 	{
+		if (empty($this->body))
+			return false;
+
 		try {
 			$message->mergeFromString($this->body);
 			return true;
+
 		} catch(\Exception $e) {
+
 			return false;
 		}
 	}

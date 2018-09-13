@@ -38,10 +38,10 @@ trait OptionsTrait {
 		return $options;
 	}
 
-	protected function updateServerOptions(ServerOptions $options, $fd)
+	protected function updateServerOptions(ServerOptions $options)
 	{
 		// TCP only
-		$client_info = $this->server->getClientInfo($fd);
+		$client_info = $this->server->getClientInfo($options->file_descriptor());
 		$options
 			->last_time($client_info['last_time'])
 			->close_errno($client_info['close_errno'])

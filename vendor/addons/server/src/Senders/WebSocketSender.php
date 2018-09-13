@@ -2,41 +2,37 @@
 
 namespace Addons\Server\Senders;
 
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractSender;
 
 class WebSocketSender extends AbstractSender {
 
-	protected $options;
 	protected $buffer_output_size;
 
-	public function __construct(ServerOptions $options)
+	public function __construct(ConnectBinder $binder)
 	{
-		$this->options = $options;
-		$this->buffer_output_size = $options->server()->setting['buffer_output_size'];
-	}
-
-	public function options()
-	{
-		return $this->options;
+		$this->binder = $binder;
+		$this->buffer_output_size = $binder->options()->server()->setting['buffer_output_size'];
 	}
 
 	public function send(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): int
 	{
+		$options = $this->options();
+
 		if (($len = strlen($data)) > $this->buffer_output_size)
 		{
 			for($i = 0; $i < ceil($len / $this->buffer_output_size); ++$i)
-				$this->options->server()->push($this->options->file_descriptor(), substr($data, $i * $this->buffer_output_size, $this->buffer_output_size), false);
-			$this->options->server()->push($this->options->file_descriptor(), '', $opcode, $finish);
+				$options->server()->push($options->file_descriptor(), substr($data, $i * $this->buffer_output_size, $this->buffer_output_size), false);
+			$options->server()->push($options->file_descriptor(), '', $opcode, $finish);
 		} else {
-			$this->options->server()->push($this->options->file_descriptor(), $data, $opcode, $finish);
+			$options->server()->push($options->file_descriptor(), $data, $opcode, $finish);
 		}
 		return $this->getLastError();
 	}
 
 	public function chunk(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT): int
 	{
-		return $this->send($this->options, $data, $opcode);
+		return $this->send($data, $opcode);
 	}
 
 	public function file(string $path, int $opcode = WEBSOCKET_OPCODE_TEXT, ?int $offset = 0, int $length = null): int
@@ -69,6 +65,6 @@ class WebSocketSender extends AbstractSender {
 
 	protected function getLastError()
 	{
-		return $this->options->server()->getLastError();
+		return $this->options()->server()->getLastError();
 	}
 }

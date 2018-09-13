@@ -18,9 +18,9 @@ use Addons\Core\Http\Output\TipTypeManager;
 use Symfony\Component\HttpFoundation\Request;
 use Addons\Core\Contracts\Http\Output\TipType;
 
-use Addons\Core\Http\Protobuf\Output as OutputProto;
-use Addons\Core\Http\Protobuf\OutputMessage as MessageProto;
-use Addons\Core\Http\Protobuf\OutputTipType as TipTypeProto;
+use Addons\Core\Structs\Protobuf\Output as OutputProto;
+use Addons\Core\Structs\Protobuf\OutputMessage as MessageProto;
+use Addons\Core\Structs\Protobuf\OutputTipType as TipTypeProto;
 
 class TextResponse extends Response implements Protobufable, Jsonable, Arrayable, JsonSerializable {
 
@@ -248,7 +248,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			$o->setTipType($t);
 		}
 
-		$o->setData(json_encode($data['data']));
+		$o->setData(!is_array($data['data']) ? $data['data'] : json_encode($data['data']));
 		$o->setTime($data['time']);
 		$o->setDuration($data['duration']);
 		$o->setBody($data['body']);

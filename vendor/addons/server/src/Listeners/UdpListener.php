@@ -3,6 +3,7 @@
 namespace Addons\Server\Listeners;
 
 use Addons\Func\Console\ConsoleLog;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Structs\ServerOptions;
 use Addons\Server\Contracts\AbstractListener;
 
@@ -37,7 +38,9 @@ class UdpListener extends AbstractListener {
 		$options->logger('debug', print_r($options->toArray(), true));
 		$options->logger('hex', $data);
 
-		$this->recv($options, $data);
+		$binder = new ConnectBinder($options);
+
+		$this->recv($binder, $data);
 	}
 
 }

@@ -4,9 +4,8 @@ namespace Addons\Server\Protocols\Http\Responses;
 
 use Closure;
 use RuntimeException;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractResponse;
-use Addons\Server\Contracts\AbstractSender;
 
 class Response extends AbstractResponse {
 
@@ -14,12 +13,6 @@ class Response extends AbstractResponse {
 	protected $cookies = [];
 	protected $status = 200;
 	protected $gzip = null;
-
-	public function with(ServerOptions $options, AbstractSender $sender)
-	{
-		$this->options = $options;
-		$this->sender = $sender;
-	}
 
 	public function status(int $status = null)
 	{

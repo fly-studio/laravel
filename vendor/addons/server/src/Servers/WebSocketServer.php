@@ -3,7 +3,7 @@
 namespace Addons\Server\Servers;
 
 use Addons\Server\Servers\HttpServer;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Senders\WebSocketSender;
 use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractObserver;
@@ -20,10 +20,10 @@ class WebSocketServer extends HttpServer {
 		return new \swoole_websocket_server($config->host()->host(), $config->host()->port(), $config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, SWOOLE_SOCK_TCP | (!empty($config->ssl_cert_file()) && !empty($config->ssl_key_file()) ? SWOOLE_SSL : 0));
 	}
 
-	protected function makeSender(ServerOptions $options, ...$args): AbstractSender
+	protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender
 	{
-		return $this->pool->getBindIf($options->unique(), 'ws-sender', function() use($options, $args) {
-			return new WebSocketSender($options, ...$args);
+		return $binder->getBindIf('ws-sender', function() use($binder, $args) {
+			return new WebSocketSender($binder, ...$args);
 		});
 	}
 

@@ -5,6 +5,7 @@ namespace Addons\Server\Contracts;
 use Closure;
 use RuntimeException;
 use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Func\Contracts\TraitsBootTrait;
 use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractRequest;
@@ -13,7 +14,7 @@ abstract class AbstractResponse {
 
 	use TraitsBootTrait;
 
-	protected $options;
+	protected $binder;
 	protected $sender;
 	protected $content = null;
 
@@ -27,20 +28,20 @@ abstract class AbstractResponse {
 		return new static(...$args);
 	}
 
-	public function with(ServerOptions $options, AbstractSender $sender)
+	public function with(ConnectBinder $binder, AbstractSender $sender)
 	{
-		$this->options = $options;
+		$this->binder = $binder;
 		$this->sender = $sender;
 	}
 
-	public function options()
+	public function options(): ServerOptions
 	{
-		return $this->options;
+		return $this->binder->options();
 	}
 
-	public function sender()
+	public function binder(): ConnectBinder
 	{
-		return $this->sender;
+		return $this->binder;
 	}
 
 	public function setContent($content)

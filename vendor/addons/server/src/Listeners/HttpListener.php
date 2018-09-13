@@ -12,13 +12,13 @@ class HttpListener extends AbstractListener {
 
 	public function onRequest(\swoole_http_request $request, \swoole_http_response $response)
 	{
-		$options = $this->pool->get($request->fd);
-		if (empty($options))
+		$binder = $this->pool->get($request->fd);
+		if (empty($binder))
 			return;
 
-		$this->updateServerOptions($options, $request->fd);
+		$this->updateServerOptions($binder->options());
 
-		$this->recv($options, $request, $response);
+		$this->recv($binder, $request, $response);
 	}
 
 }

@@ -3,7 +3,6 @@
 namespace Addons\Server\Senders;
 
 use Addons\Server\Senders\Sender;
-use Addons\Server\Structs\ServerOptions;
 
 class UdpSender extends Sender {
 

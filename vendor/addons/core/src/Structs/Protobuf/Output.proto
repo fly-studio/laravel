@@ -1,6 +1,13 @@
 syntax = "proto3";
 
-package Addons.Core.Http.Protobuf;
+//package Addons.Core.Structs.Protobuf;
+option java_package = "org.fly.core.text.lp.result";
+
+message EncryptKey {
+	bytes key = 1;
+	bytes iv = 2;
+	bytes mac = 3;
+}
 
 message OutputMessage {
 	string title = 1;
@@ -20,8 +27,9 @@ message Output {
 	bool debug = 4; //是否DEBUG
 	OutputMessage message = 5; //返回消息
 	OutputTipType tipType = 6; //客户端提示类型
-	string data = 7; // 数据 JSON
+	bytes data = 7; // 数据 JSON
 	uint64 time = 8; // 当前时间
 	float duration = 9; // 执行时长
 	string body = 10; // 原BODY
+	bytes encrypted = 11; // KEY
 }

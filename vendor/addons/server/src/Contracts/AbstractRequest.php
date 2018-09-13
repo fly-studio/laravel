@@ -4,10 +4,11 @@ namespace Addons\Server\Contracts;
 
 use Closure;
 use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 
 abstract class AbstractRequest {
 
-	protected $options;
+	protected $binder;
 	protected $routeResolver;
 	protected $userResolver;
 
@@ -18,14 +19,19 @@ abstract class AbstractRequest {
 
 	abstract public function keywords(): string;
 
-	public function options()
+	public function options(): ServerOptions
 	{
-		return $this->options;
+		return $this->binder->options();
 	}
 
-	public function with(ServerOptions $options)
+	public function binder(): ConnectBinder
 	{
-		$this->options = $options;
+		return $this->binder;
+	}
+
+	public function with(ConnectBinder $binder)
+	{
+		$this->binder = $binder;
 		return $this;
 	}
 

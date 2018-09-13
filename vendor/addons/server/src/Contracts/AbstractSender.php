@@ -2,9 +2,28 @@
 
 namespace Addons\Server\Contracts;
 
+use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractServer;
 
 abstract class AbstractSender {
+
+	protected $binder;
+
+	public function __construct(ConnectBinder $binder)
+	{
+		$this->binder = $binder;
+	}
+
+	public function options(): ServerOptions
+	{
+		return $this->binder->options();
+	}
+
+	public function binder(): ConnectBinder
+	{
+		return $this->binder;
+	}
 
 	/**
 	 * 标准Send一条数据

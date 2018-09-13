@@ -3,78 +3,91 @@
 namespace Addons\Core\Tools;
 
 use phpseclib\Crypt\RSA;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Encryption\Encrypter;
+use Addons\Core\Tools\Encrypter;
 
 class OutputEncrypt {
 
 	public static $key;
+	private $public;
+	private $private;
 
-	public function getClientEncryptedKey()
+	public function __construct($publicKey, $privateKey = null)
 	{
-		$public = urldecode(request()->header('X-RSA'));
+		$this->public = $publicKey;
+		$this->private = $privateKey;
+	}
+
+	public function encodeByPublic(string $data)
+	{
 		$rsa = new RSA;
 		$rsa->setPublicKey();
 		$rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
-		$rsa->loadKey($public);
-		$key = $rsa->encrypt(base64_encode($this->getAesKey()));
-		return $key ? base64_encode($key) : false;
+		$rsa->loadKey($this->public);
+
+		$key = $rsa->encrypt($data);
+
+		return $key ? $key : null;
 	}
 
-	public function getServerEncryptedKey()
+	public function encodeByPrivate(string $data)
 	{
 		$private = $this->getRsaPrivateKey();
+
 		$rsa = new RSA;
 		$rsa->setPrivateKey();
 		$rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
 		$rsa->loadKey($private);
-		$key = $rsa->encrypt(base64_encode($this->getAesKey()));
-		return $key ? base64_encode($key) : false;
+
+		$key = $rsa->encrypt($data);
+
+		return $key ? $key : null;
 	}
 
-	public function encode($data, $serialize = true)
+	public function encode(string $data)
 	{
-		$e = new Encrypter($this->getAesKey(), config('app.cipher'));
-		return $e->encrypt($data, $serialize);
+		$e = new Encrypter($this->generateAesKey(), config('app.cipher'));
+
+		return $e->encrypt($data, false);
 	}
 
-	public function decode($data, $unserialize = true)
+	public function decode(string $value, string $iv, string $mac)
 	{
-		$e = new Encrypter($this->getAesKey(), config('app.cipher'));
-		return $e->decrypt($data, $unserialize);
+		$e = new Encrypter($this->generateAesKey(), config('app.cipher'));
+
+		return $e->decrypt(compact('value', 'iv', 'mac'), false);
 	}
 
-	public function getAesKey()
+	public function generateAesKey($refresh = false)
 	{
-		$key = session('client.encrpted.aes');
-		if (empty($key)) {
-			$key = random_bytes(config('app.cipher') == 'AES-128-CBC' ? 16 : 32);
-			session(['client.encrpted.aes' => $key]);
-			session()->save();
-		}
-		return $key;
+		static $aes;
+
+		if (empty($aes) || $refresh)
+			$aes = Encrypter::generateKey(config('app.cipher'));
+
+		return $aes;
 	}
 
-	public function getRsaKeys($key = null)
+	public function generateRsaKeys($refresh = true)
 	{
-		$keys = session('client.encrpted.rsa');
-		if (empty($keys)) {
+		static $rsaKeys;
+
+		if (empty($rsaKeys) || $refresh) {
+
 			$rsa = new RSA;
-			$_keys = $rsa->createKey(2048);
-			session(['client.encrpted.rsa' => $keys]);
-			session()->save();
+			$rsaKeys = $rsa->createKey(2048);
 		}
-		return is_null($key) ? $keys : $keys[$key];
+
+		return $rsaKeys;
 	}
 
 	public function getRsaPublicKey()
 	{
-		return $this->getRsaKeys('publickey');
+		return $this->generateRsaKeys()['publickey'];
 	}
 
 	public function getRsaPrivateKey()
 	{
-		return $this->getRsaKeys('privatekey');
+		return $this->generateRsaKeys()['privatekey'];
 	}
 
 }

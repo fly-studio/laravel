@@ -5,7 +5,6 @@ namespace Addons\Server;
 use Closure;
 use RuntimException;
 use Addons\Server\Servers\Server;
-use Addons\Server\Structs\ServerOptions;
 
 class Kernel {
 

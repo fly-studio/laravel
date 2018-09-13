@@ -4,7 +4,7 @@ namespace Addons\Server\Servers;
 
 use Addons\Server\Servers\Server;
 use Addons\Server\Senders\HttpSender;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Observers\HttpObserver;
 use Addons\Server\Listeners\HttpListener;
 use Addons\Server\Contracts\AbstractSender;
@@ -44,12 +44,10 @@ class HttpServer extends Server {
 		parent::initServer($server, $config);
 	}
 
-	protected function makeSender(ServerOptions $options, ...$args): AbstractSender
+	protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender
 	{
 		//One tunnel has multi-http-stream
-		//return $this->pool->getBindIf($options->unique(), 'http-sender', function() use($options, $args) {
-			return new HttpSender($options, ...$args);
-		//});
+		return new HttpSender($options, ...$args);
 	}
 
 	protected function createObserver(): AbstractObserver

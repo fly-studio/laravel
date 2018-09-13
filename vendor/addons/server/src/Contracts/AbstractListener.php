@@ -2,7 +2,7 @@
 
 namespace Addons\Server\Contracts;
 
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Func\Contracts\TraitsBootTrait;
 use Addons\Server\Contracts\AbstractServer;
 
@@ -19,9 +19,9 @@ abstract class AbstractListener {
 		$this->bootIfNotBooted();
 	}
 
-	protected function recv(ServerOptions $options, ...$args)
+	protected function recv(ConnectBinder $binder, ...$args)
 	{
-		$this->server->handle($options, ...$args);
+		$this->server->handle($binder, ...$args);
 	}
 
 }

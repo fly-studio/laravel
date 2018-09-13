@@ -9,7 +9,7 @@ use Addons\Server\Senders\TcpSender;
 use Addons\Server\Observers\Observer;
 use Addons\Server\Listeners\TcpListener;
 use Addons\Server\Listeners\UdpListener;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractServer;
 use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractObserver;
@@ -50,18 +50,20 @@ class Server extends AbstractServer {
 		]);
 	}
 
-	protected function makeSender(ServerOptions $options, ...$args): AbstractSender
+	protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender
 	{
 		$sender = null;
+		$options = $binder->options();
+
 		switch ($options->socket_type()) {
 			case SWOOLE_SOCK_UDP:
 			case SWOOLE_SOCK_UDP6:
-				$sender = new UdpSender($options, ...$args);
+				$sender = new UdpSender($binder, ...$args);
 				break;
 			case SWOOLE_SOCK_TCP:
 			case SWOOLE_SOCK_TCP6:
-				$sender = $this->pool->getBindIf($options->unique(), 'sender', function() use($options, $args) {
-					return new TcpSender($options, ...$args);
+				$sender = $binder->getBindIf('sender', function() use($binder, $args) {
+					return new TcpSender($binder, ...$args);
 				});
 				break;
 		}

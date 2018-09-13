@@ -2,25 +2,19 @@
 
 namespace Addons\Server\Senders;
 
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractSender;
 
 class HttpSender extends AbstractSender {
 
-	protected $options;
 	protected $request;
 	protected $response;
 
-	public function __construct(ServerOptions $options, \swoole_http_request $request, \swoole_http_response $response)
+	public function __construct(ConnectBinder $binder, \swoole_http_request $request, \swoole_http_response $response)
 	{
-		$this->options = $options;
+		$this->binder = $binder;
 		$this->request = $request;
 		$this->response = $response;
-	}
-
-	public function options()
-	{
-		return $this->options;
 	}
 
 	public function request()
@@ -64,6 +58,6 @@ class HttpSender extends AbstractSender {
 
 	protected function getLastError()
 	{
-		return $this->options->server()->getLastError();
+		return $this->options()->server()->getLastError();
 	}
 }

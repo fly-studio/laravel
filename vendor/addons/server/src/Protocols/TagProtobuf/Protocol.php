@@ -5,7 +5,7 @@ namespace Addons\Server\Protocols\TagProtobuf;
 use Google\Protobuf\Internal\Message;
 use Addons\Server\Responses\RawResponse;
 use Addons\Core\Contracts\Protobufable;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractRequest;
 use Addons\Server\Contracts\AbstractResponse;
 use Addons\Server\Contracts\AbstractProtocol;
@@ -16,15 +16,15 @@ class Protocol extends AbstractProtocol {
 
 	use PackageOffsetTrait;
 
-	public function decode(ServerOptions $options , ...$args) : ?AbstractRequest
+	public function decode(ConnectBinder $binder , ...$args) : ?AbstractRequest
 	{
 		$raw = $args[0];
 
 		if (is_null($raw))
 			return null;
 
-		if (strlen($raw) <= 6)
-			throw new \Exception('RAW size <= 6');
+		if (strlen($raw) < 6)
+			throw new \Exception('RAW size < 6');
 
 		$protocol = substr($raw, 0, 2);
 		list(, $length) = unpack('N', substr($raw, 2, 4));
@@ -40,13 +40,13 @@ class Protocol extends AbstractProtocol {
 		if ($response instanceof AbstractResponse)
 			$response = $response;
 		else if ($response instanceof Protobufable)
-			$response = new Response(null, $response->toProtobuf());
+			$response = new Response($request->protocol(), $response->toProtobuf());
 		else if ($response instanceof Message)
-			$response = new Response(null, $response);
+			$response = new Response($request->protocol(), $response);
 		else if (empty($response) && !is_numeric($response))
 			return null;
 		else
-			$response = new RawResponse(@strval($response));
+			$response = new Response($request->protocol(), @strval($response));
 
 		return $response;
 	}

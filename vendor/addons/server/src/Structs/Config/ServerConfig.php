@@ -20,7 +20,7 @@ class ServerConfig {
 	public $group = null;
 	public $sub_hosts = []; // array<Host>
 	public $backlog = 128;
-	public $heartbeat_check_interval = 5;
+	public $heartbeat_check_interval = 60;
 	public $heartbeat_idle_time = 60;
 
 	//SSL

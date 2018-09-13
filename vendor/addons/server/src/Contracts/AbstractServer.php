@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Addons\Server\Routing\Router;
 use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Structs\ConnectPool;
-use Addons\Server\Structs\ServerOptions;
+use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractObserver;
 use Addons\Server\Structs\Config\ServerConfig;
@@ -50,7 +50,7 @@ abstract class AbstractServer {
 	abstract protected function createServer(ServerConfig $config): \swoole_server;
 	abstract protected function initServer(\swoole_server $server, ServerConfig $config);
 	abstract protected function createObserver(): AbstractObserver;
-	abstract protected function makeSender(ServerOptions $options, ...$args): AbstractSender;
+	abstract protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender;
 	abstract protected function getAutoListeners(): array;
 
 	public function listening(...$listenerClasses)
@@ -120,34 +120,34 @@ abstract class AbstractServer {
 	 * 核心request、response函数，
 	 * 接受数据之后，进入本函数
 	 *
-	 * @param  ServerOptions $options
+	 * @param  ConnectBinder $binder
 	 * @param  [type]        $args
 	 */
-	public function handle(ServerOptions $options, ...$args)
+	public function handle(ConnectBinder $binder, ...$args)
 	{
 		if (empty($this->capture))
 			return;
 
 		try {
 
-			$request = $this->capture->decode($options, ...$args);
+			$request = $this->capture->decode($binder, ...$args);
 			if (empty($request))
 				return;
 
-			$request->with($options);
+			$request->with($binder);
 			$result = $this->router->dispatchToRoute($request);
 
 			$response = $this->capture->encode($request, $result, ...$args);
 			if (empty($response))
 				return;
 
-			$response->with($options, $this->makeSender($options, ...$args));
+			$response->with($binder, $this->makeSender($binder, ...$args));
 			$response->bootIfNotBooted();
 			$response->prepare($request);
 			$response->send();
 
 		} catch (\Exception $e) {
-			$this->capture->failed($options, $e);
+			$this->capture->failed($binder, $e);
 		}
 	}
 

@@ -18,9 +18,11 @@ class TcpListener extends AbstractListener {
 	 */
 	public function onReceive($fd, $reactor_id, $data)
 	{
-		$options = $this->pool->get($fd);
-		if (empty($options))
+		$binder = $this->pool->get($fd);
+		if (empty($binder))
 			return;
+
+		$options = $binder->options();
 
 		$this->updateServerOptions($options, $fd);
 
@@ -28,7 +30,7 @@ class TcpListener extends AbstractListener {
 		$options->logger('debug', print_r($options->toArray(), true));
 		$options->logger('hex', $data);
 
-		$this->recv($options, $data);
+		$this->recv($binder, $data);
 	}
 
 
