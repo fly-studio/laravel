@@ -28,7 +28,7 @@ class Response extends RawResponse {
 		$content = $this->getContent() instanceof Message ? $this->getContent()->serializeToString() : $this->getContent();
 
 		$this->setContent($this->protocol. pack('N', strlen($content)) .$content);
-		hex_dump($this->content);
+		//hex_dump($this->content);
 
 		return $this;
 	}
