@@ -49,14 +49,14 @@ class AcceptHeaderItem
     }
 
     /**
-     * Returns header  value's string representation.
+     * Returns header value's string representation.
      *
      * @return string
      */
     public function __toString()
     {
         $string = $this->value.($this->quality < 1 ? ';q='.$this->quality : '');
-        if (count($this->attributes) > 0) {
+        if (\count($this->attributes) > 0) {
             $string .= '; '.HeaderUtils::toString($this->attributes, ';');
         }
 

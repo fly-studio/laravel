@@ -1,29 +1,15 @@
 <?php
-/**
- * This file is part of the Laravel Auditing package.
- *
- * @author     Antério Vieira <anteriovieira@gmail.com>
- * @author     Quetzy Garcia  <quetzyg@altek.org>
- * @author     Raphael França <raphaelfrancabsb@gmail.com>
- * @copyright  2015-2018
- *
- * For the full copyright and license information,
- * please view the LICENSE.md file that was distributed
- * with this source code.
- */
 
 namespace OwenIt\Auditing\Contracts;
-
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 interface Audit
 {
     /**
-     * Get the database connection for the model.
+     * Get the current connection name for the model.
      *
-     * @return \Illuminate\Database\Connection
+     * @return string|null
      */
-    public function getConnection();
+    public function getConnectionName();
 
     /**
      * Get the table associated with the model.
@@ -35,16 +21,16 @@ interface Audit
     /**
      * Get the auditable model to which this Audit belongs.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return mixed
      */
-    public function auditable(): MorphTo;
+    public function auditable();
 
     /**
      * User responsible for the changes.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return mixed
      */
-    public function user(): MorphTo;
+    public function user();
 
     /**
      * Audit data resolver.

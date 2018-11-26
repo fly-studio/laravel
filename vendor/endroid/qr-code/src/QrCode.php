@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * (c) Jeroen van den Enden <info@endroid.nl>
  *
@@ -42,6 +44,7 @@ class QrCode implements QrCodeInterface
 
     private $logoPath;
     private $logoWidth;
+    private $logoHeight;
 
     private $label;
     private $labelFontSize = 16;
@@ -56,6 +59,7 @@ class QrCode implements QrCodeInterface
 
     private $writerRegistry;
     private $writer;
+    private $writerOptions = [];
     private $validateResult = false;
 
     public function __construct(string $text = '')
@@ -170,6 +174,12 @@ class QrCode implements QrCodeInterface
         return $this->logoPath;
     }
 
+    public function setLogoSize(int $logoWidth, int $logoHeight = null): void
+    {
+        $this->logoWidth = $logoWidth;
+        $this->logoHeight = $logoHeight;
+    }
+
     public function setLogoWidth(int $logoWidth): void
     {
         $this->logoWidth = $logoWidth;
@@ -178,6 +188,16 @@ class QrCode implements QrCodeInterface
     public function getLogoWidth(): ?int
     {
         return $this->logoWidth;
+    }
+
+    public function setLogoHeight(int $logoHeight): void
+    {
+        $this->logoHeight = $logoHeight;
+    }
+
+    public function getLogoHeight(): ?int
+    {
+        return $this->logoHeight;
     }
 
     public function setLabel(string $label, int $labelFontSize = null, string $labelFontPath = null, string $labelAlignment = null, array $labelMargin = null): void
@@ -277,6 +297,16 @@ class QrCode implements QrCodeInterface
         }
 
         return $this->writerRegistry->getDefaultWriter();
+    }
+
+    public function setWriterOptions(array $writerOptions): void
+    {
+        $this->writerOptions = $writerOptions;
+    }
+
+    public function getWriterOptions(): array
+    {
+        return $this->writerOptions;
     }
 
     private function createWriterRegistry()

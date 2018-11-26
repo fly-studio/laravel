@@ -33,6 +33,13 @@ class Builder
     public $callback;
 
     /**
+     * Optional callback before model query execution.
+     *
+     * @var \Closure|null
+     */
+    public $queryCallback;
+
+    /**
      * The custom index specified for the search.
      *
      * @var string
@@ -162,6 +169,49 @@ class Builder
     }
 
     /**
+     * Apply the callback's query changes if the given "value" is true.
+     *
+     * @param  mixed  $value
+     * @param  callable  $callback
+     * @param  callable  $default
+     * @return mixed
+     */
+    public function when($value, $callback, $default = null)
+    {
+        if ($value) {
+            return $callback($this, $value) ?: $this;
+        } elseif ($default) {
+            return $default($this, $value) ?: $this;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Pass the query to a given callback.
+     *
+     * @param  \Closure  $callback
+     * @return $this
+     */
+    public function tap($callback)
+    {
+        return $this->when(true, $callback);
+    }
+
+    /**
+     * Set the callback that should have an opportunity to modify the database query.
+     *
+     * @param  callable  $callback
+     * @return $this
+     */
+    public function query($callback)
+    {
+        $this->queryCallback = $callback;
+
+        return $this;
+    }
+
+    /**
      * Get the raw results of the search.
      *
      * @return mixed
@@ -218,7 +268,7 @@ class Builder
         $perPage = $perPage ?: $this->model->getPerPage();
 
         $results = Collection::make($engine->map(
-            $rawResults = $engine->paginate($this, $perPage, $page), $this->model
+            $this, $rawResults = $engine->paginate($this, $perPage, $page), $this->model
         ));
 
         $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($rawResults), $perPage, $page, [
@@ -245,7 +295,7 @@ class Builder
 
         $perPage = $perPage ?: $this->model->getPerPage();
 
-        $results =  $engine->paginate($this, $perPage, $page);
+        $results = $engine->paginate($this, $perPage, $page);
 
         $paginator = (new LengthAwarePaginator($results, $engine->getTotalCount($results), $perPage, $page, [
             'path' => Paginator::resolveCurrentPath(),

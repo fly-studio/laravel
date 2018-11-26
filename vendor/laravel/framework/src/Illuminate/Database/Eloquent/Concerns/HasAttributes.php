@@ -478,7 +478,9 @@ trait HasAttributes
             case 'real':
             case 'float':
             case 'double':
-                return (float) $value;
+                return $this->fromFloat($value);
+            case 'decimal':
+                return $this->asDecimal($value, explode(':', $this->getCasts()[$key], 2)[1]);
             case 'string':
                 return (string) $value;
             case 'bool':
@@ -515,6 +517,10 @@ trait HasAttributes
             return 'custom_datetime';
         }
 
+        if ($this->isDecimalCast($this->getCasts()[$key])) {
+            return 'decimal';
+        }
+
         return trim(strtolower($this->getCasts()[$key]));
     }
 
@@ -531,11 +537,22 @@ trait HasAttributes
     }
 
     /**
+     * Determine if the cast type is a decimal cast.
+     *
+     * @param  string  $cast
+     * @return bool
+     */
+    protected function isDecimalCast($cast)
+    {
+        return strncmp($cast, 'decimal:', 8) === 0;
+    }
+
+    /**
      * Set a given attribute on the model.
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @return $this
+     * @return mixed
      */
     public function setAttribute($key, $value)
     {
@@ -543,9 +560,7 @@ trait HasAttributes
         // which simply lets the developers tweak the attribute as it is set on
         // the model, such as "json_encoding" an listing of data for storage.
         if ($this->hasSetMutator($key)) {
-            $method = 'set'.Str::studly($key).'Attribute';
-
-            return $this->{$method}($value);
+            return $this->setMutatedAttributeValue($key, $value);
         }
 
         // If an attribute is listed as a "date", we'll convert it from a DateTime
@@ -583,6 +598,18 @@ trait HasAttributes
     }
 
     /**
+     * Set the value of an attribute using its mutator.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
+    protected function setMutatedAttributeValue($key, $value)
+    {
+        return $this->{'set'.Str::studly($key).'Attribute'}($value);
+    }
+
+    /**
      * Determine if the given attribute is a date or date castable.
      *
      * @param  string  $key
@@ -603,7 +630,7 @@ trait HasAttributes
      */
     public function fillJsonAttribute($key, $value)
     {
-        list($key, $path) = explode('->', $key, 2);
+        [$key, $path] = explode('->', $key, 2);
 
         $this->attributes[$key] = $this->asJson($this->getArrayAttributeWithValue(
             $path, $key, $value
@@ -680,6 +707,38 @@ trait HasAttributes
     public function fromJson($value, $asObject = false)
     {
         return json_decode($value, ! $asObject);
+    }
+
+    /**
+     * Decode the given float.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function fromFloat($value)
+    {
+        switch ((string) $value) {
+            case 'Infinity':
+                return INF;
+            case '-Infinity':
+                return -INF;
+            case 'NaN':
+                return NAN;
+            default:
+                return (float) $value;
+        }
+    }
+
+    /**
+     * Return a decimal as string.
+     *
+     * @param  float  $value
+     * @param  int  $decimals
+     * @return string
+     */
+    protected function asDecimal($value, $decimals)
+    {
+        return number_format($value, $decimals, '.', '');
     }
 
     /**

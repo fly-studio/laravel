@@ -46,7 +46,7 @@ class AlgoliaEngine extends Engine
             $models->each->pushSoftDeleteMetadata();
         }
 
-        $index->addObjects($models->map(function ($model) {
+        $objects = $models->map(function ($model) {
             $array = array_merge(
                 $model->toSearchableArray(), $model->scoutMetadata()
             );
@@ -56,7 +56,11 @@ class AlgoliaEngine extends Engine
             }
 
             return array_merge(['objectID' => $model->getScoutKey()], $array);
-        })->filter()->values()->all());
+        })->filter()->values()->all();
+
+        if (! empty($objects)) {
+            $index->addObjects($objects);
+        }
     }
 
     /**
@@ -159,18 +163,19 @@ class AlgoliaEngine extends Engine
     /**
      * Map the given results to instances of the given model.
      *
+     * @param  \Laravel\Scout\Builder  $builder
      * @param  mixed  $results
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function map($results, $model)
+    public function map(Builder $builder, $results, $model)
     {
         if (count($results['hits']) === 0) {
             return Collection::make();
         }
 
         $models = $model->getScoutModelsByIds(
-            collect($results['hits'])->pluck('objectID')->values()->all()
+            $builder, collect($results['hits'])->pluck('objectID')->values()->all()
         )->keyBy(function ($model) {
             return $model->getScoutKey();
         });
@@ -191,6 +196,19 @@ class AlgoliaEngine extends Engine
     public function getTotalCount($results)
     {
         return $results['nbHits'];
+    }
+
+    /**
+     * Flush all of the model's records from the engine.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return void
+     */
+    public function flush($model)
+    {
+        $index = $this->algolia->initIndex($model->searchableAs());
+
+        $index->clearIndex();
     }
 
     /**

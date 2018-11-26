@@ -77,9 +77,10 @@ class TransportManager extends Manager
             'version' => 'latest', 'service' => 'email',
         ]);
 
-        return new SesTransport(new SesClient(
-            $this->addSesCredentials($config)
-        ));
+        return new SesTransport(
+            new SesClient($this->addSesCredentials($config)),
+            $config['options'] ?? []
+        );
     }
 
     /**
@@ -118,7 +119,9 @@ class TransportManager extends Manager
 
         return new MailgunTransport(
             $this->guzzle($config),
-            $config['secret'], $config['domain']
+            $config['secret'],
+            $config['domain'],
+            $config['endpoint'] ?? null
         );
     }
 
@@ -157,7 +160,11 @@ class TransportManager extends Manager
      */
     protected function createLogDriver()
     {
-        return new LogTransport($this->app->make(LoggerInterface::class));
+        $channel = $this->app['config']['mail.log_channel'];
+
+        return new LogTransport(
+            $this->app->make(LoggerInterface::class)->channel($channel)
+        );
     }
 
     /**

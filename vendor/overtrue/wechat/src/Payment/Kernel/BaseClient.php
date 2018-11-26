@@ -14,6 +14,8 @@ namespace EasyWeChat\Payment\Kernel;
 use EasyWeChat\Kernel\Support;
 use EasyWeChat\Kernel\Traits\HasHttpRequests;
 use EasyWeChat\Payment\Application;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -64,6 +66,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function request(string $endpoint, array $params = [], $method = 'post', array $options = [], $returnResponse = false)
     {
@@ -81,9 +84,23 @@ class BaseClient
             'body' => Support\XML::build($params),
         ], $options);
 
+        $this->pushMiddleware($this->logMiddleware(), 'log');
+
         $response = $this->performRequest($endpoint, $method, $options);
 
         return $returnResponse ? $response : $this->castResponseToType($response, $this->app->config->get('response_type'));
+    }
+
+    /**
+     * Log the request.
+     *
+     * @return \Closure
+     */
+    protected function logMiddleware()
+    {
+        $formatter = new MessageFormatter($this->app['config']['http.log_template'] ?? MessageFormatter::DEBUG);
+
+        return Middleware::log($this->app['logger'], $formatter);
     }
 
     /**
@@ -97,6 +114,7 @@ class BaseClient
      * @return ResponseInterface
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function requestRaw($endpoint, array $params = [], $method = 'post', array $options = [])
     {
@@ -114,6 +132,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     protected function safeRequest($endpoint, array $params, $method = 'post', array $options = [])
     {

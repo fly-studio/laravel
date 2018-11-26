@@ -15,9 +15,9 @@ use EasyWeChat\Kernel\Contracts\AccessTokenInterface;
 use EasyWeChat\Kernel\Http\Response;
 use EasyWeChat\Kernel\Traits\HasHttpRequests;
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Monolog\Logger;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -189,13 +189,13 @@ class BaseClient
     }
 
     /**
-     * Return GuzzleHttp\Client instance.
+     * Return GuzzleHttp\ClientInterface instance.
      *
-     * @return \GuzzleHttp\Client
+     * @return ClientInterface
      */
-    public function getHttpClient(): Client
+    public function getHttpClient(): ClientInterface
     {
-        if (!($this->httpClient instanceof Client)) {
+        if (!($this->httpClient instanceof ClientInterface)) {
             $this->httpClient = $this->app['http_client'] ?? new Client();
         }
 
@@ -258,7 +258,7 @@ class BaseClient
             ResponseInterface $response = null
         ) {
             // Limit the number of retries to 2
-            if ($retries < $this->app->config->get('http.retries', 1) && $response && $body = $response->getBody()) {
+            if ($retries < $this->app->config->get('http.max_retries', 1) && $response && $body = $response->getBody()) {
                 // Retry on server errors
                 $response = json_decode($body, true);
 

@@ -1,16 +1,4 @@
 <?php
-/**
- * This file is part of the Laravel Auditing package.
- *
- * @author     Antério Vieira <anteriovieira@gmail.com>
- * @author     Quetzy Garcia  <quetzyg@altek.org>
- * @author     Raphael França <raphaelfrancabsb@gmail.com>
- * @copyright  2015-2018
- *
- * For the full copyright and license information,
- * please view the LICENSE.md file that was distributed
- * with this source code.
- */
 
 namespace OwenIt\Auditing;
 
@@ -18,7 +6,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use OwenIt\Auditing\Contracts\AuditRedactor;
+use OwenIt\Auditing\Contracts\AttributeEncoder;
+use OwenIt\Auditing\Contracts\AttributeRedactor;
 use OwenIt\Auditing\Contracts\IpAddressResolver;
 use OwenIt\Auditing\Contracts\UrlResolver;
 use OwenIt\Auditing\Contracts\UserAgentResolver;
@@ -98,7 +87,7 @@ trait Auditable
         if (!$this->getAuditTimestamps()) {
             array_push($this->excludedAttributes, $this->getCreatedAtColumn(), $this->getUpdatedAtColumn());
 
-            if (in_array(SoftDeletes::class, class_uses_recursive($this))) {
+            if (in_array(SoftDeletes::class, class_uses_recursive(get_class($this)))) {
                 $this->excludedAttributes[] = $this->getDeletedAtColumn();
             }
         }
@@ -219,7 +208,7 @@ trait Auditable
     }
 
     /**
-     * Redact attribute value.
+     * Modify attribute value.
      *
      * @param string $attribute
      * @param mixed  $value
@@ -228,21 +217,25 @@ trait Auditable
      *
      * @return mixed
      */
-    protected function redactAttributeValue(string $attribute, $value)
+    protected function modifyAttributeValue(string $attribute, $value)
     {
-        $auditRedactors = $this->getAuditRedactors();
+        $attributeModifiers = $this->getAttributeModifiers();
 
-        if (!array_key_exists($attribute, $auditRedactors)) {
+        if (!array_key_exists($attribute, $attributeModifiers)) {
             return $value;
         }
 
-        $auditRedactor = $auditRedactors[$attribute];
+        $attributeModifier = $attributeModifiers[$attribute];
 
-        if (is_subclass_of($auditRedactor, AuditRedactor::class)) {
-            return call_user_func([$auditRedactor, 'redact'], $value);
+        if (is_subclass_of($attributeModifier, AttributeRedactor::class)) {
+            return call_user_func([$attributeModifier, 'redact'], $value);
         }
 
-        throw new AuditingException('Invalid AuditRedactor implementation');
+        if (is_subclass_of($attributeModifier, AttributeEncoder::class)) {
+            return call_user_func([$attributeModifier, 'encode'], $value);
+        }
+
+        throw new AuditingException(sprintf('Invalid AttributeModifier implementation: %s', $attributeModifier));
     }
 
     /**
@@ -268,13 +261,13 @@ trait Auditable
 
         list($old, $new) = $this->$attributeGetter();
 
-        if ($this->getAuditRedactors() && Config::get('audit.redact', false)) {
+        if ($this->getAttributeModifiers()) {
             foreach ($old as $attribute => $value) {
-                $old[$attribute] = $this->redactAttributeValue($attribute, $value);
+                $old[$attribute] = $this->modifyAttributeValue($attribute, $value);
             }
 
             foreach ($new as $attribute => $value) {
-                $new[$attribute] = $this->redactAttributeValue($attribute, $value);
+                $new[$attribute] = $this->modifyAttributeValue($attribute, $value);
             }
         }
 
@@ -548,9 +541,9 @@ trait Auditable
     /**
      * {@inheritdoc}
      */
-    public function getAuditRedactors(): array
+    public function getAttributeModifiers(): array
     {
-        return $this->auditRedactors ?? [];
+        return $this->attributeModifiers ?? [];
     }
 
     /**
@@ -585,11 +578,10 @@ trait Auditable
         }
 
         // Redacted data should not be used when transitioning states
-        if ($auditRedactors = $this->getAuditRedactors()) {
-            throw new AuditableTransitionException(
-                'Cannot transition states when Audit redactors are set',
-                $auditRedactors
-            );
+        foreach ($this->getAttributeModifiers() as $attribute => $modifier) {
+            if (is_subclass_of($modifier, AttributeRedactor::class)) {
+                throw new AuditableTransitionException('Cannot transition states when an AttributeRedactor is set');
+            }
         }
 
         // The attribute compatibility between the Audit and the Auditable model must be met

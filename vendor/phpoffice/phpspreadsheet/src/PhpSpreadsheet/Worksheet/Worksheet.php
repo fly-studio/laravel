@@ -38,6 +38,13 @@ class Worksheet implements IComparable
     const SHEETSTATE_VERYHIDDEN = 'veryHidden';
 
     /**
+     * Maximum 31 characters allowed for sheet title.
+     *
+     * @var int
+     */
+    const SHEET_TITLE_MAXIMUM_LENGTH = 31;
+
+    /**
      * Invalid characters in sheet title.
      *
      * @var array
@@ -434,9 +441,9 @@ class Worksheet implements IComparable
             throw new Exception('Invalid character found in sheet code name');
         }
 
-        // Maximum 31 characters allowed for sheet title
-        if ($CharCount > 31) {
-            throw new Exception('Maximum 31 characters allowed in sheet code name.');
+        // Enforce maximum characters allowed for sheet title
+        if ($CharCount > self::SHEET_TITLE_MAXIMUM_LENGTH) {
+            throw new Exception('Maximum ' . self::SHEET_TITLE_MAXIMUM_LENGTH . ' characters allowed in sheet code name.');
         }
 
         return $pValue;
@@ -458,9 +465,9 @@ class Worksheet implements IComparable
             throw new Exception('Invalid character found in sheet title');
         }
 
-        // Maximum 31 characters allowed for sheet title
-        if (Shared\StringHelper::countCharacters($pValue) > 31) {
-            throw new Exception('Maximum 31 characters allowed in sheet title.');
+        // Enforce maximum characters allowed for sheet title
+        if (Shared\StringHelper::countCharacters($pValue) > self::SHEET_TITLE_MAXIMUM_LENGTH) {
+            throw new Exception('Maximum ' . self::SHEET_TITLE_MAXIMUM_LENGTH . ' characters allowed in sheet title.');
         }
 
         return $pValue;
@@ -2722,12 +2729,12 @@ class Worksheet implements IComparable
     public static function extractSheetTitle($pRange, $returnRange = false)
     {
         // Sheet title included?
-        if (($sep = strpos($pRange, '!')) === false) {
-            return '';
+        if (($sep = strrpos($pRange, '!')) === false) {
+            return $returnRange ? ['', $pRange] : '';
         }
 
         if ($returnRange) {
-            return [trim(substr($pRange, 0, $sep), "'"), substr($pRange, $sep + 1)];
+            return [substr($pRange, 0, $sep), substr($pRange, $sep + 1)];
         }
 
         return substr($pRange, $sep + 1);
@@ -2956,13 +2963,14 @@ class Worksheet implements IComparable
                     $newCollection = $this->cellCollection->cloneCellCollection($this);
                     $this->cellCollection = $newCollection;
                 } elseif ($key == 'drawingCollection') {
-                    $newCollection = new ArrayObject();
-                    foreach ($this->drawingCollection as $id => $item) {
+                    $currentCollection = $this->drawingCollection;
+                    $this->drawingCollection = new ArrayObject();
+                    foreach ($currentCollection as $item) {
                         if (is_object($item)) {
-                            $newCollection[$id] = clone $this->drawingCollection[$id];
+                            $newDrawing = clone $item;
+                            $newDrawing->setWorksheet($this);
                         }
                     }
-                    $this->drawingCollection = $newCollection;
                 } elseif (($key == 'autoFilter') && ($this->autoFilter instanceof AutoFilter)) {
                     $newAutoFilter = clone $this->autoFilter;
                     $this->autoFilter = $newAutoFilter;
@@ -3051,6 +3059,6 @@ class Worksheet implements IComparable
      */
     public function hasCodeName()
     {
-        return !($this->codeName === null);
+        return $this->codeName !== null;
     }
 }

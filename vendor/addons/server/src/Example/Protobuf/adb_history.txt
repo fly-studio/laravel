@@ -1,0 +1,101 @@
+root@shamu:/ # netstat -ano
+Proto Recv-Q Send-Q Local Address          Foreign Address        State
+ tcp       0      0 0.0.0.0:18016          0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:25000          0.0.0.0:*              LISTEN
+ tcp       0      0 127.0.0.1:5037         0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:6703           0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:5554           0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:5555           0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:8470           0.0.0.0:*              LISTEN
+ tcp       0      0 0.0.0.0:18011          0.0.0.0:*              LISTEN
+ tcp       0      0 127.0.0.1:40330        127.0.0.1:10088        ESTABLISHED
+ tcp       0     97 172.17.99.15:5555      172.17.99.2:50877      ESTABLISHED
+ tcp       0      0 127.0.0.1:46918        127.0.0.1:8470         ESTABLISHED
+ tcp       0      0 127.0.0.1:40331        127.0.0.1:10088        ESTABLISHED
+ tcp       0      0 127.0.0.1:48015        127.0.0.1:6703         ESTABLISHED
+ tcp       0      0 127.0.0.1:8470         127.0.0.1:46918        ESTABLISHED
+ tcp       0      0 10.0.0.2:40292         203.119.216.255:80     ESTABLISHED
+ tcp       0      0 127.0.0.1:6703         127.0.0.1:48015        ESTABLISHED
+ udp       0      0 0.0.0.0:22469          0.0.0.0:*              CLOSE
+tcp6       0      0 :::10088               :::*                   LISTEN
+tcp6       0      0 :::8266                :::*                   LISTEN
+tcp6       0      0 :::18014               :::*                   LISTEN
+tcp6      32      0 ::ffff:172.17.100.15:59226 ::ffff:180.163.21.143:443 CLOSE_WAIT
+tcp6       1      1 ::ffff:172.17.100.15:54598 ::ffff:101.201.245.239:80 LAST_ACK
+tcp6       1      1 ::ffff:172.17.100.15:49736 ::ffff:101.201.245.239:80 LAST_ACK
+tcp6       1      1 ::ffff:172.17.100.15:43355 ::ffff:101.201.245.239:80 LAST_ACK
+tcp6       1      0 ::ffff:172.17.100.15:60015 ::ffff:101.227.143.74:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:37746 ::ffff:101.227.160.45:80 CLOSE_WAIT
+tcp6     295      0 ::ffff:10.0.0.2:48422  ::ffff:203.107.1.1:80  ESTABLISHED
+tcp6       0      0 ::ffff:172.17.100.15:55130 ::ffff:101.227.131.64:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:57055 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:51762 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:50742 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       0    114 ::ffff:10.0.0.2:46115  ::ffff:192.168.1.30:7000 ESTABLISHED
+tcp6      32      0 ::ffff:172.17.100.15:37343 ::ffff:203.119.129.122:443 CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:56467 ::ffff:140.205.172.22:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:10.0.0.2:38930  ::ffff:47.100.42.159:443 ESTABLISHED
+tcp6       1      0 ::ffff:172.17.100.15:51723 ::ffff:54.223.60.37:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:57057 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:46355 ::ffff:180.76.234.116:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:10.0.0.2:34720  ::ffff:101.226.211.211:80 ESTABLISHED
+tcp6       0      0 ::ffff:172.17.100.15:46363 ::ffff:180.76.234.116:80 CLOSE_WAIT
+tcp6      31      0 ::ffff:10.0.0.2:38873  ::ffff:203.119.129.122:443 ESTABLISHED
+tcp6       1      1 ::ffff:172.17.100.15:39311 ::ffff:101.201.245.239:80 LAST_ACK
+tcp6       0      0 ::ffff:10.0.0.2:45585  ::ffff:101.227.160.45:80 ESTABLISHED
+tcp6      32      0 ::ffff:172.17.100.15:51188 ::ffff:59.110.146.153:443 CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:54031 ::ffff:47.100.42.159:443 ESTABLISHED
+tcp6     317      0 ::ffff:10.0.0.2:41152  ::ffff:203.107.1.1:80  ESTABLISHED
+tcp6      32      0 ::ffff:172.17.100.15:42832 ::ffff:60.205.12.229:443 CLOSE_WAIT
+tcp6      32      0 ::ffff:172.17.100.15:42399 ::ffff:60.205.12.229:443 CLOSE_WAIT
+tcp6       1      1 ::ffff:172.17.100.15:60408 ::ffff:59.110.147.74:80 LAST_ACK
+tcp6       1      0 ::ffff:172.17.100.15:36674 ::ffff:14.17.43.112:80 CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:60659 ::ffff:61.151.168.140:80 CLOSE_WAIT
+tcp6     322      0 ::ffff:10.0.0.2:60165  ::ffff:203.107.1.1:80  ESTABLISHED
+tcp6      32      0 ::ffff:172.17.100.15:36505 ::ffff:59.110.146.153:443 CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:34941 ::ffff:203.119.129.122:443 CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:47038 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       1      0 ::ffff:172.17.100.15:45024 ::ffff:54.223.60.37:80 CLOSE_WAIT
+tcp6       0      7 ::ffff:172.17.100.15:48312 ::ffff:101.226.211.211:80 FIN_WAIT1
+tcp6       0      0 ::ffff:127.0.0.1:10088 ::ffff:127.0.0.1:40331 ESTABLISHED
+tcp6       1      0 ::ffff:172.17.100.15:35136 ::ffff:101.227.160.45:80 CLOSE_WAIT
+tcp6       0      0 ::ffff:127.0.0.1:10088 ::ffff:127.0.0.1:40330 ESTABLISHED
+tcp6       0      0 ::ffff:172.17.100.15:57056 ::ffff:203.107.1.1:80  CLOSE_WAIT
+tcp6       0      0 ::ffff:172.17.100.15:34257 ::ffff:101.226.211.211:80 ESTABLISHED
+tcp6       0      0 ::ffff:172.17.100.15:57849 ::ffff:203.119.216.255:80 ESTABLISHED
+tcp6       1      0 ::ffff:172.17.100.15:35061 ::ffff:101.227.143.74:80 CLOSE_WAIT
+udp6       0      0 ::ffff:172.17.100.15:49681 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:43088 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:44121 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 :::18012               :::*                   CLOSE
+udp6       0      0 ::ffff:172.17.100.15:59494 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:54386 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:57995 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:33954 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:48824 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:43720 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:41683 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:51415 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:56056 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:46355 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:41762 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:53032 ::ffff:8.8.8.8:53      ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:41780 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:46900 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:54113 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:58724 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:56195 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:45957 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 :::9098                :::*                   CLOSE
+udp6       0      0 ::ffff:172.17.100.15:59294 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:44978 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:43492 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:52715 ::ffff:223.5.5.5:53    ESTABLISHED
+udp6       0      0 ::ffff:172.17.100.15:56309 ::ffff:223.5.5.5:53    ESTABLISHED
+root@shamu:/ # root@shamu:/ # netstat -ano                                                     | grep 10088
+ tcp       0      0 127.0.0.1:40330        127.0.0.1:10088        ESTABLISHED
+ tcp       0      0 127.0.0.1:40331        127.0.0.1:10088        ESTABLISHED
+tcp6       0      0 :::10088               :::*                   LISTEN
+tcp6       0      0 ::ffff:127.0.0.1:10088 ::ffff:127.0.0.1:40331 ESTABLISHED
+tcp6       0      0 ::ffff:127.0.0.1:10088 ::ffff:127.0.0.1:40330 ESTABLISHED
+root@shamu:/ # 

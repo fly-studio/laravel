@@ -13,18 +13,16 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
+use Composer\Script\ScriptEvents;
 
 final class Installer implements PluginInterface, EventSubscriberInterface
 {
     private $composer;
     private $io;
 
-
     private $projectTypes = [
         'symfony' => [
-            'src/Kernel.php',
             'config/packages',
-            'config/routes',
             'public',
         ],
     ];
@@ -38,8 +36,8 @@ final class Installer implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'post-install-cmd' => ['install', 1],
-            'post-update-cmd' => ['install', 1],
+            ScriptEvents::POST_INSTALL_CMD => ['install', 1],
+            ScriptEvents::POST_UPDATE_CMD => ['install', 1],
         ];
     }
 
@@ -49,12 +47,16 @@ final class Installer implements PluginInterface, EventSubscriberInterface
         $exclude = $this->composer->getPackage()->getExtra()['endroid']['installer']['exclude'] ?? [];
 
         if (!$enabled) {
+            $this->io->write('<info>Endroid Installer was disabled</>');
+
             return;
         }
 
         $projectType = $this->detectProjectType();
 
-        if ($projectType === null) {
+        if (null === $projectType) {
+            $this->io->write('<info>Endroid Installer did not detect a compatible project type for auto-configuration</>');
+
             return;
         }
 
@@ -63,7 +65,6 @@ final class Installer implements PluginInterface, EventSubscriberInterface
         $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getPackages();
 
         foreach ($packages as $package) {
-
             // Avoid handling duplicates: getPackages sometimes returns duplicates
             if (in_array($package->getName(), $processedPackages)) {
                 continue;
@@ -80,8 +81,10 @@ final class Installer implements PluginInterface, EventSubscriberInterface
             $packagePath = $this->composer->getInstallationManager()->getInstallPath($package);
             $sourcePath = $packagePath.DIRECTORY_SEPARATOR.'.install'.DIRECTORY_SEPARATOR.$projectType;
             if (file_exists($sourcePath)) {
-                $this->io->write('- Configuring <info>'.$package->getName().'</>');
-                $this->copy($sourcePath, getcwd());
+                $changed = $this->copy($sourcePath, getcwd());
+                if ($changed) {
+                    $this->io->write('- Configured <info>'.$package->getName().'</>');
+                }
             }
         }
     }
@@ -94,14 +97,17 @@ final class Installer implements PluginInterface, EventSubscriberInterface
                     continue 2;
                 }
             }
+
             return $projectType;
         }
 
         return null;
     }
 
-    private function copy(string $sourcePath, string $targetPath): void
+    private function copy(string $sourcePath, string $targetPath): bool
     {
+        $changed = false;
+        
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourcePath, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($iterator as $item) {
             $target = $targetPath.DIRECTORY_SEPARATOR.$iterator->getSubPathName();
@@ -111,11 +117,14 @@ final class Installer implements PluginInterface, EventSubscriberInterface
                 }
             } elseif (!file_exists($target)) {
                 $this->copyFile($item, $target);
+                $changed = true;
             }
         }
+
+        return $changed;
     }
 
-    public function copyFile(string $source, string $target)
+    public function copyFile(string $source, string $target): void
     {
         if (file_exists($target)) {
             return;

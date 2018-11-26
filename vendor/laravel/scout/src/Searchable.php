@@ -101,11 +101,14 @@ trait Searchable
      * @param  Closure  $callback
      * @return \Laravel\Scout\Builder
      */
-    public static function search($query, $callback = null)
+    public static function search($query = '', $callback = null)
     {
-        return new Builder(
-            new static, $query, $callback, config('scout.soft_delete', false)
-        );
+        return app(Builder::class, [
+            'model' => new static,
+            'query' => $query,
+            'callback' => $callback,
+            'softDelete'=> static::usesSoftDelete() && config('scout.soft_delete', false)
+        ]);
     }
 
     /**
@@ -117,11 +120,10 @@ trait Searchable
     {
         $self = new static();
 
-        $softDeletes = in_array(SoftDeletes::class, class_uses_recursive(get_called_class())) &&
-                       config('scout.soft_delete', false);
+        $softDelete = static::usesSoftDelete() && config('scout.soft_delete', false);
 
         $self->newQuery()
-            ->when($softDeletes, function ($query) {
+            ->when($softDelete, function ($query) {
                 $query->withTrashed();
             })
             ->orderBy($self->getKeyName())
@@ -147,9 +149,7 @@ trait Searchable
     {
         $self = new static();
 
-        $self->newQuery()
-            ->orderBy($self->getKeyName())
-            ->unsearchable();
+        $self->searchableUsing()->flush($self);
     }
 
     /**
@@ -165,15 +165,20 @@ trait Searchable
     /**
      * Get the requested models from an array of object IDs;
      *
+     * @param  \Laravel\Scout\Builder  $builder
      * @param  array  $ids
      * @return mixed
      */
-    public function getScoutModelsByIds(array $ids)
+    public function getScoutModelsByIds(Builder $builder, array $ids)
     {
-        $builder = in_array(SoftDeletes::class, class_uses_recursive($this))
-                            ? $this->withTrashed() : $this->newQuery();
+        $query = static::usesSoftDelete()
+            ? $this->withTrashed() : $this->newQuery();
 
-        return $builder->whereIn(
+        if ($builder->queryCallback) {
+            call_user_func($builder->queryCallback, $query);
+        }
+
+        return $query->whereIn(
             $this->getScoutKeyName(), $ids
         )->get();
     }
@@ -258,7 +263,7 @@ trait Searchable
     /**
      * Get the queue that should be used with syncing
      *
-     * @return  string
+     * @return string
      */
     public function syncWithSearchUsingQueue()
     {
@@ -317,5 +322,15 @@ trait Searchable
     public function getScoutKeyName()
     {
         return $this->getQualifiedKeyName();
+    }
+
+    /**
+     * Determine if the current class should use soft deletes with searching.
+     *
+     * @return bool
+     */
+    protected static function usesSoftDelete()
+    {
+        return in_array(SoftDeletes::class, class_uses_recursive(get_called_class()));
     }
 }

@@ -29,7 +29,7 @@ class StaticInvocation implements Invocation, SelfDescribing
         'sqlite3'   => true,
         'tidy'      => true,
         'xmlwriter' => true,
-        'xsl'       => true
+        'xsl'       => true,
     ];
 
     /**
@@ -42,7 +42,7 @@ class StaticInvocation implements Invocation, SelfDescribing
         'RecursiveIteratorIterator',
         'SplFileObject',
         'PDORow',
-        'ZipArchive'
+        'ZipArchive',
     ];
 
     /**
@@ -73,7 +73,6 @@ class StaticInvocation implements Invocation, SelfDescribing
     /**
      * @param string $className
      * @param string $methodName
-     * @param array  $parameters
      * @param string $returnType
      * @param bool   $cloneObjects
      */

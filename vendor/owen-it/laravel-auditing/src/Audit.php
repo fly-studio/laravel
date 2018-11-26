@@ -1,23 +1,11 @@
 <?php
-/**
- * This file is part of the Laravel Auditing package.
- *
- * @author     Antério Vieira <anteriovieira@gmail.com>
- * @author     Quetzy Garcia  <quetzyg@altek.org>
- * @author     Raphael França <raphaelfrancabsb@gmail.com>
- * @copyright  2015-2018
- *
- * For the full copyright and license information,
- * please view the LICENSE.md file that was distributed
- * with this source code.
- */
 
 namespace OwenIt\Auditing;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Config;
+use OwenIt\Auditing\Contracts\AttributeEncoder;
 
 trait Audit
 {
@@ -45,9 +33,25 @@ trait Audit
     /**
      * {@inheritdoc}
      */
-    public function getConnection()
+    public function auditable()
     {
-        return static::resolveConnection(Config::get('audit.drivers.database.connection'));
+        return $this->morphTo();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function user()
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConnectionName()
+    {
+        return Config::get('audit.drivers.database.connection');
     }
 
     /**
@@ -56,22 +60,6 @@ trait Audit
     public function getTable(): string
     {
         return Config::get('audit.drivers.database.table', parent::getTable());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function auditable(): MorphTo
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function user(): MorphTo
-    {
-        return $this->morphTo();
     }
 
     /**
@@ -164,7 +152,39 @@ trait Audit
 
         // Auditable value
         if ($this->auditable && starts_with($key, ['new_', 'old_'])) {
-            return $this->getFormattedValue($this->auditable, substr($key, 4), $value);
+            $attribute = substr($key, 4);
+
+            return $this->getFormattedValue(
+                $this->auditable,
+                $attribute,
+                $this->decodeAttributeValue($this->auditable, $attribute, $value)
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * Decode attribute value.
+     *
+     * @param Contracts\Auditable $auditable
+     * @param string              $attribute
+     * @param mixed               $value
+     *
+     * @return mixed
+     */
+    protected function decodeAttributeValue(Contracts\Auditable $auditable, string $attribute, $value)
+    {
+        $attributeModifiers = $auditable->getAttributeModifiers();
+
+        if (!array_key_exists($attribute, $attributeModifiers)) {
+            return $value;
+        }
+
+        $attributeDecoder = $attributeModifiers[$attribute];
+
+        if (is_subclass_of($attributeDecoder, AttributeEncoder::class)) {
+            return call_user_func([$attributeDecoder, 'decode'], $value);
         }
 
         return $value;

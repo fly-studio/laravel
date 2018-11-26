@@ -4,6 +4,7 @@ namespace Illuminate\Database\Eloquent;
 
 use LogicException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Contracts\Queue\QueueableCollection;
@@ -63,6 +64,32 @@ class Collection extends BaseCollection implements QueueableCollection
     }
 
     /**
+     * Load a set of relationship counts onto the collection.
+     *
+     * @param  array|string  $relations
+     * @return $this
+     */
+    public function loadCount($relations)
+    {
+        if ($this->isEmpty()) {
+            return $this;
+        }
+
+        $query = $this->first()->newModelQuery()
+            ->whereKey($this->modelKeys())
+            ->select($this->first()->getKeyName())
+            ->withCount(...func_get_args());
+
+        $query->get()->each(function ($model) {
+            $this->find($model->getKey())->forceFill(
+                Arr::except($model->getAttributes(), $model->getKeyName())
+            );
+        });
+
+        return $this;
+    }
+
+    /**
      * Load a set of relationships onto the collection if they are not already eager loaded.
      *
      * @param  array|string  $relations
@@ -79,7 +106,13 @@ class Collection extends BaseCollection implements QueueableCollection
                 $key = $value;
             }
 
-            $path = array_combine($segments = explode('.', $key), $segments);
+            $segments = explode('.', explode(':', $key)[0]);
+
+            if (Str::contains($key, ':')) {
+                $segments[count($segments) - 1] .= ':'.explode(':', $key)[1];
+            }
+
+            $path = array_combine($segments, $segments);
 
             if (is_callable($value)) {
                 $path[end($segments)] = $value;
@@ -135,6 +168,7 @@ class Collection extends BaseCollection implements QueueableCollection
     public function loadMorph($relation, $relations)
     {
         $this->pluck($relation)
+            ->filter()
             ->groupBy(function ($model) {
                 return get_class($model);
             })
@@ -353,9 +387,7 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function makeHidden($attributes)
     {
-        return $this->each(function ($model) use ($attributes) {
-            $model->addHidden($attributes);
-        });
+        return $this->each->addHidden($attributes);
     }
 
     /**
@@ -366,9 +398,7 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function makeVisible($attributes)
     {
-        return $this->each(function ($model) use ($attributes) {
-            $model->makeVisible($attributes);
-        });
+        return $this->each->makeVisible($attributes);
     }
 
     /**
@@ -474,6 +504,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get the type of the entities being queued.
      *
      * @return string|null
+     *
      * @throws \LogicException
      */
     public function getQueueableClass()
@@ -523,6 +554,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Get the connection of the entities being queued.
      *
      * @return string|null
+     *
      * @throws \LogicException
      */
     public function getQueueableConnection()

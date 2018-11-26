@@ -35,10 +35,23 @@ class Client extends Model
      * @var array
      */
     protected $casts = [
+        'grant_types' => 'array',
         'personal_access_client' => 'bool',
         'password_client' => 'bool',
         'revoked' => 'bool',
     ];
+
+    /**
+     * Get the user that the client belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(
+            config('auth.providers.'.config('auth.guards.api.provider').'.model')
+        );
+    }
 
     /**
      * Get all of the authentication codes for the client.

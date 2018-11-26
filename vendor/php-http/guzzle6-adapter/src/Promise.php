@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @author Joel Wurtz <joel.wurtz@gmail.com>
  */
-class Promise implements HttpPromise
+final class Promise implements HttpPromise
 {
     /**
      * @var PromiseInterface
@@ -95,7 +95,7 @@ class Promise implements HttpPromise
         $this->promise->wait(false);
 
         if ($unwrap) {
-            if ($this->getState() == self::REJECTED) {
+            if (self::REJECTED == $this->getState()) {
                 throw $this->exception;
             }
 

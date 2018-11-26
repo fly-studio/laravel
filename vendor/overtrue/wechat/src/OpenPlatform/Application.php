@@ -109,20 +109,57 @@ class Application extends ServiceContainer
     /**
      * Return the pre-authorization login page url.
      *
-     * @param string      $callbackUrl
-     * @param string|null $authCode
+     * @param string            $callbackUrl
+     * @param string|array|null $optional
      *
      * @return string
      */
-    public function getPreAuthorizationUrl(string $callbackUrl, string $authCode = null): string
+    public function getPreAuthorizationUrl(string $callbackUrl, $optional = []): string
     {
-        $queries = [
+        // 兼容旧版 API 设计
+        if (\is_string($optional)) {
+            $optional = [
+                'pre_auth_code' => $optional,
+            ];
+        } else {
+            $optional['pre_auth_code'] = $this->createPreAuthorizationCode()['pre_auth_code'];
+        }
+
+        $queries = \array_merge($optional, [
             'component_appid' => $this['config']['app_id'],
-            'pre_auth_code' => $authCode ?: $this->createPreAuthorizationCode()['pre_auth_code'],
             'redirect_uri' => $callbackUrl,
-        ];
+        ]);
 
         return 'https://mp.weixin.qq.com/cgi-bin/componentloginpage?'.http_build_query($queries);
+    }
+
+    /**
+     * Return the pre-authorization login page url (mobile).
+     *
+     * @param string            $callbackUrl
+     * @param string|array|null $optional
+     *
+     * @return string
+     */
+    public function getMobilePreAuthorizationUrl(string $callbackUrl, $optional = []): string
+    {
+        // 兼容旧版 API 设计
+        if (\is_string($optional)) {
+            $optional = [
+                'pre_auth_code' => $optional,
+            ];
+        } else {
+            $optional['pre_auth_code'] = $this->createPreAuthorizationCode()['pre_auth_code'];
+        }
+
+        $queries = \array_merge($optional, [
+            'component_appid' => $this['config']['app_id'],
+            'redirect_uri' => $callbackUrl,
+            'action' => 'bindcomponent',
+            'no_scan' => 1,
+        ]);
+
+        return 'https://mp.weixin.qq.com/safe/bindcomponent?'.http_build_query($queries).'#wechat_redirect';
     }
 
     /**
@@ -133,13 +170,11 @@ class Application extends ServiceContainer
      */
     protected function getAuthorizerConfig(string $appId, string $refreshToken = null): array
     {
-        return [
-            'debug' => $this['config']->get('debug', false),
-            'response_type' => $this['config']->get('response_type'),
-            'log' => $this['config']->get('log', []),
+        return $this['config']->merge([
+            'component_app_id' => $this['config']['app_id'],
             'app_id' => $appId,
             'refresh_token' => $refreshToken,
-        ];
+        ])->toArray();
     }
 
     /**
@@ -178,6 +213,6 @@ class Application extends ServiceContainer
      */
     public function __call($method, $args)
     {
-        return call_user_func_array([$this['base'], $method], $args);
+        return $this->base->$method(...$args);
     }
 }
