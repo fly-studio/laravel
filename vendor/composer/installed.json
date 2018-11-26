@@ -612,6 +612,69 @@
         ]
     },
     {
+        "name": "beyondcode/laravel-dump-server",
+        "version": "1.2.2",
+        "version_normalized": "1.2.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/beyondcode/laravel-dump-server.git",
+            "reference": "8864b9efcb48e0a79e83014dd7f0a5481f5c808f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/beyondcode/laravel-dump-server/zipball/8864b9efcb48e0a79e83014dd7f0a5481f5c808f",
+            "reference": "8864b9efcb48e0a79e83014dd7f0a5481f5c808f",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/console": "5.6.*|5.7.*|5.8.*",
+            "illuminate/http": "5.6.*|5.7.*|5.8.*",
+            "illuminate/support": "5.6.*|5.7.*|5.8.*",
+            "php": "^7.1",
+            "symfony/var-dumper": "^4.1.1"
+        },
+        "require-dev": {
+            "larapack/dd": "^1.0",
+            "phpunit/phpunit": "^7.0"
+        },
+        "time": "2018-10-04T07:22:24+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "BeyondCode\\DumpServer\\DumpServerServiceProvider"
+                ]
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "BeyondCode\\DumpServer\\": "src"
+            },
+            "files": [
+                "helpers.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Marcel Pociot",
+                "email": "marcel@beyondco.de",
+                "homepage": "https://beyondcode.de",
+                "role": "Developer"
+            }
+        ],
+        "description": "Symfony Var-Dump Server for Laravel",
+        "homepage": "https://github.com/beyondcode/laravel-dump-server",
+        "keywords": [
+            "beyondcode",
+            "laravel-dump-server"
+        ]
+    },
+    {
         "name": "clue/stream-filter",
         "version": "v1.4.0",
         "version_normalized": "1.4.0.0",
@@ -1444,17 +1507,17 @@
     },
     {
         "name": "endroid/qr-code",
-        "version": "3.4.7",
-        "version_normalized": "3.4.7.0",
+        "version": "3.4.8",
+        "version_normalized": "3.4.8.0",
         "source": {
             "type": "git",
             "url": "https://github.com/endroid/qr-code.git",
-            "reference": "bb9516890149b15ab5e64a4471dd801411bc9335"
+            "reference": "5f0344341985a257fffc53ccac6c9489f0a022f0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/endroid/qr-code/zipball/bb9516890149b15ab5e64a4471dd801411bc9335",
-            "reference": "bb9516890149b15ab5e64a4471dd801411bc9335",
+            "url": "https://api.github.com/repos/endroid/qr-code/zipball/5f0344341985a257fffc53ccac6c9489f0a022f0",
+            "reference": "5f0344341985a257fffc53ccac6c9489f0a022f0",
             "shasum": ""
         },
         "require": {
@@ -1470,7 +1533,7 @@
         "require-dev": {
             "phpunit/phpunit": "^5.7|^6.0"
         },
-        "time": "2018-11-23T13:14:01+00:00",
+        "time": "2018-11-26T10:04:22+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
