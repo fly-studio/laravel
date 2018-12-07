@@ -16,6 +16,9 @@ class Protocol extends AbstractProtocol {
 
 	use PackageOffsetTrait;
 
+	// | 2 bytes  | 4 bytes             | content |
+	// | protocol | content length (BE) |         |
+
 	public function decode(ConnectBinder $binder , ...$args) : ?AbstractRequest
 	{
 		$raw = $args[0];
