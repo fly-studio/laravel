@@ -87,7 +87,8 @@ class ApiResponse extends TextResponse implements Protobufable {
 	{
 		$message = parent::toProtobuf();
 
-		$message->setEncrypted($this->getEncrypted());
+		if (!empty($this->getEncrypted()))
+			$message->setEncrypted($this->getEncrypted());
 
 		return $message;
 	}
