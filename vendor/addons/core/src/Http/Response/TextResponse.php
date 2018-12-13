@@ -247,8 +247,9 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			!empty($data['tipType']['url']) && $t->setUrl($data['tipType']['url']);
 			$o->setTipType($t);
 		}
+		$data = !is_array($data['data']) ? $data['data'] : json_encode($data['data']);
+		!is_null($data) && $o->setData($data);
 
-		$o->setData(!is_array($data['data']) ? $data['data'] : json_encode($data['data']));
 		$o->setTime($data['time']);
 		$o->setDuration($data['duration']);
 		$o->setBody($data['body']);
