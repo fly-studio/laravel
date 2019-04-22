@@ -35,7 +35,7 @@ class RWRedis {
 			}
 		}
 
-		$this->redis = new RedisManager($driver, $config);
+		$this->redis = new RedisManager(app(), $driver, $config);
 	}
 
 	public function connection($connection = 'default')
