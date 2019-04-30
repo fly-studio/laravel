@@ -14,6 +14,7 @@ return array(
     'a0edc8309cc5e1d60e3047b5df6b7052' => $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
     'c964ee0ededf28c96ebd9db5099ef910' => $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
+    '3a37ebac017bc098e9a86b35401e7a68' => $vendorDir . '/mongodb/mongodb/src/functions.php',
     'cf97c57bfe0f23854afd2f3818abb7a0' => $vendorDir . '/zendframework/zend-diactoros/src/functions/create_uploaded_file.php',
     '9bf37a3d0dad93e29cb4e1b1bfab04e9' => $vendorDir . '/zendframework/zend-diactoros/src/functions/marshal_headers_from_sapi.php',
     'ce70dccb4bcc2efc6e94d2ee526e6972' => $vendorDir . '/zendframework/zend-diactoros/src/functions/marshal_method_from_sapi.php',

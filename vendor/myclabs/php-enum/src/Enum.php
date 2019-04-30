@@ -80,18 +80,15 @@ abstract class Enum implements \JsonSerializable
     }
 
     /**
-     * Determines if Enum should be considered equal with the variable passed as a parameter.
-     * Returns false if an argument is an object of different class or not an object.
+     * Compares one Enum with another.
      *
      * This method is final, for more information read https://github.com/myclabs/php-enum/issues/4
      *
-     * @return bool
+     * @return bool True if Enums are equal, false if not equal
      */
-    final public function equals($variable = null): bool
+    final public function equals(Enum $enum = null)
     {
-        return $variable instanceof self
-            && $this->getValue() === $variable->getValue()
-            && \get_called_class() === \get_class($variable);
+        return $enum !== null && $this->getValue() === $enum->getValue() && \get_called_class() === \get_class($enum);
     }
 
     /**
