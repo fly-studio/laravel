@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * (c) Jeroen van den Enden <info@endroid.nl>
  *
@@ -11,6 +13,10 @@ namespace Endroid\QrCode\Response;
 
 use Endroid\QrCode\QrCodeInterface;
 use Symfony\Component\HttpFoundation\Response;
+
+if (!class_exists(Response::class)) {
+    throw new \Exception('QrCodeResponse requires symfony/http-foundation');
+}
 
 class QrCodeResponse extends Response
 {

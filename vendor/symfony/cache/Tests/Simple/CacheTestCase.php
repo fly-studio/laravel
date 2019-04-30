@@ -21,14 +21,14 @@ abstract class CacheTestCase extends SimpleCacheTest
     {
         parent::setUp();
 
-        if (!array_key_exists('testPrune', $this->skippedTests) && !$this->createSimpleCache() instanceof PruneableInterface) {
+        if (!\array_key_exists('testPrune', $this->skippedTests) && !$this->createSimpleCache() instanceof PruneableInterface) {
             $this->skippedTests['testPrune'] = 'Not a pruneable cache pool.';
         }
     }
 
     public static function validKeys()
     {
-        return array_merge(parent::validKeys(), array(array("a\0b")));
+        return array_merge(parent::validKeys(), [["a\0b"]]);
     }
 
     public function testDefaultLifeTime()
@@ -38,6 +38,7 @@ abstract class CacheTestCase extends SimpleCacheTest
         }
 
         $cache = $this->createSimpleCache(2);
+        $cache->clear();
 
         $cache->set('key.dlt', 'value');
         sleep(1);
@@ -46,6 +47,8 @@ abstract class CacheTestCase extends SimpleCacheTest
 
         sleep(2);
         $this->assertNull($cache->get('key.dlt'));
+
+        $cache->clear();
     }
 
     public function testNotUnserializable()
@@ -55,16 +58,19 @@ abstract class CacheTestCase extends SimpleCacheTest
         }
 
         $cache = $this->createSimpleCache();
+        $cache->clear();
 
         $cache->set('foo', new NotUnserializable());
 
         $this->assertNull($cache->get('foo'));
 
-        $cache->setMultiple(array('foo' => new NotUnserializable()));
+        $cache->setMultiple(['foo' => new NotUnserializable()]);
 
-        foreach ($cache->getMultiple(array('foo')) as $value) {
+        foreach ($cache->getMultiple(['foo']) as $value) {
         }
         $this->assertNull($value);
+
+        $cache->clear();
     }
 
     public function testPrune()
@@ -79,6 +85,7 @@ abstract class CacheTestCase extends SimpleCacheTest
 
         /** @var PruneableInterface|CacheInterface $cache */
         $cache = $this->createSimpleCache();
+        $cache->clear();
 
         $cache->set('foo', 'foo-val', new \DateInterval('PT05S'));
         $cache->set('bar', 'bar-val', new \DateInterval('PT10S'));
@@ -120,6 +127,8 @@ abstract class CacheTestCase extends SimpleCacheTest
         $cache->prune();
         $this->assertFalse($this->isPruned($cache, 'foo'));
         $this->assertTrue($this->isPruned($cache, 'qux'));
+
+        $cache->clear();
     }
 }
 

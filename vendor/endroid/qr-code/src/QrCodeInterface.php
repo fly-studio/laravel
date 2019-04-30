@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * (c) Jeroen van den Enden <info@endroid.nl>
  *
@@ -25,11 +27,13 @@ interface QrCodeInterface
 
     public function getRoundBlockSize(): bool;
 
-    public function getErrorCorrectionLevel(): string;
+    public function getErrorCorrectionLevel(): ErrorCorrectionLevel;
 
     public function getLogoPath(): ?string;
 
     public function getLogoWidth(): ?int;
+
+    public function getLogoHeight(): ?int;
 
     public function getLabel(): ?string;
 
@@ -43,6 +47,8 @@ interface QrCodeInterface
 
     public function getValidateResult(): bool;
 
+    public function getWriterOptions(): array;
+
     public function getContentType(): string;
 
     public function setWriterRegistry(WriterRegistryInterface $writerRegistry): void;
@@ -52,4 +58,6 @@ interface QrCodeInterface
     public function writeDataUri(): string;
 
     public function writeFile(string $path): void;
+
+    public function getData(): array;
 }

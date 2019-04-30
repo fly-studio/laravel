@@ -28,12 +28,12 @@ $CrawlerDetect = new CrawlerDetect;
 
 // Check the user agent of the current 'visitor'
 if($CrawlerDetect->isCrawler()) {
-	// true if crawler user agent detected
+    // true if crawler user agent detected
 }
 
 // Pass a user agent as a string
 if($CrawlerDetect->isCrawler('Mozilla/5.0 (compatible; Sosospider/2.0; +http://help.soso.com/webspider.htm)')) {
-	// true if crawler user agent detected
+    // true if crawler user agent detected
 }
 
 // Output the name of the bot that matched (if any)
@@ -62,6 +62,10 @@ To use this library in a .net standard (including .net core) based project, chec
 
 ### Nette Extension
 To use this library with the Nette framework, checkout [NetteCrawlerDetect](https://github.com/JanGalek/Crawler-Detect).
+
+### Ruby Gem
+
+To use this library with Ruby on Rails or any Ruby-based application, check out [crawler_detect](https://github.com/loadkpi/crawler_detect) gem.
 
 _Parts of this class are based on the brilliant [MobileDetect](https://github.com/serbanghita/Mobile-Detect)_
 

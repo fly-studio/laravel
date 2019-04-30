@@ -336,6 +336,8 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
+     * @throws \ReflectionException
+     *
      * @return string
      */
     public function getName()
@@ -473,6 +475,8 @@ abstract class AbstractProvider implements ProviderInterface
      * Set options for Guzzle HTTP client.
      *
      * @param array $config
+     *
+     * @return array
      */
     public static function setGuzzleOptions($config = [])
     {
@@ -496,7 +500,7 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function isStateless()
     {
-        return $this->stateless;
+        return !$this->request->hasSession() || $this->stateless;
     }
 
     /**
@@ -536,6 +540,10 @@ abstract class AbstractProvider implements ProviderInterface
      */
     protected function makeState()
     {
+        if (!$this->request->hasSession()) {
+            return false;
+        }
+
         $state = sha1(uniqid(mt_rand(1, 1000000), true));
         $session = $this->request->getSession();
 

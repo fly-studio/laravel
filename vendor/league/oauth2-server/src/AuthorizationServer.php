@@ -9,6 +9,7 @@
 
 namespace League\OAuth2\Server;
 
+use DateInterval;
 use Defuse\Crypto\Key;
 use League\Event\EmitterAwareInterface;
 use League\Event\EmitterAwareTrait;
@@ -34,7 +35,7 @@ class AuthorizationServer implements EmitterAwareInterface
     protected $enabledGrantTypes = [];
 
     /**
-     * @var \DateInterval[]
+     * @var DateInterval[]
      */
     protected $grantTypeAccessTokenTTL = [];
 
@@ -49,7 +50,7 @@ class AuthorizationServer implements EmitterAwareInterface
     protected $publicKey;
 
     /**
-     * @var null|ResponseTypeInterface
+     * @var ResponseTypeInterface
      */
     protected $responseType;
 
@@ -103,8 +104,16 @@ class AuthorizationServer implements EmitterAwareInterface
         if ($privateKey instanceof CryptKey === false) {
             $privateKey = new CryptKey($privateKey);
         }
+
         $this->privateKey = $privateKey;
         $this->encryptionKey = $encryptionKey;
+
+        if ($responseType === null) {
+            $responseType = new BearerTokenResponse();
+        } else {
+            $responseType = clone $responseType;
+        }
+
         $this->responseType = $responseType;
     }
 
@@ -112,12 +121,12 @@ class AuthorizationServer implements EmitterAwareInterface
      * Enable a grant type on the server.
      *
      * @param GrantTypeInterface $grantType
-     * @param null|\DateInterval $accessTokenTTL
+     * @param null|DateInterval  $accessTokenTTL
      */
-    public function enableGrantType(GrantTypeInterface $grantType, \DateInterval $accessTokenTTL = null)
+    public function enableGrantType(GrantTypeInterface $grantType, DateInterval $accessTokenTTL = null)
     {
-        if ($accessTokenTTL instanceof \DateInterval === false) {
-            $accessTokenTTL = new \DateInterval('PT1H');
+        if ($accessTokenTTL instanceof DateInterval === false) {
+            $accessTokenTTL = new DateInterval('PT1H');
         }
 
         $grantType->setAccessTokenRepository($this->accessTokenRepository);
@@ -204,16 +213,15 @@ class AuthorizationServer implements EmitterAwareInterface
      */
     protected function getResponseType()
     {
-        if ($this->responseType instanceof ResponseTypeInterface === false) {
-            $this->responseType = new BearerTokenResponse();
+        $responseType = clone $this->responseType;
+
+        if ($responseType instanceof AbstractResponseType) {
+            $responseType->setPrivateKey($this->privateKey);
         }
 
-        if ($this->responseType instanceof AbstractResponseType === true) {
-            $this->responseType->setPrivateKey($this->privateKey);
-        }
-        $this->responseType->setEncryptionKey($this->encryptionKey);
+        $responseType->setEncryptionKey($this->encryptionKey);
 
-        return $this->responseType;
+        return $responseType;
     }
 
     /**

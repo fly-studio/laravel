@@ -1,26 +1,10 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\DBAL\Platforms\Keywords;
 
 /**
  * MariaDb reserved keywords list.
+ *
  * @link https://mariadb.com/kb/en/the-mariadb-library/reserved-words/
  */
 final class MariaDb102Keywords extends MySQLKeywords
@@ -101,6 +85,7 @@ final class MariaDb102Keywords extends MySQLKeywords
             'ELSEIF',
             'ENCLOSED',
             'ESCAPED',
+            'EXCEPT',
             'EXISTS',
             'EXIT',
             'EXPLAIN',
@@ -141,6 +126,7 @@ final class MariaDb102Keywords extends MySQLKeywords
             'INT4',
             'INT8',
             'INTEGER',
+            'INTERSECT',
             'INTERVAL',
             'INTO',
             'IO_AFTER_GTIDS',
@@ -195,6 +181,7 @@ final class MariaDb102Keywords extends MySQLKeywords
             'OUT',
             'OUTER',
             'OUTFILE',
+            'OVER',
             'PARTITION',
             'PRECISION',
             'PRIMARY',
@@ -216,6 +203,7 @@ final class MariaDb102Keywords extends MySQLKeywords
             'RESIGNAL',
             'RESTRICT',
             'RETURN',
+            'RETURNING',
             'REVOKE',
             'RIGHT',
             'RLIKE',
@@ -275,6 +263,7 @@ final class MariaDb102Keywords extends MySQLKeywords
             'WHEN',
             'WHERE',
             'WHILE',
+            'WINDOW',
             'WITH',
             'WRITE',
             'XOR',

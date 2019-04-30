@@ -65,10 +65,10 @@ class UploadedFile extends File
         $this->originalName = $this->getName($originalName);
         $this->mimeType = $mimeType ?: 'application/octet-stream';
 
-        if (4 < func_num_args() ? !is_bool($test) : null !== $error && @filesize($path) === $error) {
+        if (4 < \func_num_args() ? !\is_bool($test) : null !== $error && @filesize($path) === $error) {
             @trigger_error(sprintf('Passing a size as 4th argument to the constructor of "%s" is deprecated since Symfony 4.1.', __CLASS__), E_USER_DEPRECATED);
             $error = $test;
-            $test = 5 < func_num_args() ? func_get_arg(5) : false;
+            $test = 5 < \func_num_args() ? func_get_arg(5) : false;
         }
 
         $this->error = $error ?: UPLOAD_ERR_OK;
@@ -158,7 +158,7 @@ class UploadedFile extends File
      */
     public function getClientSize()
     {
-        @trigger_error(sprintf('"%s" is deprecated since Symfony 4.1. Use getSize() instead.', __METHOD__), E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.1. Use getSize() instead.', __METHOD__), E_USER_DEPRECATED);
 
         return $this->getSize();
     }
@@ -254,9 +254,9 @@ class UploadedFile extends File
 
         $max = ltrim($iniMax, '+');
         if (0 === strpos($max, '0x')) {
-            $max = intval($max, 16);
+            $max = \intval($max, 16);
         } elseif (0 === strpos($max, '0')) {
-            $max = intval($max, 8);
+            $max = \intval($max, 8);
         } else {
             $max = (int) $max;
         }
@@ -281,7 +281,7 @@ class UploadedFile extends File
      */
     public function getErrorMessage()
     {
-        static $errors = array(
+        static $errors = [
             UPLOAD_ERR_INI_SIZE => 'The file "%s" exceeds your upload_max_filesize ini directive (limit is %d KiB).',
             UPLOAD_ERR_FORM_SIZE => 'The file "%s" exceeds the upload limit defined in your form.',
             UPLOAD_ERR_PARTIAL => 'The file "%s" was only partially uploaded.',
@@ -289,7 +289,7 @@ class UploadedFile extends File
             UPLOAD_ERR_CANT_WRITE => 'The file "%s" could not be written on disk.',
             UPLOAD_ERR_NO_TMP_DIR => 'File could not be uploaded: missing temporary directory.',
             UPLOAD_ERR_EXTENSION => 'File upload was stopped by a PHP extension.',
-        );
+        ];
 
         $errorCode = $this->error;
         $maxFilesize = UPLOAD_ERR_INI_SIZE === $errorCode ? self::getMaxFilesize() / 1024 : 0;

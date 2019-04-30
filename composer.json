@@ -7,7 +7,7 @@
     "require": {
         "php": ">=7.1.3",
         "addons/core": "^6.0",
-        "addons/elasticsearch": "^2.0",
+        "addons/elasticsearch": "^3.0",
         "addons/entrust": "^2.0",
         "addons/plugins": "^1.0",
         "addons/server": "dev-master",

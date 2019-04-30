@@ -75,8 +75,6 @@ class IsEqual extends Constraint
      * @param bool   $returnResult Whether to return a result or throw an exception
      *
      * @throws ExpectationFailedException
-     *
-     * @return mixed
      */
     public function evaluate($other, $description = '', $returnResult = false)
     {
@@ -108,7 +106,7 @@ class IsEqual extends Constraint
             }
 
             throw new ExpectationFailedException(
-                \trim($description . PHP_EOL . $f->getMessage()),
+                \trim($description . "\n" . $f->getMessage()),
                 $f
             );
         }
@@ -119,19 +117,19 @@ class IsEqual extends Constraint
     /**
      * Returns a string representation of the constraint.
      *
-     * @throws SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function toString(): string
     {
         $delta = '';
 
         if (\is_string($this->value)) {
-            if (\strpos($this->value, PHP_EOL) !== false) {
+            if (\strpos($this->value, "\n") !== false) {
                 return 'is equal to <text>';
             }
 
             return \sprintf(
-                'is equal to "%s"',
+                "is equal to '%s'",
                 $this->value
             );
         }

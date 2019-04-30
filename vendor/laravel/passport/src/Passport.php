@@ -69,6 +69,13 @@ class Passport
     public static $cookie = 'laravel_token';
 
     /**
+     * Indicates if Passport should ignore incoming CSRF tokens.
+     *
+     * @var bool
+     */
+    public static $ignoreCsrfToken = false;
+
+    /**
      * The storage location of the encryption keys.
      *
      * @var string
@@ -109,6 +116,13 @@ class Passport
      * @var bool
      */
     public static $runsMigrations = true;
+
+    /**
+     * Indicates if Passport should unserializes cookies.
+     *
+     * @var bool
+     */
+    public static $unserializesCookies = true;
 
     /**
      * Enable the implicit grant type.
@@ -301,6 +315,19 @@ class Passport
     }
 
     /**
+     * Indicate that Passport should ignore incoming CSRF tokens.
+     *
+     * @param  boolean|null  $ignoreCsrfToken
+     * @return boolean|static
+     */
+    public static function ignoreCsrfToken($ignoreCsrfToken = true)
+    {
+        static::$ignoreCsrfToken = $ignoreCsrfToken;
+
+        return new static;
+    }
+
+    /**
      * Set the current user for the application with the given scopes.
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
@@ -483,6 +510,18 @@ class Passport
     public static function ignoreMigrations()
     {
         static::$runsMigrations = false;
+
+        return new static;
+    }
+
+    /**
+     * Instruct Passport to disable cookie serialization.
+     *
+     * @return static
+     */
+    public static function withoutCookieSerialization()
+    {
+        static::$unserializesCookies = false;
 
         return new static;
     }
