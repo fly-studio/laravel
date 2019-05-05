@@ -97,7 +97,7 @@ trait Searchable
      * Perform a search against the model's indexed data.
      *
      * @param  string  $query
-     * @param  Closure  $callback
+     * @param  \Closure  $callback
      * @return \Laravel\Scout\Builder
      */
     public static function search($query = '', $callback = null)
@@ -106,7 +106,7 @@ trait Searchable
             'model' => new static,
             'query' => $query,
             'callback' => $callback,
-            'softDelete'=> static::usesSoftDelete() && config('scout.soft_delete', false)
+            'softDelete'=> static::usesSoftDelete() && config('scout.soft_delete', false),
         ]);
     }
 
@@ -162,7 +162,7 @@ trait Searchable
     }
 
     /**
-     * Get the requested models from an array of object IDs;
+     * Get the requested models from an array of object IDs.
      *
      * @param  \Laravel\Scout\Builder  $builder
      * @param  array  $ids
@@ -260,7 +260,7 @@ trait Searchable
     }
 
     /**
-     * Get the queue that should be used with syncing
+     * Get the queue that should be used with syncing.
      *
      * @return string
      */
@@ -294,7 +294,7 @@ trait Searchable
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @return void
+     * @return $this
      */
     public function withScoutMetadata($key, $value)
     {
