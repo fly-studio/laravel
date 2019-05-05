@@ -65,6 +65,7 @@ return array(
     'Nexmo\\' => array($vendorDir . '/nexmo/client/src'),
     'MyCLabs\\Enum\\' => array($vendorDir . '/myclabs/php-enum/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'MongoDB\\' => array($vendorDir . '/mongodb/mongodb/src'),
     'Money\\' => array($vendorDir . '/moneyphp/money/src'),
     'Mews\\Captcha\\' => array($vendorDir . '/mews/captcha/src'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),

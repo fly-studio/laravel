@@ -2525,6 +2525,77 @@
         ]
     },
     {
+        "name": "jenssegers/mongodb",
+        "version": "v3.5.0",
+        "version_normalized": "3.5.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jenssegers/laravel-mongodb.git",
+            "reference": "58972584d1b5ea61101a9aaa80c84e22f19d1daa"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jenssegers/laravel-mongodb/zipball/58972584d1b5ea61101a9aaa80c84e22f19d1daa",
+            "reference": "58972584d1b5ea61101a9aaa80c84e22f19d1daa",
+            "shasum": ""
+        },
+        "require": {
+            "illuminate/container": "^5.6",
+            "illuminate/database": "^5.6",
+            "illuminate/events": "^5.6",
+            "illuminate/support": "^5.6",
+            "mongodb/mongodb": "^1.0.0"
+        },
+        "require-dev": {
+            "doctrine/dbal": "^2.5",
+            "mockery/mockery": "^1.0",
+            "orchestra/testbench": "^3.1",
+            "phpunit/phpunit": "^6.0|^7.0",
+            "satooshi/php-coveralls": "^2.0"
+        },
+        "suggest": {
+            "jenssegers/mongodb-sentry": "Add Sentry support to Laravel-MongoDB",
+            "jenssegers/mongodb-session": "Add MongoDB session support to Laravel-MongoDB"
+        },
+        "time": "2019-02-27T16:24:21+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "Jenssegers\\Mongodb\\MongodbServiceProvider",
+                    "Jenssegers\\Mongodb\\MongodbQueueServiceProvider"
+                ]
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Jenssegers\\Mongodb": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jens Segers",
+                "homepage": "https://jenssegers.com"
+            }
+        ],
+        "description": "A MongoDB based Eloquent model and Query builder for Laravel (Moloquent)",
+        "homepage": "https://github.com/jenssegers/laravel-mongodb",
+        "keywords": [
+            "database",
+            "eloquent",
+            "laravel",
+            "model",
+            "moloquent",
+            "mongo",
+            "mongodb"
+        ]
+    },
+    {
         "name": "khanamiryan/qrcode-detector-decoder",
         "version": "1.0.2",
         "version_normalized": "1.0.2.0",
@@ -4071,6 +4142,73 @@
             "Value Object",
             "money",
             "vo"
+        ]
+    },
+    {
+        "name": "mongodb/mongodb",
+        "version": "1.4.2",
+        "version_normalized": "1.4.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mongodb/mongo-php-library.git",
+            "reference": "bd148eab0493e38354e45e2cd7db59b90fdcad79"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/bd148eab0493e38354e45e2cd7db59b90fdcad79",
+            "reference": "bd148eab0493e38354e45e2cd7db59b90fdcad79",
+            "shasum": ""
+        },
+        "require": {
+            "ext-hash": "*",
+            "ext-json": "*",
+            "ext-mongodb": "^1.5.0",
+            "php": ">=5.5"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.8.36 || ^6.4"
+        },
+        "time": "2018-07-18T14:33:41+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.4.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "MongoDB\\": "src/"
+            },
+            "files": [
+                "src/functions.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Jeremy Mikola",
+                "email": "jmikola@gmail.com"
+            },
+            {
+                "name": "Derick Rethans",
+                "email": "github@derickrethans.nl"
+            },
+            {
+                "name": "Katherine Walker",
+                "email": "katherine.walker@mongodb.com"
+            }
+        ],
+        "description": "MongoDB driver library",
+        "homepage": "https://jira.mongodb.org/browse/PHPLIB",
+        "keywords": [
+            "database",
+            "driver",
+            "mongodb",
+            "persistence"
         ]
     },
     {
