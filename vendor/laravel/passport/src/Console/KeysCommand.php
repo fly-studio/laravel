@@ -3,6 +3,7 @@
 namespace Laravel\Passport\Console;
 
 use phpseclib\Crypt\RSA;
+use Illuminate\Support\Arr;
 use Laravel\Passport\Passport;
 use Illuminate\Console\Command;
 
@@ -28,7 +29,7 @@ class KeysCommand extends Command
      * Execute the console command.
      *
      * @param  \phpseclib\Crypt\RSA  $rsa
-     * @return mixed
+     * @return void
      */
     public function handle(RSA $rsa)
     {
@@ -40,12 +41,12 @@ class KeysCommand extends Command
         ];
 
         if ((file_exists($publicKey) || file_exists($privateKey)) && ! $this->option('force')) {
-            return $this->error('Encryption keys already exist. Use the --force option to overwrite them.');
+            $this->error('Encryption keys already exist. Use the --force option to overwrite them.');
+        } else {
+            file_put_contents($publicKey, Arr::get($keys, 'publickey'));
+            file_put_contents($privateKey, Arr::get($keys, 'privatekey'));
+
+            $this->info('Encryption keys generated successfully.');
         }
-
-        file_put_contents($publicKey, array_get($keys, 'publickey'));
-        file_put_contents($privateKey, array_get($keys, 'privatekey'));
-
-        $this->info('Encryption keys generated successfully.');
     }
 }

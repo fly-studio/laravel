@@ -1,15 +1,15 @@
 <?php
+
 namespace Laravel\Passport\Http\Controllers;
 
 use Illuminate\Http\Response;
-use Psr\Http\Message\ResponseInterface;
 
 trait ConvertsPsrResponses
 {
     /**
      * Convert a PSR7 response to a Illuminate Response.
      *
-     * @param \Psr\Http\Message\ResponseInterface $psrResponse
+     * @param  \Psr\Http\Message\ResponseInterface  $psrResponse
      * @return \Illuminate\Http\Response
      */
     public function convertResponse($psrResponse)

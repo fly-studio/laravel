@@ -248,7 +248,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function some($key, $operator = null, $value = null)
     {
-        return $this->contains($key, $operator, $value);
+        return $this->contains(...func_get_args());
     }
 
     /**
@@ -312,6 +312,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * Dump the collection and end the script.
      *
+     * @param  mixed  ...$args
      * @return void
      */
     public function dd(...$args)
@@ -560,7 +561,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function unlessEmpty(callable $callback, callable $default = null)
     {
-        return $this->unless($this->isEmpty(), $callback, $default);
+        return $this->whenNotEmpty($callback, $default);
     }
 
     /**
@@ -572,7 +573,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function unlessNotEmpty(callable $callback, callable $default = null)
     {
-        return $this->unless($this->isNotEmpty(), $callback, $default);
+        return $this->whenEmpty($callback, $default);
     }
 
     /**
@@ -676,6 +677,32 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     public function whereInStrict($key, $values)
     {
         return $this->whereIn($key, $values, true);
+    }
+
+    /**
+     * Filter items such that the value of the given key is between the given values.
+     *
+     * @param  string  $key
+     * @param  array  $values
+     * @return static
+     */
+    public function whereBetween($key, $values)
+    {
+        return $this->where($key, '>=', reset($values))->where($key, '<=', end($values));
+    }
+
+    /**
+     * Filter items such that the value of the given key is not between the given values.
+     *
+     * @param  string  $key
+     * @param  array  $values
+     * @return static
+     */
+    public function whereNotBetween($key, $values)
+    {
+        return $this->filter(function ($item) use ($key, $values) {
+            return data_get($item, $key) < reset($values) || data_get($item, $key) > end($values);
+        });
     }
 
     /**
@@ -800,7 +827,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * Group an associative array by a field or using a callback.
      *
-     * @param  callable|string  $groupBy
+     * @param  array|callable|string  $groupBy
      * @param  bool  $preserveKeys
      * @return static
      */
@@ -1319,7 +1346,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     /**
      * Push all of the given items onto the collection.
      *
-     * @param  \Traversable|array  $source
+     * @param  iterable  $source
      * @return static
      */
     public function concat($source)

@@ -10,9 +10,10 @@
  */
 
 use Overtrue\Socialite\Providers\WeChatProvider as RealWeChatProvider;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class WechatProviderTest extends PHPUnit_Framework_TestCase
+class WechatProviderTest extends TestCase
 {
     public function testWeChatProviderHasCorrectlyRedirectResponse()
     {
@@ -41,6 +42,7 @@ class WechatProviderTest extends PHPUnit_Framework_TestCase
             'response_type' => 'code',
             'scope' => 'snsapi_login',
             'state' => 'wechat-state',
+            'connect_redirect' => 1,
         ], $provider->codeFields('wechat-state'));
     }
 
@@ -54,6 +56,7 @@ class WechatProviderTest extends PHPUnit_Framework_TestCase
             'response_type' => 'code',
             'scope' => 'snsapi_base',
             'state' => 'state',
+            'connect_redirect' => 1,
             'component_appid' => 'component-app-id',
         ], $provider->codeFields('state'));
 

@@ -13,6 +13,8 @@ namespace Symfony\Component\Cache\Traits;
 
 use Symfony\Component\Cache\Exception\CacheException;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
+use Symfony\Component\Cache\Marshaller\DefaultMarshaller;
+use Symfony\Component\Cache\Marshaller\MarshallerInterface;
 
 /**
  * @author Rob Frawley 2nd <rmf@src.run>
@@ -22,13 +24,14 @@ use Symfony\Component\Cache\Exception\InvalidArgumentException;
  */
 trait MemcachedTrait
 {
-    private static $defaultClientOptions = array(
+    private static $defaultClientOptions = [
         'persistent_id' => null,
         'username' => null,
         'password' => null,
         'serializer' => 'php',
-    );
+    ];
 
+    private $marshaller;
     private $client;
     private $lazyClient;
 
@@ -37,7 +40,7 @@ trait MemcachedTrait
         return \extension_loaded('memcached') && version_compare(phpversion('memcached'), '2.2.0', '>=');
     }
 
-    private function init(\Memcached $client, $namespace, $defaultLifetime)
+    private function init(\Memcached $client, $namespace, $defaultLifetime, ?MarshallerInterface $marshaller)
     {
         if (!static::isSupported()) {
             throw new CacheException('Memcached >= 2.2.0 is required');
@@ -55,6 +58,7 @@ trait MemcachedTrait
 
         parent::__construct($namespace, $defaultLifetime);
         $this->enableVersioning();
+        $this->marshaller = $marshaller ?? new DefaultMarshaller();
     }
 
     /**
@@ -64,19 +68,19 @@ trait MemcachedTrait
      *
      * Examples for servers:
      * - 'memcached://user:pass@localhost?weight=33'
-     * - array(array('localhost', 11211, 33))
+     * - [['localhost', 11211, 33]]
      *
-     * @param array[]|string|string[] An array of servers, a DSN, or an array of DSNs
-     * @param array                   An array of options
+     * @param array[]|string|string[] $servers An array of servers, a DSN, or an array of DSNs
+     * @param array                   $options An array of options
      *
      * @return \Memcached
      *
      * @throws \ErrorException When invalid options or servers are provided
      */
-    public static function createConnection($servers, array $options = array())
+    public static function createConnection($servers, array $options = [])
     {
         if (\is_string($servers)) {
-            $servers = array($servers);
+            $servers = [$servers];
         } elseif (!\is_array($servers)) {
             throw new InvalidArgumentException(sprintf('MemcachedAdapter::createClient() expects array or string as first argument, %s given.', \gettype($servers)));
         }
@@ -95,18 +99,42 @@ trait MemcachedTrait
                 if (\is_array($dsn)) {
                     continue;
                 }
-                if (0 !== strpos($dsn, 'memcached://')) {
-                    throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: %s does not start with "memcached://"', $dsn));
+                if (0 !== strpos($dsn, 'memcached:')) {
+                    throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: %s does not start with "memcached:"', $dsn));
                 }
-                $params = preg_replace_callback('#^memcached://(?:([^@]*+)@)?#', function ($m) use (&$username, &$password) {
-                    if (!empty($m[1])) {
-                        list($username, $password) = explode(':', $m[1], 2) + array(1 => null);
+                $params = preg_replace_callback('#^memcached:(//)?(?:([^@]*+)@)?#', function ($m) use (&$username, &$password) {
+                    if (!empty($m[2])) {
+                        list($username, $password) = explode(':', $m[2], 2) + [1 => null];
                     }
 
-                    return 'file://';
+                    return 'file:'.($m[1] ?? '');
                 }, $dsn);
                 if (false === $params = parse_url($params)) {
                     throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: %s', $dsn));
+                }
+                $query = $hosts = [];
+                if (isset($params['query'])) {
+                    parse_str($params['query'], $query);
+
+                    if (isset($query['host'])) {
+                        if (!\is_array($hosts = $query['host'])) {
+                            throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: %s', $dsn));
+                        }
+                        foreach ($hosts as $host => $weight) {
+                            if (false === $port = strrpos($host, ':')) {
+                                $hosts[$host] = [$host, 11211, (int) $weight];
+                            } else {
+                                $hosts[$host] = [substr($host, 0, $port), (int) substr($host, 1 + $port), (int) $weight];
+                            }
+                        }
+                        $hosts = array_values($hosts);
+                        unset($query['host']);
+                    }
+                    if ($hosts && !isset($params['host']) && !isset($params['path'])) {
+                        unset($servers[$i]);
+                        $servers = array_merge($servers, $hosts);
+                        continue;
+                    }
                 }
                 if (!isset($params['host']) && !isset($params['path'])) {
                     throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: %s', $dsn));
@@ -115,18 +143,21 @@ trait MemcachedTrait
                     $params['weight'] = $m[1];
                     $params['path'] = substr($params['path'], 0, -\strlen($m[0]));
                 }
-                $params += array(
+                $params += [
                     'host' => isset($params['host']) ? $params['host'] : $params['path'],
                     'port' => isset($params['host']) ? 11211 : null,
                     'weight' => 0,
-                );
-                if (isset($params['query'])) {
-                    parse_str($params['query'], $query);
+                ];
+                if ($query) {
                     $params += $query;
                     $options = $query + $options;
                 }
 
-                $servers[$i] = array($params['host'], $params['port'], $params['weight']);
+                $servers[$i] = [$params['host'], $params['port'], $params['weight']];
+
+                if ($hosts) {
+                    $servers = array_merge($servers, $hosts);
+                }
             }
 
             // set client's options
@@ -135,7 +166,7 @@ trait MemcachedTrait
             $client->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
             $client->setOption(\Memcached::OPT_NO_BLOCK, true);
             $client->setOption(\Memcached::OPT_TCP_NODELAY, true);
-            if (!array_key_exists('LIBKETAMA_COMPATIBLE', $options) && !array_key_exists(\Memcached::OPT_LIBKETAMA_COMPATIBLE, $options)) {
+            if (!\array_key_exists('LIBKETAMA_COMPATIBLE', $options) && !\array_key_exists(\Memcached::OPT_LIBKETAMA_COMPATIBLE, $options)) {
                 $client->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
             }
             foreach ($options as $name => $value) {
@@ -154,12 +185,12 @@ trait MemcachedTrait
 
             // set client's servers, taking care of persistent connections
             if (!$client->isPristine()) {
-                $oldServers = array();
+                $oldServers = [];
                 foreach ($client->getServerList() as $server) {
-                    $oldServers[] = array($server['host'], $server['port']);
+                    $oldServers[] = [$server['host'], $server['port']];
                 }
 
-                $newServers = array();
+                $newServers = [];
                 foreach ($servers as $server) {
                     if (1 < \count($server)) {
                         $server = array_values($server);
@@ -195,16 +226,20 @@ trait MemcachedTrait
      */
     protected function doSave(array $values, $lifetime)
     {
+        if (!$values = $this->marshaller->marshall($values, $failed)) {
+            return $failed;
+        }
+
         if ($lifetime && $lifetime > 30 * 86400) {
             $lifetime += time();
         }
 
-        $encodedValues = array();
+        $encodedValues = [];
         foreach ($values as $key => $value) {
             $encodedValues[rawurlencode($key)] = $value;
         }
 
-        return $this->checkResultCode($this->getClient()->setMulti($encodedValues, $lifetime));
+        return $this->checkResultCode($this->getClient()->setMulti($encodedValues, $lifetime)) ? $failed : false;
     }
 
     /**
@@ -212,22 +247,19 @@ trait MemcachedTrait
      */
     protected function doFetch(array $ids)
     {
-        $unserializeCallbackHandler = ini_set('unserialize_callback_func', __CLASS__.'::handleUnserializeCallback');
         try {
             $encodedIds = array_map('rawurlencode', $ids);
 
             $encodedResult = $this->checkResultCode($this->getClient()->getMulti($encodedIds));
 
-            $result = array();
+            $result = [];
             foreach ($encodedResult as $key => $value) {
-                $result[rawurldecode($key)] = $value;
+                $result[rawurldecode($key)] = $this->marshaller->unmarshall($value);
             }
 
             return $result;
         } catch (\Error $e) {
             throw new \ErrorException($e->getMessage(), $e->getCode(), E_ERROR, $e->getFile(), $e->getLine());
-        } finally {
-            ini_set('unserialize_callback_func', $unserializeCallbackHandler);
         }
     }
 
@@ -260,7 +292,7 @@ trait MemcachedTrait
      */
     protected function doClear($namespace)
     {
-        return false;
+        return '' === $namespace && $this->getClient()->flush();
     }
 
     private function checkResultCode($result)

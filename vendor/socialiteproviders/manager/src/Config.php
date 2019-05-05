@@ -2,6 +2,9 @@
 
 namespace SocialiteProviders\Manager;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
+
 class Config implements Contracts\ConfigInterface
 {
     /**
@@ -20,10 +23,23 @@ class Config implements Contracts\ConfigInterface
     public function __construct($key, $secret, $callbackUri, array $additionalProviderConfig = [])
     {
         $this->config = array_merge([
-            'client_id' => $key,
+            'client_id'     => $key,
             'client_secret' => $secret,
-            'redirect' => $callbackUri,
+            'redirect'      => $this->formatRedirectUri($callbackUri),
         ], $additionalProviderConfig);
+    }
+
+    /**
+     * Format the callback URI, resolving a relative URI if needed.
+     *
+     * @param  string  $callbackUri
+     * @return string
+     */
+    protected function formatRedirectUri($callbackUri)
+    {
+        return Str::startsWith($callbackUri, '/')
+                    ? URL::to($callbackUri)
+                    : $callbackUri;
     }
 
     /**

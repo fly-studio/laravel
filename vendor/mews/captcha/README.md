@@ -7,7 +7,7 @@ A simple [Laravel 5](http://www.laravel.com/) service provider for including the
 for Laravel 4 [Captcha for Laravel Laravel 4](https://github.com/mewebstudio/captcha/tree/master-l4)
 
 ## Preview
-![Preview](http://i.imgur.com/HYtr744.png)
+![Preview](https://image.ibb.co/kZxMLm/image.png)
 
 ## Installation
 
@@ -91,6 +91,7 @@ return [
         'width'     => 120,
         'height'    => 36,
         'quality'   => 90,
+        'math'      => true, //Enable Math Captcha
     ],
     // ...
 ];
@@ -100,19 +101,13 @@ return [
 ```php
 
     // [your site path]/Http/routes.php
-
-    Route::any('captcha-test', function()
-    {
-        if (Request::getMethod() == 'POST')
-        {
+    Route::any('captcha-test', function() {
+        if (request()->getMethod() == 'POST') {
             $rules = ['captcha' => 'required|captcha'];
-            $validator = Validator::make(Input::all(), $rules);
-            if ($validator->fails())
-            {
+            $validator = validator()->make(request()->all(), $rules);
+            if ($validator->fails()) {
                 echo '<p style="color: #ff0000;">Incorrect!</p>';
-            }
-            else
-            {
+            } else {
                 echo '<p style="color: #00ff30;">Matched :)</p>';
             }
         }

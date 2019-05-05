@@ -3,7 +3,6 @@
 namespace Laravel\Passport;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 
 class TokenRepository
 {
@@ -63,7 +62,7 @@ class TokenRepository
     {
         return $client->tokens()
                     ->whereUserId($user->getKey())
-                    ->whereRevoked(0)
+                    ->where('revoked', 0)
                     ->where('expires_at', '>', Carbon::now())
                     ->first();
     }
@@ -117,7 +116,7 @@ class TokenRepository
     {
         return $client->tokens()
                       ->whereUserId($user->getKey())
-                      ->whereRevoked(0)
+                      ->where('revoked', 0)
                       ->where('expires_at', '>', Carbon::now())
                       ->latest('expires_at')
                       ->first();

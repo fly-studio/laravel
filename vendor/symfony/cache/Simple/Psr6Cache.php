@@ -15,7 +15,7 @@ use Psr\Cache\CacheException as Psr6CacheException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheException as SimpleCacheException;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Adapter\AbstractAdapter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\Cache\PruneableInterface;
@@ -29,28 +29,39 @@ class Psr6Cache implements CacheInterface, PruneableInterface, ResettableInterfa
 {
     use ProxyTrait;
 
+    private const METADATA_EXPIRY_OFFSET = 1527506807;
+
     private $createCacheItem;
+    private $cacheItemPrototype;
 
     public function __construct(CacheItemPoolInterface $pool)
     {
         $this->pool = $pool;
 
-        if ($pool instanceof AbstractAdapter) {
-            $this->createCacheItem = \Closure::bind(
-                function ($key, $value, $allowInt = false) {
-                    if ($allowInt && \is_int($key)) {
-                        $key = (string) $key;
-                    } else {
-                        CacheItem::validateKey($key);
-                    }
-                    $f = $this->createCacheItem;
-
-                    return $f($key, $value, false);
-                },
-                $pool,
-                AbstractAdapter::class
-            );
+        if (!$pool instanceof AdapterInterface) {
+            return;
         }
+        $cacheItemPrototype = &$this->cacheItemPrototype;
+        $createCacheItem = \Closure::bind(
+            function ($key, $value, $allowInt = false) use (&$cacheItemPrototype) {
+                $item = clone $cacheItemPrototype;
+                $item->key = $allowInt && \is_int($key) ? (string) $key : CacheItem::validateKey($key);
+                $item->value = $value;
+                $item->isHit = false;
+
+                return $item;
+            },
+            null,
+            CacheItem::class
+        );
+        $this->createCacheItem = function ($key, $value, $allowInt = false) use ($createCacheItem) {
+            if (null === $this->cacheItemPrototype) {
+                $this->get($allowInt && \is_int($key) ? (string) $key : $key);
+            }
+            $this->createCacheItem = $createCacheItem;
+
+            return $createCacheItem($key, null, $allowInt)->set($value);
+        };
     }
 
     /**
@@ -64,6 +75,10 @@ class Psr6Cache implements CacheInterface, PruneableInterface, ResettableInterfa
             throw $e;
         } catch (Psr6CacheException $e) {
             throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
+        }
+        if (null === $this->cacheItemPrototype) {
+            $this->cacheItemPrototype = clone $item;
+            $this->cacheItemPrototype->set(null);
         }
 
         return $item->isHit() ? $item->get() : $default;
@@ -132,10 +147,31 @@ class Psr6Cache implements CacheInterface, PruneableInterface, ResettableInterfa
         } catch (Psr6CacheException $e) {
             throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
         }
-        $values = array();
+        $values = [];
+
+        if (!$this->pool instanceof AdapterInterface) {
+            foreach ($items as $key => $item) {
+                $values[$key] = $item->isHit() ? $item->get() : $default;
+            }
+
+            return $values;
+        }
 
         foreach ($items as $key => $item) {
-            $values[$key] = $item->isHit() ? $item->get() : $default;
+            if (!$item->isHit()) {
+                $values[$key] = $default;
+                continue;
+            }
+            $values[$key] = $item->get();
+
+            if (!$metadata = $item->getMetadata()) {
+                continue;
+            }
+            unset($metadata[CacheItem::METADATA_TAGS]);
+
+            if ($metadata) {
+                $values[$key] = ["\x9D".pack('VN', (int) $metadata[CacheItem::METADATA_EXPIRY] - self::METADATA_EXPIRY_OFFSET, $metadata[CacheItem::METADATA_CTIME])."\x5F" => $values[$key]];
+            }
         }
 
         return $values;
@@ -150,7 +186,7 @@ class Psr6Cache implements CacheInterface, PruneableInterface, ResettableInterfa
         if (!$valuesIsArray && !$values instanceof \Traversable) {
             throw new InvalidArgumentException(sprintf('Cache values must be array or Traversable, "%s" given', \is_object($values) ? \get_class($values) : \gettype($values)));
         }
-        $items = array();
+        $items = [];
 
         try {
             if (null !== $f = $this->createCacheItem) {
@@ -159,7 +195,7 @@ class Psr6Cache implements CacheInterface, PruneableInterface, ResettableInterfa
                     $items[$key] = $f($key, $value, true);
                 }
             } elseif ($valuesIsArray) {
-                $items = array();
+                $items = [];
                 foreach ($values as $key => $value) {
                     $items[] = (string) $key;
                 }

@@ -25,7 +25,7 @@ class SvgWriter extends AbstractWriter
             throw new ValidationException('Built-in validation reader can not check SVG images: please disable via setValidateResult(false)');
         }
 
-        $data = $this->getData($qrCode);
+        $data = $qrCode->getData();
 
         $svg = new SimpleXMLElement('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"/>');
         $svg->addAttribute('version', '1.1');
@@ -92,10 +92,10 @@ class SvgWriter extends AbstractWriter
         }
 
         $imageDefinition = $svg->addChild('image');
-        $imageDefinition->addAttribute('x', $imageWidth / 2 - $logoWidth / 2);
-        $imageDefinition->addAttribute('y', $imageHeight / 2 - $logoHeight / 2);
-        $imageDefinition->addAttribute('width', $logoWidth);
-        $imageDefinition->addAttribute('height', $logoHeight);
+        $imageDefinition->addAttribute('x', strval($imageWidth / 2 - $logoWidth / 2));
+        $imageDefinition->addAttribute('y', strval($imageHeight / 2 - $logoHeight / 2));
+        $imageDefinition->addAttribute('width', strval($logoWidth));
+        $imageDefinition->addAttribute('height', strval($logoHeight));
         $imageDefinition->addAttribute('preserveAspectRatio', 'none');
         $imageDefinition->addAttribute('xlink:href', 'data:'.$mimeType.';base64,'.base64_encode($imageData));
     }

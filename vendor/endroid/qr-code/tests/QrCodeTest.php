@@ -57,33 +57,64 @@ class QrCodeTest extends TestCase
         $this->assertEquals('QR Code', $reader->text());
     }
 
-    public function testWriteQrCode(): void
+    /**
+     * @dataProvider writerNamesProvider
+     */
+    public function testWriteQrCodeByWriterName($writerName, $fileContent): void
     {
         $qrCode = new QrCode('QR Code');
+        $qrCode->setLogoPath(__DIR__.'/../assets/images/symfony.png');
+        $qrCode->setLogoWidth(100);
 
-        $qrCode->setWriterByName('binary');
-        $binData = $qrCode->writeString();
-        $this->assertTrue(is_string($binData));
+        $qrCode->setWriterByName($writerName);
+        $data = $qrCode->writeString();
+        $this->assertTrue(is_string($data));
 
-        $qrCode->setWriterByName('debug');
-        $debugData = $qrCode->writeString();
-        $this->assertTrue(is_string($debugData));
+        if (null !== $fileContent) {
+            $uriData = $qrCode->writeDataUri();
+            $this->assertTrue(0 === strpos($uriData, $fileContent));
+        }
+    }
 
-        $qrCode->setWriterByName('eps');
-        $epsData = $qrCode->writeString();
-        $this->assertTrue(is_string($epsData));
+    public function writerNamesProvider()
+    {
+        return [
+            ['binary', null],
+            ['debug', null],
+            ['eps', null],
+            ['png', 'data:image/png;base64'],
+            ['svg', 'data:image/svg+xml;base64'],
+        ];
+    }
 
-        $qrCode->setWriterByName('png');
-        $pngData = $qrCode->writeString();
-        $this->assertTrue(is_string($pngData));
-        $pngDataUriData = $qrCode->writeDataUri();
-        $this->assertTrue(0 === strpos($pngDataUriData, 'data:image/png;base64'));
+    /**
+     * @dataProvider extensionsProvider
+     */
+    public function testWriteQrCodeByWriterExtension($extension, $fileContent): void
+    {
+        $qrCode = new QrCode('QR Code');
+        $qrCode->setLogoPath(__DIR__.'/../assets/images/symfony.png');
+        $qrCode->setLogoWidth(100);
 
-        $qrCode->setWriterByName('svg');
-        $svgData = $qrCode->writeString();
-        $this->assertTrue(is_string($svgData));
-        $svgDataUriData = $qrCode->writeDataUri();
-        $this->assertTrue(0 === strpos($svgDataUriData, 'data:image/svg+xml;base64'));
+        $qrCode->setWriterByExtension($extension);
+        $data = $qrCode->writeString();
+        $this->assertTrue(is_string($data));
+
+        if (null !== $fileContent) {
+            $uriData = $qrCode->writeDataUri();
+            $this->assertTrue(0 === strpos($uriData, $fileContent));
+        }
+    }
+
+    public function extensionsProvider()
+    {
+        return [
+            ['bin', null],
+            ['txt', null],
+            ['eps', null],
+            ['png', 'data:image/png;base64'],
+            ['svg', 'data:image/svg+xml;base64'],
+        ];
     }
 
     public function testSetSize(): void
@@ -136,5 +167,21 @@ class QrCodeTest extends TestCase
         $image = imagecreatefromstring(file_get_contents($filename));
 
         $this->assertTrue(is_resource($image));
+    }
+
+    public function testData(): void
+    {
+        $qrCode = new QrCode('QR Code');
+
+        $data = $qrCode->getData();
+
+        $this->assertArrayHasKey('block_count', $data);
+        $this->assertArrayHasKey('block_size', $data);
+        $this->assertArrayHasKey('inner_width', $data);
+        $this->assertArrayHasKey('inner_height', $data);
+        $this->assertArrayHasKey('outer_width', $data);
+        $this->assertArrayHasKey('outer_height', $data);
+        $this->assertArrayHasKey('margin_left', $data);
+        $this->assertArrayHasKey('margin_right', $data);
     }
 }

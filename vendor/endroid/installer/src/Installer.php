@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * (c) Jeroen van den Enden <info@endroid.nl>
  *
@@ -21,6 +23,7 @@ final class Installer implements PluginInterface, EventSubscriberInterface
     private $io;
 
     private $projectTypes = [
+        'all' => [],
         'symfony' => [
             'config/packages',
             'public',
@@ -44,7 +47,6 @@ final class Installer implements PluginInterface, EventSubscriberInterface
     public function install(): void
     {
         $enabled = $this->composer->getPackage()->getExtra()['endroid']['installer']['enabled'] ?? true;
-        $exclude = $this->composer->getPackage()->getExtra()['endroid']['installer']['exclude'] ?? [];
 
         if (!$enabled) {
             $this->io->write('<info>Endroid Installer was disabled</>');
@@ -52,13 +54,35 @@ final class Installer implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        $projectType = $this->detectProjectType();
+        $foundCompabibleProjectType = false;
+        foreach ($this->projectTypes as $projectType => $paths) {
+            if ($this->isCompatibleProjectType($paths)) {
+                $foundCompabibleProjectType = true;
+                $this->installProjectType($projectType);
+            }
+        }
 
-        if (null === $projectType) {
+        if (!$foundCompabibleProjectType) {
             $this->io->write('<info>Endroid Installer did not detect a compatible project type for auto-configuration</>');
 
             return;
         }
+    }
+
+    private function isCompatibleProjectType(array $paths): bool
+    {
+        foreach ($paths as $path) {
+            if (!file_exists(getcwd().DIRECTORY_SEPARATOR.$path)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function installProjectType(string $projectType): void
+    {
+        $exclude = $this->composer->getPackage()->getExtra()['endroid']['installer']['exclude'] ?? [];
 
         $processedPackages = [];
         $this->io->write('<info>Endroid Installer detected project type "'.$projectType.'"</>');
@@ -89,34 +113,22 @@ final class Installer implements PluginInterface, EventSubscriberInterface
         }
     }
 
-    private function detectProjectType()
-    {
-        foreach ($this->projectTypes as $projectType => $paths) {
-            foreach ($paths as $path) {
-                if (!file_exists(getcwd().DIRECTORY_SEPARATOR.$path)) {
-                    continue 2;
-                }
-            }
-
-            return $projectType;
-        }
-
-        return null;
-    }
-
     private function copy(string $sourcePath, string $targetPath): bool
     {
         $changed = false;
-        
+
+        /** @var \RecursiveDirectoryIterator $iterator */
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourcePath, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($iterator as $item) {
+
+        /** @var \SplFileInfo $fileInfo */
+        foreach ($iterator as $fileInfo) {
             $target = $targetPath.DIRECTORY_SEPARATOR.$iterator->getSubPathName();
-            if ($item->isDir()) {
+            if ($fileInfo->isDir()) {
                 if (!is_dir($target)) {
                     mkdir($target);
                 }
             } elseif (!file_exists($target)) {
-                $this->copyFile($item, $target);
+                $this->copyFile($fileInfo->getPathname(), $target);
                 $changed = true;
             }
         }

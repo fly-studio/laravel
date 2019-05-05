@@ -3,8 +3,8 @@
 namespace Laravel\Passport\Console;
 
 use Illuminate\Console\Command;
+use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
-use Laravel\Passport\PersonalAccessClient;
 
 class ClientCommand extends Command
 {
@@ -17,7 +17,9 @@ class ClientCommand extends Command
             {--personal : Create a personal access token client}
             {--password : Create a password grant client}
             {--client : Create a client credentials grant client}
-            {--name= : The name of the client}';
+            {--name= : The name of the client}
+            {--redirect_uri= : The URI to redirect to after authorization }
+            {--user_id= : The user ID the client should be assigned to }';
 
     /**
      * The console command description.
@@ -35,18 +37,14 @@ class ClientCommand extends Command
     public function handle(ClientRepository $clients)
     {
         if ($this->option('personal')) {
-            return $this->createPersonalClient($clients);
+            $this->createPersonalClient($clients);
+        } elseif ($this->option('password')) {
+            $this->createPasswordClient($clients);
+        } elseif ($this->option('client')) {
+            $this->createClientCredentialsClient($clients);
+        } else {
+            $this->createAuthCodeClient($clients);
         }
-
-        if ($this->option('password')) {
-            return $this->createPasswordClient($clients);
-        }
-
-        if ($this->option('client')) {
-            return $this->createClientCredentialsClient($clients);
-        }
-
-        $this->createAuthCodeClient($clients);
     }
 
     /**
@@ -67,8 +65,8 @@ class ClientCommand extends Command
         );
 
         $this->info('Personal access client created successfully.');
-        $this->line('<comment>Client ID:</comment> '.$client->id);
-        $this->line('<comment>Client Secret:</comment> '.$client->secret);
+
+        $this->outputClientDetails($client);
     }
 
     /**
@@ -89,38 +87,8 @@ class ClientCommand extends Command
         );
 
         $this->info('Password grant client created successfully.');
-        $this->line('<comment>Client ID:</comment> '.$client->id);
-        $this->line('<comment>Client Secret:</comment> '.$client->secret);
-    }
 
-    /**
-     * Create a authorization code client.
-     *
-     * @param  \Laravel\Passport\ClientRepository  $clients
-     * @return void
-     */
-    protected function createAuthCodeClient(ClientRepository $clients)
-    {
-        $userId = $this->ask(
-            'Which user ID should the client be assigned to?'
-        );
-
-        $name = $this->option('name') ?: $this->ask(
-            'What should we name the client?'
-        );
-
-        $redirect = $this->ask(
-            'Where should we redirect the request after authorization?',
-            url('/auth/callback')
-        );
-
-        $client = $clients->create(
-            $userId, $name, $redirect
-        );
-
-        $this->info('New client created successfully.');
-        $this->line('<comment>Client ID:</comment> '.$client->id);
-        $this->line('<comment>Client secret:</comment> '.$client->secret);
+        $this->outputClientDetails($client);
     }
 
     /**
@@ -132,7 +100,8 @@ class ClientCommand extends Command
     protected function createClientCredentialsClient(ClientRepository $clients)
     {
         $name = $this->option('name') ?: $this->ask(
-            'What should we name the client?'
+            'What should we name the client?',
+            config('app.name').' ClientCredentials Grant Client'
         );
 
         $client = $clients->create(
@@ -140,6 +109,48 @@ class ClientCommand extends Command
         );
 
         $this->info('New client created successfully.');
+
+        $this->outputClientDetails($client);
+    }
+
+    /**
+     * Create a authorization code client.
+     *
+     * @param  \Laravel\Passport\ClientRepository  $clients
+     * @return void
+     */
+    protected function createAuthCodeClient(ClientRepository $clients)
+    {
+        $userId = $this->option('user_id') ?: $this->ask(
+            'Which user ID should the client be assigned to?'
+        );
+
+        $name = $this->option('name') ?: $this->ask(
+            'What should we name the client?'
+        );
+
+        $redirect = $this->option('redirect_uri') ?: $this->ask(
+            'Where should we redirect the request after authorization?',
+            url('/auth/callback')
+        );
+
+        $client = $clients->create(
+            $userId, $name, $redirect
+        );
+
+        $this->info('New client created successfully.');
+
+        $this->outputClientDetails($client);
+    }
+
+    /**
+     * Output the client's ID and secret key.
+     *
+     * @param  \Laravel\Passport\Client  $client
+     * @return void
+     */
+    protected function outputClientDetails(Client $client)
+    {
         $this->line('<comment>Client ID:</comment> '.$client->id);
         $this->line('<comment>Client secret:</comment> '.$client->secret);
     }

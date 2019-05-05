@@ -14,14 +14,18 @@ namespace Symfony\Component\Cache\Traits;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
+use Symfony\Component\Cache\Marshaller\DefaultMarshaller;
+use Symfony\Component\Cache\Marshaller\MarshallerInterface;
 
 /**
  * @internal
  */
 trait PdoTrait
 {
+    private $marshaller;
     private $conn;
     private $dsn;
     private $driver;
@@ -33,10 +37,10 @@ trait PdoTrait
     private $timeCol = 'item_time';
     private $username = '';
     private $password = '';
-    private $connectionOptions = array();
+    private $connectionOptions = [];
     private $namespace;
 
-    private function init($connOrDsn, $namespace, $defaultLifetime, array $options)
+    private function init($connOrDsn, $namespace, $defaultLifetime, array $options, ?MarshallerInterface $marshaller)
     {
         if (isset($namespace[0]) && preg_match('#[^-+.A-Za-z0-9]#', $namespace, $match)) {
             throw new InvalidArgumentException(sprintf('Namespace contains "%s" but only characters in [-+.A-Za-z0-9] are allowed.', $match[0]));
@@ -65,6 +69,7 @@ trait PdoTrait
         $this->password = isset($options['db_password']) ? $options['db_password'] : $this->password;
         $this->connectionOptions = isset($options['db_connection_options']) ? $options['db_connection_options'] : $this->connectionOptions;
         $this->namespace = $namespace;
+        $this->marshaller = $marshaller ?? new DefaultMarshaller();
 
         parent::__construct($namespace, $defaultLifetime);
     }
@@ -85,24 +90,24 @@ trait PdoTrait
         $conn = $this->getConnection();
 
         if ($conn instanceof Connection) {
-            $types = array(
+            $types = [
                 'mysql' => 'binary',
                 'sqlite' => 'text',
                 'pgsql' => 'string',
                 'oci' => 'string',
                 'sqlsrv' => 'string',
-            );
+            ];
             if (!isset($types[$this->driver])) {
                 throw new \DomainException(sprintf('Creating the cache table is currently not implemented for PDO driver "%s".', $this->driver));
             }
 
             $schema = new Schema();
             $table = $schema->createTable($this->table);
-            $table->addColumn($this->idCol, $types[$this->driver], array('length' => 255));
-            $table->addColumn($this->dataCol, 'blob', array('length' => 16777215));
-            $table->addColumn($this->lifetimeCol, 'integer', array('unsigned' => true, 'notnull' => false));
-            $table->addColumn($this->timeCol, 'integer', array('unsigned' => true));
-            $table->setPrimaryKey(array($this->idCol));
+            $table->addColumn($this->idCol, $types[$this->driver], ['length' => 255]);
+            $table->addColumn($this->dataCol, 'blob', ['length' => 16777215]);
+            $table->addColumn($this->lifetimeCol, 'integer', ['unsigned' => true, 'notnull' => false]);
+            $table->addColumn($this->timeCol, 'integer', ['unsigned' => true]);
+            $table->setPrimaryKey([$this->idCol]);
 
             foreach ($schema->toSql($conn->getDatabasePlatform()) as $sql) {
                 $conn->exec($sql);
@@ -150,14 +155,21 @@ trait PdoTrait
             $deleteSql .= " AND $this->idCol LIKE :namespace";
         }
 
-        $delete = $this->getConnection()->prepare($deleteSql);
+        try {
+            $delete = $this->getConnection()->prepare($deleteSql);
+        } catch (TableNotFoundException $e) {
+            return true;
+        }
         $delete->bindValue(':time', time(), \PDO::PARAM_INT);
 
         if ('' !== $this->namespace) {
             $delete->bindValue(':namespace', sprintf('%s%%', $this->namespace), \PDO::PARAM_STR);
         }
-
-        return $delete->execute();
+        try {
+            return $delete->execute();
+        } catch (TableNotFoundException $e) {
+            return true;
+        }
     }
 
     /**
@@ -166,7 +178,7 @@ trait PdoTrait
     protected function doFetch(array $ids)
     {
         $now = time();
-        $expired = array();
+        $expired = [];
 
         $sql = str_pad('', (\count($ids) << 1) - 1, '?,');
         $sql = "SELECT $this->idCol, CASE WHEN $this->lifetimeCol IS NULL OR $this->lifetimeCol + $this->timeCol > ? THEN $this->dataCol ELSE NULL END FROM $this->table WHERE $this->idCol IN ($sql)";
@@ -181,7 +193,7 @@ trait PdoTrait
             if (null === $row[1]) {
                 $expired[] = $row[0];
             } else {
-                yield $row[0] => parent::unserialize(\is_resource($row[1]) ? stream_get_contents($row[1]) : $row[1]);
+                yield $row[0] => $this->marshaller->unmarshall(\is_resource($row[1]) ? stream_get_contents($row[1]) : $row[1]);
             }
         }
 
@@ -229,7 +241,10 @@ trait PdoTrait
             $sql = "DELETE FROM $this->table WHERE $this->idCol LIKE '$namespace%'";
         }
 
-        $conn->exec($sql);
+        try {
+            $conn->exec($sql);
+        } catch (TableNotFoundException $e) {
+        }
 
         return true;
     }
@@ -241,8 +256,11 @@ trait PdoTrait
     {
         $sql = str_pad('', (\count($ids) << 1) - 1, '?,');
         $sql = "DELETE FROM $this->table WHERE $this->idCol IN ($sql)";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute(array_values($ids));
+        try {
+            $stmt = $this->getConnection()->prepare($sql);
+            $stmt->execute(array_values($ids));
+        } catch (TableNotFoundException $e) {
+        }
 
         return true;
     }
@@ -252,18 +270,7 @@ trait PdoTrait
      */
     protected function doSave(array $values, $lifetime)
     {
-        $serialized = array();
-        $failed = array();
-
-        foreach ($values as $id => $value) {
-            try {
-                $serialized[$id] = serialize($value);
-            } catch (\Exception $e) {
-                $failed[] = $id;
-            }
-        }
-
-        if (!$serialized) {
+        if (!$values = $this->marshaller->marshall($values, $failed)) {
             return $failed;
         }
 
@@ -302,7 +309,14 @@ trait PdoTrait
 
         $now = time();
         $lifetime = $lifetime ?: null;
-        $stmt = $conn->prepare($sql);
+        try {
+            $stmt = $conn->prepare($sql);
+        } catch (TableNotFoundException $e) {
+            if (!$conn->isTransactionActive() || \in_array($this->driver, ['pgsql', 'sqlite', 'sqlsrv'], true)) {
+                $this->createTable();
+            }
+            $stmt = $conn->prepare($sql);
+        }
 
         if ('sqlsrv' === $driver || 'oci' === $driver) {
             $stmt->bindParam(1, $id);
@@ -328,9 +342,15 @@ trait PdoTrait
             $insertStmt->bindValue(':time', $now, \PDO::PARAM_INT);
         }
 
-        foreach ($serialized as $id => $data) {
-            $stmt->execute();
-
+        foreach ($values as $id => $data) {
+            try {
+                $stmt->execute();
+            } catch (TableNotFoundException $e) {
+                if (!$conn->isTransactionActive() || \in_array($this->driver, ['pgsql', 'sqlite', 'sqlsrv'], true)) {
+                    $this->createTable();
+                }
+                $stmt->execute();
+            }
             if (null === $driver && !$stmt->rowCount()) {
                 try {
                     $insertStmt->execute();
