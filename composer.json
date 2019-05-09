@@ -14,6 +14,7 @@
         "doctrine/dbal": "^2.9",
         "endroid/qr-code": "^3.5",
         "fideloper/proxy": "^4.0",
+        "geoip2/geoip2": "^2.9",
         "intervention/image": "^2.4",
         "jenssegers/agent": "^2.6",
         "jenssegers/mongodb": "^3.5",
