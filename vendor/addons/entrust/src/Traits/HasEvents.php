@@ -2,6 +2,8 @@
 
 namespace Addons\Entrust\Traits;
 
+use Illuminate\Support\Str;
+
 trait HasEvents
 {
     /**
@@ -25,7 +27,7 @@ trait HasEvents
 
         foreach ($observables as $event) {
             if (method_exists($class, $event)) {
-                static::registerEntrustEvent(\Illuminate\Support\Str::snake($event, '.'), $className.'@'.$event);
+                static::registerEntrustEvent(Str::snake($event, '.'), $className.'@'.$event);
             }
         }
     }
@@ -43,7 +45,7 @@ trait HasEvents
             return true;
         }
 
-        return static::$dispatcher->fire(
+        return static::$dispatcher->dispatch(
             "entrust.{$event}: ".static::class,
             $payload
         );
