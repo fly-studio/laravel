@@ -3,7 +3,7 @@
 namespace Addons\Core\Models;
 
 use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
+use Addons\Core\Models\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Support\Arrayable;
 
@@ -72,26 +72,6 @@ trait PolyfillTrait {
 	}
 
 	/**
-	 * Convert the model's attributes to an array.
-	 *
-	 * @return array
-	 */
-	public function attributesToArray()
-	{
-		$data = parent::attributesToArray();
-		foreach ($this->getCasts() as $key => $type)
-		{
-			if (!empty($type) && !in_array($type, $this->originalCastTypes) && isset($data[$key]))
-			{
-				$method = Str::camel($type).'ToArray';
-				if (method_exists($this, $method))
-					$data[$key] = call_user_func([$this, $method], $data[$key], $key, $type);
-			}
-		}
-		return $data;
-	}
-
-	/**
 	 * Set a given attribute on the model.
 	 *
 	 * @param  string  $key
@@ -110,12 +90,33 @@ trait PolyfillTrait {
 		return parent::setAttribute($key, $value);
 	}
 
+	/**
+	 * 可以在Model转换数组的时候，补充casts字段、appends字段、relations关系，以及修改时间格式
+	 *
+	 * @example
+	 * toArray([
+	 * 	'casts' => [
+	 * 		'other_cast_field1' => 'datetime'
+	 * 		'other_cast_field2' => 'datetime'
+	 * 	],
+	 * 	'appends' => [
+	 * 		'other_append_field1', 'other_append_field2'
+	 * 	],
+	 * 	'relations' => [
+	 * 		'other_relation1',
+	 * 		'other_relation2',
+	 * 	],
+	 * 	'dataFormat' => \DateTime::W3C,
+	 * ])
+	 * @param  array  $options
+	 * @return array
+	 */
 	public function toArray(array $options = [])
 	{
 		$options += [
-			'cast' => true,
-			'append' => true,
-			'relations' => true,
+			'casts' => [],
+			'appends' => [],
+			'relations' => [],
 			'dateFormat' => null,
 		];
 
@@ -125,9 +126,9 @@ trait PolyfillTrait {
 			$data, $mutatedAttributes = $this->getMutatedAttributes()
 		);
 
-		if ($options['cast'])
+		if ($options['casts'] !== false && is_array($options['casts']))
 		{
-			foreach ($this->getCasts() as $key => $value) {
+			foreach ($this->getCasts() + $options['casts'] as $key => $value) {
 
 				if (! isset($data[$key]) || in_array($key, $mutatedAttributes)) {
 					continue;
@@ -145,12 +146,20 @@ trait PolyfillTrait {
 				if ($data[$key] && $this->isCustomDateTimeCast($value)) {
 					$data[$key] = $data[$key]->format(explode(':', $value, 2)[1]);
 				}
+
+				// execute xxToArray
+				if (isset($data[$key]) && !empty($value) && !in_array($value, $this->originalCastTypes))
+				{
+					$method = Str::camel($value).'ToArray';
+					if (method_exists($this, $method))
+						$data[$key] = call_user_func([$this, $method], $data[$key], $key, $value);
+				}
 			}
 		}
 
-		if ($options['append'])
+		if ($options['appends'] !== false && is_array($options['appends']))
 		{
-			foreach ($this->getArrayableAppends() as $key) {
+			foreach ($this->getArrayableAppends() + array_combine($options['appends'], $options['appends'])  as $key) {
 				$data[$key] = $this->mutateAttributeForArray($key, null);
 			}
 		}
@@ -167,8 +176,11 @@ trait PolyfillTrait {
 
 		$attributes = [];
 
-		if ($options['relations'])
+		if ($options['relations'] !== false && is_array($options['relations']))
 		{
+			if (!empty($options['relations']))
+				$this->loadMissing($options['relations']);
+
 			foreach ($this->getArrayableRelations() as $key => $value) {
 
 				if ($value instanceof Model) {
@@ -197,11 +209,15 @@ trait PolyfillTrait {
 		return $data + $attributes;
 	}
 
-	public function toArrayWith(array $with = [], array $options = [])
+	/**
+	 * Create a new Eloquent Collection instance.
+	 *
+	 * @param  array  $models
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function newCollection(array $models = [])
 	{
-		!empty($with) && $this->loadMissing($with);
-
-		return $this->toArray($options);
+		return new Collection($models);
 	}
 
 }
