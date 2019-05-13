@@ -81,7 +81,7 @@ if (! function_exists('squareroot')) {
  * 平方根
  *
  * @param  float $x 输入
- * @return float    [description]
+ * @return float
  */
 function squareroot ($x) {
 	if (! function_exists('power')) {
@@ -144,7 +144,7 @@ function is_pow_from_2($x)
 
 if (! function_exists('absolute')) {
 /**
- * 取绝对值（只支持int）
+ * 取绝对值（只支持int32）
  * @param  int $x
  * @return int
  */
@@ -472,7 +472,7 @@ if(! function_exists('byterev')) {
  * @param  mixed $x
  * @return mixed
  */
-function byterev($x)
+function byterev(int $x)
 {
 	$x = (($x >>  1) & 0x55555555) | (($x <<  1) & 0xaaaaaaaa) ;
 	$x = (($x >>  2) & 0x33333333) | (($x <<  2) & 0xcccccccc) ;
@@ -489,7 +489,7 @@ if(! function_exists('byte_pop')) {
  * @param  mixed $x
  * @return int
  */
-function byte_pop($x)
+function byte_pop(int $x)
 {
 	$x = ($x & 0x55555555) + (($x & 0xaaaaaaaa) >> 1);
 	$x = ($x & 0x33333333) + (($x & 0xcccccccc) >> 2);
@@ -506,5 +506,38 @@ function byte_pop($x)
 	$x += $x >> 16;
 	*/
 	return $x;
+}
+}
+
+if(! function_exists('bswap_64')) {
+/**
+ * int64转换大小端
+ * @param  int    $x
+ * @return int
+ */
+function bswap_64(int $x)
+{
+   return ((($x & 0xff00000000000000) >> 56)
+      | (($x & 0x00ff000000000000) >> 40)
+      | (($x & 0x0000ff0000000000) >> 24)
+      | (($x & 0x000000ff00000000) >> 8)
+      | (($x & 0x00000000ff000000) << 8)
+      | (($x & 0x0000000000ff0000) << 24)
+      | (($x & 0x000000000000ff00) << 40)
+      | (($x & 0x00000000000000ff) << 56));
+}
+}
+
+if(! function_exists('bswap_32')) {
+/**
+ * int32转换大小端
+ * 如果输入int64，会自动截取低4位
+ *
+ * @param  int    $x
+ * @return int
+ */
+function bswap_32(int $x)
+{
+   return (($x & 0xff000000) >> 24) | (($x & 0x00ff0000) >>  8) |  (($x & 0x0000ff00) <<  8) | (($x & 0x000000ff) << 24);
 }
 }
