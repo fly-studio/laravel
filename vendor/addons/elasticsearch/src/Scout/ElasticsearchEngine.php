@@ -196,6 +196,9 @@ class ElasticsearchEngine {
 			'index' => is_null($builder->index) ? $builder->model->searchableAs() : $builder->index,
 			'type' => '_doc',
 			'body' => $this->parseBody($builder),
+			'custom' => [
+				'ignore_throttled' => false,
+			],
 		];
 		return $this->elasticsearch->count($query);
 	}
@@ -215,6 +218,9 @@ class ElasticsearchEngine {
 			'type' => '_doc',
 			'body' => $this->parseBody($builder) + [
 				'sort' => $builder->orders,
+			],
+			'custom' => [
+				'ignore_throttled' => false,
 			],
 		];
 

@@ -66,12 +66,8 @@ class ServiceProvider extends BaseServiceProvider
 
 		config('scout.elasticsearch.config.logger') === 'monolog' && config(['scout.elasticsearch.config.logger' => $app->make('log')]);
 
-		$app->singleton('elasticsearch.factory', function($app) {
-			return new Factory();
-		});
-
 		$app->singleton('elasticsearch', function($app) {
-			return new Manager($app, $app['elasticsearch.factory']);
+			return new Manager($app, new Factory());
 		});
 
 		$app->singleton(Client::class, function($app) {
