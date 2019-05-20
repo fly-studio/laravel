@@ -67,7 +67,7 @@ trait RoleTrait
             return $this->permissions()->get();
         }
 
-        return Cache::remember($cacheKey, Config::get('cache.ttl', 60), function () {
+        return Cache::remember($cacheKey, Config::get('cache.ttl'), function () {
             return $this->permissions()->get()->toArray();
         });
     }
