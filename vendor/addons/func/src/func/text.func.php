@@ -1190,7 +1190,7 @@ if (! function_exists('strlen_ansi')) {
  * @param integer $ansi_width 汉字等非英文字符按照几个字宽来处理
  * @return string 返回字符串长度
  */
-function strlen_ansi(string $string, string $charset, $ansi_width = 1)
+function strlen_ansi(string $string, string $charset = 'UTF-8', $ansi_width = 1)
 {
 	if (empty($string) && !is_numeric($string)) return 0;
 

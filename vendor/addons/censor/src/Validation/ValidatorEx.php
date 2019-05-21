@@ -108,7 +108,7 @@ class ValidatorEx extends BaseValidator {
 		$rule = $this->getRule($attribute, 'Ansi');
 		$ansiWidth = empty($rule) || empty($rule[1]) ? 1 : intval($rule[1][0]);
 
-		return strlen_ansi($value, NULL, $ansiWidth);
+		return strlen_ansi($value, 'UTF-8', $ansiWidth);
 		//return mb_strlen($value);
 	}
 
