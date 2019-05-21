@@ -346,42 +346,38 @@ function ucs_utf16_code(int $codepage)
 }
 }
 
-if (! function_exists('utf16_utf8_code')) {
+if (! function_exists('ucs_utf8_code')) {
 /**
- * utf16码转换为utf8码
+ * ucs码转换utf8码
  * 1~6位算法： http://tidy.sourceforge.net/cgi-bin/lxr/source/src/utf8.c#L342
- *
  * 注意: 2003年之后规范utf-8不会超过4位，
- * 4bytes的UTF-16的需要先转换到0x10000~0x10ffff，转换函数为：utf16_ucs_code
+ *
  *
  * @param  int    $codepage
  * @return int
  */
-function utf16_utf8_code(int $codepage)
-{
-	$ucs = utf16_ucs_code($codepage);
-
+function ucs_utf8_code(int $codepage) {
 	$symbol = 0;
 
 	//0 ~ 0x0080
-	if ($ucs < 0x0080) { // 1-byte sequence
-		return $ucs;
+	if ($codepage < 0x0080) { // 1-byte sequence
+		return $codepage;
 	// 0x0080 ~ 0x7f00
-	} else if ($ucs < 0x0800) { // 2-byte sequence
-		$symbol = ((($ucs >> 6) & 0x1F) | 0xC0) << 8;
+	} else if ($codepage < 0x0800) { // 2-byte sequence
+		$symbol = ((($codepage >> 6) & 0x1F) | 0xC0) << 8;
 	//0x0800 ~ 0xd7ff 0xe000 ~ x0ffff
-	} else if ($ucs <= 0xd7ff || ($ucs >= 0xe000 && $ucs <= 0xffff)) { // 3-byte sequence
-		$symbol = (($ucs >> 12) & 0x0F | 0xE0) << 16;
-		$symbol |= _create_utf8_byte($ucs, 6) << 8;
+	} else if ($codepage <= 0xd7ff || ($codepage >= 0xe000 && $codepage <= 0xffff)) { // 3-byte sequence
+		$symbol = (($codepage >> 12) & 0x0F | 0xE0) << 16;
+		$symbol |= _create_utf8_byte($codepage, 6) << 8;
 	//0x10000 ~ 0x10ffff
-	} else if ($ucs <= 0x10ffff) { // 4-byte sequence
-		$symbol = (($ucs >> 18) & 0x07 | 0xF0) << 24;
-		$symbol |= _create_utf8_byte($ucs, 12) << 16;
-		$symbol |= _create_utf8_byte($ucs, 6) << 8;
+	} else if ($codepage <= 0x10ffff) { // 4-byte sequence
+		$symbol = (($codepage >> 18) & 0x07 | 0xF0) << 24;
+		$symbol |= _create_utf8_byte($codepage, 12) << 16;
+		$symbol |= _create_utf8_byte($codepage, 6) << 8;
 	} else {
 		return 0;
 	}
-	$symbol |= ($ucs & 0x3F) | 0x80;
+	$symbol |= ($codepage & 0x3F) | 0x80;
 
 	return $symbol;
 }
@@ -462,6 +458,38 @@ function utf8_ucs_code(int $codepage)
 }
 }
 
+if (! function_exists('utf16_utf8_code')) {
+/**
+ * utf16码转换为utf8码
+ * 1~6位算法： http://tidy.sourceforge.net/cgi-bin/lxr/source/src/utf8.c#L342
+ *
+ * 注意: 2003年之后规范utf-8不会超过4位，
+ * 4bytes的UTF-16的需要先转换到0x10000~0x10ffff，转换函数为：utf16_ucs_code
+ *
+ * @param  int    $codepage
+ * @return int
+ */
+function utf16_utf8_code(int $codepage)
+{
+	$ucs = utf16_ucs_code($codepage);
+
+	return ucs_utf8_code($ucs);
+}
+}
+
+if (! function_exists('utf8_utf16_code')) {
+/**
+ * utf-8转换UTF-16
+ *
+ * @param  int $codepage
+ * @return int
+ */
+function utf8_utf16_code(int $codepage)
+{
+	return ucs_utf16_code(utf8_ucs_code($codepage));
+}
+}
+
 if (! function_exists('uchr')) {
 /**
  * 原chr的函数只支持ascii编码，此函数可以支持int转换为一个自然字: ascii utf8 utf-16 utf-32
@@ -520,9 +548,8 @@ function uord(string $char)
 }
 
 if (! function_exists('utf16_to_utf8')) {
-
 /**
- * utf-16转换UTF-8
+ * utf-16码转换UTF-8码
  * 本函数主要是展示utf-16转换utf-8的算法
  *
  * @param  string $str
@@ -563,7 +590,7 @@ function utf8_to_utf16(string $str)
 	foreach($data as $word)
 	{
 		$code = uord($word);
-		$utf16 = ucs_utf16_code(utf8_ucs_code($code));
+		$utf16 = utf8_utf16_code($code);
 
 		$res .= uchr($utf16, 'UTF-16');
 	}
@@ -1586,7 +1613,7 @@ function parse_dataurl($dataurl)
 }
 }
 
-if (! function_exists('__')) {
+if (! function_exists('__r')) {
 /**
  * Make the place-holder replacements on a line.
  *
@@ -1594,7 +1621,7 @@ if (! function_exists('__')) {
  * @param  array   $replace
  * @return string
  */
-function __(string $line, array $replace)
+function __r(string $line, array $replace)
 {
 	$replace = array_keyflatten($replace, '.', ':');
 	ksort($replace);
