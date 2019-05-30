@@ -22,14 +22,6 @@ class Response extends AbstractResponse {
 		return $this;
 	}
 
-	public function gzip(int $gzip = null)
-	{
-		if (is_null($gzip)) return $this->gzip;
-
-		$this->gzip = $gzip;
-		return $this;
-	}
-
 	public function header(string $key, string $value)
 	{
 		$this->headers[$key] = $value;
@@ -46,23 +38,16 @@ class Response extends AbstractResponse {
 	{
 		$nativeResponse = $this->sender->response();
 		foreach($this->headers as $k => $v)
-			$nativeResponse->header($k, ...array_values(array_wrap($v)));
+			$nativeResponse->header($k, $v);
 
 		foreach($this->cookies as $k => $v)
-			$nativeResponse->cookie($k, ...array_values(array_wrap($v)));
+			$nativeResponse->cookie($k, ...array_values($v));
 
 		$nativeResponse->status($this->status);
-
-		if (!is_null($this->gzip)) $nativeResponse->gzip($this->gzip);
 	}
 
 	public function send()
 	{
-		static $i;
-		if (empty($i)) $i =0;
-
-		echo ++$i, PHP_EOL;
-
 		$this->sendMeta();
 
 		$this->sender->send($this->getContent());

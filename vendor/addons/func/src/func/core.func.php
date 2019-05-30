@@ -146,12 +146,7 @@ if (! function_exists('call_class_method')) {
  */
 function call_class_method($class, $method, ...$parameters)
 {
-	if (!is_object($class)) throw new Exception('paramater #0 must be an object\'s instance.', 1);
-
-	$reflectionMethod = (new ReflectionClass($class))->getMethod($method);
-	$reflectionMethod->setAccessible(true);
-
-	return $reflectionMethod->invokeArgs($class, $parameters);
+	return call_class_method_array($class, $method, $parameters);
 }
 }
 

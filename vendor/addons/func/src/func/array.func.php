@@ -1015,30 +1015,6 @@ function array_orderby()
 }
 }
 
-if (! function_exists('zend_inline_hash_func')) {
-/**
- * PHP内置HASH KEY生成函数
- *
- * @example 制造KEY冲突
- * $size = pow(2, 16);
- * for ($key = 0, $maxKey = ($size - 1) * $size; $key <= $maxKey; $key += $size) {
- *	echo $key .'--'. zend_inline_hash_func($key);
- * }
- *
- * @param  string $arKey 输入KEY
- * @return integer        返回hash key
- */
-function zend_inline_hash_func($arKey)
-{
-		$hash = 5381;
-		$nKeyLength = strlen($arKey);
-		/* variant with the hash unrolled eight times */
-		for($i = 0; $i < $nKeyLength; ++$i)
-			$hash = (($hash << 5) + $hash) + ord($arKey{$i});
-		return $hash;
-}
-}
-
 if (! function_exists('array_average')) {
 /**
  * 计算数组平均数

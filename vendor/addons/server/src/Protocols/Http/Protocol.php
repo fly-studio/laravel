@@ -7,22 +7,23 @@ use Addons\Server\Protocols\Http\Request;
 use Addons\Server\Contracts\AbstractRequest;
 use Addons\Server\Contracts\AbstractResponse;
 use Addons\Server\Contracts\AbstractProtocol;
+use Addons\Server\Protocols\Http\Responses\Response;
 
 class Protocol extends AbstractProtocol {
 
 	public function decode(ConnectBinder $binder, ...$args) : ?AbstractRequest
 	{
-		$request = $args[0];
-		$response = $args[1];
-		//To Do
 		return new Request(...$args);
 	}
 
 	public function encode(AbstractRequest $request, $response, ...$args): ?AbstractResponse
 	{
-		//To Do
-		//
-		return $response;
+		if ($response instanceof AbstractResponse) {
+			return $response;
+		} else {
+			return new Response(@strval($response));
+		}
+
 	}
 
 }

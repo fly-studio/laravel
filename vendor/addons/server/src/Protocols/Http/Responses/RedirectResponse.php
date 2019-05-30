@@ -17,6 +17,8 @@ class RedirectResponse extends Response {
 
 	public function send()
 	{
+		$this->sendMeta();
+
 		return $this->sender->redirect($this->url, $this->http_code);
 	}
 }

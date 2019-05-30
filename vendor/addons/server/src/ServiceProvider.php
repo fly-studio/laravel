@@ -19,6 +19,7 @@ class ServiceProvider extends BaseServiceProvider
 		if ($this->app->runningInConsole())
 		{
 			$this->commands([
+				\Addons\Server\Console\NativeHttpCommand::class,
 				\Addons\Server\Example\Console\TagCommand::class,
 				\Addons\Server\Example\Console\RawCommand::class,
 				\Addons\Server\Example\Console\GrpcCommand::class,

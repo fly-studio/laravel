@@ -148,6 +148,8 @@ abstract class AbstractServer {
 
 		} catch (\Exception $e) {
 			$this->capture->failed($binder, $e);
+		} catch (\Throwable $e) {
+			$this->capture->failed($binder, $e);
 		}
 	}
 
