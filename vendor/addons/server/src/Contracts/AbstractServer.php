@@ -7,8 +7,10 @@ use InvalidArgumentException;
 use Addons\Server\Routing\Router;
 use Addons\Func\Console\ConsoleLog;
 use Addons\Server\Structs\ConnectPool;
+use Addons\Server\Listeners\PidListener;
 use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Contracts\AbstractSender;
+use Addons\Server\Contracts\AbstractListener;
 use Addons\Server\Contracts\AbstractObserver;
 use Addons\Server\Structs\Config\ServerConfig;
 
@@ -39,6 +41,10 @@ abstract class AbstractServer {
 
 		foreach($this->observerListeners as $method)
 			$this->server->on($method, [$this->observer, 'on'.$method]);
+
+		// load system's listeners
+		foreach($this->getSystemListeners() as $listener)
+			$this->listening($listener);
 	}
 
 	protected function createRouter()
@@ -51,20 +57,43 @@ abstract class AbstractServer {
 	abstract protected function initServer(\swoole_server $server, ServerConfig $config);
 	abstract protected function createObserver(): AbstractObserver;
 	abstract protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender;
-	abstract protected function getAutoListeners(): array;
+	abstract protected function getSystemListeners(): array;
 
-	public function listening(...$listenerClasses)
+	/**
+	 * 添加监听器，比如是AbstractListener的子类
+	 *
+	 * 注意：如果覆盖同名监听函数，那只会触发这次设置的监听函数，之前设置的同名监听函数会被删除
+	 * 这里的覆盖并不是指类的覆盖，而是指覆盖类中的回调函数名(onXXX之类)
+	 *
+	 * @param AbstractListener $listenerClass
+	 * @param bool $overwrite 是否覆盖同名监听函数
+	 * @return $this
+	 */
+	public function listening($listenerClass, bool $overwrite = false)
 	{
-		foreach($listenerClasses as $class)
-			$this->observer->addClassListener($class);
+		$this->observer->addClassListener($listenerClass, $overwrite);
 		return $this;
 	}
 
 	/**
-	 * 分析的协议
+	 * 设置pid文件路径，server会在启动、关闭时维护这个pid文件
+	 * 注意：在server其中，此文件禁止写入
 	 *
-	 * @param  AbstractProtocol $capture 捕获的协议实例
-	 * @return [this]                     $this
+	 * @param string $pidPath
+	 */
+	public function setPidPath(string $pidPath)
+	{
+		$pidListener = new PidListener($this);
+		$pidListener->pidPath($pidPath);
+
+		$this->listening($pidListener);
+	}
+
+	/**
+	 * 设置解码协议
+	 *
+	 * @param  AbstractProtocol $capture 解码协议实例
+	 * @return $this
 	 */
 	public function capture(AbstractProtocol $capture)
 	{
@@ -78,7 +107,7 @@ abstract class AbstractServer {
 	 *
 	 * @param  string $file_path 文件绝对路径
 	 * @param  string $namespace Controller的默认namespace
-	 * @return [this]            this
+	 * @return $this
 	 */
 	public function loadRoutes(string $file_path, string $namespace = 'App\\Tcp\\Controllers')
 	{
@@ -86,16 +115,28 @@ abstract class AbstractServer {
 		return $this;
 	}
 
+	/**
+	 * 获取swoole的server
+	 * @return [type] [description]
+	 */
 	public function nativeServer(): \swoole_server
 	{
 		return $this->server;
 	}
 
+	/**
+	 * 获取路由表
+	 * @return Router [description]
+	 */
 	public function router(): Router
 	{
 		return $this->router;
 	}
 
+	/**
+	 * 获取服务器配置
+	 * @return ServerConfig [description]
+	 */
 	public function config(): ServerConfig
 	{
 		return $this->config;
@@ -159,13 +200,6 @@ abstract class AbstractServer {
 	 */
 	public function run()
 	{
-		if (empty($this->observer->getListeners()))
-		{
-			$listeners = $this->getAutoListeners();
-			foreach($listeners as $listener)
-				$this->listening($listener);
-		}
-
 		$this->server->start();
 	}
 
@@ -180,8 +214,8 @@ abstract class AbstractServer {
 
 	/**
 	 * Get Native server's property
-	 * @param  [type] $property [description]
-	 * @return [type]           [description]
+	 * @param  [type] $property
+	 * @return [type]
 	 */
 	public function __get($property)
 	{
@@ -193,9 +227,9 @@ abstract class AbstractServer {
 
 	/**
 	 * Get Native server's method
-	 * @param  string $method [description]
-	 * @param  [type] $args   [description]
-	 * @return [type]         [description]
+	 * @param  string $method
+	 * @param  [type] $args
+	 * @return [type]
 	 */
 	public function __call($method, $args)
 	{

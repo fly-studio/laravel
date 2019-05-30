@@ -22,7 +22,7 @@ class UnixServer extends Server {
 		return new UnixObserver($this);
 	}
 
-	protected function getAutoListeners(): array
+	protected function getSystemListeners(): array
 	{
 		return [UnixListener::class];
 	}

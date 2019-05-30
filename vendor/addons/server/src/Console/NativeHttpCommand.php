@@ -3,14 +3,16 @@
 namespace Addons\Server\Console;
 
 use Addons\Server\Kernel;
-use Illuminate\Console\Command;
 use Addons\Server\Structs\Config\Host;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Servers\NativeHttpServer;
 use Addons\Server\Structs\Config\ServerConfig;
 use Addons\Server\Protocols\Http\NativeProtocol;
+use Addons\Server\Contracts\AbstractServerCommand;
 
-class NativeHttpCommand extends Command {
+class NativeHttpCommand extends AbstractServerCommand {
+
+	protected $pidPath = '/tmp/native-http.pid';
 
 	/**
 	 * The name and signature of the console command.
@@ -18,13 +20,8 @@ class NativeHttpCommand extends Command {
 	 * @var string
 	 */
 	protected $signature = 'server:native-http
-							{--cert= : The absolute path of ssl_cert}
-							{--key= : The absolute path of ssl_key}
-							{--host=0.0.0.0 : (string) IP/IPv6 of DNS listening: 0.0.0.0,::,0:0:0:0:0:0:0:0 for any, 127.0.0.1,::1 for local, ip for LAN or WAN}
-							{--port=8080 : (number) Port of DNS listening }
-							{--workers=1 : (number) Number of the workers running}
-							{--daemon : Run the worker in daemon mode}
-							{--user=nobody:nobody : (string) the user:group of swoole\'s process}
+							{--cert= : (string) The absolute path of ssl_cert}
+							{--key= : (string) The absolute path of ssl_key}
 							';
 
 	/**
@@ -36,6 +33,9 @@ class NativeHttpCommand extends Command {
 
 	public function handle(Dispatcher $events)
 	{
+		if ($this->option('reload'))
+			return $this->reload();
+
 		$host = $this->option('host');
 		$port = $this->option('port');
 		$worker_num = $this->option('workers');
@@ -46,6 +46,7 @@ class NativeHttpCommand extends Command {
 		$ssl_method = SWOOLE_TLSv1_2_METHOD;
 
 		$server = new NativeHttpServer(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group', 'worker_num', 'ssl_cert_file', 'ssl_key_file', 'ssl_method')));
+		$server->setPidPath($this->getPidPath());
 
 		$server->capture(new NativeProtocol());
 		$this->info('Create a native http server with: ' . $port);
@@ -57,4 +58,6 @@ class NativeHttpCommand extends Command {
 
 		return 0;
 	}
+
+
 }

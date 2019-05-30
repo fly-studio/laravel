@@ -92,7 +92,7 @@ class Server extends AbstractServer {
 		return $result;
 	}
 
-	protected function getAutoListeners(): array
+	protected function getSystemListeners(): array
 	{
 		$result = [];
 

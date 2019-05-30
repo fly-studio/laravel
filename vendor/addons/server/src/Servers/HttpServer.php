@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
  * Http Server 需要指定類似Tcp的路由，並且Request、Response的用法也和Tcp的類似，所以需要手动的东西较多
  *
  * 如果你想像nginx一样访问原網站的web/api路由，並且使用Laravel中提供的Request、Response等，使用NativeHttpServer
- * 
+ *
  * 注意：如果使用dd() dump() exit() die() 将导致swoole退出，或输出到swoole的控制台
  */
 class HttpServer extends Server {
@@ -87,7 +87,7 @@ class HttpServer extends Server {
 		return new HttpObserver($this);
 	}
 
-	protected function getAutoListeners(): array
+	protected function getSystemListeners(): array
 	{
 		return [HttpListener::class];
 	}

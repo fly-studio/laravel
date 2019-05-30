@@ -32,7 +32,7 @@ class WebSocketServer extends HttpServer {
 		return new WebSocketObserver($this);
 	}
 
-	protected function getAutoListeners(): array
+	protected function getSystemListeners(): array
 	{
 		return [WebSocketListener::class];
 	}

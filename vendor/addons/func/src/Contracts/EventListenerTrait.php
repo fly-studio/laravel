@@ -10,13 +10,17 @@ trait EventListenerTrait {
 	/**
 	 * $observer->addListener('onStart', function(){  });
 	 * $observer->addListener('onStop', [$obj, 'methodName']);
-	 * $observer->addListener('onStop', 'methodName');
+	 * $observer->addListener('onStop', 'methodName', true);
 	 *
 	 *
-	 * @param [type] $args [description]
+	 * @param string $messageName 监听消息名
+	 * @param callable $callback  回调函数
+	 * @param bool $overwrite     是否覆盖之前的同名消息，如果是，则会清除之前的监听
 	 */
-	public function addListener(string $messageName, callable $callback)
+	public function addListener(string $messageName, callable $callback, bool $overwrite = false)
 	{
+		if ($overwrite) $this->removeListener($messageName);
+
 		$this->listeners[$messageName][] = $callback;
 		return $this;
 	}
