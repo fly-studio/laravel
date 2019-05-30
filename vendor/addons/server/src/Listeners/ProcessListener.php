@@ -30,9 +30,9 @@ class ProcessListener extends AbstractListener {
 	public function onWorkerStart($worker_id)
 	{
 		if ($this->server->taskworker)
-			ConsoleLog::info('starting a task: '. getmypid(). ' task_id: '.($worker_id - $this->server->setting['worker_num']));
+			ConsoleLog::info('starting a task: [PID: '. getmypid(). '] task_id: '.($worker_id - $this->server->setting['worker_num']));
 		else
-			ConsoleLog::info('starting a work: '. getmypid(). ' worker_id: '.$worker_id);
+			ConsoleLog::info('starting a work: [PID: '. getmypid(). '] worker_id: '.$worker_id);
 	}
 
 	/**
@@ -42,9 +42,9 @@ class ProcessListener extends AbstractListener {
 	public function onWorkerStop($worker_id)
 	{
 		if ($this->server->taskworker)
-			ConsoleLog::info('stop a task: '. getmypid(). ' task_id: '.($worker_id - $this->server->setting['worker_num']));
+			ConsoleLog::info('stop a task: [PID: '. getmypid(). '] task_id: '.($worker_id - $this->server->setting['worker_num']));
 		else
-			ConsoleLog::info('stop a work: '. getmypid(). ' worker_id: '.$worker_id);
+			ConsoleLog::info('stop a work: [PID: '. getmypid(). '] worker_id: '.$worker_id);
 	}
 
 	/**

@@ -27,7 +27,7 @@ class PidListener extends AbstractListener {
 
 		if (!empty($this->pidPath))
 		{
-			$this->pidFp = fopen($this->pidPath, 'w');
+			$this->pidFp = fopen($this->pidPath, 'w+');
 			if (!flock($this->pidFp, LOCK_EX | LOCK_NB))
 				throw new \RuntimeException('The server is running with the port: '.$this->server->config()->host()->port());
 
@@ -52,6 +52,18 @@ class PidListener extends AbstractListener {
 
 			@unlink($this->pidPath);
 		}
-
 	}
+
+	public function onWorkerStart($worker_id)
+	{
+		if (function_exists('opcache_reset'))
+			opcache_reset();
+
+		if (function_exists('apc_clear_cache'))
+			apc_clear_cache();
+
+		if ($this->server->taskworker)
+			ConsoleLog::info('starting a task: [PID: '. getmypid(). '] task_id: '.($worker_id - $this->server->setting['worker_num']));
+		else
+			ConsoleLog::info('starting a work: [PID: '. getmypid(). '] worker_id: '.$worker_id);	}
 }
