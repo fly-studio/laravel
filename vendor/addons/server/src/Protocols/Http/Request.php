@@ -2,8 +2,8 @@
 
 namespace Addons\Server\Protocols\Http;
 
+use BadMethodCallException;
 use Addons\Server\Contracts\AbstractRequest;
-
 use Illuminate\Http\Request as LaravelRequest;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
@@ -41,7 +41,7 @@ class Request extends AbstractRequest {
 				$server[strtoupper($key)] = $value;
 			}
 			foreach ($this->swooleRequest->header as $key => $value) {
-				$server['HTTP_'.strtoupper($key)] = $value;
+				$server['HTTP_'.str_replace('-', '_', strtoupper($key))] = $value;
 			}
 
 			$symfonyRequest = call_class_method(new SymfonyRequest(), 'createRequestFromFactory', $this->swooleRequest->get ?? [], $this->swooleRequest->post ?? [], [], $this->swooleRequest->cookie ?? [], $this->swooleRequest->files ?? [], $server, $this->swooleRequest->rawContent());
@@ -61,6 +61,13 @@ class Request extends AbstractRequest {
 
 	public function __call($name, $arguments)
 	{
-		return call_user_func([$this->laravelRequest(), $name], $arguments);
+		$laravelRequest = $this->getLaravelRequest();
+
+		if (method_exists($laravelRequest, method_name))
+			return call_user_func([$laravelRequest, $name], $arguments);
+
+		throw new BadMethodCallException(sprintf(
+			'Method %s::%s does not exist.', static::class, $method
+		));
 	}
 }
