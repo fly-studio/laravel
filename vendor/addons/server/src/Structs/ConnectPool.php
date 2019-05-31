@@ -21,7 +21,7 @@ class ConnectPool implements \ArrayAccess {
 		return $this->items[$fd];
 	}
 
-	public function get($fd): ConnectBinder
+	public function get($fd): ?ConnectBinder
 	{
 		return isset($this->items[$fd]) ? $this->items[$fd] : null;
 	}

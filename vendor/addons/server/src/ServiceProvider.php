@@ -2,6 +2,7 @@
 
 namespace Addons\Server;
 
+use Addons\Core\File\Mimes;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -24,8 +25,32 @@ class ServiceProvider extends BaseServiceProvider
 				\Addons\Server\Example\Console\RawCommand::class,
 				\Addons\Server\Example\Console\GrpcCommand::class,
 			]);
-		}
 
+			$this->registerRouter();
+		}
+	}
+
+	private function registerRouter()
+	{
+		$router = $this->app['router'];
+
+		$router->get('static/{path}', function($path) {
+
+		if (file_exists($p = static_path('common/'.$path)))
+				return response()->preview($p, [], ['mime_type' => Mimes::getInstance()->mime_by_ext(pathinfo($p, PATHINFO_EXTENSION))]);
+
+			abort(404);
+
+		})->where('path', '.*');
+
+		$router->get('plugins/{path}', function($path) {
+
+			if (file_exists($p = plugins_path($path)))
+				return response()->preview($p, [], ['mime_type' => Mimes::getInstance()->mime_by_ext(pathinfo($p, PATHINFO_EXTENSION))]);
+
+			abort(404);
+
+		})->where('path', '.*');
 	}
 
 	public function provides()

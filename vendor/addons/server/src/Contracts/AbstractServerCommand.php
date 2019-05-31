@@ -2,9 +2,13 @@
 
 namespace Addons\Server\Contracts;
 
+use Event;
 use Illuminate\Console\Command;
 use Addons\Server\Contracts\AbstractServer;
+use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractServerCommand extends Command {
 
@@ -17,13 +21,13 @@ abstract class AbstractServerCommand extends Command {
 		$definition = $this->getDefinition();
 
 		if (!$definition->hasOption('host'))
-			$this->addOption('host', 'H', InputOption::VALUE_OPTIONAL, '(string) IP/IPv6 of server listening: 0.0.0.0,::,0:0:0:0:0:0:0:0 for any, 127.0.0.1,::1 for local, ip for LAN or WAN', '0.0.0.0');
+			$this->addOption('host', null, InputOption::VALUE_OPTIONAL, '(string) IP/IPv6 of server listening: 0.0.0.0,::,0:0:0:0:0:0:0:0 for any, 127.0.0.1,::1 for local, ip for LAN or WAN', '0.0.0.0');
 
 		if (!$definition->hasOption('port'))
-			$this->addOption('port', 'P', InputOption::VALUE_REQUIRED, '(number) Port of server listening', mt_rand(1025, 10240));
+			$this->addOption('port', null, InputOption::VALUE_REQUIRED, '(number) Port of server listening', mt_rand(1025, 10240));
 
 		if (!$definition->hasOption('workers'))
-			$this->addOption('workers', 'w', InputOption::VALUE_OPTIONAL, '(number) Number of the workers running', 1);
+			$this->addOption('workers', null, InputOption::VALUE_OPTIONAL, '(number) Number of the workers running', 1);
 
 		if (!$definition->hasOption('daemon'))
 			$this->addOption('daemon', 'd', null, 'Run the worker in daemon mode');
@@ -34,6 +38,25 @@ abstract class AbstractServerCommand extends Command {
 
 		$this->addOption('pid', null, InputOption::VALUE_OPTIONAL, 'A absolute path of the server\'s pid file', null);
 		$this->addOption('reload', 'r', null, 'Reload this server');
+		$this->addOption('stop', 's', null, 'Shutdown this server');
+	}
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		// 捕获Console参数reload、restart
+		if ($input->hasParameterOption(['--reload', '-r'], true))
+		{
+			$this->reload();
+			return;
+		}
+
+		if ($input->hasParameterOption(['--stop', '-s'], true))
+		{
+			$this->shutdown();
+			return;
+		}
+
+        return $this->laravel->call([$this, 'handle']);
 	}
 
 	protected function reload()
@@ -44,9 +67,24 @@ abstract class AbstractServerCommand extends Command {
 		{
 			$this->info("kill -SIGUSR1 $pid :");
 			if (posix_kill($pid, SIGUSR1))
-				$this->warn("Success!");
+				$this->warn("Reload success!");
 			else
-				$this->error("Fail, the server are not running.");
+				$this->error("Reload fail, the server is not running.");
+		} else
+			$this->info('No running server!');
+	}
+
+	protected function shutdown()
+	{
+		$pid = $this->getPid();
+
+		if (!empty($pid))
+		{
+			$this->info("kill -SIGTERM $pid :");
+			if (posix_kill($pid, SIGTERM))
+				$this->warn("Shutdown success!");
+			else
+				$this->error("Shutdown fail, the server is not running.");
 		} else
 			$this->info('No running server!');
 	}

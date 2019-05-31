@@ -37,7 +37,6 @@ class ServerConfig {
 	public $package_max_length = 2 * 1024 * 1024;
 	public $document_root = null;
 	public $enable_static_handler = true;
-	public $static_handler_locations = ['/static', '/attachments', '/storage/utils', '/storage/attachments', '/storage/placeholders'];
 	public $open_http2_protocol = false; // HTTP2
 
 	public function __construct(Host $host, array $config)
@@ -59,6 +58,6 @@ class ServerConfig {
 		$processUser = posix_getpwuid(posix_geteuid());
 		$this->user = $processUser['name'];
 		$this->upload_tmp_dir = sys_get_temp_dir();
-		$this->document_root = base_path();
+		$this->document_root = public_path();
 	}
 }

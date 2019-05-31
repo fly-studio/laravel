@@ -22,9 +22,6 @@ class RawCommand extends AbstractServerCommand {
 
 	public function handle(Dispatcher $events)
 	{
-		if ($this->option('reload'))
-			return $this->reload();
-
 		$host = $this->option('host');
 		$daemon = $this->option('daemon');
 		$port = $this->option('port');

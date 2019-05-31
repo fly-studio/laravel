@@ -21,7 +21,7 @@ class Server extends AbstractServer {
 
 	protected function createServer(ServerConfig $config): \swoole_server
 	{
-		return new \swoole_server($config->host()->host(), $config->host()->port(), $config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, $config->host()->protocol());
+		return new \swoole_server($config->host()->host(), $config->host()->port(), SWOOLE_PROCESS, $config->host()->protocol());
 	}
 
 	protected function validateConfig(ServerConfig $config)

@@ -33,9 +33,6 @@ class NativeHttpCommand extends AbstractServerCommand {
 
 	public function handle(Dispatcher $events)
 	{
-		if ($this->option('reload'))
-			return $this->reload();
-
 		$host = $this->option('host');
 		$port = $this->option('port');
 		$worker_num = $this->option('workers');

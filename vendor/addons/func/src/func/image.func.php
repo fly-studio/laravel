@@ -8,7 +8,7 @@ if (! function_exists('color_similar')) {
  * @param  integer $allowance 误差范围 正数
  * @return boolean
  */
-function color_similar($rgb1, $rgb2, $allowance = 10) {
+function color_similar(int $rgb1, int $rgb2, int $allowance = 10) {
 	$r1 = ($rgb1 >> 16) & 0xFF;
 	$g1 = ($rgb1 >> 8) & 0xFF;
 	$b1 = $rgb1 & 0xFF;
@@ -28,7 +28,7 @@ if (! function_exists('calculate_textbox')) {
  * @param  string $text 文本
  * @return array
  */
-function calculate_textbox($font_size, $font_angle, $font_file, $text) {
+function calculate_textbox(int $font_size, float $font_angle, string $font_file, string $text) {
 	$box = imagettfbbox($font_size, $font_angle, $font_file, $text);
 	if( !$box ) return false;
 	$min_x = min( array($box[0], $box[2], $box[4], $box[6]) );
@@ -75,7 +75,7 @@ if (! function_exists('hex2rgb')) {
  * @param  string $colour 颜色的16进制，比如灰色的值为CCCCCC或CCC
  * @return [type]         [description]
  */
-function hex2rgb($colour)
+function hex2rgb(string $colour)
 {
 	$colour = preg_replace("/[^abcdef0-9]/i", "", $colour);
 	if (strlen($colour) == 6)
@@ -103,7 +103,7 @@ if (! function_exists('aspect_ratio')) {
  * @param  float $newHeight      需要缩放的高
  * @return array                 返回等比缩放之后的宽高
  */
-function aspect_ratio($width, $height, $newWidth = NULL, $newHeight = NULL)
+function aspect_ratio(float $width, float $height, float $newWidth = null, float $newHeight = null)
 {
 	empty($newWidth) && $newWidth = $width;
 	empty($newHeight) && $newHeight = $height;

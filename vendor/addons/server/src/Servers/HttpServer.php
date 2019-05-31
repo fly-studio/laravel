@@ -44,7 +44,7 @@ class HttpServer extends Server {
 
 	protected function createServer(ServerConfig $config): \swoole_server
 	{
-		return new \swoole_http_server($config->host()->host(), $config->host()->port(), $config->daemon() ? SWOOLE_PROCESS : SWOOLE_BASE, SWOOLE_SOCK_TCP | (!empty($config->ssl_cert_file()) && !empty($config->ssl_key_file()) ? SWOOLE_SSL : 0));
+		return new \swoole_http_server($config->host()->host(), $config->host()->port(), SWOOLE_PROCESS, SWOOLE_SOCK_TCP | (!empty($config->ssl_cert_file()) && !empty($config->ssl_key_file()) ? SWOOLE_SSL : 0));
 	}
 
 	protected function initServer(\swoole_server $server, ServerConfig $config)

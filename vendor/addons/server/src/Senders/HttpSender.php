@@ -47,13 +47,13 @@ class HttpSender extends AbstractSender {
 
 	public function file(string $path, int $offset = -1, int $maxlen = null): int
 	{
-		$this->response->sendfile($file);
+		$this->response->sendfile($path);
 		return $this->getLastError();
 	}
 
 	public function end(): int
 	{
-		return $this->end('');
+		return $this->response->end('');
 	}
 
 	protected function getLastError()

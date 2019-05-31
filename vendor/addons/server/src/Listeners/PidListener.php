@@ -27,10 +27,24 @@ class PidListener extends AbstractListener {
 
 		if (!empty($this->pidPath))
 		{
-			$this->pidFp = fopen($this->pidPath, 'w+');
-			if (!flock($this->pidFp, LOCK_EX | LOCK_NB))
-				throw new \RuntimeException('The server is running with the port: '.$this->server->config()->host()->port());
+			if (file_exists($this->pidPath))
+			{
+				$fp = fopen($this->pidPath, 'r+');
 
+				if (!flock($fp, LOCK_EX | LOCK_NB))
+				{
+					ConsoleLog::error('The server is running.');
+					fclose($fp);
+
+					$this->server->shutdown();
+					return;
+				}
+
+				fclose($fp);
+			}
+
+			$this->pidFp = fopen($this->pidPath, 'w');
+			flock($this->pidFp, LOCK_EX | LOCK_NB);
 			fwrite($this->pidFp, getmypid());
 		}
 	}
@@ -48,9 +62,8 @@ class PidListener extends AbstractListener {
 			{
 				flock($this->pidFp, LOCK_UN);
 				fclose($this->pidFp);
+				@unlink($this->pidPath);
 			}
-
-			@unlink($this->pidPath);
 		}
 	}
 
