@@ -43,6 +43,9 @@ class PidListener extends AbstractListener {
 				fclose($fp);
 			}
 
+			$dir = dirname($this->pidPath);
+			!is_dir($dir) && @mkdir($dir, 0755, true);
+
 			$this->pidFp = fopen($this->pidPath, 'w');
 			flock($this->pidFp, LOCK_EX | LOCK_NB);
 			fwrite($this->pidFp, getmypid());

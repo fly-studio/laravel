@@ -38,6 +38,7 @@ class ServerConfig {
 	public $document_root = null;
 	public $enable_static_handler = true;
 	public $open_http2_protocol = false; // HTTP2
+	public $static_handler_locations = ['/static/'];
 
 	public function __construct(Host $host, array $config)
 	{
