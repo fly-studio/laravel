@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Filesystem\Filesystem;
 use Addons\Plugins\Events\EventDispatcher;
+use Illuminate\Contracts\Broadcasting\Broadcaster;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -123,23 +124,33 @@ class ServiceProvider extends BaseServiceProvider
 					 ->namespace(empty($route['namespace']) ? $config['namespace'].'\App\Http\Controllers' : $route['namespace'])
 					 ->group($config['path'].'routes/'.$key.'.php');
 				}
+			// set commands
 			if ($this->app->runningInConsole())
 			{
 				!empty($config['commands']) && $this->commands($config['commands']);
 				if (!empty($config['register']['console']))
 					require $config['path'].'routes/console.php';
 			}
+
+			//register event
 			if (!empty($config['register']['event']))
 				app(EventDispatcher::class)->group(['namespace' => $config['namespace'].'\App'], function($eventer) use($config) {
 					require $config['path'].'routes/event.php';
 				});
+
+			//register broadcast
+			if (!empty($config['register']['broadcast']))
+				call_user_func(function($broadcaster){
+					require $config['path'].'routes/channels.php';
+				}, app(Broadcaster::class));
+
 		}
 	}
 
 	/**
 	 * Get the services provided by the provider.
 	 *
-	 * @return array
+	  * @return array
 	 */
 	public function provides()
 	{

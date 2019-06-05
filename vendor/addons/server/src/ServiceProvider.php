@@ -32,6 +32,10 @@ class ServiceProvider extends BaseServiceProvider
 
 	private function registerRouter()
 	{
+		if ($this->app->routesAreCached()) {
+			return;
+		}
+
 		$router = $this->app['router'];
 
 		$router->get('static/{path}', function($path) {

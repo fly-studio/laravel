@@ -27,8 +27,8 @@ return [
 		//- Controller中这样调用：censor('tools:member.store', ['username', 'password', 'nickname'])->data($request->all())->validator(); 对应/tools/resources/censors/zh-CN/member.php
 		'censor' => false,
 		//是否注册/tools/resources/lang到语言包
-		//- Controller中这样调用：trans('tools:valition.alpha_dash');
-		//- smarty模板中这样调用：<{'tools:valition.alpha_dash'|trans}>
+		//- Controller中这样调用：trans('tools:validation.alpha_dash');
+		//- smarty模板中这样调用：<{'tools:validation.alpha_dash'|trans}>
 		'translator' => false,
 		//是否注册数据库迁移文件
 		// - 自动加载/tools/database/migrations/*.php
@@ -43,9 +43,13 @@ return [
 		//- 具体请查看主程序下的 routes/console.php
 		'console' => false,
 		//是否加载Event合集
-		//- 在主程序下的 routes/listener.php 是L+项目特有的内容，可以将众多listener放在在一起，方便执行以及查询
-		//- 自动加载/tools/routes/listener.php
-		'listener' => false,
+		//- 在主程序下的 routes/event.php 是L+项目特有的内容，可以将众多listener放在在一起，方便执行以及查询
+		//- 自动加载/tools/routes/event.php
+		'event' => false,
+		//是否加載Broadcast
+		//- 自动加载/tools/routes/channels.php
+		//- 具体请查看主程序下的 routes/channels.php
+		'broadcast' => false,
 	],
 	'routes' => [ //Route::group(['namespace' => '?', 'prefix' => '?', 'middleware' => '?']);
 		'web' => [
