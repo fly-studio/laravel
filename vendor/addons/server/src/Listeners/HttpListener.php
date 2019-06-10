@@ -18,6 +18,8 @@ class HttpListener extends AbstractListener {
 
 		$this->updateServerOptions($binder->options());
 
+		$binder->options()->logger('debug', 'Http '.$request->server['request_method'].' '.$request->server['request_uri'].(!empty($request->server['query_string']) ? '?'.$request->server['query_string'] : ''));
+
 		$this->recv($binder, $request, $response);
 	}
 

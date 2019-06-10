@@ -2,6 +2,7 @@
 
 namespace Addons\Server\Structs\Config;
 
+use Illuminate\Support\Arr;
 use Addons\Func\Contracts\MutatorTrait;
 use Addons\Server\Structs\Config\Host;
 
@@ -45,7 +46,7 @@ class ServerConfig {
 		$this->initDefault();
 
 		$this->host = $host;
-		foreach (array_except($config, ['on']) as $key => $val)
+		foreach (Arr::except($config, ['on']) as $key => $val)
 			$this->{$key} = $val;
 	}
 

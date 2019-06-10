@@ -6,6 +6,7 @@ use Addons\Server\Servers\Server;
 use Addons\Server\Senders\HttpSender;
 use Addons\Server\Structs\ConnectBinder;
 use Addons\Server\Observers\HttpObserver;
+use Addons\Server\Protocols\Http\Protocol;
 use Addons\Server\Listeners\HttpListener;
 use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractObserver;
@@ -15,14 +16,10 @@ use Symfony\Component\VarDumper\VarDumper;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 
-use Illuminate\Http\Request as LaravelRequest;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-
 /**
  * Http Server 需要指定類似Tcp的路由，並且Request、Response的用法也和Tcp的類似，所以需要手动的东西较多
  *
- * 如果你想像nginx一样访问原網站的web/api路由，並且使用Laravel中提供的Request、Response等，使用NativeHttpServer
+ * 如果你需要类似php-fpm（nginx）一样访问当前的网站的所有页面，可以使用NativeHttpServer，它将比php-fpm的效率更高
  *
  * 注意：如果使用dd() dump() exit() die() 将导致swoole退出，或输出到swoole的控制台
  */
@@ -74,11 +71,16 @@ class HttpServer extends Server {
 		parent::initServer($server, $config);
 
 		$this->redirectDumper();
+
+		if (empty($this->capture))
+			$this->capture = new Protocol();
+
 	}
 
 	protected function makeSender(ConnectBinder $binder, ...$args): AbstractSender
 	{
 		//One tunnel has multi-http-stream
+		//http1.1中一个fd会有多个http流，所以需要独立的sender类
 		return new HttpSender($binder, ...$args);
 	}
 
