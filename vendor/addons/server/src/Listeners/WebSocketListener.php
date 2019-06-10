@@ -40,6 +40,6 @@ class WebSocketListener extends HttpListener {
 
 		$binder->options()->logger('debug', 'Http '.$request->server['request_method'].' '.$request->server['request_uri'].(!empty($request->server['query_string']) ? '?'.$request->server['query_string'] : ''));
 
-		$this->server->webHandle($binder, ...$args);
+		$this->server->webHandle($binder, $request, $response);
 	}
 }

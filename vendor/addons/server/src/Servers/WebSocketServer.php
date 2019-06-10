@@ -60,9 +60,11 @@ class WebSocketServer extends HttpServer {
 	 */
 	public function capture(AbstractProtocol $capture, AbstractProtocol $webCapture = null)
 	{
-		$this->webCapture = $webCapture;
-		if (!empty($webCapture))
+		if (!is_null($webCapture))
+		{
+			$this->webCapture = $webCapture;
 			$webCapture->bootIfNotBooted($this);
+		}
 
 		return parent::capture($capture);
 	}

@@ -70,7 +70,7 @@ class HttpServer extends Server {
 
 		parent::initServer($server, $config);
 
-		$this->redirectDumper();
+		//$this->redirectDumper();
 
 		if (empty($this->capture))
 			$this->capture = new Protocol();

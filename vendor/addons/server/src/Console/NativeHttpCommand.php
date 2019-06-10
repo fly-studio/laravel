@@ -7,7 +7,6 @@ use Addons\Server\Structs\Config\Host;
 use Illuminate\Contracts\Events\Dispatcher;
 use Addons\Server\Servers\NativeHttpServer;
 use Addons\Server\Structs\Config\ServerConfig;
-use Addons\Server\Protocols\Http\NativeProtocol;
 use Addons\Server\Contracts\AbstractServerCommand;
 
 class NativeHttpCommand extends AbstractServerCommand {
@@ -45,7 +44,6 @@ class NativeHttpCommand extends AbstractServerCommand {
 		$server = new NativeHttpServer(ServerConfig::build($host, $port, SWOOLE_SOCK_TCP, compact('daemon', 'user', 'group', 'worker_num', 'ssl_cert_file', 'ssl_key_file', 'ssl_method')));
 		$server->setPidPath($this->getPidPath());
 
-		$server->capture(new NativeProtocol());
 		$this->info('Create a native http server with: ' . $port);
 
 		$kernel = app(Kernel::class);
