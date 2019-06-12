@@ -10,10 +10,10 @@ if (! function_exists('is_assoc')) {
 /**
  * Tests if an array is associative or not.
  *
- *     // Returns TRUE
+ *     // Returns true
  *     Arr::is_assoc(array('username' => 'john.doe'));
  *
- *     // Returns FALSE
+ *     // Returns false
  *     Arr::is_assoc('foo', 'bar');
  *
  * @param   array   $array  array to check
@@ -37,10 +37,10 @@ if (! function_exists('to_array')) {
  * 将一个非数组的变量转成数组
  *
  * @param  mixed $data 输入字符/数字或数组等
- * @param  bool $strict 开启严格模式，NULL返回NULL，否则返回array(NULL)
+ * @param  bool $strict 开启严格模式，null返回null，否则返回array(null)
  * @return array      返回数组
  */
-function to_array($data, $strict = TRUE)
+function to_array($data, bool $strict = true)
 {
 	if ($strict && is_null($data)) return $data;
 	return !is_array($data) ?  array($data) : $data;
@@ -49,26 +49,28 @@ function to_array($data, $strict = TRUE)
 
 if (! function_exists('dataset_merge')) {
 /**
- * 合并通过数据库查出来的数据集,比如$a = array(0=>array('f1'=>'v1','f2'=>'v2'));$b = array(0=>array('f3'=>'v3','f4'=>'v4'));
+ * 合并通过数据库查出来的数据集,比如$a = [0 => ['f1' => 'v1','f2' => 'v2']]; $b = [0  =>  ['f3' => 'v3','f4' => 'v4']];
  *
  * @param array $a 数据集1
  * @param array $b 数据集2
- * @return array 返回如:$c = array(0=>array('f1'=>'v1','f2'=>'v2','f3'=>'v3','f4'=>'v4'));
+ * @return array 返回如:$c = [0 => ['f1' => 'v1','f2' => 'v2','f3' => 'v3','f4' => 'v4']];
  */
-function dataset_merge(array $a,array $b) //合并数据集
+function dataset_merge(array $a, array $b) //合并数据集
 {
-	$d = array();
+	$d = [];
 	foreach($a as $k => $v) {
 		if (array_key_exists($k,$b))
-			$d[$k] = array_merge((array)$v,(array)$b[$k]);
+			$d[$k] = array_merge((array)$v, (array)$b[$k]);
 		else
 			$d[$k] = $v;
 	}
+
 	foreach($b as $k => $v) {
-		if (!array_key_exists($k,$d)) {
+		if (!array_key_exists($k, $d)) {
 			$d[$k] = $v;
 		}
 	}
+
 	return $d;
 }
 }
@@ -82,16 +84,18 @@ if (! function_exists('array_delete')) {
  * @param boolean $strict 是否强制对比类型
  * @return array 返回操作结果
  */
-function array_delete(array &$haystack, $needles, $strict = FALSE)
+function array_delete(array &$haystack, $needles, bool $strict = false)
 {
 	$needles = toarray($needles);
 	$_haystack = $haystack;
+
 	foreach($needles as $needle) {
-		$indexes = array_keys($_haystack,$needle,$strict);
+		$indexes = array_keys($_haystack, $needle, $strict);
 		foreach($indexes as $index) {
 			unset($_haystack[$index]);
 		}
 	}
+
 	return $_haystack;
 }
 }
@@ -102,18 +106,18 @@ if (! function_exists('_extends')) {
  * 优先以$arr_set的值为准，比如：
  * $set = array('k1' => 'v1','k5' => 'v2'); $base = array('k1' => 'default','k2' => 'default');
  * 使用 _extends($set,$base);得到结果为 array('k1' => 'v1','k2' => 'default'); 故结果以$base为蓝本，但是$a里面原有的值不会覆盖
- * [注意] 当$base中出现NULL时，默认匹配标量(NULL在PHP中属于非标量)
+ * [注意] 当$base中出现null时，默认匹配标量(null在PHP中属于非标量)
  *
  * @example 复杂的例子如：
- * $set = array(				$base = array(
- *	 'a' => array('e','a'),			'a' => array(),				使用$set['a'],有值,类型一致,均为非标量,($base['a']空数组,则表示$set['a']为数组即可)
- *	 'b' => '2a',					'b' => 5, 					使用$set['b'],有值,类型一致,均为标量
- *	 'c' => array('e','g'),			'c'=> 3, 					使用$base['c'],因为类型不一致,
- *	 'd' => NULL,					'd' => 5, 					使用$base['c'],因为$set['c']为NULL,
- *	 'e' => 123,					'e' => array(), 			使用$base['e'],因为类型不一致,(虽然$base中为空数组,但是$set中类型不一致,仍然使用$base)
+ * $set = [						$base = [
+ *	 'a' => ['e','a'],				'a' => [],				使用$set['a'],有值,类型一致,均为非标量,($base['a']空数组,则表示$set['a']为数组即可)
+ *	 'b' => '2a',					'b' => 5, 				使用$set['b'],有值,类型一致,均为标量
+ *	 'c' => ['e','g'],				'c'=> 3, 				使用$base['c'],因为类型不一致,
+ *	 'd' => null,					'd' => 5, 				使用$base['c'],因为$set['c']为null,
+ *	 'e' => 123,					'e' => [], 				使用$base['e'],因为类型不一致,(虽然$base中为空数组,但是$set中类型不一致,仍然使用$base)
  *									'f' => '33',				使用$base['f'],因为无$set['f']
- *	 'g' => array('k' => '222'),	'g' => array('k' => '111'),	递归到子项,匹配规则同上
- * );							);
+ *	 'g' => ['k' => '222'],			'g' => array('k' => '111'),	递归到子项,匹配规则同上
+ * ];							];
  *
  * @param array $arr_set 需要调整的数组
  * @param array $arr_base 基础数组
@@ -121,17 +125,18 @@ if (! function_exists('_extends')) {
  */
 function _extends(&$arr_set, array &$arr_base) //以arr_base为默认,填补arr_set缺的项
 {
-	$result = array();
+	$result = [];
 	if (is_array($arr_set)) {
 		foreach($arr_base as $k => $v) {
 			$is_set = isset($arr_set[$k]);
 			$is_array = $is_set && is_array($arr_set[$k]);
 			$result[$k] = $v; //先设置默认值
+
 			if ($is_set) {
 				if (is_array($v) && !empty($v)) //base为数组并且非空
 					$result[$k] = _extends($arr_set[$k],$v); //则递归循环
 				elseif (is_null($v))
-					is_scalar($arr_set[$k]) && $result[$k] = $arr_set[$k];  //如果base为NULL，匹配任意标量即可
+					is_scalar($arr_set[$k]) && $result[$k] = $arr_set[$k];  //如果base为null，匹配任意标量即可
 				else
 					is_scalar($v) == is_scalar($arr_set[$k]) && $result[$k] = $arr_set[$k];//如果base和set的类型一致,则使用set的值
 			}
@@ -173,20 +178,20 @@ function array_merge_recursive_overwrite()
 
 if (! function_exists('array_add_recursive')) {
 /**
- * 按key1/key2/key3的方式添加一个项,相当于$src['key1']['key2']['key3'] = $value
+ * 按key1.key2.key3的方式添加一个项,相当于$src['key1']['key2']['key3'] = $value
  *
  * @param array $src 需要进行添加操作的数组
- * @param string $key 以"key1/key2/key3/key4/key5"的方式传递,可以无限级
+ * @param string $key 以"key1.key2.key3.key4.key5"的方式传递,可以无限级
  * @param mixed $value 该项的值
  * @return array 得到操作后的数据
  */
-function array_add_recursive(array &$src, $key, $value)
+function array_add_recursive(array &$src, string $key, $value)
 {
-	$keys = explode('/',$key);
+	$keys = explode('.',$key);
 	$_src = $src;
 	$t = &$_src;
 	foreach($keys as $v){
-		if (!isset($t[$v])) $t[$v] = array();
+		if (!isset($t[$v])) $t[$v] = [];
 		$t = &$t[$v];
 	}
 	$t = $value;
@@ -196,47 +201,52 @@ function array_add_recursive(array &$src, $key, $value)
 
 if (! function_exists('array_delete_recursive')) {
 /**
- * 按key1/key2/key3的方式删除一个项,相当于unset($src['key1']['key2']['key3'])
+ * 按key1.key2.key3的方式删除一个项,相当于unset($src['key1']['key2']['key3'])
  *
  * @param array $src 需要进行删除操作的数组
- * @param string $key 以"key1/key2/key3/key4/key5"的方式传递,可以无限级\
+ * @param string $key 以"key1.key2.key3.key4.key5"的方式传递,可以无限级\
  * @return array 得到操作后的数据
  */
-function array_delete_recursive(array &$src, $key)
+function array_delete_recursive(array &$src, string $key)
 {
-	$keys = explode('/',$key);
+	$keys = explode('.',$key);
 	$_src = $src;
 	$t = &$_src;
 	$count = count($keys) - 1;
+
 	for($i = 0; $i < $count; ++$i) { //最后一个不循环
 		$k = $keys[$i];
 		if (!isset($t[$k])) return;
 		$t = &$t[$k];
 	}
+
 	$k = $keys[$count]; //获取最后一个
 	if(isset($t[$k]) && is_array($t))
 		unset($t[$k]); //删除最后一个
+
 	return $_src;
 }
 }
 
 if (! function_exists('array_get_recursive')) {
 /**
- * 按key1/key2/key3的方式获取一个项,相当于得到$value = $src['key1']['key2']['key3']，没有则返回NULL
+ * 按key1.key2.key3的方式获取一个项,相当于得到$value = $src['key1']['key2']['key3']，没有则返回null
  *
  * @param array $src 原始数组
- * @param string $key 以"key1/key2/key3/key4/key5"的方式传递,可以无限级
+ * @param string $key 以"key1.key2.key3.key4.key5"的方式传递,可以无限级
  * @return mixed 该项的值
  */
-function array_get_recursive(array &$src, $key)
+function array_get_recursive(array &$src, string $key)
 {
-	$keys = explode('/',$key);
+	$keys = explode('.',$key);
 	$_src = $src;
 	$t = &$_src;
+
 	foreach($keys as $v){
-		if (!isset($t[$v])) return NULL;
+		if (!isset($t[$v])) return null;
 		$t = &$t[$v];
 	}
+
 	$value = $t;
 	return $value;
 }
@@ -244,15 +254,15 @@ function array_get_recursive(array &$src, $key)
 
 if (! function_exists('array_set_recursive')) {
 /**
- * 按key1/key2/key3的方式设置一个项,相当于$src['key1']['key2']['key3'] = $value
+ * 按key1.key2.key3的方式设置一个项,相当于$src['key1']['key2']['key3'] = $value
  * 其实和array_add_recursive功能一致
  *
  * @param array $src  需要进行添加操作的数组
- * @param string $key  以"key1/key2/key3/key4/key5"的方式传递,可以无限级
+ * @param string $key  以"key1.key2.key3.key4.key5"的方式传递,可以无限级
  * @param miexed $value 该项的值
  * @return array 得到操作后的数据
  */
-function array_set_recursive(array &$src, $key, $value)
+function array_set_recursive(array &$src, string $key, $value)
 {
 	return array_add_recursive($src, $key, $value);
 }
@@ -261,8 +271,8 @@ function array_set_recursive(array &$src, $key, $value)
 if (! function_exists('_array_selector_subkey')) {
 /**
  * private 函数,切分$selector的sub key,独立出来供某些地方调用
- * @example 如果$with_whitespace为FALSE，$selector会自动去掉空格，比如: [a, ;b ] 相当于[a,;b]，会自动删除中间和最后那个空格
- * @example 如果$with_empty为FALSE，$selector会自动去掉重复分隔符，比如: [a,;b] 相当于[a,b]，不然会返回：[a,空,b]
+ * @example 如果$with_whitespace为false，$selector会自动去掉空格，比如: [a, ;b ] 相当于[a,;b]，会自动删除中间和最后那个空格
+ * @example 如果$with_empty为false，$selector会自动去掉重复分隔符，比如: [a,;b] 相当于[a,b]，不然会返回：[a,空,b]
  *
  * @param string $selector  条件表达式  [,][;] (逗号，分号)表示"或"
  * @param boolean $with_whitespace 是否允许包含空格
@@ -271,37 +281,39 @@ if (! function_exists('_array_selector_subkey')) {
  *
  *
  */
-function _array_selector_subkey($selector, $with_whitespace = FALSE, $with_empty = FALSE)
+function _array_selector_subkey(string $selector, bool $with_whitespace = false, bool $with_empty = false)
 {
 	if (is_array($selector)) return $selector;
 
 	!$with_whitespace && $selector = preg_replace('/\s*([,;])\s*/', '$1', $selector); //去掉这些分隔符前后的空格
-	return $with_empty ? preg_split('/[,;]/', $selector) : preg_split('/[,;]+/', $selector, NULL, PREG_SPLIT_NO_EMPTY);
+	return $with_empty ? preg_split('/[,;]/', $selector) : preg_split('/[,;]+/', $selector, null, PREG_SPLIT_NO_EMPTY);
 }
 }
 
 if (! function_exists('_array_selector_keymaker')) {
 /**
  * private 函数,切分$selector,外界一般不调用
- * @example 如果$with_whitespace为FALSE，$selector会自动去掉空格，比如: [/ a, ;b / /] 相当于[/a,;b//]，会自动删除最前的那个空格，以及中间那些和最后那个空格
- * @example 如果$with_empty为FALSE，$selector会自动去掉重复分隔符，比如: [a,;b///*] 相当于[a,b/*]，不然会返回：[[a,空,b]/[空]/[空]/*]
+ * @example 如果$with_whitespace为false，$selector会自动去掉空格，比如: [. a, ;b . .] 相当于[.a,;b..]，会自动删除最前的那个空格，以及中间那些和最后那个空格
+ * @example 如果$with_empty为false，$selector会自动去掉重复分隔符，比如: [a,;b...*] 相当于[a,b.*]，不然会返回：[[a,空,b].[空].[空].*]
  *
- * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (中竖线，逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY；
+ * @param string $selector  条件表达式 [.] 表示数组维度;  [,][;] (中竖线，逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY；
  * @param boolean $with_whitespace 是否允许包含空格
  * @param boolean $with_empty 是否包含空值
  * @return array 返回切分后的数组
  *
  */
-function _array_selector_keymaker($selector, $with_whitespace = FALSE, $with_empty = FALSE)
+function _array_selector_keymaker(string $selector, bool $with_whitespace = false, bool $with_empty = false)
 {
 	if (is_array($selector)) return $selector;
 
-	$keys = array();
-	!$with_whitespace && $selector = preg_replace('/\s*([\\/\\|])\s*/', '$1', $selector); //去掉这些分隔符前后的空格
+	$keys = [];
+	!$with_whitespace && $selector = preg_replace('/\s*([\\.\\|])\s*/', '$1', $selector); //去掉这些分隔符前后的空格
 
-	$root = preg_split('/\\|+/', $selector, NULL, PREG_SPLIT_NO_EMPTY); //切分|
+	$root = preg_split('/\\|+/', $selector, null, PREG_SPLIT_NO_EMPTY); //切分|
 	foreach ($root as $value) {
-		$sp = $with_empty ? preg_split('/\\//', $value) : preg_split('/\\/+/', $value, NULL, PREG_SPLIT_NO_EMPTY);
+
+		$sp = $with_empty ? preg_split('/\\./', $value) : preg_split('/\\.+/', $value, null, PREG_SPLIT_NO_EMPTY);
+
 		foreach($sp as $k => $v) {
 			!$with_whitespace && $v = trim($v);
 			$f = empty($v) || $v == '*' ? '*' : _array_selector_subkey($v, $with_whitespace, $with_empty);
@@ -318,17 +330,17 @@ if (! function_exists('array_selector')) {
 /**
  * 获取数组下面的某些项的集合
  * 如 $a = array('a' => array('f1'=>'v1','f2'=>'v2','f3'=>'v3'),'b' => array('f1'=>'v4','f2'=>'v5'),'c'=>array('f1'=>'v6'));
- * 如 $selector = 'a,b/f1'; 得到 array('a' => array('f1'=>'v1'),'b' => array('f1'=>'v4'));
- * 如 $selector = 'a/*'; 得到 array('a' => array('f1'=>'v1','f2'=>'v2','f3'=>'v3'));
+ * 如 $selector = 'a,b.f1'; 得到 array('a' => array('f1'=>'v1'),'b' => array('f1'=>'v4'));
+ * 如 $selector = 'a.*'; 得到 array('a' => array('f1'=>'v1','f2'=>'v2','f3'=>'v3'));
  *
  * @param array $data  数组
- * @param string $selector  条件表达式 [/] 表示数组维度;  [[,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
+ * @param string $selector  条件表达式 [.] 表示数组维度;  [[,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回根据表达式计算出来的值
  */
 function array_selector(array $data, $selector = '*')
 {
 	if (!is_array($data)) return false;
-	$result = array();
+	$result = [];
 	//print_r($result);
 	if (!empty($selector)) {
 
@@ -426,8 +438,8 @@ if (! function_exists('array_delete_selector')) {
  * 删除数组下面的某些项,没有维度限制
  * 如 $a = array('a' => array('f1' => 'v1', 'f2' => 'v2'),'b' => array('f1' => 'v4','f2' => 'v5'),'c'=>array('f1' => 'v6'));
  * 如要删除 'f1';
- * 如 $selector = 'a,c/f1'; 得到 array('a' => array('f2' => 'v2'),'b' => array('f1' => 'v4','f2' => 'v5'),'c'=>array());
- * 如 $selector = '* /f1' (无空格，只是因为 * 和 / 拼写在一起代表注释结束); 得到 array('a' => array('f2' => 'v2'),'b' => array('f2' => 'v5'),'c'=>array());
+ * 如 $selector = 'a,c/f1'; 得到 array('a' => array('f2' => 'v2'),'b' => array('f1' => 'v4','f2' => 'v5'),'c'=>[]);
+ * 如 $selector = '* /f1' (无空格，只是因为 * 和 / 拼写在一起代表注释结束); 得到 array('a' => array('f2' => 'v2'),'b' => array('f2' => 'v5'),'c'=>[]);
  *
  *
  * @param array $data 原始数组
@@ -436,7 +448,7 @@ if (! function_exists('array_delete_selector')) {
  */
 function array_delete_selector(array $data, $selector = '*')
 {
-	if (!is_array($data)) return FALSE;
+	if (!is_array($data)) return false;
 	$result = $data;
 	if (!empty($selector)) {
 		$root = _array_selector_keymaker($selector);
@@ -496,7 +508,7 @@ function array_keyfilter(array $data, $keys)
 {
 
 	$keys = _array_selector_subkey($keys);
-	$result = array();
+	$result = [];
 	foreach ($data as $key => $value) {
 		if (in_array($key, $keys))
 			$result[$key] = $value;
@@ -553,7 +565,7 @@ if (! function_exists('array_keyflatten')) {
  */
 function array_keyflatten(array $data, $delimiter = '/', $prefix_key = '')
 {
-	$_result = array();
+	$_result = [];
 
 	//隐藏参数 $level
 	$level = 0;
@@ -580,20 +592,20 @@ function array_keyflatten(array $data, $delimiter = '/', $prefix_key = '')
 
 if (! function_exists('array_flatten_selector')) {
 /**
- * 根据表达式，提取第几层的数据，并把数据提到一维，如果$overwrite为TRUE，则相同的键值，后者会覆盖前者
- * @example $a = array('a' => array('c' => 1,'d' => 2),'b' => array('c' => 4, 'e' => 5));
- * @example $selector = '* /*' 结果 array('c' => 4, 'd' => 2, 'e' => 5); 后面的c覆盖了前面的c
- * @example $selector = '* /c' 结果 array('c' => 4);
+ * 根据表达式，提取第几层的数据，并把数据提到一维，如果$overwrite为true，则相同的键值，后者会覆盖前者
+ * @example $a = array('a' => ['c' => 1,'d' => 2),'b' => ['c' => 4, 'e' => 5]];
+ * @example $selector = '* /*' 结果 ['c' => 4, 'd' => 2, 'e' => 5]; 后面的c覆盖了前面的c
+ * @example $selector = '* /c' 结果 ['c' => 4];
  *
  * @param array $data 原始数组
  * @param string $selector  条件表达式 [/] 表示数组维度;  [,][;] (逗号，分号)表示同维度KEY1和KEY2和KEYN...; [*] 表示同维度全部的KEY，此参数注意事项请见_array_selector_keymaker；
  * @return array 返回筛选之后的内容
  */
-function array_flatten_selector($data, $selector = '*', $overwrite = TRUE)
+function array_flatten_selector($data, $selector = '*', $overwrite = true)
 {
 
-	if (!is_array($data)) return array();
-	$result = array();
+	if (!is_array($data)) return [];
+	$result = [];
 	if (!empty($selector)) {
 
 		$root = _array_selector_keymaker($selector);
@@ -631,10 +643,10 @@ function array_flatten_selector($data, $selector = '*', $overwrite = TRUE)
 
 if (! function_exists('_array_flatten_selector_rev')) {
 /*array_flatten_selector 的 private 函数,外界一般不调用*/
-function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $overwrite = TRUE)
+function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $overwrite = true)
 {
 
-	$_result = array();
+	$_result = [];
 
 	if (is_array($data)) {
 		$count = count($keys) - 1;
@@ -665,7 +677,7 @@ function _array_flatten_selector_rev(array &$data, array $keys, $level = 0, $ove
 if (! function_exists('to_array_selector')) {
 /**
  * 将数组里面的某些项目转化为数组，注意：只转化表达式最后一级的项目
- * @example $a = array('a' => 1, 'b' => 2, 'c' => array('e','g'));
+ * @example $a = ['a' => 1, 'b' => 2, 'c' => ['e','g']];
  * @example to_array_selector($a, '*') 得到 [ 'a' => [1], 'b' => [2], 'c' => ['e','g'] ]; 因为c本身就是数组,则不转化
  * @example to_array_selector($a, 'a,b') 任然为 [ 'a' => [1], 'b' => [2], 'c' => ['e','g'] ];
  * @example to_array_selector($a, '* /*') 得到 [ 'a' => 1, 'b' => 2, 'c' => [ ['e'], ['g'] ] ]; 只转化c下级的参数，只转化表达式最后一级的项目
@@ -692,7 +704,7 @@ function _to_array_selector_rev(&$data, array $keys, $level = 0)
 {
 	if (!is_array($data)) return $data;
 
-	$result = array();
+	$result = [];
 	$count = count($keys) - 1;
 	foreach ($data as $key => $value)
 	{
@@ -782,7 +794,7 @@ if (! function_exists('range_string')) {
  */
 function range_string($range_str)
 {
-	$range_out = array();
+	$range_out = [];
 	$ranges = explode(',', $range_str);
 
 	$last_num = 0;
@@ -886,7 +898,7 @@ if (! function_exists('value_next')) {
  * 移动到匹配性的下一个
  * @example value_next('DESC', array('ASC', 'DESC', 'OTHER')) 返回 OTHER
  * @example value_next('DESC', array('ASC', 'DESC')) 返回 ASC，匹配项在结尾时，会返回第一项
- * @example value_next(NULL, array('ASC', 'DESC')) 返回 ASC，如果没有找到，则返回第一项
+ * @example value_next(null, array('ASC', 'DESC')) 返回 ASC，如果没有找到，则返回第一项
  *
  * @param  mixed $needle   需要匹配的value
  * @param  array  $haystack 输入数组
@@ -895,11 +907,11 @@ if (! function_exists('value_next')) {
 function value_next($needle, array $haystack)
 {
 	$size = count($haystack);
-	if (empty($size)) return NULL;
+	if (empty($size)) return null;
 
 	$_data = array_values($haystack);
 	$index = array_search($needle, $_data);
-	if ($index === FALSE || ++$index >= $size)
+	if ($index === false || ++$index >= $size)
 		$index = 0;
 	return $_data[$index];
 }
@@ -921,9 +933,9 @@ function array_in_array(array $needles, array $haystack)
 	//简单办法，遍历数组，查找是否有不存在的值
 	// foreach ($needles as $needle) {
 	// 	if (!in_array($needle, $haystack))
-	// 		return FALSE;
+	// 		return false;
 	// }
-	// return TRUE; //均存在
+	// return true; //均存在
 
 	//高阶,查看交集的数量是否等于$needles的数量，使用内置C，效率高
 	return count($needles) == count(array_intersect($needles, $haystack));
@@ -943,9 +955,9 @@ if (! function_exists('search_fields')) {
  */
 function search_fields($data, $keys)
 {
-	if (empty($data)) return array();
+	if (empty($data)) return [];
 	$keys = _array_selector_subkey($keys);
-	$result = array();
+	$result = [];
 	foreach ($data as $key => $value) {
 		if (is_array($value))
 			$result = array_merge($result, search_fields($value, $keys));
@@ -965,11 +977,11 @@ if (! function_exists('array_slice_byoffset')) {
  * 不包含end_offset
  *
  */
-function array_slice_byoffset(&$arr, $start_offset, $end_offset, $preserve_keys = FALSE)
+function array_slice_byoffset(&$arr, $start_offset, $end_offset, $preserve_keys = false)
 {
 	return array_slice($arr, $start_offset, $end_offset - $start_offset, $preserve_keys);
 	/*
-	$result = array();
+	$result = [];
 	foreach($arr as $k => $v) {
 		if ($k >= $start_offset && $k < $end_offset) {
 			if ($preserve_keys) {
@@ -1003,7 +1015,7 @@ function array_orderby()
 	$data = array_shift($args);
 	foreach ($args as $n => $field) {
 		if (is_string($field)) {
-			$tmp = array();
+			$tmp = [];
 			foreach ($data as $key => $row)
 				$tmp[$key] = $row[$field];
 			$args[$n] = $tmp;
@@ -1024,7 +1036,7 @@ if (! function_exists('array_average')) {
  */
 function array_average(array $a)
 {
-	return !empty($a) ? array_sum($a) / count($a) : FALSE;
+	return !empty($a) ? array_sum($a) / count($a) : false;
 }
 }
 
@@ -1036,14 +1048,15 @@ if (! function_exists('array_pick')) {
  * @param  int $num    需要随机取出多少数据
  * @return array       返回结果
  */
-function array_pick($data, $num) {
+function array_pick(array $data, int $num = 1) {
 	$count = count($data);
-	if ($num <= 0) return array();
+	if ($num <= 0) return [];
 	if ($num >= $count) return $data;
 	$required = $count - $num;
 	$keys = array_rand($data, $required);
 	$keys = to_array($keys);
 	foreach ($keys as $k) unset($data[$k]);
+
 	return $data;
 }
 }
@@ -1053,19 +1066,19 @@ if (! function_exists('shuffle_assoc')) {
  * 打乱数组，保留KEY
  *
  * @param  array $array 需要打乱的数组
- * @return boolean      永远输出TRUE
+ * @return boolean      永远输出true
  */
 function shuffle_assoc( array &$array )
 {
 	$keys = array_keys( $array );
 	shuffle( $keys );
 
-	$random = array();
+	$random = [];
 	foreach ($keys as $key)
 		$random[$key] = $array[$key];
 	//$random = array_merge_recursive_overwrite( array_flip( $keys ) , $array );
 	$array = $random;
-	return TRUE;
+	return true;
 }
 }
 
@@ -1077,7 +1090,7 @@ if (! function_exists('array_max_recursive')) {
  * @return mixed        最大的数据
  */
 function array_max_recursive(array $array /*, ...*/) {
-	$max = NULL;
+	$max = null;
 	$stack = func_get_args();
 	do {
 		$current = array_pop($stack);
@@ -1089,7 +1102,7 @@ function array_max_recursive(array $array /*, ...*/) {
 				{
 					$stack[] = $value;
 				} else {
-					// max(NULL, 0) returns NULL, so cast it
+					// max(null, 0) returns null, so cast it
 					$max = max($max, $value);
 				}
 			}
@@ -1109,7 +1122,7 @@ if (! function_exists('array_min_recursive')) {
  * @return mixed        最小的数据
  */
 function array_min_recursive(array $array /*, ...*/) {
-	$min = NULL;
+	$min = null;
 	$stack = func_get_args();
 	do {
 		$current = array_pop($stack);
@@ -1121,7 +1134,7 @@ function array_min_recursive(array $array /*, ...*/) {
 				{
 					$stack[] = $value;
 				} else {
-					// min(NULL, 0) returns NULL, so cast it
+					// min(null, 0) returns null, so cast it
 					$min = min($min, $value);
 				}
 			}

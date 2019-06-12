@@ -2,7 +2,7 @@
 
 namespace Addons\Core\Controllers\Concerns;
 
-use Auth;
+use Auth, URL;
 
 trait ViewTrait {
 
@@ -37,7 +37,10 @@ trait ViewTrait {
 
 	protected function view($filename, $data = [])
 	{
-		if (!$this->disableUser) $this->viewData['_user'] = Auth::user();
+		if (!$this->disableUser)
+			$this->viewData['_user'] = Auth::user();
+		$this->viewData['_url'] = URL::current();
+
 		return view($filename, $data)->with($this->viewData);
 	}
 

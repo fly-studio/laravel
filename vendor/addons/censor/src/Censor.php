@@ -3,6 +3,7 @@
 namespace Addons\Censor;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Addons\Censor\Ruling\Ruler;
 use Illuminate\Contracts\Validation\Factory;
 
@@ -25,7 +26,7 @@ class Censor {
 
 	public function validData()
 	{
-		return array_only($this->parseData($this->data), $this->attributes);
+		return Arr::only($this->parseData($this->data), $this->attributes);
 	}
 
 	public function data($data = null)
@@ -76,7 +77,7 @@ class Censor {
 
 	public function messagesWithDot()
 	{
-		return array_dot($this->messages());
+		return Arr::dot($this->messages());
 	}
 
 	public function messages()

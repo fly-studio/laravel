@@ -2,6 +2,7 @@
 
 namespace Addons\Elasticsearch\Scout;
 
+use Illuminate\Support\Arr;
 use Addons\Elasticsearch\Collection;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
@@ -145,7 +146,7 @@ class ElasticsearchEngine {
 	public function aggregations(Builder $builder, $key = null)
 	{
 		$result = $this->execute($builder);
-		return is_null($key) ? $result['aggregations'] : array_get($result['aggregations'], $key);
+		return is_null($key) ? $result['aggregations'] : Arr::get($result['aggregations'], $key);
 	}
 
 	/**

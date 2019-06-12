@@ -2,6 +2,7 @@
 
 namespace Addons\Core\Http\Response;
 
+use Illuminate\Support\Arr;
 use Addons\Core\Tools\OutputEncrypt;
 use Addons\Core\Contracts\Protobufable;
 use Addons\Core\Http\Response\TextResponse;
@@ -75,7 +76,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 	public function getOutputData()
 	{
 		$encrypted = $this->getEncrypted();
-		$data = array_except(parent::getOutputData(), ['tipType', 'message']);
+		$data = Arr::except(parent::getOutputData(), ['tipType', 'message']);
 
 		if (!empty($encrypted))
 			return ['encrypted' => base64_encode($encrypted), 'data' => base64_encode($data['data'])] + $data;

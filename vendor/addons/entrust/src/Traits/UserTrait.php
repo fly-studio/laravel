@@ -279,7 +279,7 @@ trait UserTrait
         $team = Helper::fetchTeam($team);
 
         foreach ($this->cachedPermissions() as $perm) {
-            if (Helper::isInSameTeam($perm, $team) && str_is($permission, $perm['name'])) {
+            if (Helper::isInSameTeam($perm, $team) && Str::is($permission, $perm['name'])) {
                 return true;
             }
         }

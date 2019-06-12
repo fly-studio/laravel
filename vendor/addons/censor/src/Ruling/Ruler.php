@@ -2,6 +2,7 @@
 
 namespace Addons\Censor\Ruling;
 
+use Illuminate\Support\Arr;
 use Addons\Censor\File\Localer;
 use Addons\Censor\Exceptions\RuleNotFoundException;
 
@@ -18,7 +19,7 @@ class Ruler extends Localer {
 		$ruleKeys == '*' && $ruleKeys = array_keys($validations);
 		!is_array($ruleKeys) && $ruleKeys = explode(',', $ruleKeys);
 
-		$validations = array_only($validations, $ruleKeys);
+		$validations = Arr::only($validations, $ruleKeys);
 
 		if (!empty($diff = array_diff($ruleKeys, array_keys($validations))))
 			throw new RuleNotFoundException('[Censor] Rule keys are not exists: ['.implode(', ', $diff). '].', $this, $key);

@@ -2,6 +2,7 @@
 
 namespace Addons\Core\Cache;
 
+use Illuminate\Support\Arr;
 use Illuminate\Cache\RedisStore;
 use Illuminate\Redis\RedisManager;
 
@@ -15,10 +16,10 @@ class RWRedis {
 	public function __construct()
 	{
 		$config = (array)config('database.redis');
-		$driver = array_pull($config, 'client', 'predis');
-		$readonly = array_pull($config, static::$readOnlyKey, []);
+		$driver = Arr::pull($config, 'client', 'predis');
+		$readonly = Arr::pull($config, static::$readOnlyKey, []);
 
-		foreach(array_except($config, ['options', 'clusters']) as $key => $value)
+		foreach(Arr::except($config, ['options', 'clusters']) as $key => $value)
 		{
 			$newKey = $this->newKey($key);
 			if (!array_key_exists($newKey, $config))
