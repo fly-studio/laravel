@@ -42,7 +42,7 @@ abstract class AbstractProtocol {
 	}
 
 
-	public function failed(ConnectBinder $binder, \Exception $e)
+	public function failed(ConnectBinder $binder, \Throwable $e)
 	{
 		$options = $binder->options();
 

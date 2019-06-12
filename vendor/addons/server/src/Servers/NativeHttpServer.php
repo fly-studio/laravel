@@ -4,6 +4,7 @@ namespace Addons\Server\Servers;
 
 use Addons\Server\Servers\NativeTrait;
 use Addons\Server\Structs\ConnectBinder;
+use Addons\Server\Contracts\AbstractSender;
 use Addons\Server\Contracts\AbstractProtocol;
 
 /**
