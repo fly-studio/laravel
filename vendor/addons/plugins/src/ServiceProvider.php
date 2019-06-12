@@ -140,7 +140,7 @@ class ServiceProvider extends BaseServiceProvider
 
 			//register broadcast
 			if (!empty($config['register']['broadcast']))
-				call_user_func(function($broadcaster){
+				call_user_func(function($broadcaster) use($config) {
 					require $config['path'].'routes/channels.php';
 				}, app(Broadcaster::class));
 

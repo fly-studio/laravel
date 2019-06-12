@@ -26,7 +26,7 @@ trait NativeTrait {
 	 * @param  ConnectBinder $binder
 	 * @param  [type]        $args
 	 */
-	public function handle(ConnectBinder $binder, ...$args)
+	public function webHandle(ConnectBinder $binder, ...$args)
 	{
 
 		try {

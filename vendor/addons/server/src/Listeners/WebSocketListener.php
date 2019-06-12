@@ -18,9 +18,13 @@ class WebSocketListener extends HttpListener {
 		if (empty($binder))
 			return;
 
-		$this->updateServerOptions($binder->options(), $frame->fd);
+		$options = $binder->options();
 
-		$binder->options()->logger('debug', 'Websocket receive: ');
+		$this->updateServerOptions($options, $frame->fd);
+
+		$options->logger('info', 'Websocket receive: ');
+		$options->logger('debug', print_r($options->toArray(), true));
+		$options->logger('hex', $frame->data);
 
 		$this->recv($binder, $frame->data, $frame->opcode);
 	}

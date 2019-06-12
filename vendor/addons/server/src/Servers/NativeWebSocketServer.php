@@ -7,9 +7,7 @@ use Addons\Server\Contracts\AbstractProtocol;
 
 class NativeWebSocketServer extends WebSocketServer {
 
-	use NativeTrait {
-		handle as webHandle;
-	}
+	use NativeTrait;
 
 	public function loadWebRoutes(string $file_path, string $namespace = 'App\\Tcp\\Controllers')
 	{

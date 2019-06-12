@@ -39,4 +39,9 @@ class NativeHttpServer extends HttpServer {
 		return $this->makeSender($binder, ...$args);
 	}
 
+	public function handle(ConnectBinder $binder, ...$args)
+	{
+		$this->webHandle($binder, ...$args);
+	}
+
 }
