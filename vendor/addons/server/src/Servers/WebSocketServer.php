@@ -21,7 +21,7 @@ use Addons\Server\Listeners\WebSocketListener;
  */
 class WebSocketServer extends HttpServer {
 
-	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Request', 'Close', 'BufferFull', 'BufferEmpty', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop', 'Connect', 'Message', 'Open', 'HandShake'];
+	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Request', 'Close', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop', 'Connect', 'Message', 'Open', 'HandShake'];
 
 	protected $webRouter;
 	protected $webCapture;

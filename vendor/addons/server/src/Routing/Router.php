@@ -59,24 +59,57 @@ class Router extends AbstractGroupLoader {
 		});
 	}
 
+	/**
+	 * raw内容，区分大小写
+	 * $pattern == $request->keywords()
+	 *
+	 * @param  string $pattern [description]
+	 * @param  [type] $action  [description]
+	 * @return [type]          [description]
+	 */
 	public function raw(string $pattern, $action)
 	{
 		$this->routes[] = $this->createRoute(Route::TYPE_RAW, $pattern, $action);
 		return $this;
 	}
 
+	/**
+	 * 类似web路由中的参数 player/{id}，/ 符号不是特殊符号(在web路由中是)
+	 * 路由内部函数($pattern, $request->keywords());
+	 *
+	 * @param  string $pattern
+	 * @param  [type] $action  [description]
+	 * @return [type]          [description]
+	 */
 	public function param(string $pattern, $action)
 	{
 		$this->routes[] = $this->createRoute(Route::TYPE_PARAM, $pattern, $action);
 		return $this;
 	}
 
+	/**
+	 * 正则匹配，完整的正则表达式
+	 * preg_match($pattern, $request->keywords());
+	 *
+	 * @param  string $pattern [description]
+	 * @param  [type] $action  [description]
+	 * @return [type]          [description]
+	 */
 	public function regex(string $pattern, $action)
 	{
 		$this->routes[] = $this->createRoute(Route::TYPE_REGEX, $pattern, $action);
 		return $this;
 	}
 
+	/**
+	 * 一个回调确认是否匹配
+	 * $callable($request->keywords())
+	 * 需要返回true/false
+	 *
+	 * @param  callable $callable [description]
+	 * @param  [type]   $action   [description]
+	 * @return [type]             [description]
+	 */
 	public function callable(callable $callable, $action)
 	{
 		$this->routes[] = $this->createRoute(Route::TYPE_CALL, $pattern, $action);

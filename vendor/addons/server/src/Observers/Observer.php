@@ -90,26 +90,6 @@ class Observer extends AbstractObserver {
 	}
 
 	/**
-	 * [bufferFull description]
-	 * @param  \Swoole\Server $server [description]
-	 * @param  [int]         $fd     [description]
-	 */
-	public function onBufferFull(\Swoole\Server $server, $fd)
-	{
-		$this->trigger('onBufferFull', $fd);
-	}
-
-	/**
-	 * [bufferEmpty description]
-	 * @param  \Swoole\Server $serv [description]
-	 * @param  [int]         $fd   [description]
-	 */
-	public function onBufferEmpty(\Swoole\Server $serv, $fd)
-	{
-		$this->trigger('onBufferEmpty', $fd);
-	}
-
-	/**
 	 * [task description]
 	 * @param  \swoole_server $server        [description]
 	 * @param  [int]         $task_id       [description]

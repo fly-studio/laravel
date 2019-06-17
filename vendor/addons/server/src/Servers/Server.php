@@ -17,7 +17,7 @@ use Addons\Server\Structs\Config\ServerConfig;
 
 class Server extends AbstractServer {
 
-	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Connect', 'Receive', 'Packet', 'Close', 'BufferFull', 'BufferEmpty', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop'];
+	protected $observerListeners = ['Start', 'Shutdown', 'WorkerStart', 'WorkerStop', 'Connect', 'Receive', 'Packet', 'Close', 'Task', 'Finish', 'PipeMessage', 'WorkerError', 'ManagerStart', 'ManagerStop'];
 
 	protected function createServer(ServerConfig $config): \swoole_server
 	{
