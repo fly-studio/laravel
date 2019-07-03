@@ -29,6 +29,7 @@ Version Matrix
 
 | Elasticsearch Version | Elasticsearch-PHP Branch |
 | --------------------- | ------------------------ |
+| >= 7.0, < 8.0         | 7.0                      |
 | >= 6.6, < 7.0         | 6.7.x                    |
 | >= 6.0, < 6.6         | 6.5.x                    |
 | >= 5.0, < 6.0         | 5.0                      |
@@ -36,6 +37,7 @@ Version Matrix
 | >= 1.0, < 2.0         | 1.0 or 2.0               |
 | <= 0.90.x             | 0.4                      |
 
+ - If you are using Elasticsearch 7.x, use Elasticsearch-PHP 7.0 branch.
  - If you are using Elasticsearch 6.6 to 6.7, use Elasticsearch-PHP 6.7.x branch.
  - If you are using Elasticsearch 6.0 to 6.5, use Elasticsearch-PHP 6.5.x branch.
  - If you are using Elasticsearch 5.x, use Elasticsearch-PHP 5.0 branch.
@@ -51,12 +53,12 @@ Installation via Composer
 -------------------------
 The recommended method to install _Elasticsearch-PHP_ is through [Composer](http://getcomposer.org).
 
-1. Add `elasticsearch/elasticsearch` as a dependency in your project's `composer.json` file (change version to suit your version of Elasticsearch, for instance for ES 6.7):
+1. Add `elasticsearch/elasticsearch` as a dependency in your project's `composer.json` file (change version to suit your version of Elasticsearch, for instance for ES 7.0):
 
     ```json
         {
             "require": {
-                "elasticsearch/elasticsearch": "^6.7"
+                "elasticsearch/elasticsearch": "^7.0"
             }
         }
     ```
@@ -86,15 +88,17 @@ The recommended method to install _Elasticsearch-PHP_ is through [Composer](http
 
         $client = ClientBuilder::create()->build();
     ```
+
 You can find out more on how to install Composer, configure autoloading, and other best-practices for defining dependencies at [getcomposer.org](http://getcomposer.org).
 
 PHP Version Requirement
 ----
-Version 6.0 of this library requires at least PHP version 7.0.0 to function.  In addition, it requires the native JSON
+Version 7.0 of this library requires at least PHP version 7.1. In addition, it requires the native JSON
 extension to be version 1.3.7 or higher.
 
 | Elasticsearch-PHP Branch | PHP Version |
 | ----------- | ------------------------ |
+| 7.0         | >= 7.1.0                 |
 | 6.0         | >= 7.0.0                 |
 | 5.0         | >= 5.6.6                 |
 | 2.0         | >= 5.4.0                 |
@@ -107,16 +111,15 @@ Quickstart
 
 ### Index a document
 
-In elasticsearch-php, almost everything is configured by associative arrays.  The REST endpoint, document and optional parameters - everything is an associative array.
+In elasticsearch-php, almost everything is configured by associative arrays. The REST endpoint, document and optional parameters - everything is an associative array.
 
-To index a document, we need to specify four pieces of information: index, type, id and a document body. This is done by
+To index a document, we need to specify three pieces of information: index, id and a document body. This is done by
 constructing an associative array of key:value pairs.  The request body is itself an associative array with key:value pairs
 corresponding to the data in your document:
 
 ```php
 $params = [
     'index' => 'my_index',
-    'type' => 'my_type',
     'id' => 'my_id',
     'body' => ['testField' => 'abc']
 ];
@@ -132,12 +135,20 @@ associative array containing a decoded version of the JSON that Elasticsearch re
 Array
 (
     [_index] => my_index
-    [_type] => my_type
+    [_type] => _doc
     [_id] => my_id
     [_version] => 1
-    [created] => 1
-)
+    [result] => created
+    [_shards] => Array
+        (
+            [total] => 1
+            [successful] => 1
+            [failed] => 0
+        )
 
+    [_seq_no] => 0
+    [_primary_term] => 1
+)
 ```
 
 ### Get a document
@@ -147,7 +158,6 @@ Let's get the document that we just indexed.  This will simply return the docume
 ```php
 $params = [
     'index' => 'my_index',
-    'type' => 'my_type',
     'id' => 'my_id'
 ];
 
@@ -155,16 +165,18 @@ $response = $client->get($params);
 print_r($response);
 ```
 
-The response contains some metadata (index, type, etc.) as well as a `_source` field...this is the original document
+The response contains some metadata (index, version, etc.) as well as a `_source` field, which is the original document
 that you sent to Elasticsearch.
 
 ```php
 Array
 (
     [_index] => my_index
-    [_type] => my_type
+    [_type] => _doc
     [_id] => my_id
     [_version] => 1
+    [_seq_no] => 0
+    [_primary_term] => 1
     [found] => 1
     [_source] => Array
         (
@@ -179,12 +191,20 @@ If you want to retrieve the `_source` field directly, there is the `getSource` m
 ```php
 $params = [
     'index' => 'my_index',
-    'type' => 'my_type',
     'id' => 'my_id'
 ];
 
 $source = $client->getSource($params);
-doSomething($source);
+print_r($source);
+```
+
+The response will be just the `_source` value:
+
+```php
+Array
+(
+    [testField] => abc
+)
 ```
 
 ### Search for a document
@@ -194,7 +214,6 @@ Searching is a hallmark of Elasticsearch, so let's perform a search.  We are goi
 ```php
 $params = [
     'index' => 'my_index',
-    'type' => 'my_type',
     'body' => [
         'query' => [
             'match' => [
@@ -215,34 +234,44 @@ individual search results:
 ```php
 Array
 (
-    [took] => 1
+    [took] => 33
     [timed_out] =>
     [_shards] => Array
         (
-            [total] => 5
-            [successful] => 5
+            [total] => 1
+            [successful] => 1
+            [skipped] => 0
             [failed] => 0
         )
 
     [hits] => Array
         (
-            [total] => 1
-            [max_score] => 0.30685282
+            [total] => Array
+                (
+                    [value] => 1
+                    [relation] => eq
+                )
+
+            [max_score] => 0.2876821
             [hits] => Array
                 (
                     [0] => Array
                         (
                             [_index] => my_index
-                            [_type] => my_type
+                            [_type] => _doc
                             [_id] => my_id
-                            [_score] => 0.30685282
+                            [_score] => 0.2876821
                             [_source] => Array
                                 (
                                     [testField] => abc
                                 )
+
                         )
+
                 )
+
         )
+
 )
 ```
 
@@ -253,7 +282,6 @@ Alright, let's go ahead and delete the document that we added previously:
 ```php
 $params = [
     'index' => 'my_index',
-    'type' => 'my_type',
     'id' => 'my_id'
 ];
 
@@ -267,11 +295,20 @@ You'll notice this is identical syntax to the `get` syntax.  The only difference
 ```php
 Array
 (
-    [found] => 1
     [_index] => my_index
-    [_type] => my_type
+    [_type] => _doc
     [_id] => my_id
     [_version] => 2
+    [result] => deleted
+    [_shards] => Array
+        (
+            [total] => 1
+            [successful] => 1
+            [failed] => 0
+        )
+
+    [_seq_no] => 1
+    [_primary_term] => 1
 )
 ```
 
@@ -339,7 +376,8 @@ $handler = new MockHandler([
   'transfer_stats' => [
      'total_time' => 100
   ],
-  'body' => fopen('somefile.json')
+  'body' => fopen('somefile.json'),
+  'effective_url' => 'localhost'
 ]);
 $builder = ClientBuilder::create();
 $builder->setHosts(['somehost']);

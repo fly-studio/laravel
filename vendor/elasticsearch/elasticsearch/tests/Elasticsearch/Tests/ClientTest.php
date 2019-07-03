@@ -8,6 +8,8 @@ use Elasticsearch;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Elasticsearch\Common\Exceptions\MaxRetriesException;
+use GuzzleHttp\Ring\Client\MockHandler;
+use GuzzleHttp\Ring\Future\FutureArray;
 use Mockery as m;
 
 /**
@@ -95,12 +97,11 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testTypeCannotBeNullForDelete()
+    public function testTypeCanBeNullForDelete()
     {
         $client = ClientBuilder::create()->build();
 
-        $this->expectException(Elasticsearch\Common\Exceptions\InvalidArgumentException::class);
-        $this->expectExceptionMessage('type cannot be null.');
+        $this->expectException(Elasticsearch\Common\Exceptions\Missing404Exception::class);
 
         $client->delete(
             [
@@ -147,8 +148,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     {
         $client = ClientBuilder::create()->build();
 
-        $this->expectException(Elasticsearch\Common\Exceptions\InvalidArgumentException::class);
-        $this->expectExceptionMessage('type cannot be an empty string');
+        $this->expectException(Elasticsearch\Common\Exceptions\BadRequest400Exception::class);
 
         $client->delete(
             [
@@ -191,22 +191,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testTypeCannotBeArrayOfEmptyStringsForDelete()
-    {
-        $client = ClientBuilder::create()->build();
-
-        $this->expectException(Elasticsearch\Common\Exceptions\InvalidArgumentException::class);
-        $this->expectExceptionMessage('type cannot be an array of empty strings');
-
-        $client->delete(
-            [
-            'index' => 'test',
-            'type' => ['', '', ''],
-            'id' => 'test'
-            ]
-        );
-    }
-
     public function testIndexCannotBeArrayOfNullsForDelete()
     {
         $client = ClientBuilder::create()->build();
@@ -218,22 +202,6 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             [
             'index' => [null, null, null],
             'type' => 'test',
-            'id' => 'test'
-            ]
-        );
-    }
-
-    public function testTypeCannotBeArrayOfNullsForDelete()
-    {
-        $client = ClientBuilder::create()->build();
-
-        $this->expectException(Elasticsearch\Common\Exceptions\InvalidArgumentException::class);
-        $this->expectExceptionMessage('type cannot be an array of empty strings');
-
-        $client->delete(
-            [
-            'index' => 'test',
-            'type' => [null, null, null],
             'id' => 'test'
             ]
         );
@@ -298,7 +266,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("localhost:9200", $host->getHost());
+        $this->assertSame("localhost", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -308,7 +277,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("localhost:9200", $host->getHost());
+        $this->assertSame("localhost", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
         $client = Elasticsearch\ClientBuilder::create()->setHosts(
@@ -317,7 +287,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
         $client = Elasticsearch\ClientBuilder::create()->setHosts(
@@ -326,7 +297,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("https", $host->getTransportSchema());
 
 
@@ -336,7 +308,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("https", $host->getTransportSchema());
         $this->assertSame("user:pass", $host->getUserPass());
     }
@@ -353,7 +326,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("localhost:9200", $host->getHost());
+        $this->assertSame("localhost", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -367,7 +341,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -381,7 +356,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("https", $host->getTransportSchema());
 
 
@@ -394,7 +370,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -406,7 +383,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -420,7 +398,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9500", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9500, $host->getPort());
         $this->assertSame("https", $host->getTransportSchema());
 
 
@@ -447,7 +426,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("the_foo.com:9200", $host->getHost());
+        $this->assertSame("the_foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
 
 
@@ -462,8 +442,33 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ]
         )->build();
         $host = $client->transport->getConnection();
-        $this->assertSame("foo.com:9200", $host->getHost());
+        $this->assertSame("foo.com", $host->getHost());
+        $this->assertSame(9200, $host->getPort());
         $this->assertSame("http", $host->getTransportSchema());
         $this->assertSame("user:abc#$@?%!abc", $host->getUserPass());
+    }
+
+    public function testClientLazy()
+    {
+        $handler = new MockHandler([
+          'status' => 200,
+          'transfer_stats' => [
+             'total_time' => 100
+          ],
+          'body' => '{test}',
+          'effective_url' => 'localhost'
+        ]);
+        $builder = ClientBuilder::create();
+        $builder->setHosts(['somehost']);
+        $builder->setHandler($handler);
+        $client = $builder->build();
+
+        $params = [
+            'client' => [
+                'future' => 'lazy',
+            ]
+        ];
+        $result = $client->info($params);
+        $this->assertInstanceOf(FutureArray::class, $result);
     }
 }

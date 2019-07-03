@@ -51,6 +51,8 @@ AdminLabs
 adressendeutschland
 adscanner
 Adstxtaggregator
+adstxt-worker
+adstxt\.com
 agentslug
 AHC
 aihit
@@ -84,6 +86,7 @@ APIs-Google
 AportWorm\/
 AppBeat\/
 AppEngine-Google
+AppleSyndication
 AppStoreScraperZ
 Aprc\/[0-9]
 Arachmo
@@ -100,6 +103,7 @@ Astute
 asynchttp
 Attach
 autocite
+AutomaticWPTester
 Autonomy
 axios\/
 B-l-i-t-z-B-O-T
@@ -213,6 +217,7 @@ Crescent
 Crowsnest
 Criteo
 CSHttp
+CSSCheck
 curb
 Curious George
 curl
@@ -228,6 +233,7 @@ DataparkSearch
 dataprovider
 DataXu
 Daum(oa)?[ \/][0-9]
+dBpoweramp
 ddline
 deeris
 Demon
@@ -354,6 +360,7 @@ GetRight
 getroot
 GetURLInfo\/
 GetWeb
+Geziyor
 Ghost Inspector
 GigablastOpenSource
 GIS-LABS
@@ -458,6 +465,7 @@ http_get
 HttpComponents
 httphr
 HTTPMon
+HTTPie
 httpRequest
 httpscheck
 httpssites_power
@@ -518,6 +526,7 @@ isitup\.org
 iskanie
 isUp\.li
 iThemes Sync\/
+IZaBEE
 iZSearch
 JAHHO
 janforman
@@ -544,6 +553,7 @@ Kerrigan\/
 KeyCDN
 Keyword Density
 Keywords Research
+khttp\/
 KickFire
 KimonoLabs\/
 Kml-Google
@@ -836,6 +846,7 @@ Recorder
 RecurPost\/
 redback\/
 ReederForMac
+Reeder\/
 ReGet
 RepoMonkey
 request\.js
@@ -1013,6 +1024,7 @@ TheNomad
 Thinklab
 Thumbshots
 ThumbSniper
+Thumbor
 timewe\.net
 TinEye
 Tiny Tiny RSS
@@ -1166,6 +1178,7 @@ Woko
 woorankreview
 Word\/
 WordPress\/
+worldping-api
 WordupinfoSearch
 wotbox
 WP Engine Install Performance API
@@ -1216,6 +1229,7 @@ Zermelo
 Zeus 
 zgrab
 ZnajdzFoto
+ZnHTTP
 Zombie\.js
 Zoom\.Mac
 ZyBorg

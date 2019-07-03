@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.7.0 - 2019-06-30
+
+### Added
+
+- Dropped support for PHP < 7.1
+- Support for `symfony/http-client`
+
 ## 1.6.1 - 2019-02-23
 
 ### Fixed
