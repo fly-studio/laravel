@@ -31,7 +31,10 @@ trait ValidatesRequests
 	 */
 	public function censor(Request $request, $censorKey, $attributes, Model $model = null)
 	{
-		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($request->all());
+		$input = $request->all();
+		$json = $request->json()->all();
+
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data(is_array($json) ? array_merge($input, $json) : $input);
 		$validator = $censor->validator();
 		return $validator->fails() ? $this->throwValidationException($request, $validator) : $censor->validData();
 	}
