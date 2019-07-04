@@ -8,14 +8,16 @@ use Elasticsearch\Namespaces\NamespaceBuilderInterface;
 
 class CustomNamespaceBuilder implements NamespaceBuilderInterface {
 
-	public function getName()
+	public function getName(): string
 	{
 		return 'custom';
 	}
 
 	public function getObject(Transport $transport, SerializerInterface $serializer)
 	{
-		return new CustomNamespace($transport, null);
+		return new CustomNamespace($transport, function(){
+			
+		});
 	}
 
 }
