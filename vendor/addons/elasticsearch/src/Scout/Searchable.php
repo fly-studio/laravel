@@ -71,7 +71,7 @@ trait Searchable {
 		if (!empty($max) && $max >= $min) $builder->where($self->getKeyName(), '<=', $max);
 
 		$builder
-			->when($softDeletes, function ($query) {
+			->when($softDelete, function ($query) {
 				$query->withTrashed();
 			})
 			->orderBy($self->getKeyName())
