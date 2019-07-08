@@ -63,8 +63,7 @@ trait Searchable {
 	{
 		$self = new static();
 
-		$softDeletes = in_array(SoftDeletes::class, class_uses_recursive(get_called_class())) &&
-						config('scout.soft_delete', false);
+        $softDelete = static::usesSoftDelete() && config('scout.soft_delete', false);
 
 		$builder = $self->newQuery();
 
@@ -76,7 +75,7 @@ trait Searchable {
 				$query->withTrashed();
 			})
 			->orderBy($self->getKeyName())
-			->searchable($refresh);
+			->searchable(null, $refresh);
 	}
 
 	/**

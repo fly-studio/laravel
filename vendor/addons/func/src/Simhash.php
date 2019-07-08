@@ -6,7 +6,7 @@ class Simhash
 {
 	/**
 	 * 通过分词计算simhash
-	 * @param array  &$set ['词1', '词2', '词1'] 或 ['词1' => 2, '词2' => 1]
+	 * @param array $set ['词1', '词2', '词1'] 或 ['词1' => 2, '词2' => 1]
 	 * @param int $length  返回的bit长度，一般如下值：32, 64, 128
 	 * @return string 二进制文本，使用varbinary存储
 	 */
