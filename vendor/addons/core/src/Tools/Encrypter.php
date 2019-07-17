@@ -104,7 +104,7 @@ class Encrypter implements EncrypterContract
 
         if ($serialize)
         {
-            $json = json_encode($result);
+            $json = json_encode($result, JSON_PARTIAL_OUTPUT_ON_ERROR);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new EncryptException('Could not encrypt the data.');
             }

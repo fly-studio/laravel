@@ -44,7 +44,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 				'key' => $encryptor->generateAesKey()
 			];
 
-			$encoded = $encryptor->encode(json_encode($data));
+			$encoded = $encryptor->encode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR));
 
 			$encrypted['iv'] = $encoded['iv'];
 			$encrypted['mac'] = $encoded['mac'];
@@ -53,7 +53,8 @@ class ApiResponse extends TextResponse implements Protobufable {
 				json_encode(
 					array_map(function($v) {
 						return base64_encode($v);
-					}, $encrypted)
+					}, $encrypted),
+					JSON_PARTIAL_OUTPUT_ON_ERROR
 				)
 			);
 
@@ -62,7 +63,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 		} else {
 			$this->encrypted = null;
 
-			$this->data = json_decode(json_encode($data), true); //turn Object to Array
+			$this->data = json_decode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR), true); //turn Object to Array
 		}
 
 		return $this;

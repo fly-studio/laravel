@@ -115,7 +115,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 
 	public function setData($data, $outputRaw = false)
 	{
-		$data = json_decode(json_encode($data), true); //turn Object to Array
+		$data = json_decode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR), true); //turn Object to Array
 		//
 		$this->data = $data;
 		$this->outputRaw = $outputRaw;
@@ -196,7 +196,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 				$response = $this->setContent($content)->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 				break;
 			default: //其余全部为json
-				$jsonResponse = (new JsonResponse($data))->withCallback($callback)->setStatusCode($this->getStatusCode());
+				$jsonResponse = (new JsonResponse($data, $this->getStatusCode(), [], JSON_PARTIAL_OUTPUT_ON_ERROR))->withCallback($callback);
 				$response = $this->setContent($jsonResponse->getContent())->withHeaders($jsonResponse->headers->all())->header('Content-Type', 'application/json');
 				break;
 		}
@@ -247,7 +247,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			!empty($data['tipType']['url']) && $t->setUrl($data['tipType']['url']);
 			$o->setTipType($t);
 		}
-		$d = !is_array($data['data']) ? $data['data'] : json_encode($data['data']);
+		$d = !is_array($data['data']) ? $data['data'] : json_encode($data['data'], JSON_PARTIAL_OUTPUT_ON_ERROR);
 		!is_null($d) && $o->setData($d);
 
 		$o->setTime($data['time']);
