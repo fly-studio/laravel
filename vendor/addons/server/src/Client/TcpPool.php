@@ -9,6 +9,7 @@ use Swoole\Coroutine\Channel;
 use Addons\Func\Console\ConsoleLog;
 
 // 一个Swoole\Client的实现的Tcp连接池
+// 注意所有的实现都是协程的，发送和接收不会阻塞其它任务
 class TcpPool {
 
 	protected $host;
@@ -21,8 +22,23 @@ class TcpPool {
 	protected $clients;
 
 	protected $aliveCount = 0;
-	protected $lastCoroutineId = -1;
+	protected $lastWaitingCoroutines = [];
 
+	/**
+	 *
+	 * @example
+	 * 比如设置一个自动分割 | 2bytes | LENGTH 4bytes | DATA | 的 配置
+	 * $serverConfig = ['open_length_check' => true,
+	 * 	'package_length_type' => 'N',
+	 * 	'package_length_offset' => 2,
+	 * 	'package_body_offset' => 6,
+	 * ]
+	 *
+	 * @param string      $host         [description]
+	 * @param int         $port         [description]
+	 * @param array       $serverConfig [description]
+	 * @param int|integer $poolCount    [description]
+	 */
 	public function __construct(string $host, int $port, array $serverConfig = [], int $poolCount = 10)
 	{
 		$this->host = $host;
@@ -44,11 +60,11 @@ class TcpPool {
 	}
 
 	/**
-	 * https://wiki.swoole.com/wiki/page/p-client/close.html
-	 * 当一个swoole_client连接被close后不要再次发起connect。正确的做法是销毁当前的swoole_client，重新创建一个swoole_client并发起新的连接。
+	 * 连接池内所有连接
+	 * 注意: 调用close之后，无法再connect，必须重新new TcpPool
 	 *
-	 * @param  int|integer $reconnectDelay [description]
-	 * @return [type]                      [description]
+	 * @param  int|integer $reconnectDelay 间隔多少时间检查是否断开连接，单位：ms
+	 * @return
 	 */
 	public function connect(int $reconnectDelay = 500)
 	{
@@ -63,6 +79,8 @@ class TcpPool {
 			while (!$this->closed) {
 
 				// 发现失败就移除
+				// https://wiki.swoole.com/wiki/page/p-client/close.html
+	 			// 当一个swoole_client连接被close后不要再次发起connect。正确的做法是销毁当前的swoole_client，重新创建一个swoole_client并发起新的连接。
 				for($i = count($this->clients) - 1; $i >= 0; $i--)
 				{
 					$client = $this->clients[$i];
@@ -106,32 +124,45 @@ class TcpPool {
 	}
 
 	/**
-	 * 关闭所有连接
-	 * 注意: 关闭之后无法再次connect
-	 * @param  bool|boolean $force [description]
-	 * @return [type]              [description]
+	 * 关闭所有连接，默认会等正在发送的数据发送完毕(也会等所有未发送的异步任务执行完毕)
+	 *
+	 * 注意：关闭之后无法再次connect
+	 *
+	 * @param  bool|boolean $force 强制关闭数据发送，不计丢失
+	 * @return
 	 */
 	public function close(bool $force = false)
 	{
-		$this->closed = true;
-		$this->aliveCount = 0;
-		$this->idlePool->close(); // 关闭池
+		go(function() use ($force) {
+			if (!$force) $this->waitFor();
 
-		for($i = count($this->clients) - 1; $i >= 0; $i--)
-		{
-			$this->clients[$i]->close($force);
-			unset($this->clients[$i]);
-		}
+			$this->closed = true;
+			$this->aliveCount = 0;
+			$this->idlePool->close(); // 关闭池
+
+			for($i = count($this->clients) - 1; $i >= 0; $i--)
+			{
+				$this->clients[$i]->close($force);
+				unset($this->clients[$i]);
+			}
+		});
+
 	}
 
+	/**
+	 * 增删aliveCount的方法，当为0时，恢复因waitFor而挂起的协程
+	 * @param int|integer $value [description]
+	 */
 	protected function addAliveCount(int $value = 1)
 	{
 		$this->aliveCount += $value;
 
-		if ($this->aliveCount <= 0 && $this->lastCoroutineId >= 0)
+		if ($this->aliveCount <= 0 && !empty($this->lastWaitingCoroutines))
 		{
-			Co::resume($this->lastCoroutineId);
-			$this->lastCoroutineId = 0;
+			foreach($this->lastWaitingCoroutines as $id)
+				Co::resume($id);
+
+			$this->lastWaitingCoroutines = [];
 		}
 	}
 
@@ -144,8 +175,15 @@ class TcpPool {
 	 *
 	 * 注意：必须运行在协程内，如果此函数上面都是同步call，执行本函数没有意义，因为同步call的aliveCount肯定为0
 	 *
+	 * @example
+	 * go(function() use ($list, $pool){
+	 * 	foreach($list as $data)
+	 * 	{
+	 *  	$pool->callSync($data);
+	 * 	}
+	 *  $pool->waitFor(); // 挂起当前协程直到上面的callAsync处理完毕
+	 * });
 	 *
-	 * @return [type] [description]
 	 */
 	public function waitFor()
 	{
@@ -154,9 +192,9 @@ class TcpPool {
 		if ($coroutineId < 0)
 			throw new RuntimeException('Must run this in a Coroutine.');
 
-		if ($this->aliveCount() > 0)
+		if ($this->aliveCount() > 0) // 因为是单线程, 所以此处的不会像多线程一样需要原子
 		{
-			$this->lastCoroutineId = $coroutineId;
+			$this->lastWaitingCoroutines[] = $coroutineId;
 			Co::yield();
 		}
 
@@ -165,12 +203,16 @@ class TcpPool {
 	/**
 	 * 同步发送并接收数据
 	 *
-	 * 注意：使用本函数最好设置client的eol等参数，让swoole自动分割每个包
-	 * 其次，这个只能返回一个包，如果需要多个返回的，只能用callAsync然后自己实现recv
+	 * 如果池内连接意外断开，会一直重试寻找下一个可用连接(协程,不会阻塞)
 	 *
-	 * @param  string $data         [description]
+	 * 注意：使用本函数最好设置$serverConfig的open_length_check等参数，让swoole自动分割每个包
+	 * 其次，这个只能recv一个包，如果需要多个返回的，只能用callAsync然后自己实现recv
+	 *
+	 * @example [URI] [<description>]
+	 *
+	 * @param  string $data         RAW 数据
 	 * @param  bool   $needResponse 是否需要回执
-	 * @return [type]               [description]
+	 * @return string               回执
 	 */
 	public function call(string $data, bool $needResponse = true)
 	{
@@ -180,12 +222,30 @@ class TcpPool {
 	/**
 	 * 异步发送数据并接收回执
 	 *
-	 * 注意: $recvCallable执行的顺序是乱序的，因为连接池的缘故，server端返回的也不是按照顺序来，也就是说send顺序是：1 2 3，回复顺序可能是1 3 2
-	 * 如果上下文有关联，执行的时候最好使用将上下文引入到匿名函数中 $pool->callAsync($data, function($client) use ($xxx) {$client->recv();} ); $xxx 表示上下文的变量
+	 * 如果池内连接意外断开，会一直重试寻找下一个可用连接(协程,不会阻塞)
 	 *
-	 * @param  string        $data          [description]
-	 * @param  callable|null $recvCallable [description]
-	 * @return [type]                       [description]
+	 * 如果recvCallable内部发生异常，会被捕获并写入日志，然后抛出，请自行捕获(见下例)
+	 *
+	 * 注意: 同时发送多条时，$recvCallable执行的顺序是乱序的，因为连接池以及协程的缘故，其次server端返回的也可能不是按照顺序来，也就是说send顺序是：1 2 3，回复顺序可能是1 3 2
+	 * 如果上下文有关联，执行的时候最好使用将上下文引入到匿名函数中(见下例)
+	 *
+	 * @example
+	 * 接收多条
+	 * try {
+	 * $pool->callAsync($data, function($client) use ($xxx) { // $xxx 表示上下文的变量
+	 * 	$recv = $client->recv();
+	 * 	$recv .= $client->recv(); //接收多条
+	 *
+	 *  $xxx->setRecv($recv); // 可操作与之关联的对象
+	 * });
+	 *
+	 * catch(Exception $e) {
+	 *	// $e 捕获到错误
+	 * }
+	 *
+	 * @param  string        $data          RAW DATA
+	 * @param  callable|null $recvCallable  需要回调的函数，只有一个参数 $client，如果客户端连接异常，需要您在这个函数内返回false，不然只有等到下一次send时才能发现连接问题
+	 * @return int                          协程ID
 	 */
 	public function callAsync(string $data, callable $recvCallable = null)
 	{
@@ -194,11 +254,22 @@ class TcpPool {
 		});
 	}
 
+	/**
+	 * 真正的发送和接收的方法，被上文callAsync call内部调用
+	 *
+	 * 会操作aliveCount计数器，在同步模式下执行完毕aliveCount会被抵消 == 0，所以只有异步情况下才会出现 > 0
+	 * 如果池内连接意外断开，会一直以重试寻找下一个可用连接(协程,不会阻塞)，也就是continue实现的
+	 *
+	 * @param  string        $data         RAW DATA
+	 * @param  callable|null $recvCallable 需要回调的函数，只有一个参数 $client，如果客户端recv时出现连接错误，需要您在这个函数内返回false，不然只有等到下一次send时才能发现连接问题
+	 * @return boolean|string              Recv or null
+	 */
 	private function syncSend(string $data, callable $recvCallable = null)
 	{
-		$this->addAliveCount();
+		$this->addAliveCount(); // +1
 
 		$result = null;
+		$exception = null;
 
 		while(!$this->closed) {
 			// 取出连接池Client，pool如果为空，会被挂起
@@ -227,6 +298,8 @@ class TcpPool {
 			} catch (Exception $e) { //捕获 $recvCallable 的异常
 
 				ConsoleLog::error($e);
+
+				$exception =  $e;
 			}
 
 			// 加入到连接池
@@ -235,10 +308,18 @@ class TcpPool {
 			break;
 		}
 
-		$this->addAliveCount(-1);
+		$this->addAliveCount(-1); // -1 平衡
+
+		if ($exception instanceof Exception)
+			throw $exception;
+
 		return $result;
 	}
 
+	/**
+	 * 用于同步call的回调函数，只是简单是实现了连接异常的问题
+	 * @return string|false recv data
+	 */
 	private function makeSimpleRecvCall()
 	{
 		return function($client) {
