@@ -59,6 +59,11 @@ class TcpPool {
 		return $this->aliveCount;
 	}
 
+	public function isClosed()
+	{
+		return $this->closed;
+	}
+
 	/**
 	 * 连接池内所有连接
 	 * 注意: 调用close之后，无法再connect，必须重新new TcpPool
@@ -70,7 +75,6 @@ class TcpPool {
 	{
 		if ($this->closed)
 			throw new RuntimeException('Pool was closed, you may create an new TcpPool instance.');
-
 
 		go(function() use($reconnectDelay) {
 
