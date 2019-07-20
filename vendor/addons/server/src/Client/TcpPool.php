@@ -220,7 +220,7 @@ class TcpPool {
 	 */
 	public function call(string $data, bool $needResponse = true)
 	{
-		return $this->syncSend($data, $needResponse ? $this->makeSimpleRecvCall() : null);
+		return $this->callSync($data, $needResponse ? $this->makeSimpleRecvCall() : null);
 	}
 
 	/**
@@ -254,7 +254,7 @@ class TcpPool {
 	public function callAsync(string $data, callable $recvCallable = null)
 	{
 		return go(function() use ($data, $recvCallable) {
-			return $this->syncSend($data, $recvCallable);
+			return $this->callSync($data, $recvCallable);
 		});
 	}
 
@@ -268,7 +268,7 @@ class TcpPool {
 	 * @param  callable|null $recvCallable 需要回调的函数，只有一个参数 $client，如果客户端recv时出现连接错误，需要您在这个函数内返回false，不然只有等到下一次send时才能发现连接问题
 	 * @return boolean|string              Recv or null
 	 */
-	private function syncSend(string $data, callable $recvCallable = null)
+	public function callSync(string $data, callable $recvCallable = null)
 	{
 		$this->addAliveCount(); // +1
 

@@ -17,9 +17,13 @@ class RedisHashTable {
 
 	public function hmget(string $key, array $fields)
 	{
-		return array_map(function($v){
-			return !empty($v) ? unserialize($v) : null;
-		}, $this->redis->hmet($key, $fields));
+		return array_combine($fields,
+			array_map(function($v) {
+					return !empty($v) ? unserialize($v) : null;
+				},
+				$this->redis->hmget($key, $fields)
+			)
+		);
 	}
 
 	public function hmset(string $key, array $data)
