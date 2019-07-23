@@ -9,7 +9,8 @@ use Swoole\Coroutine\Channel;
 use Addons\Func\Console\ConsoleLog;
 
 // 一个Swoole\Client的实现的Tcp连接池
-// 注意所有的实现都是协程的，发送和接收不会阻塞其它任务
+// 这个类只能运行在go(function(){ .... });中
+// 注意所有的实现都是协程的，发送和接收不会阻塞其它任务，根据测试异步发送效率要比同步高很多。
 class TcpPool {
 
 	protected $host;
@@ -28,7 +29,8 @@ class TcpPool {
 	 *
 	 * @example
 	 * 比如设置一个自动分割 | 2bytes | LENGTH 4bytes | DATA | 的 配置
-	 * $serverConfig = ['open_length_check' => true,
+	 * $serverConfig = [
+	 * 	'open_length_check' => true,
 	 * 	'package_length_type' => 'N',
 	 * 	'package_length_offset' => 2,
 	 * 	'package_body_offset' => 6,
@@ -206,6 +208,7 @@ class TcpPool {
 
 	/**
 	 * 同步发送并接收数据
+	 * 同步发送必须要等待上一个发送（或返回）之后才能进行下一个发送
 	 *
 	 * 如果池内连接意外断开，会一直重试寻找下一个可用连接(协程,不会阻塞)
 	 *
