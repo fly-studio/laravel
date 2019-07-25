@@ -59,10 +59,9 @@ class AsyncSaveModel implements ShouldQueue
 
 		foreach($collections as $item)
 		{
-			$model = $instance->newInstance([], true);
-			$model->setConnection($instance->getConnectionName());
-			$model->fill($list[$item->getKey()]);
-			$model->save();
+			$item->fill($list[$item->getKey()]);
+
+			$item->save();
 		}
 
 	}
