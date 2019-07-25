@@ -31,22 +31,40 @@ class AsyncSaveModel implements ShouldQueue
 		$this->className = $className;
 		$this->saveList = base64_encode(serialize($saveList));
 		$this->connectionName = $connectionName;
+
+		//$this->onQueue('async-save-model');
+
 	}
 
 	public function handle()
 	{
-		$class = $this->className;
-		$instance = new $class();
-
 		$this->saveList = unserialize(base64_decode($this->saveList));
 
-		foreach($this->saveList as $data)
+		if (empty($this->saveList))
+			return;
+
+		$class = $this->className;
+		$instance = new $class();
+		$idName = $instance->getKeyName();
+
+		$list = collect($this->saveList);
+
+		// ID 不存在
+		if (!in_array($idName, $list->first()))
+			return;
+
+		$list = $list->keyBy($idName);
+
+		$collections = $instance::whereIn($idName, $list->keys())->get(array_keys($list->first()));
+
+		foreach($collections as $item)
 		{
 			$model = $instance->newInstance([], true);
-			$model->setConnection($this->connectionName ?? $instance->getConnectionName());
-			$model->forceFill($data);
+			$model->setConnection($instance->getConnectionName());
+			$model->fill($list[$item->getKey()]);
 			$model->save();
 		}
+
 	}
 
 }
