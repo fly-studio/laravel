@@ -50,7 +50,7 @@ class AsyncSaveModel implements ShouldQueue
 		$list = collect($this->saveList);
 
 		// ID 不存在
-		if (!in_array($idName, $list->first()))
+		if (!array_key_exists($idName, $list->first()))
 			return;
 
 		$list = $list->keyBy($idName);
