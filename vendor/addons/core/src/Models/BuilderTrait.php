@@ -5,8 +5,11 @@ namespace Addons\Core\Models;
 use Addons\Core\Models\Builder;
 use Addons\Core\Models\Relations\HasOneBy;
 use Addons\Core\Models\Relations\HasManyBy;
+use Illuminate\Database\ConnectionInterface;
 
 trait BuilderTrait {
+
+	protected $connectionInstance = null;
 
 	/**
 	 * Create a new Eloquent query builder for the model.
@@ -17,6 +20,22 @@ trait BuilderTrait {
 	public function newEloquentBuilder($query)
 	{
 		return new Builder($query);
+	}
+
+	public function setConnectionInstance(ConnectionInterface $connection)
+	{
+		$this->connectionInstance = $connection;
+		return $this;
+	}
+
+	/**
+	 * Get the database connection for the model.
+	 *
+	 * @return \Illuminate\Database\Connection
+	 */
+	public function getConnection()
+	{
+		return $this->connectionInstance ?? static::resolveConnection($this->getConnectionName());
 	}
 
 	/**

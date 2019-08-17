@@ -87,7 +87,7 @@ trait ApiTrait {
 		$queries = $this->_getQueries($condition);
 
 		foreach ($queries as $key => $value)
-			if ((!empty($value) && !is_numeric($value)) && method_exists($builder->getModel(), 'scope'.ucfirst($key)))
+			if ((!empty($value) || is_numeric($value)) && method_exists($builder->getModel(), 'scope'.ucfirst($key)))
 				call_user_func_array([$builder, $key], Arr::wrap($value));
 
 		return $queries;
