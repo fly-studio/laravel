@@ -117,8 +117,8 @@ trait ApiTrait {
 			$paginate = $builder->paginate($size, $columns, 'page', $page);
 		} catch (ServerErrorResponseException $e) {
 
-			if (stripos($e, 'Result window is too large') !== false)
-				throw new OutputResponseException('es::exceptions.failure_out_page');
+			if (stripos($e->getMessage(), 'Result window is too large') !== false)
+				throw new OutputResponseException('es::exceptions.out_of_page');
 			else
 				throw new OutputResponseException('es::exceptions.ServerErrorResponseException');
 		}
@@ -160,12 +160,12 @@ trait ApiTrait {
 
 		try {
 
-			$paginate = $builder->orderBy($builder->getModel()->getKeyName(),'DESC')->paginate($size, $columns);
+			$paginate = $builder->orderBy($builder->getModel()->getKeyName(), 'DESC')->paginate($size, $columns);
 
 		} catch (ServerErrorResponseException $e) {
 
-			if (stripos($e, 'Result window is too large') !== false)
-				throw new OutputResponseException('es::exceptions.failure_out_page');
+			if (stripos($e->getMessage(), 'Result window is too large') !== false)
+				throw new OutputResponseException('es::exceptions.out_of_page');
 			else
 				throw new OutputResponseException('es::exceptions.ServerErrorResponseException');
 		}
