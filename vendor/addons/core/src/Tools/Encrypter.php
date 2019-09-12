@@ -67,7 +67,7 @@ class Encrypter implements EncrypterContract
      */
     public static function generateKey($cipher)
     {
-        return random_bytes($cipher == 'AES-128-CBC' ? 16 : 32);
+        return random_bytes($cipher === 'AES-128-CBC' ? 16 : 32);
     }
 
     /**
@@ -98,7 +98,7 @@ class Encrypter implements EncrypterContract
         // Once we get the encrypted value we'll go ahead and base64_encode the input
         // vector and create the MAC for the encrypted value so we can then verify
         // its authenticity. Then, we'll JSON the data into the "payload" array.
-        $mac = $this->hash(base64_encode($iv), $value);
+        $mac = $this->hash($iv = base64_encode($iv), $value);
 
         $result = compact('iv', 'value', 'mac');
 
@@ -120,6 +120,8 @@ class Encrypter implements EncrypterContract
      *
      * @param  string  $value
      * @return string
+     *
+     * @throws \Illuminate\Contracts\Encryption\EncryptException
      */
     public function encryptString($value)
     {
@@ -145,7 +147,7 @@ class Encrypter implements EncrypterContract
         // we will then unserialize it and return it out to the caller. If we are
         // unable to decrypt this value we will throw out an exception message.
         $decrypted = \openssl_decrypt(
-            $payload['value'], $this->cipher, $this->key, 0, $iv
+            $payload['value'], $this->cipher, $this->key, OPENSSL_RAW_DATA, $iv
         );
 
         if ($decrypted === false) {

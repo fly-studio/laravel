@@ -52,3 +52,19 @@ if (! function_exists('repo')) {
 		return app('App\\Repositories\\'.studly_case($className).'Repository');
 	}
 }
+
+
+if (! function_exists('static_cache')) {
+	/**
+	 * Like Cache::remember($key, $expired, $callback), but this via static variant to store the data
+	 *
+	 * @param  string   $key      a unique key
+	 * @param  int      $expired  this data expire in seconds
+	 * @param  callable $callback data
+	 * @return
+	 */
+	function static_cache(string $key, int $expired, callable $callback)
+	{
+		return \Addons\Core\Cache\StaticCache::remember($key, $expired, $callback);
+	}
+}

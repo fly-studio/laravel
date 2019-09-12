@@ -30,35 +30,21 @@ class ApiResponse extends TextResponse implements Protobufable {
 		return null;
 	}
 
-	public function setData($data, $rsaPublicKey = false)
+	public function setData($data, $rsaKey = false, $rsaType = 'public')
 	{
-		if (!empty($rsaPublicKey))
+		if (!empty($rsaKey))
 		{
-			$rsaPublicKey = is_string($rsaPublicKey) ? $rsaPublicKey : urldecode(request()->header('X-RSA'));
+			$rsaKey = is_string($rsaKey) ? $rsaKey : urldecode(request()->header('X-RSA'));
 
-			$encryptor = new OutputEncrypt($rsaPublicKey);
+			$encryptor = $rsaType == 'public' ? new OutputEncrypt($rsaKey) : new OutputEncrypt(null, $rsaKey);
 
-			$encrypted = [
-				'iv' => '',
-				'mac' => '',
-				'key' => $encryptor->generateAesKey()
-			];
+			$data = json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-			$encoded = $encryptor->encode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR));
+			$encoded = $rsaType == 'public' ? $encryptor->encodeByPublic($data) : $encryptor->encodeByPrivate($data);
 
-			$encrypted['iv'] = $encoded['iv'];
-			$encrypted['mac'] = $encoded['mac'];
+			$this->encrypted = $encoded['aesEncrypted'];
 
-			$this->encrypted = $encryptor->encodeByPublic(
-				json_encode(
-					array_map(function($v) {
-						return base64_encode($v);
-					}, $encrypted),
-					JSON_PARTIAL_OUTPUT_ON_ERROR
-				)
-			);
-
-			$this->data = !empty($this->encrypted) ? $encoded['value'] : null; //如果无法加密成功，则不用返回数据，避免浪费传输
+			$this->data = $encoded['value']; //如果无法加密成功，则不用返回数据，避免浪费传输
 
 		} else {
 			$this->encrypted = null;
@@ -80,7 +66,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 		$data = Arr::except(parent::getOutputData(), ['tipType', 'message']);
 
 		if (!empty($encrypted))
-			return ['encrypted' => base64_encode($encrypted), 'data' => base64_encode($data['data'])] + $data;
+			return ['encrypted' => $encrypted, 'data' => $data['data']] + $data;
 
 		return $data;
 	}
