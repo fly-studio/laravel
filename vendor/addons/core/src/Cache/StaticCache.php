@@ -18,7 +18,7 @@ class StaticCache {
 	{
 		if (isset(static::$instances[$key]['last']))
 		{
-			if (time() - $expired <= static::$instances[$key]['last']);
+			if (time() - $expired <= static::$instances[$key]['last'])
 				return static::$instances[$key]['data'];
 		}
 
