@@ -12,7 +12,7 @@ class TcpSender extends Sender {
 	public function __construct(ConnectBinder $binder)
 	{
 		$this->binder = $binder;
-		$this->buffer_output_size = $binder->options()->server()->setting['buffer_output_size'];
+		$this->buffer_output_size = $binder->options()->server()->setting['buffer_output_size'] ?? 1024 * 1024 * 2;
 	}
 
 	public function send(string $data): int
