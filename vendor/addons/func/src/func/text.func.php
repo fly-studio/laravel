@@ -61,7 +61,7 @@ if (! function_exists('str_split_utf8')) {
  */
 function str_split_utf8(string $str)
 {
-	return preg_match_all('/./u', removeBOM($str), $out) ? $out[0] : false;
+	return preg_match_all('/./us', removeBOM($str), $out) ? $out[0] : false;
 	/*
 	// place each character of the string into and array
 	$split = 1;
