@@ -13,9 +13,19 @@ class ServiceProvider extends SocialiteServiceProvider
      */
     public function boot()
     {
-        $socialiteWasCalled = app(SocialiteWasCalled::class);
+        if ($this->app instanceof \Illuminate\Foundation\Application) {
+            // Laravel
+            $this->app->booted(function () {
+                $socialiteWasCalled = app(SocialiteWasCalled::class);
 
-        event($socialiteWasCalled);
+                event($socialiteWasCalled);
+            });
+        } else {
+            // Lumen
+            $socialiteWasCalled = app(SocialiteWasCalled::class);
+
+            event($socialiteWasCalled);
+        }
     }
 
     /**
@@ -29,8 +39,10 @@ class ServiceProvider extends SocialiteServiceProvider
             define('SOCIALITEPROVIDERS_STATELESS', true);
         }
 
-        $this->app->singleton(ConfigRetrieverInterface::class, function () {
-            return new ConfigRetriever();
-        });
+        if (!$this->app->bound(ConfigRetrieverInterface::class)) {
+            $this->app->singleton(ConfigRetrieverInterface::class, function () {
+                return new ConfigRetriever();
+            });
+        }
     }
 }

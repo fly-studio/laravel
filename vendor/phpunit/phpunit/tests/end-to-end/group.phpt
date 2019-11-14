@@ -1,7 +1,7 @@
 --TEST--
 phpunit --group balanceIsInitiallyZero BankAccountTest ../../_files/BankAccountTest.php
 --FILE--
-<?php
+<?php declare(strict_types=1);
 $_SERVER['argv'][1] = '--no-configuration';
 $_SERVER['argv'][2] = '--testdox';
 $_SERVER['argv'][3] = '--group';
@@ -14,7 +14,7 @@ PHPUnit\TextUI\Command::main();
 --EXPECTF--
 PHPUnit %s by Sebastian Bergmann and contributors.
 
-NumericGroupAnnotation
+Numeric Group Annotation
  ✔ Empty test for @ticket numeric annotation values
  ✔ Empty test for @group numeric annotation values
 

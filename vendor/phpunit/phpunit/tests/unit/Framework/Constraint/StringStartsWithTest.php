@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -12,7 +12,10 @@ namespace PHPUnit\Framework\Constraint;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestFailure;
 
-class StringStartsWithTest extends ConstraintTestCase
+/**
+ * @small
+ */
+final class StringStartsWithTest extends ConstraintTestCase
 {
     public function testConstraintStringStartsWithCorrectValueAndReturnResult(): void
     {
@@ -33,6 +36,13 @@ class StringStartsWithTest extends ConstraintTestCase
         $constraint = new StringStartsWith('0E1');
 
         $this->assertTrue($constraint->evaluate('0E1zzz', '', true));
+    }
+
+    public function testConstraintStringStartsWithCorrectSingleZeroAndReturnResult(): void
+    {
+        $constraint = new StringStartsWith('0');
+
+        $this->assertTrue($constraint->evaluate('0ABC', '', true));
     }
 
     public function testConstraintStringStartsWithNotCorrectNumericValueAndReturnResult(): void

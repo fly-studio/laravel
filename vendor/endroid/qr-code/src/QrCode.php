@@ -22,9 +22,13 @@ class QrCode implements QrCodeInterface
 
     private $text;
 
+    /** @var int */
     private $size = 300;
+
+    /** @var int */
     private $margin = 10;
 
+    /** @var array */
     private $foregroundColor = [
         'r' => 0,
         'g' => 0,
@@ -32,6 +36,7 @@ class QrCode implements QrCodeInterface
         'a' => 0,
     ];
 
+    /** @var array */
     private $backgroundColor = [
         'r' => 255,
         'g' => 255,
@@ -39,18 +44,35 @@ class QrCode implements QrCodeInterface
         'a' => 0,
     ];
 
+    /** @var string */
     private $encoding = 'UTF-8';
+
+    /** @var bool */
     private $roundBlockSize = true;
+
     private $errorCorrectionLevel;
 
+    /** @var string */
     private $logoPath;
+
+    /** @var int|null */
     private $logoWidth;
+
+    /** @var int|null */
     private $logoHeight;
 
+    /** @var string */
     private $label;
+
+    /** @var int */
     private $labelFontSize = 16;
+
+    /** @var string */
     private $labelFontPath = self::LABEL_FONT_PATH_DEFAULT;
+
     private $labelAlignment;
+
+    /** @var array */
     private $labelMargin = [
         't' => 0,
         'r' => 10,
@@ -58,17 +80,24 @@ class QrCode implements QrCodeInterface
         'l' => 10,
     ];
 
+    /** @var WriterRegistryInterface */
     private $writerRegistry;
+
+    /** @var WriterInterface|null */
     private $writer;
+
+    /** @var array */
     private $writerOptions = [];
+
+    /** @var bool */
     private $validateResult = false;
 
     public function __construct(string $text = '')
     {
         $this->text = $text;
 
-        $this->errorCorrectionLevel = new ErrorCorrectionLevel(ErrorCorrectionLevel::LOW);
-        $this->labelAlignment = new LabelAlignment(LabelAlignment::CENTER);
+        $this->errorCorrectionLevel = ErrorCorrectionLevel::LOW();
+        $this->labelAlignment = LabelAlignment::CENTER();
 
         $this->createWriterRegistry();
     }
@@ -173,7 +202,7 @@ class QrCode implements QrCodeInterface
     {
         $logoPath = realpath($logoPath);
 
-        if (!is_file($logoPath)) {
+        if (false === $logoPath || !is_file($logoPath)) {
             throw new InvalidPathException('Invalid logo path: '.$logoPath);
         }
 
@@ -242,23 +271,23 @@ class QrCode implements QrCodeInterface
         $this->labelFontSize = $labelFontSize;
     }
 
-    public function getLabelFontSize(): ?int
+    public function getLabelFontSize(): int
     {
         return $this->labelFontSize;
     }
 
     public function setLabelFontPath(string $labelFontPath): void
     {
-        $resolvedLabelFontPath = realpath($labelFontPath);
+        $resolvedLabelFontPath = (string) realpath($labelFontPath);
 
-        if (!is_string($resolvedLabelFontPath) || !is_file($resolvedLabelFontPath)) {
+        if (!is_file($resolvedLabelFontPath)) {
             throw new InvalidPathException('Invalid label font path: '.$labelFontPath);
         }
 
         $this->labelFontPath = $resolvedLabelFontPath;
     }
 
-    public function getLabelFontPath(): ?string
+    public function getLabelFontPath(): string
     {
         return $this->labelFontPath;
     }
@@ -268,7 +297,7 @@ class QrCode implements QrCodeInterface
         $this->labelAlignment = new LabelAlignment($labelAlignment);
     }
 
-    public function getLabelAlignment(): ?string
+    public function getLabelAlignment(): string
     {
         return $this->labelAlignment->getValue();
     }
@@ -278,7 +307,7 @@ class QrCode implements QrCodeInterface
         $this->labelMargin = array_merge($this->labelMargin, $labelMargin);
     }
 
-    public function getLabelMargin(): ?array
+    public function getLabelMargin(): array
     {
         return $this->labelMargin;
     }
@@ -316,13 +345,13 @@ class QrCode implements QrCodeInterface
         return $this->writerOptions;
     }
 
-    private function createWriterRegistry()
+    private function createWriterRegistry(): void
     {
         $this->writerRegistry = new WriterRegistry();
         $this->writerRegistry->loadDefaultWriters();
     }
 
-    public function setWriterByName(string $name)
+    public function setWriterByName(string $name): void
     {
         $this->writer = $this->getWriter($name);
     }
@@ -383,10 +412,16 @@ class QrCode implements QrCodeInterface
 
         $baconQrCode = Encoder::encode($this->text, $baconErrorCorrectionLevel, $this->encoding);
 
-        $matrix = $baconQrCode->getMatrix()->getArray()->toArray();
+        $baconMatrix = $baconQrCode->getMatrix();
 
-        foreach ($matrix as &$row) {
-            $row = $row->toArray();
+        $matrix = [];
+        $columnCount = $baconMatrix->getWidth();
+        $rowCount = $baconMatrix->getHeight();
+        for ($rowIndex = 0; $rowIndex < $rowCount; ++$rowIndex) {
+            $matrix[$rowIndex] = [];
+            for ($columnIndex = 0; $columnIndex < $columnCount; ++$columnIndex) {
+                $matrix[$rowIndex][$columnIndex] = $baconMatrix->get($columnIndex, $rowIndex);
+            }
         }
 
         $data = ['matrix' => $matrix];

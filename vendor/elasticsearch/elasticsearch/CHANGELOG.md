@@ -1,3 +1,80 @@
+## Release 7.3.0
+
+- Added support for simplified access to the `X-Opaque-Id` header
+  [#952](https://github.com/elastic/elasticsearch-php/pull/952)
+- Added the HTTP port in the log messages
+  [#950](https://github.com/elastic/elasticsearch-php/pull/950)
+- Fixed hostname with underscore (ClientBuilder::prependMissingScheme)
+  [#949](https://github.com/elastic/elasticsearch-php/pull/949)
+- Removed unused Monolog in ClientBuilder
+  [#948](https://github.com/elastic/elasticsearch-php/pull/948)
+  
+## Release 7.2.2
+
+- Reintroduced the optional parameter in `Elasticsearch\Namespaces\IndicesNamespace::getAliases()`.
+  This fixes the BC break introduced in 7.2.0 and 7.2.1.
+  [#947](https://github.com/elastic/elasticsearch-php/pull/)
+
+## Release 7.2.1
+
+- Reintroduced `Elasticsearch\Namespaces\IndicesNamespace::getAliases()` as proxy
+  to `IndicesNamespace::getAlias()` to prevent BC breaks. The `getAliases()` is
+  marked as deprecated and it will be removed from `elasticsearch-php 8.0`
+  [#943](https://github.com/elastic/elasticsearch-php/pull/943)
+
+### Docs
+
+- Fixed missing put mapping code snippet in code examples
+  [#938](https://github.com/elastic/elasticsearch-php/pull/938)
+
+# Release 7.2.0
+
+- Updated the API endpoints for working with Elasticsearch 7.2.0:
+    - added `wait_for_active_shards` parameter to `indices.close` API;
+    - added `expand_wildcards` parameter to `cluster.health` API;
+    - added include_unloaded_segments`, `expand_wildcards`, `forbid_closed_indices`
+      parameters to `indices.stats` API.
+  [[27d721b]](https://github.com/elastic/elasticsearch-php/pull/933/commits/27d721ba44b8c199388650c5a1c8bd69757229aa)
+- Updated the phpdoc parameters for all the API endpoints
+  [[27d721b]](https://github.com/elastic/elasticsearch-php/pull/933/commits/27d721ba44b8c199388650c5a1c8bd69757229aa)  
+- Improved the Travis CI speed using cache feature with composer
+  [#929](https://github.com/elastic/elasticsearch-php/pull/929)
+- Fixed `php_uname()` usage checking if it is disabled
+  [#927](https://github.com/elastic/elasticsearch-php/pull/927)
+- Added support of Elastic Cloud ID and API key authentication
+  [#923](https://github.com/elastic/elasticsearch-php/pull/923)
+
+## Release 7.1.1
+
+- Fixed `ClientBuilder::setSSLVerification()` to accept string or boolean
+  [#917](https://github.com/elastic/elasticsearch-php/pull/917)
+- Fix type hinting for `setBody` in `Elasticsearch\Endpoints\Ingest\Pipeline\Put`
+  [#913](https://github.com/elastic/elasticsearch-php/pull/913)
+
+## Release 7.1.0
+
+- Added warning log for Elasticsearch response containing the `Warning` header
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+- Fixed #838 hosting company is blocking ports because of `YamlRunnerTest.php`
+  [#844](https://github.com/elastic/elasticsearch-php/pull/844)
+- Specialized inheritance of `NoNodesAvailableException` to extend `ServerErrorResponseException`
+  instead of the generic `\Exception`
+  [#607](https://github.com/elastic/elasticsearch-php/pull/607)
+- Fixed scroll TTL is extracted but not set as a body param
+  [#907](https://github.com/elastic/elasticsearch-php/pull/907)
+
+### Testing
+
+- Improved the speed of integration tests removing snapshots delete from `YamlRunnerTest::clean`
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+- Reduced the number of skipping YAML integration tests from 20 to 6
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+
+### Docs
+
+- Documentation updated for Elasticsearch 7
+  [#904](https://github.com/elastic/elasticsearch-php/pull/904)
+
 ## Release 7.0.2
 
 - Fixed incorrect return type hint when using async requests/futures

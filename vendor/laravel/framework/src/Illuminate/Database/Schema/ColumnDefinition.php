@@ -2,8 +2,8 @@
 
 namespace Illuminate\Database\Schema;
 
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Fluent;
 
 /**
  * @method ColumnDefinition after(string $column) Place the column "after" another column (MySQL)
@@ -11,7 +11,7 @@ use Illuminate\Database\Query\Expression;
  * @method ColumnDefinition autoIncrement() Set INTEGER columns as auto-increment (primary key)
  * @method ColumnDefinition change() Change the column
  * @method ColumnDefinition charset(string $charset) Specify a character set for the column (MySQL)
- * @method ColumnDefinition collation(string $collation) Specify a collation for the column (MySQL/SQL Server)
+ * @method ColumnDefinition collation(string $collation) Specify a collation for the column (MySQL/PostgreSQL/SQL Server)
  * @method ColumnDefinition comment(string $comment) Add a comment to the column (MySQL)
  * @method ColumnDefinition default(mixed $value) Specify a "default" value for the column
  * @method ColumnDefinition first() Place the column "first" in the table (MySQL)

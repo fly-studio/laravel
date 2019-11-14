@@ -12,20 +12,17 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-gd": "*",
         "bacon/bacon-qr-code": "^2.0",
-        "endroid/installer": "^1.0.3",
         "khanamiryan/qrcode-detector-decoder": "^1.0.2",
-        "myclabs/php-enum": "^1.5",
-        "symfony/options-resolver": "^2.7|^3.0|^4.0",
-        "symfony/property-access": "^2.7|^3.0|^4.0"
+        "symfony/http-foundation": "^3.4||^4.0",
+        "symfony/options-resolver": "^3.4||^4.0",
+        "symfony/property-access": "^3.4||^4.0",
+        "myclabs/php-enum": "^1.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7|^6.0"
-    },
-    "suggest": {
-        "symfony/http-foundation": "Install if you want to use QrCodeResponse"
+        "endroid/test": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -36,6 +33,9 @@
         "psr-4": {
             "Endroid\\QrCode\\Tests\\": "tests/"
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {

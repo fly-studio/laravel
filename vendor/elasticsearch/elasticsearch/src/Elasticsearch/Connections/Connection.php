@@ -112,6 +112,11 @@ class Connection implements ConnectionInterface
 
     private $lastRequest = array();
 
+    /**
+     * @var string
+     */
+    private $OSVersion = null;
+
     public function __construct(
         callable $handler,
         array $hostDetails,
@@ -129,7 +134,11 @@ class Connection implements ConnectionInterface
             $this->transportSchema = $hostDetails['scheme'];
         }
 
-        if (isset($hostDetails['user']) && isset($hostDetails['pass'])) {
+        // Only Set the Basic if API Key is not set and setBasicAuthentication was not called prior
+        if (isset($connectionParams['client']['headers']['Authorization']) === false
+                && isset($connectionParams['client']['curl'][CURLOPT_HTTPAUTH]) === false
+                && isset($hostDetails['user'])
+                && isset($hostDetails['pass'])) {
             $connectionParams['client']['curl'][CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
             $connectionParams['client']['curl'][CURLOPT_USERPWD] = $hostDetails['user'].':'.$hostDetails['pass'];
         }
@@ -145,8 +154,8 @@ class Connection implements ConnectionInterface
         $this->headers['User-Agent'] = [sprintf(
             "elasticsearch-php/%s (%s %s; PHP %s)",
             Client::VERSION,
-            php_uname("s"),
-            php_uname("r"),
+            PHP_OS,
+            $this->getOSVersion(),
             phpversion()
         )];
 
@@ -283,6 +292,9 @@ class Connection implements ConnectionInterface
                 } else {
                     $connection->markAlive();
 
+                    if (isset($response['headers']['Warning'])) {
+                        $this->logWarning($request, $response);
+                    }
                     if (isset($response['body']) === true) {
                         $response['body'] = stream_get_contents($response['body']);
                         $this->lastRequest['response']['body'] = $response['body'];
@@ -342,6 +354,11 @@ class Connection implements ConnectionInterface
         return $this->headers;
     }
 
+    public function logWarning(array $request, array $response): void
+    {
+        $this->log->warning('Deprecation', $response['headers']['Warning']);
+    }
+
     /**
      * Log a successful request
      *
@@ -357,6 +374,7 @@ class Connection implements ConnectionInterface
             array(
                 'method'    => $request['http_method'],
                 'uri'       => $response['effective_url'],
+                'port'      => $response['transfer_stats']['primary_port'],
                 'headers'   => $request['headers'],
                 'HTTP code' => $response['status'],
                 'duration'  => $response['transfer_stats']['total_time'],
@@ -391,11 +409,13 @@ class Connection implements ConnectionInterface
     public function logRequestFail(array $request, array $response, \Exception $exception): void
     {
         $this->log->debug('Request Body', array($request['body']));
+        
         $this->log->warning(
             'Request Failure:',
             array(
                 'method'    => $request['http_method'],
                 'uri'       => $response['effective_url'],
+                'port'      => $response['transfer_stats']['primary_port'],
                 'headers'   => $request['headers'],
                 'HTTP code' => $response['status'],
                 'duration'  => $response['transfer_stats']['total_time'],
@@ -533,6 +553,22 @@ class Connection implements ConnectionInterface
         }
 
         return $exception;
+    }
+
+    /**
+     * Get the OS version using php_uname if available
+     * otherwise it returns an empty string
+     *
+     * @see  https://github.com/elastic/elasticsearch-php/issues/922
+     */
+    private function getOSVersion(): string
+    {
+        if ($this->OSVersion === null) {
+            $this->OSVersion = strpos(strtolower(ini_get('disable_functions')), 'php_uname') !== false
+                ? ''
+                : php_uname("r");
+        }
+        return $this->OSVersion;
     }
 
     /**

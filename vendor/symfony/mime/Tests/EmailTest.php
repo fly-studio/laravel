@@ -285,6 +285,10 @@ class EmailTest extends TestCase
         $this->assertEquals(new MixedPart($html, $att), $e->getBody());
 
         $e = new Email();
+        $e->attach($file);
+        $this->assertEquals(new MixedPart($att), $e->getBody());
+
+        $e = new Email();
         $e->html('html content');
         $e->text('text content');
         $e->attach($file);
@@ -316,8 +320,6 @@ class EmailTest extends TestCase
         $e->text('text content');
         $e->attach($file);
         $e->attach($image, 'test.gif');
-        $fullhtml = new TextPart($content, 'utf-8', 'html');
-        $inlinedimg = (new DataPart($image, 'test.gif'))->asInline();
         $body = $e->getBody();
         $this->assertInstanceOf(MixedPart::class, $body);
         $this->assertCount(2, $related = $body->getParts());
@@ -326,7 +328,7 @@ class EmailTest extends TestCase
         $this->assertCount(2, $parts = $related[0]->getParts());
         $this->assertInstanceOf(AlternativePart::class, $parts[0]);
         $generatedHtml = $parts[0]->getParts()[1];
-        $this->assertContains('cid:'.$parts[1]->getContentId(), $generatedHtml->getBody());
+        $this->assertStringContainsString('cid:'.$parts[1]->getContentId(), $generatedHtml->getBody());
 
         $content = 'html content <img src="cid:test.gif">';
         $r = fopen('php://memory', 'r+', false);
@@ -374,7 +376,7 @@ class EmailTest extends TestCase
         $e->from('fabien@symfony.com');
         $e->text($r);
         $e->html($r);
-        $contents = file_get_contents($name = __DIR__.'/Fixtures/mimetypes/test', 'r');
+        $name = __DIR__.'/Fixtures/mimetypes/test';
         $file = fopen($name, 'r');
         $e->attach($file, 'test');
         $expected = clone $e;

@@ -3,11 +3,11 @@
 namespace Illuminate\Session;
 
 use Closure;
-use stdClass;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use SessionHandlerInterface;
-use Illuminate\Contracts\Session\Session;
+use stdClass;
 
 class Store implements Session
 {
@@ -165,6 +165,17 @@ class Store implements Session
     public function all()
     {
         return $this->attributes;
+    }
+
+    /**
+     * Get a subset of the session data.
+     *
+     * @param  array  $keys
+     * @return array
+     */
+    public function only(array $keys)
+    {
+        return Arr::only($this->attributes, $keys);
     }
 
     /**

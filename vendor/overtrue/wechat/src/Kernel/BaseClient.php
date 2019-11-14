@@ -18,6 +18,7 @@ use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LogLevel;
 
 /**
  * Class BaseClient.
@@ -39,7 +40,7 @@ class BaseClient
     protected $accessToken;
 
     /**
-     * @var
+     * @var string
      */
     protected $baseUri;
 
@@ -64,6 +65,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function httpGet(string $url, array $query = [])
     {
@@ -79,6 +81,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function httpPost(string $url, array $data = [])
     {
@@ -88,13 +91,14 @@ class BaseClient
     /**
      * JSON request.
      *
-     * @param string       $url
-     * @param string|array $data
-     * @param array        $query
+     * @param string $url
+     * @param array  $data
+     * @param array  $query
      *
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function httpPostJson(string $url, array $data = [], array $query = [])
     {
@@ -112,6 +116,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function httpUpload(string $url, array $files = [], array $form = [], array $query = [])
     {
@@ -160,6 +165,7 @@ class BaseClient
      * @return \Psr\Http\Message\ResponseInterface|\EasyWeChat\Kernel\Support\Collection|array|object|string
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function request(string $url, string $method = 'GET', array $options = [], $returnRaw = false)
     {
@@ -168,6 +174,8 @@ class BaseClient
         }
 
         $response = $this->performRequest($url, $method, $options);
+
+        $this->app->events->dispatch(new Events\HttpResponseCreated($response));
 
         return $returnRaw ? $response : $this->castResponseToType($response, $this->app->config->get('response_type'));
     }
@@ -180,6 +188,7 @@ class BaseClient
      * @return \EasyWeChat\Kernel\Http\Response
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function requestRaw(string $url, string $method = 'GET', array $options = [])
     {
@@ -226,7 +235,7 @@ class BaseClient
     {
         $formatter = new MessageFormatter($this->app['config']['http.log_template'] ?? MessageFormatter::DEBUG);
 
-        return Middleware::log($this->app['logger'], $formatter);
+        return Middleware::log($this->app['logger'], $formatter, LogLevel::DEBUG);
     }
 
     /**

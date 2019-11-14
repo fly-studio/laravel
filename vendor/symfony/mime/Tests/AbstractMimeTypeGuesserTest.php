@@ -16,7 +16,7 @@ use Symfony\Component\Mime\MimeTypeGuesserInterface;
 
 abstract class AbstractMimeTypeGuesserTest extends TestCase
 {
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $path = __DIR__.'/Fixtures/mimetypes/to_delete';
         if (file_exists($path)) {
@@ -26,6 +26,21 @@ abstract class AbstractMimeTypeGuesserTest extends TestCase
     }
 
     abstract protected function getGuesser(): MimeTypeGuesserInterface;
+
+    public function testGuessWithLeadingDash()
+    {
+        if (!$this->getGuesser()->isGuesserSupported()) {
+            $this->markTestSkipped('Guesser is not supported');
+        }
+
+        $cwd = getcwd();
+        chdir(__DIR__.'/Fixtures/mimetypes');
+        try {
+            $this->assertEquals('image/gif', $this->getGuesser()->guessMimeType('-test'));
+        } finally {
+            chdir($cwd);
+        }
+    }
 
     public function testGuessImageWithoutExtension()
     {

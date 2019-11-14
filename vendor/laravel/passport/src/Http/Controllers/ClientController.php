@@ -2,11 +2,11 @@
 
 namespace Laravel\Passport\Http\Controllers;
 
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Http\Rules\RedirectRule;
-use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
 class ClientController
 {
@@ -73,10 +73,12 @@ class ClientController
         $this->validation->make($request->all(), [
             'name' => 'required|max:255',
             'redirect' => ['required', $this->redirectRule],
+            'confidential' => 'boolean',
         ])->validate();
 
         return $this->clients->create(
-            $request->user()->getKey(), $request->name, $request->redirect
+            $request->user()->getKey(), $request->name, $request->redirect,
+            false, false, (bool) $request->input('confidential', true)
         )->makeVisible('secret');
     }
 

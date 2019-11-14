@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace Endroid\QrCode\Writer;
 
+use Endroid\QrCode\Exception\GenerateImageException;
 use Endroid\QrCode\Exception\MissingFunctionException;
+use Endroid\QrCode\Exception\MissingLogoHeightException;
 use Endroid\QrCode\Exception\ValidationException;
 use Endroid\QrCode\LabelAlignment;
 use Endroid\QrCode\QrCodeInterface;
@@ -23,12 +25,14 @@ class PngWriter extends AbstractWriter
     {
         $image = $this->createImage($qrCode->getData(), $qrCode);
 
-        if ($qrCode->getLogoPath()) {
-            $image = $this->addLogo($image, $qrCode->getLogoPath(), $qrCode->getLogoWidth(), $qrCode->getLogoHeight());
+        $logoPath = $qrCode->getLogoPath();
+        if (null !== $logoPath) {
+            $image = $this->addLogo($image, $logoPath, $qrCode->getLogoWidth(), $qrCode->getLogoHeight());
         }
 
-        if ($qrCode->getLabel()) {
-            $image = $this->addLabel($image, $qrCode->getLabel(), $qrCode->getLabelFontPath(), $qrCode->getLabelFontSize(), $qrCode->getLabelAlignment(), $qrCode->getLabelMargin(), $qrCode->getForegroundColor(), $qrCode->getBackgroundColor());
+        $label = $qrCode->getLabel();
+        if (null !== $label) {
+            $image = $this->addLabel($image, $label, $qrCode->getLabelFontPath(), $qrCode->getLabelFontSize(), $qrCode->getLabelAlignment(), $qrCode->getLabelMargin(), $qrCode->getForegroundColor(), $qrCode->getBackgroundColor());
         }
 
         $string = $this->imageToString($image);
@@ -46,6 +50,7 @@ class PngWriter extends AbstractWriter
         return $string;
     }
 
+    /** @return resource */
     private function createImage(array $data, QrCodeInterface $qrCode)
     {
         $baseSize = $qrCode->getRoundBlockSize() ? $data['block_size'] : 25;
@@ -56,9 +61,15 @@ class PngWriter extends AbstractWriter
         return $interpolatedImage;
     }
 
+    /** @return resource */
     private function createBaseImage(int $baseSize, array $data, QrCodeInterface $qrCode)
     {
         $image = imagecreatetruecolor($data['block_count'] * $baseSize, $data['block_count'] * $baseSize);
+
+        if (!is_resource($image)) {
+            throw new GenerateImageException('Unable to generate image: check your GD installation');
+        }
+
         $foregroundColor = imagecolorallocatealpha($image, $qrCode->getForegroundColor()['r'], $qrCode->getForegroundColor()['g'], $qrCode->getForegroundColor()['b'], $qrCode->getForegroundColor()['a']);
         $backgroundColor = imagecolorallocatealpha($image, $qrCode->getBackgroundColor()['r'], $qrCode->getBackgroundColor()['g'], $qrCode->getBackgroundColor()['b'], $qrCode->getBackgroundColor()['a']);
         imagefill($image, 0, 0, $backgroundColor);
@@ -66,7 +77,7 @@ class PngWriter extends AbstractWriter
         foreach ($data['matrix'] as $row => $values) {
             foreach ($values as $column => $value) {
                 if (1 === $value) {
-                    imagefilledrectangle($image, $column * $baseSize, $row * $baseSize, ($column + 1) * $baseSize, ($row + 1) * $baseSize, $foregroundColor);
+                    imagefilledrectangle($image, $column * $baseSize, $row * $baseSize, intval(($column + 1) * $baseSize), intval(($row + 1) * $baseSize), $foregroundColor);
                 }
             }
         }
@@ -74,9 +85,19 @@ class PngWriter extends AbstractWriter
         return $image;
     }
 
+    /**
+     * @param resource $baseImage
+     *
+     * @return resource
+     */
     private function createInterpolatedImage($baseImage, array $data, QrCodeInterface $qrCode)
     {
         $image = imagecreatetruecolor($data['outer_width'], $data['outer_height']);
+
+        if (!is_resource($image)) {
+            throw new GenerateImageException('Unable to generate image: check your GD installation');
+        }
+
         $backgroundColor = imagecolorallocatealpha($image, $qrCode->getBackgroundColor()['r'], $qrCode->getBackgroundColor()['g'], $qrCode->getBackgroundColor()['b'], $qrCode->getBackgroundColor()['a']);
         imagefill($image, 0, 0, $backgroundColor);
         imagecopyresampled($image, $baseImage, (int) $data['margin_left'], (int) $data['margin_left'], 0, 0, (int) $data['inner_width'], (int) $data['inner_height'], imagesx($baseImage), imagesy($baseImage));
@@ -85,9 +106,24 @@ class PngWriter extends AbstractWriter
         return $image;
     }
 
+    /**
+     * @param resource $sourceImage
+     *
+     * @return resource
+     */
     private function addLogo($sourceImage, string $logoPath, int $logoWidth = null, int $logoHeight = null)
     {
-        $logoImage = imagecreatefromstring(file_get_contents($logoPath));
+        $mimeType = $this->getMimeType($logoPath);
+        $logoImage = imagecreatefromstring(strval(file_get_contents($logoPath)));
+
+        if ('image/svg+xml' === $mimeType && (null === $logoHeight || null === $logoWidth)) {
+            throw new MissingLogoHeightException('SVG Logos require an explicit height set via setLogoSize($width, $height)');
+        }
+
+        if (!is_resource($logoImage)) {
+            throw new GenerateImageException('Unable to generate image: check your GD installation or logo path');
+        }
+
         $logoSourceWidth = imagesx($logoImage);
         $logoSourceHeight = imagesy($logoImage);
 
@@ -103,11 +139,16 @@ class PngWriter extends AbstractWriter
         $logoX = imagesx($sourceImage) / 2 - $logoWidth / 2;
         $logoY = imagesy($sourceImage) / 2 - $logoHeight / 2;
 
-        imagecopyresampled($sourceImage, $logoImage, (int) $logoX, (int) $logoY, 0, 0, $logoWidth, $logoHeight, $logoSourceWidth, $logoSourceHeight);
+        imagecopyresampled($sourceImage, $logoImage, intval($logoX), intval($logoY), 0, 0, $logoWidth, $logoHeight, $logoSourceWidth, $logoSourceHeight);
 
         return $sourceImage;
     }
 
+    /**
+     * @param resource $sourceImage
+     *
+     * @return resource
+     */
     private function addLabel($sourceImage, string $label, string $labelFontPath, int $labelFontSize, string $labelAlignment, array $labelMargin, array $foregroundColor, array $backgroundColor)
     {
         if (!function_exists('imagettfbbox')) {
@@ -125,6 +166,11 @@ class PngWriter extends AbstractWriter
 
         // Create empty target image
         $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        if (!is_resource($targetImage)) {
+            throw new GenerateImageException('Unable to generate image: check your GD installation');
+        }
+
         $foregroundColor = imagecolorallocate($targetImage, $foregroundColor['r'], $foregroundColor['g'], $foregroundColor['b']);
         $backgroundColor = imagecolorallocate($targetImage, $backgroundColor['r'], $backgroundColor['g'], $backgroundColor['b']);
         imagefill($targetImage, 0, 0, $backgroundColor);
@@ -150,13 +196,15 @@ class PngWriter extends AbstractWriter
         return $targetImage;
     }
 
+    /**
+     * @param resource $image
+     */
     private function imageToString($image): string
     {
         ob_start();
         imagepng($image);
-        $string = ob_get_clean();
 
-        return $string;
+        return (string) ob_get_clean();
     }
 
     public static function getContentType(): string

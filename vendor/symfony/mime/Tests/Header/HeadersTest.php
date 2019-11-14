@@ -141,7 +141,7 @@ class HeadersTest extends TestCase
         $this->assertNull($headers->get('Message-ID'));
     }
 
-    public function testGetAllReturnsAllHeadersMatchingName()
+    public function testAllReturnsAllHeadersMatchingName()
     {
         $header0 = new UnstructuredHeader('X-Test', 'some@id');
         $header1 = new UnstructuredHeader('X-Test', 'other@id');
@@ -150,10 +150,10 @@ class HeadersTest extends TestCase
         $headers->addTextHeader('X-Test', 'some@id');
         $headers->addTextHeader('X-Test', 'other@id');
         $headers->addTextHeader('X-Test', 'more@id');
-        $this->assertEquals([$header0, $header1, $header2], iterator_to_array($headers->getAll('X-Test')));
+        $this->assertEquals([$header0, $header1, $header2], iterator_to_array($headers->all('X-Test')));
     }
 
-    public function testGetAllReturnsAllHeadersIfNoArguments()
+    public function testAllReturnsAllHeadersIfNoArguments()
     {
         $header0 = new IdentificationHeader('Message-ID', 'some@id');
         $header1 = new UnstructuredHeader('Subject', 'thing');
@@ -162,19 +162,17 @@ class HeadersTest extends TestCase
         $headers->addIdHeader('Message-ID', 'some@id');
         $headers->addTextHeader('Subject', 'thing');
         $headers->addMailboxListHeader('To', [new Address('person@example.org')]);
-        $this->assertEquals(['message-id' => $header0, 'subject' => $header1, 'to' => $header2], iterator_to_array($headers->getAll()));
+        $this->assertEquals(['message-id' => $header0, 'subject' => $header1, 'to' => $header2], iterator_to_array($headers->all()));
     }
 
-    public function testGetAllReturnsEmptyArrayIfNoneSet()
+    public function testAllReturnsEmptyArrayIfNoneSet()
     {
         $headers = new Headers();
-        $this->assertEquals([], iterator_to_array($headers->getAll('Received')));
+        $this->assertEquals([], iterator_to_array($headers->all('Received')));
     }
 
     public function testRemoveRemovesAllHeadersWithName()
     {
-        $header0 = new UnstructuredHeader('X-Test', 'some@id');
-        $header1 = new UnstructuredHeader('X-Test', 'other@id');
         $headers = new Headers();
         $headers->addIdHeader('X-Test', 'some@id');
         $headers->addIdHeader('X-Test', 'other@id');
@@ -185,7 +183,6 @@ class HeadersTest extends TestCase
 
     public function testHasIsNotCaseSensitive()
     {
-        $header = new IdentificationHeader('Message-ID', 'some@id');
         $headers = new Headers();
         $headers->addIdHeader('Message-ID', 'some@id');
         $this->assertTrue($headers->has('message-id'));
@@ -199,17 +196,16 @@ class HeadersTest extends TestCase
         $this->assertEquals($header, $headers->get('message-id'));
     }
 
-    public function testGetAllIsNotCaseSensitive()
+    public function testAllIsNotCaseSensitive()
     {
         $header = new IdentificationHeader('Message-ID', 'some@id');
         $headers = new Headers();
         $headers->addIdHeader('Message-ID', 'some@id');
-        $this->assertEquals([$header], iterator_to_array($headers->getAll('message-id')));
+        $this->assertEquals([$header], iterator_to_array($headers->all('message-id')));
     }
 
     public function testRemoveIsNotCaseSensitive()
     {
-        $header = new IdentificationHeader('Message-ID', 'some@id');
         $headers = new Headers();
         $headers->addIdHeader('Message-ID', 'some@id');
         $headers->remove('message-id');

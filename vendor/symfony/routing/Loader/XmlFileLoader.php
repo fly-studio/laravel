@@ -169,7 +169,7 @@ class XmlFileLoader extends FileLoader
         $this->setCurrentDir(\dirname($path));
 
         /** @var RouteCollection[] $imported */
-        $imported = $this->import($resource, ('' !== $type ? $type : null), false, $file);
+        $imported = $this->import($resource, ('' !== $type ? $type : null), false, $file) ?: [];
 
         if (!\is_array($imported)) {
             $imported = [$imported];
@@ -337,7 +337,7 @@ class XmlFileLoader extends FileLoader
     private function parseDefaultsConfig(\DOMElement $element, $path)
     {
         if ($this->isElementValueNull($element)) {
-            return;
+            return null;
         }
 
         // Check for existing element nodes in the default element. There can
@@ -374,7 +374,7 @@ class XmlFileLoader extends FileLoader
     private function parseDefaultNode(\DOMElement $node, $path)
     {
         if ($this->isElementValueNull($node)) {
-            return;
+            return null;
         }
 
         switch ($node->localName) {

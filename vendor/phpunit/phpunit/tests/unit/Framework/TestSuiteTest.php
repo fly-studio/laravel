@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -9,7 +9,10 @@
  */
 namespace PHPUnit\Framework;
 
-class TestSuiteTest extends TestCase
+/**
+ * @small
+ */
+final class TestSuiteTest extends TestCase
 {
     /**
      * @var TestResult
@@ -167,7 +170,7 @@ class TestSuiteTest extends TestCase
         $lastSkippedResult = \array_pop($skipped);
         $message           = $lastSkippedResult->thrownException()->getMessage();
 
-        $this->assertContains('Test for DataProviderDependencyTest::testDependency skipped by data provider', $message);
+        $this->assertStringContainsString('Test for DataProviderDependencyTest::testDependency skipped by data provider', $message);
     }
 
     public function testIncompleteTestDataProvider(): void
@@ -204,28 +207,6 @@ class TestSuiteTest extends TestCase
         $result = $suite->run();
 
         $this->assertCount(2, $result);
-    }
-
-    public function testCreateTestForConstructorlessTestClass(): void
-    {
-        $reflection = $this->getMockBuilder(\ReflectionClass::class)
-            ->setConstructorArgs([$this])
-            ->getMock();
-
-        $reflection->expects($this->once())
-            ->method('getConstructor')
-            ->willReturn(null);
-        $reflection->expects($this->once())
-            ->method('isInstantiable')
-            ->willReturn(true);
-        $reflection->expects($this->once())
-            ->method('getName')
-            ->willReturn(__CLASS__);
-
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('No valid test provided.');
-
-        TestSuite::createTest($reflection, 'TestForConstructorlessTestClass');
     }
 
     /**

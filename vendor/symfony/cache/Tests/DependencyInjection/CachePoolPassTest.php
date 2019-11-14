@@ -24,7 +24,7 @@ class CachePoolPassTest extends TestCase
 {
     private $cachePoolPass;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->cachePoolPass = new CachePoolPass();
     }
@@ -60,6 +60,33 @@ class CachePoolPassTest extends TestCase
         $adapter->setClass(RedisAdapter::class);
         $container->setDefinition('app.cache_adapter', $adapter);
         $container->setAlias('app.cache_adapter_alias', 'app.cache_adapter');
+        $cachePool = new ChildDefinition('app.cache_adapter_alias');
+        $cachePool->addArgument(null);
+        $cachePool->addTag('cache.pool');
+        $container->setDefinition('app.cache_pool', $cachePool);
+
+        $this->cachePoolPass->process($container);
+
+        $this->assertSame('xmOJ8gqF-Y', $cachePool->getArgument(0));
+    }
+
+    public function testNamespaceArgumentIsSeededWithAdapterClassNameWithoutAffectingOtherCachePools()
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.container_class', 'app');
+        $container->setParameter('kernel.project_dir', 'foo');
+        $adapter = new Definition();
+        $adapter->setAbstract(true);
+        $adapter->addTag('cache.pool');
+        $adapter->setClass(RedisAdapter::class);
+        $container->setDefinition('app.cache_adapter', $adapter);
+        $container->setAlias('app.cache_adapter_alias', 'app.cache_adapter');
+
+        $otherCachePool = new ChildDefinition('app.cache_adapter_alias');
+        $otherCachePool->addArgument(null);
+        $otherCachePool->addTag('cache.pool');
+        $container->setDefinition('app.other_cache_pool', $otherCachePool);
+
         $cachePool = new ChildDefinition('app.cache_adapter_alias');
         $cachePool->addArgument(null);
         $cachePool->addTag('cache.pool');
@@ -130,12 +157,10 @@ class CachePoolPassTest extends TestCase
         $this->assertSame('+naTpPa4Sm', $cachePool->getArgument(1));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid "cache.pool" tag for service "app.cache_pool": accepted attributes are
-     */
     public function testThrowsExceptionWhenCachePoolTagHasUnknownAttributes()
     {
+        $this->expectException('InvalidArgumentException');
+        $this->expectExceptionMessage('Invalid "cache.pool" tag for service "app.cache_pool": accepted attributes are');
         $container = new ContainerBuilder();
         $container->setParameter('kernel.container_class', 'app');
         $container->setParameter('kernel.project_dir', 'foo');
