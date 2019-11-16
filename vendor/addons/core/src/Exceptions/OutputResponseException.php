@@ -49,7 +49,7 @@ class OutputResponseException extends HttpResponseException {
 		return $this;
 	}
 
-	public function rawMessage(string $message)
+	public function rawMessage($message)
 	{
 		$this->response->rawMessage($message);
 		return $this;

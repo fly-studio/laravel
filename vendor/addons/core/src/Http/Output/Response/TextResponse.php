@@ -69,7 +69,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return $this;
 	}
 
-	public function rawMessage(string $message)
+	public function rawMessage($message)
 	{
 		$this->message = $message;
 		return $this;
