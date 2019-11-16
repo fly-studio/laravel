@@ -65,8 +65,6 @@ class ServiceProvider extends BaseServiceProvider
 			return new ValidatorEx( $translator, $data, $rules, $messages, $customAttributes );
 		});
 
-		$this->loadTranslationsFrom(realpath(__DIR__.'/../resources/lang/'), 'censor');
-
 		Event::listen(LocaleUpdated::class, function(LocaleUpdated $locale){
 			$this->app['ruler']->setLocale($locale->locale);
 		});
