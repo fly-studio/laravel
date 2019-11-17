@@ -38,7 +38,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return $this;
 	}
 
-	public function message(string $message_name, array $transData = null)
+	public function message(?string $message_name, array $transData = null)
 	{
 		if (empty($message_name))
 		{
@@ -257,11 +257,12 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			'action' => $this->getAction(),
 			'data' => $this->getData(),
 			'uid' => $this->uid ? null : (Auth::check() ? Auth::user()->getKey() : null),
-			'time' => time() . ' ' . (microtime(true) - LARAVEL_START),
+			'at' => time(),
 		];
 
 		if (config('app.debug')) {
 			$result += [
+				'duration' => microtime(true) - LARAVEL_START,
 				'body' => strval($this->original),
 			];
 		}
