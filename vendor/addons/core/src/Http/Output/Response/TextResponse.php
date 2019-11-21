@@ -257,7 +257,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			'action' => $this->getAction(),
 			'data' => $this->getData(),
 			'uid' => $this->uid ? null : (Auth::check() ? Auth::user()->getKey() : null),
-			'at' => time(),
+			'at' => microtime(true),
 		];
 
 		if (config('app.debug')) {
