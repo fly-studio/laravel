@@ -6,7 +6,7 @@ use Illuminate\Translation\FileLoader as Base;
 
 class FileLoader extends Base {
 
-	public function getPath($locale, $group, $namespace = null)
+	public function getPath(string $locale, string $group, string $namespace = null)
 	{
 		if (is_null($namespace) || $namespace == '*')
 			return $this->getBasePath($this->path, $locale, $group);
@@ -14,12 +14,12 @@ class FileLoader extends Base {
 		return $this->getNamespacedPath($locale, $group, $namespace);
 	}
 
-	public function getBasePath($path, $locale, $group)
+	public function getBasePath(string $path, string $locale, string $group)
 	{
 		return "{$path}/{$locale}/{$group}.php";
 	}
 
-	public function getNamespacedPath($locale, $group, $namespace)
+	public function getNamespacedPath(string $locale, string $group, string $namespace = null)
 	{
 		if (isset($this->hints[$namespace])) {
 			return $this->getBasePath($this->hints[$namespace], $locale, $group);

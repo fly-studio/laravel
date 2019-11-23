@@ -11,7 +11,7 @@ class Rules {
 	protected $rules;
 	protected $originalRules;
 
-	public function __construct($attribute, $ruleLines, $replace = [])
+	public function __construct(array $attribute, $ruleLines, array $replace = [])
 	{
 		$this->attribute = $attribute;
 		$this->parse($ruleLines, $replace);
@@ -27,7 +27,7 @@ class Rules {
 		return $this->rules;
 	}
 
-	public function ruleParameters($ruleName)
+	public function ruleParameters(string $ruleName)
 	{
 		$ruleName = Str::snake($ruleName);
 		return $rules[$ruleName] ?? null;
@@ -189,12 +189,13 @@ class Rules {
 		foreach($rules as $key => $value)
 			if (empty($value))
 				unset($rules[$key]);
+
 		return $rules;
 	}
 
 
 
-	protected function parse($ruleLines, $replace)
+	protected function parse($ruleLines, array $replace = [])
 	{
 		$this->originalRules = [];
 		$this->rules = [];
@@ -214,11 +215,12 @@ class Rules {
 		}
 	}
 
-	protected function replace($line, $replace)
+	protected function replace(string $line, array $replace)
 	{
 		$line = str_replace(',{{attribute}}', ','.$this->attribute, $line);
 		//替换rule中的{{  }}
 		$pattern = '/,\{\{([a-z0-9_\-]*)\}\}/i';
+
 		return empty($replace)
 			? preg_replace($pattern, '', $line)
 			: preg_replace_callback($pattern, function( $matches ) use ($replace){
@@ -230,8 +232,11 @@ class Rules {
 	public function isNumeric()
 	{
 		foreach(['Digits', 'DigitsBetween', 'Numeric', 'Integer'] as $pattern)
+		{
 			if (array_key_exists($pattern, $this->rules()))
 				return true;
+		}
+
 		return false;
 	}
 

@@ -4,11 +4,12 @@ namespace Addons\Censor\Exceptions;
 
 use Lang;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CensorException extends HttpResponseException {
 
-	public function __construct(Request $request, $validator)
+	public function __construct(array $data, Validator $validator)
 	{
 		//Output\ResponseFactory exists
 		if (class_exists('\Addons\Core\Http\Output\ResponseFactory')) {
@@ -21,16 +22,7 @@ class CensorException extends HttpResponseException {
 
 			$errors = $validator->errors()->getMessages();
 
-			if ($request->expectsJson())
-			{
-				$this->response = response()->json($errors, 422);
-			}
-			else
-			{
-				$this->response = redirect()->back()->withInput(
-					$request->input()
-				)->withErrors($errors);
-			}
+			$this->response = redirect()->back()->withInput($data)->withErrors($errors);
 		}
 	}
 

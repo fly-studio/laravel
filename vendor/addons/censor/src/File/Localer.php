@@ -44,7 +44,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $locale
 	 * @return void
 	 */
-	public function __construct(Loader $loader, $locale)
+	public function __construct(Loader $loader, string $locale)
 	{
 		$this->loader = $loader;
 		$this->locale = $locale;
@@ -58,7 +58,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $locale
 	 * @return void
 	 */
-	public function load($namespace, $group, $locale)
+	public function load(string $namespace, string $group, string $locale = null)
 	{
 		if ($this->isLoaded($namespace, $group, $locale)) {
 			return;
@@ -80,7 +80,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $namespace
 	 * @return void
 	 */
-	public function addLines(array $lines, $locale, $namespace = '*')
+	public function addLines(array $lines, string $locale = null, string $namespace = '*')
 	{
 		foreach ($lines as $key => $value) {
 			list($group, $item) = explode('.', $key, 2);
@@ -96,7 +96,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string|null  $locale
 	 * @return bool
 	 */
-	public function hasForLocale($key, $locale = null)
+	public function hasForLocale(string $key, string $locale = null)
 	{
 		return $this->has($key, $locale, false);
 	}
@@ -109,7 +109,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  bool  $fallback
 	 * @return bool
 	 */
-	public function has($key, $locale = null, $fallback = true)
+	public function has(string $key, string $locale = null, bool $fallback = true)
 	{
 		return !is_null($this->get($key, [], $locale, $fallback));
 	}
@@ -123,7 +123,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  bool  $fallback
 	 * @return string|array|null
 	 */
-	public function getLine($key, $replace = [], $locale = null, $fallback = true)
+	public function getLine(string $key, array $replace = [], string $locale = null, bool $fallback = true)
 	{
 		list($namespace, $group, $item) = $this->parseKey($key);
 
@@ -150,7 +150,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string|null  $locale
 	 * @return array
 	 */
-	protected function localeArray($locale)
+	protected function localeArray(string $locale = null)
 	{
 		return array_filter([$locale ?: $this->locale, $this->fallback]);
 	}
@@ -163,7 +163,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $locale
 	 * @return bool
 	 */
-	protected function isLoaded($namespace, $group, $locale)
+	protected function isLoaded(string $namespace, string $group, string $locale)
 	{
 		return isset($this->loaded[$namespace][$group][$locale]);
 	}
@@ -175,10 +175,9 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $group
 	 * @param  string  $locale
 	 * @param  string  $item
-	 * @param  array   $replace
 	 * @return string|array|null
 	 */
-	protected function read($namespace, $group, $locale, $item)
+	protected function read(string $namespace, string $group, string $locale, $item = null)
 	{
 		$this->load($namespace, $group, $locale);
 
@@ -213,7 +212,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $locale
 	 * @return void
 	 */
-	public function setLocale($locale)
+	public function setLocale(string $locale)
 	{
 		$this->locale = $locale;
 	}
@@ -234,7 +233,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $fallback
 	 * @return void
 	 */
-	public function setFallback($fallback)
+	public function setFallback(string $fallback = null)
 	{
 		$this->fallback = $fallback;
 	}
@@ -246,7 +245,7 @@ class Localer extends NamespacedItemResolver {
 	 * @param  string  $hint
 	 * @return void
 	 */
-	public function addNamespace($namespace, $hint)
+	public function addNamespace(string $namespace, $hint = null)
 	{
 		$this->loader->addNamespace($namespace, $hint);
 	}
@@ -278,7 +277,7 @@ class Localer extends NamespacedItemResolver {
 		return $segments;
 	}
 
-	public function getPath($key, $fallback = false)
+	public function getPath(string $key, bool $fallback = false)
 	{
 		list($namespace, $group, $item) = $this->parseKey($key);
 		return $this->loader->getPath($fallback ? $this->fallback : $this->locale, $group, $namespace);

@@ -2,6 +2,7 @@
 
 namespace Addons\Censor\Validation;
 
+use RuntimeException;
 use Addons\Censor\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
@@ -29,14 +30,30 @@ trait ValidatesRequests
 	 * @param  Model|null $model
 	 * @return array|Exception
 	 */
-	public function censor(Request $request, $censorKey, $attributes, Model $model = null)
+	public function censor($request, string $censorKey, array $attributes, Model $model = null)
 	{
-		$input = $request->all();
-		$json = $request->json()->all();
+		$data = null;
 
-		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data(is_array($json) ? array_merge($input, $json) : $input);
+		if ($request instanceof Request)
+		{
+			$input = $request->all();
+			$json = $request->json()->all();
+
+			$data = is_array($json) ? array_merge($input, $json) : $input;
+		} else if ($request instanceof Arrayable ||
+					$request instanceof Jsonable ||
+					$request instanceof ArrayObject ||
+					$request instanceof JsonSerializable ||
+					is_array($request))
+		{
+			$data = $request;
+		} else {
+			throw new RuntimeException('The parameter#0 must be Array or Request.');
+		}
+
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($data);
 		$validator = $censor->validator();
-		return $validator->fails() ? $this->throwValidationException($request, $validator) : $censor->validData();
+		return $validator->fails() ? $this->throwValidationException($data, $validator) : $censor->validData();
 	}
 
 	/**
@@ -48,9 +65,9 @@ trait ValidatesRequests
 	 *
 	 * @throws Addons\Censor\Exceptions\CensorException
 	 */
-	protected function throwValidationException(Request $request, $validator)
+	protected function throwValidationException(array $data, $validator)
 	{
-		throw new CensorException($request, $validator);
+		throw new CensorException($data, $validator);
 	}
 
 	/**

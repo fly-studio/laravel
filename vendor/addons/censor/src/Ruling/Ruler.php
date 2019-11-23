@@ -8,7 +8,7 @@ use Addons\Censor\Exceptions\RuleNotFoundException;
 
 class Ruler extends Localer {
 
-	public function get($key, $ruleKeys, $replace = [], $locale = null)
+	public function get(string $key, array $ruleKeys, array $replace = [], string $locale = null)
 	{
 		//get all
 		$validations = $this->getLine($key, $locale);

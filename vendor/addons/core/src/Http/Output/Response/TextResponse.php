@@ -29,6 +29,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 	protected $message = null;
 	protected $action = null;
 	protected $uid = null;
+	protected $code = 0;
 
 	public function data($data)
 	{
@@ -81,9 +82,14 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return $this;
 	}
 
-	public function code(int $code, $text = null)
+	public function code(int $code)
 	{
-		return $this->setStatusCode($code, $text);
+		$this->code = $code;
+
+		/*if ($code >= 100 && $code < 600)
+			$this->setStatusCode($code, $text);*/
+
+		return $this;
 	}
 
 	public function request(?Request $request)
@@ -127,6 +133,11 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 	}
 
 	public function getData()
+	{
+		return $this->data;
+	}
+
+	public function getCode()
 	{
 		return $this->data;
 	}
@@ -252,7 +263,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 	public function toArray()
 	{
 		$result = [
-			'code' => $this->getStatusCode(),
+			'code' => $this->getCode(),
 			'message' => $this->getMessage(),
 			'action' => $this->getAction(),
 			'data' => $this->getData(),

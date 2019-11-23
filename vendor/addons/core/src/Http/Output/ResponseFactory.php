@@ -66,7 +66,7 @@ class ResponseFactory {
 
 	public function success(string $messageName = null, $data = null)
 	{
-		return $this->text($messageName, $data)->code(Response::HTTP_OK);
+		return $this->text($messageName, $data)->code(0);
 	}
 
 	public function error(string $messageName = null, $data = null)
