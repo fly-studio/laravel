@@ -8,7 +8,7 @@ use Addons\Censor\Exceptions\RuleNotFoundException;
 
 class Ruler extends Localer {
 
-	public function get(string $key, array $ruleKeys, array $replace = [], string $locale = null)
+	public function get(string $key, array $ruleKeys, array $replacement = null, string $locale = null)
 	{
 		//get all
 		$validations = $this->getLine($key, $locale);
@@ -16,8 +16,7 @@ class Ruler extends Localer {
 		if (empty($validations))
 			throw new RuleNotFoundException('[Censor] Censor KEY is not exists: ['. $key. ']. You may create it.', $this, $key);
 
-		$ruleKeys == '*' && $ruleKeys = array_keys($validations);
-		!is_array($ruleKeys) && $ruleKeys = explode(',', $ruleKeys);
+		in_array('*', $ruleKeys) && $ruleKeys = array_keys($validations);
 
 		$validations = Arr::only($validations, $ruleKeys);
 
@@ -25,14 +24,14 @@ class Ruler extends Localer {
 			throw new RuleNotFoundException('[Censor] Rule keys are not exists: ['.implode(', ', $diff). '].', $this, $key);
 
 		foreach($validations as $attribute => &$v)
-			$v['rules'] = $this->parseRules($attribute, $v['rules'], $replace);
+			$v['rules'] = $this->parseRules($attribute, $v['rules'], $replacement);
 
 		return $validations;
 	}
 
-	private function parseRules($attribute, $rules, $replace)
+	private function parseRules(string $attribute, $rules, array $replacement = null)
 	{
-		return new Rules($attribute, $rules, $replace);
+		return new Rules($attribute, $rules, $replacement);
 	}
 
 }

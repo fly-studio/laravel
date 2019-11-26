@@ -118,12 +118,12 @@ class Localer extends NamespacedItemResolver {
 	 * Get the translation for the given key.
 	 *
 	 * @param  string  $key
-	 * @param  array|null|Model   $replace
+	 * @param  array|null|Model   $replacement
 	 * @param  string|null  $locale
 	 * @param  bool  $fallback
 	 * @return string|array|null
 	 */
-	public function getLine(string $key, array $replace = [], string $locale = null, bool $fallback = true)
+	public function getLine(string $key, array $replacement = null, string $locale = null, bool $fallback = true)
 	{
 		list($namespace, $group, $item) = $this->parseKey($key);
 
@@ -135,7 +135,7 @@ class Localer extends NamespacedItemResolver {
 
 		foreach ($locales as $locale) {
 			if (! is_null($line = $this->read(
-				$namespace, $group, $locale, $item, $replace
+				$namespace, $group, $locale, $item, $replacement
 			))) {
 				break;
 			}

@@ -6,6 +6,7 @@ use RuntimeException;
 use Addons\Censor\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Support\Arrayable;
 use Addons\Censor\Exceptions\CensorException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Validation\ValidatesRequests as BaseValidatesRequests;
@@ -30,29 +31,29 @@ trait ValidatesRequests
 	 * @param  Model|null $model
 	 * @return array|Exception
 	 */
-	public function censor($request, string $censorKey, array $attributes, Model $model = null)
+	public function censor($request, string $censorKey, array $attributes, array $replacement = null)
 	{
 		$data = null;
 
 		if ($request instanceof Request)
 		{
-			$input = $request->all();
-			$json = $request->json()->all();
+			$data = $request->all();
+			//$json = $request->json()->all();
 
-			$data = is_array($json) ? array_merge($input, $json) : $input;
-		} else if ($request instanceof Arrayable ||
-					$request instanceof Jsonable ||
-					$request instanceof ArrayObject ||
-					$request instanceof JsonSerializable ||
-					is_array($request))
+			//$data = is_array($json) ? array_merge($input, $json) : $input;
+		} else if ($request instanceof Arrayable)
+		{
+			$data = $request->toArray();
+		} else if (is_array($request))
 		{
 			$data = $request;
 		} else {
 			throw new RuntimeException('The parameter#0 must be Array or Request.');
 		}
 
-		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $model)->data($data);
+		$censor = $this->getCensorFactory()->make($censorKey, $attributes, $replacement)->data($data);
 		$validator = $censor->validator();
+
 		return $validator->fails() ? $this->throwValidationException($data, $validator) : $censor->validData();
 	}
 

@@ -11,10 +11,10 @@ class Rules {
 	protected $rules;
 	protected $originalRules;
 
-	public function __construct(array $attribute, $ruleLines, array $replace = [])
+	public function __construct(string $attribute, $ruleLines, array $replacement = null)
 	{
 		$this->attribute = $attribute;
-		$this->parse($ruleLines, $replace);
+		$this->parse($ruleLines, $replacement);
 	}
 
 	public function originalRules()
@@ -195,7 +195,7 @@ class Rules {
 
 
 
-	protected function parse($ruleLines, array $replace = [])
+	protected function parse($ruleLines, array $replacement = null)
 	{
 		$this->originalRules = [];
 		$this->rules = [];
@@ -208,24 +208,24 @@ class Rules {
 
 		foreach($ruleLines as $line)
 		{
-			$line = $this->replace($line, $replace);
+			$line = $this->replace($line, $replacement);
 			list($ruleName, $parameters) = ValidationRuleParser::parse($line);
 			$this->originalRules[] = $line;
 			$this->rules[$ruleName] = $parameters;
 		}
 	}
 
-	protected function replace(string $line, array $replace)
+	protected function replace(string $line, array $replacement = null)
 	{
 		$line = str_replace(',{{attribute}}', ','.$this->attribute, $line);
 		//替换rule中的{{  }}
 		$pattern = '/,\{\{([a-z0-9_\-]*)\}\}/i';
 
-		return empty($replace)
+		return empty($replacement)
 			? preg_replace($pattern, '', $line)
-			: preg_replace_callback($pattern, function( $matches ) use ($replace){
+			: preg_replace_callback($pattern, function( $matches ) use ($replacement){
 				$key = $matches[1];
-				return isset($replace[$key]) ? ','.$replace[$key] : '';
+				return isset($replacement[$key]) ? ','.$replacement[$key] : '';
 			}, $line);
 	}
 

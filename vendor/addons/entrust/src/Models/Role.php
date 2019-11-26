@@ -9,19 +9,16 @@ namespace Addons\Entrust\Models;
  * @license MIT
  * @package Addons\Entrust
  */
-use Addons\Core\Models\Tree;
+use Addons\Core\Models\TreeTrait;
+use Addons\Core\Models\BuilderTrait;
 use Addons\Entrust\Traits\RoleTrait;
-use Addons\Core\Models\TreeCacheTrait;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Model;
 use Addons\Entrust\Contracts\RoleInterface;
 
-class Role extends Tree implements RoleInterface
+class Role extends Model implements RoleInterface
 {
-    use RoleTrait, TreeCacheTrait;
-
-    public $orderKey = NULL;
-    public $pathKey = NULL;
-    public $levelKey = NULL;
+    use RoleTrait, TreeTrait, BuilderTrait;
 
     protected $touches = ['permissions'];
 
@@ -44,5 +41,20 @@ class Role extends Tree implements RoleInterface
     {
         parent::__construct($attributes);
         $this->table = Config::get('entrust.tables.roles');
+    }
+
+    public function getOrderKeyName()
+    {
+        return null;
+    }
+
+    public function getPathKeyName()
+    {
+        return null;
+    }
+
+    public function getLevelKeyName()
+    {
+        return null;
     }
 }

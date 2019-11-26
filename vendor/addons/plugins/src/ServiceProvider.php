@@ -73,6 +73,7 @@ class ServiceProvider extends BaseServiceProvider
 			//register middleware
 			foreach ($config['routeMiddleware'] as $key => $middleware)
 				$router->aliasMiddleware($key, $middleware);
+
 			foreach ($config['middlewareGroups'] as $group => $middlewares)
 				foreach($middlewares as $middleware)
 					$router->pushMiddlewareToGroup($group, $middleware);
@@ -105,18 +106,24 @@ class ServiceProvider extends BaseServiceProvider
 		foreach($plugins as $name => $config)
 		{
 			if (!$config['enabled']) continue;
+echo ( $name.PHP_EOL );
 			// 发布config文件
 			foreach ($config['configs'] as $file)
 				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
+
 			//add smarty's path
 			config()->set('smarty.template_path', (array)config('smarty.template_path', []) + [$name => $config['path'].'resources/views']);
+
 			//加载
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
 			!is_null($censor) && !empty($config['register']['censor']) && $censor->addNamespace($name, realpath($config['path'].'resources/censors/'));
 			!empty($config['register']['translator']) && $this->loadTranslationsFrom(realpath($config['path'].'resources/lang/'), $name);
+
 			if (!empty($config['register']['migrate']) && $this->app->runningInConsole())
 				$this->loadMigrationsFrom(realpath($config['path'].'database/migrations'));
+
 			if (!empty($config['register']['router']) && !$this->app->routesAreCached())
+			{
 				foreach($config['routes'] as $key => $route)
 				{
 					$router->prefix($route['prefix'])
@@ -124,6 +131,8 @@ class ServiceProvider extends BaseServiceProvider
 					 ->namespace(empty($route['namespace']) ? $config['namespace'].'\App\Http\Controllers' : $route['namespace'])
 					 ->group($config['path'].'routes/'.$key.'.php');
 				}
+			}
+
 			// set commands
 			if ($this->app->runningInConsole())
 			{
@@ -134,15 +143,20 @@ class ServiceProvider extends BaseServiceProvider
 
 			//register event
 			if (!empty($config['register']['event']))
+			{
 				app(EventDispatcher::class)->group(['namespace' => $config['namespace'].'\App'], function($eventer) use($config) {
 					require $config['path'].'routes/event.php';
 				});
+			}
+
 
 			//register broadcast
 			if (!empty($config['register']['broadcast']))
+			{
 				call_user_func(function($broadcaster) use($config) {
 					require $config['path'].'routes/channels.php';
 				}, app(Broadcaster::class));
+			}
 
 		}
 	}

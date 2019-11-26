@@ -12,15 +12,15 @@ class Censor {
 	protected $data;
 	protected $censorKey;
 	protected $attributes;
-	protected $replace;
+	protected $replacement;
 	protected $validations;
 
-	public function __construct(Ruler $ruler, string $censorKey, array $attributes, array $replace = [], string $locale = null)
+	public function __construct(Ruler $ruler, string $censorKey, array $attributes, array $replacement = null, string $locale = null)
 	{
 		$this->ruler = $ruler;
 		$this->censorKey = $censorKey;
-		$this->replace = $replace;
-		$this->validations = $ruler->get($censorKey, $attributes, $replace, $locale);
+		$this->replacement = $replacement;
+		$this->validations = $ruler->get($censorKey, $attributes, $replacement, $locale);
 		$this->attributes = array_keys($this->validations);
 	}
 
@@ -71,9 +71,9 @@ class Censor {
 		return $this->censorKey;
 	}
 
-	public function replace()
+	public function replacement()
 	{
-		return $this->replace;
+		return $this->replacement;
 	}
 
 	public function messagesWithDot()

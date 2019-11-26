@@ -9,9 +9,9 @@ namespace Addons\Entrust\Models;
  * @license MIT
  * @package Addons\Entrust
  */
+use Addons\Entrust\Traits\TeamTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Database\Eloquent\Model;
-use Addons\Entrust\Traits\TeamTrait;
 use Addons\Entrust\Contracts\TeamInterface;
 
 class Team extends Model implements TeamInterface

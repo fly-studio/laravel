@@ -14,9 +14,9 @@ class Factory {
 		$this->ruler = $ruler;
 	}
 
-	public function make(string $key, array $attributes, array $replace = [])
+	public function make(string $key, array $attributes, array $replacement = null)
 	{
-		return new Censor($this->ruler, $key, $attributes, $replace);
+		return new Censor($this->ruler, $key, $attributes, $replacement);
 	}
 
 	/**

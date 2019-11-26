@@ -139,7 +139,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 
 	public function getCode()
 	{
-		return $this->data;
+		return $this->code;
 	}
 
 	public function getMessage()
