@@ -63,7 +63,7 @@ trait Searchable {
 	{
 		$self = new static();
 
-        $softDelete = static::usesSoftDelete() && config('scout.soft_delete', false);
+		$softDelete = static::usesSoftDelete() && config('scout.soft_delete', false);
 
 		$builder = $self->newQuery();
 
