@@ -28,14 +28,14 @@ abstract class AbstractGroupLoader {
 		};
 	}
 
-	public function load($file_path, $namespace = 'App')
+	public function load(string $file_path, string $namespace = 'App')
 	{
 		$this->group(['namespace' => $namespace], function($loader) use ($file_path) {
 			return call_user_func($this->getLoadResolver(), $file_path, $loader);
 		});
 	}
 
-	public function group($attributes, $callback)
+	public function group(array $attributes, $callback)
 	{
 		$this->updateGroupStack($attributes);
 
@@ -68,7 +68,7 @@ abstract class AbstractGroupLoader {
 	 * @param  array  $new
 	 * @return array
 	 */
-	public function mergeWithLastGroup($new)
+	public function mergeWithLastGroup(array $new) : array
 	{
 		return $this->mergeGroup($new, end($this->groupStack));
 	}
@@ -79,7 +79,7 @@ abstract class AbstractGroupLoader {
 	 * @param  string  $class
 	 * @return string
 	 */
-	protected function prependGroupNamespace($class)
+	protected function prependGroupNamespace(string $class) : string
 	{
 		$group = end($this->groupStack);
 
@@ -94,7 +94,7 @@ abstract class AbstractGroupLoader {
 	 * @param  array  $old
 	 * @return array
 	 */
-	public static function mergeGroup($new, $old)
+	public static function mergeGroup(array $new, array $old) : array
 	{
 		$new['namespace'] = static::formatUsesPrefix($new, $old);
 
@@ -106,7 +106,7 @@ abstract class AbstractGroupLoader {
 	 *
 	 * @return bool
 	 */
-	public function hasGroupStack()
+	public function hasGroupStack() : bool
 	{
 		return ! empty($this->groupStack);
 	}
@@ -116,7 +116,7 @@ abstract class AbstractGroupLoader {
 	 *
 	 * @return array
 	 */
-	public function getGroupStack()
+	public function getGroupStack() : array
 	{
 		return $this->groupStack;
 	}
@@ -128,7 +128,7 @@ abstract class AbstractGroupLoader {
 	 * @param  array  $old
 	 * @return string|null
 	 */
-	protected static function formatUsesPrefix($new, $old)
+	protected static function formatUsesPrefix(array $new, array $old) : string
 	{
 		if (isset($new['namespace'])) {
 			return isset($old['namespace'])
