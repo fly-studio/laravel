@@ -1,3 +1,35 @@
+## Release 7.4.1
+
+- We added the suppress operator `@` for the deprecation messages `@trigger_error()`.
+  With this approach we don't break existing application that convert PHP errors in Exception
+  (e.g. using Laravel with issue https://github.com/babenkoivan/scout-elasticsearch-driver/issues/297)
+  Using the `@` operator is still possible to intercept the deprecation message using
+  a custom error handler.
+  [#973](https://github.com/elastic/elasticsearch-php/pull/973)
+- Add missing leading slash in the URL of put mapping endpoint
+  [#970](https://github.com/elastic/elasticsearch-php/pull/970)
+- Fix pre 7.2 endpoint class name with aliases + reapply fix #947.
+  This PR solved the unexpected BC break introduce in 7.4.0 with the code
+  generation tool
+  [#968](https://github.com/elastic/elasticsearch-php/pull/968)
+
+## Release 7.4.0
+
+- Added the code generation for endpoints and namespaces based on
+  the [REST API specification](https://github.com/elastic/elasticsearch/tree/v7.4.2/rest-api-spec/src/main/resources/rest-api-spec/api)
+  of Elasticsearch. This tool is available in `util/GenerateEndpoints.php`.
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- Fixed the asciidoc [endpoints documentation](https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/ElasticsearchPHP_Endpoints.html) based on the code generation 
+  using [Sami](https://github.com/FriendsOfPHP/Sami) project
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- All the `experimental` and `beta` APIs are now signed with
+  a `@note` tag in the phpdoc section (e.g. [$client->rankEval()](https://github.com/elastic/elasticsearch-php/blob/master/src/Elasticsearch/Client.php)). For more information read the [experimental and beta APIs](docs/experimental-beta-apis.asciidoc)
+  section in the documentation.
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- Removed `AlreadyExpiredException` since it has been removed
+  from Elasticsearch with https://github.com/elastic/elasticsearch/pull/24857
+  [#954](https://github.com/elastic/elasticsearch-php/pull/954)
+
 ## Release 7.3.0
 
 - Added support for simplified access to the `X-Opaque-Id` header
