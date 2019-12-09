@@ -3,6 +3,7 @@
 namespace Addons\Core\Http\Output\Response;
 
 use Lang, Auth;
+use Carbon\Carbon;
 use JsonSerializable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
@@ -18,8 +19,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpFoundation\Request;
 
 use Addons\Core\Structs\Protobuf\Output as OutputProto;
-use Addons\Core\Structs\Protobuf\OutputMessage as MessageProto;
-use Addons\Core\Structs\Protobuf\OutputTipType as TipTypeProto;
+use Addons\Core\Structs\Protobuf\Action as ActionProto;
 
 class TextResponse extends Response implements Protobufable, Jsonable, Arrayable, JsonSerializable {
 
@@ -123,8 +123,15 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			$route = $request->route();
 			$of = $request->query('of', null);
 
-			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml', 'html']))
-				$of = $request->expectsJson() || (!empty($route) && in_array('api', $route->gatherMiddleware())) ? 'json' : 'html';
+			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml', 'html', 'protobuf', 'proto']))
+			{
+				if ($request->accepts(Mimes::getInstance()->mimes_by_ext('proto')))
+					$of = 'proto';
+				else if ($request->expectsJson() || (!empty($route) && in_array('api', $route->middleware())))
+					$of = 'json';
+				else
+					$of = 'html';
+			}
 
 			return $of;
 		}
@@ -151,7 +158,9 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			if ($code != Response::HTTP_OK)
 			{
 				return Lang::has('exception.http.'.$code) ? trans('exception.http.'.$code) : trans('core::common.default.error');
-			} else {
+			}
+			else
+			{
 				return trans('core::common.default.sucess');
 			}
 		}
@@ -190,6 +199,14 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 					->header('Content-Type', Mimes::getInstance()->mime_by_ext($of).'; charset='.$charset);
 
 				break;
+			case 'proto':
+			case 'protobuf':
+				$content = $this->toProtobuf()->serializeToString();
+
+				$response = $this->setContent($content)
+					->header('Content-Type', Mimes::getInstance()->mime_by_ext($of));
+
+				break;
 			default: //其余全部为json
 
 				$jsonResponse = (new JsonResponse($data, $this->getStatusCode(), [], JSON_PARTIAL_OUTPUT_ON_ERROR))
@@ -220,42 +237,33 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return parent::send();
 	}
 
-	public function toProtobuf(): \Google\Protobuf\Internal\Message
+	public function toProtobuf(array $data = null): \Google\Protobuf\Internal\Message
 	{
-		$data = $this->toArray();
+		$data = $this->getOutputData();
 
 		$o = new OutputProto();
-		$o->setResult($data['result']);
-		$o->setCode($data['status_code']);
+		$o->setCode($data['code']);
+		$o->setMessage($data['message']);
 		!empty($data['uid']) && $o->setUid($data['uid']);
-		$o->setDebug($data['debug']);
+		$o->setAt($data['at']);
 
-		if (!empty($data['message']))
+		if (!is_null($data['data']))
 		{
-			$m = new MessageProto();
-			if (is_array($data['message']))
-			{
-				$m->setTitle($data['message']['title'] ?? null);
-				$m->setContent($data['message']['content'] ?? null);
-			} else if (is_string($message))
-				$m->setContent($data['message'] ?? null);
-			$o->setMessage($m);
+			$d = is_array($data['data']) ? json_encode($data['data'], JSON_PARTIAL_OUTPUT_ON_ERROR) : $data['data'];
+			$o->setData($d);
 		}
 
-		if (!empty($data['tipType']))
+		if (!empty($data['action']))
 		{
-			$t = new TipTypeProto();
-			!empty($data['tipType']['type']) && $t->setType($data['tipType']['type']);
-			!empty($data['tipType']['timeout']) && $t->setTimeout($data['tipType']['timeout']);
-			!empty($data['tipType']['url']) && $t->setUrl($data['tipType']['url']);
-			$o->setTipType($t);
+			$a = ActionProto::make(...$data['action']);
+			$o->setAction($a);
 		}
-		$d = !is_array($data['data']) ? $data['data'] : json_encode($data['data'], JSON_PARTIAL_OUTPUT_ON_ERROR);
-		!is_null($d) && $o->setData($d);
 
-		$o->setTime($data['time']);
-		$o->setDuration($data['duration']);
-		$o->setBody($data['body']);
+		if (config('app.debug'))
+		{
+			$o->setDuration($data['duration']);
+			$o->setBody($data['body']);
+		}
 
 		return $o;
 	}
@@ -268,12 +276,12 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			'action' => $this->getAction(),
 			'data' => $this->getData(),
 			'uid' => $this->uid ? null : (Auth::check() ? Auth::user()->getKey() : null),
-			'at' => microtime(true),
+			'at' => Carbon::now()->getPreciseTimestamp(3), //ms timestamp
 		];
 
 		if (config('app.debug')) {
 			$result += [
-				'duration' => microtime(true) - LARAVEL_START,
+				'duration' => intval((microtime(true) - LARAVEL_START) * 1000),
 				'body' => strval($this->original),
 			];
 		}

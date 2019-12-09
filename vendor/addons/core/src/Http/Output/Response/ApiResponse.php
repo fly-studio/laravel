@@ -18,7 +18,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 			$request = app('request');
 			$of = $request->input('of', null);
 
-			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml']))
+			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml', 'proto', 'protobuf']))
 				$of = '';
 
 			return $of;
