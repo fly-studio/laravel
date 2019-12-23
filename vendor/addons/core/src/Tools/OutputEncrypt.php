@@ -124,7 +124,7 @@ class OutputEncrypt {
 
 		$encoded = $this->encryptAes($value, $aes['key']);
 
-		$aes['iv'] = $encoded['iv'];
+		$aes['iv'] = base64_encode($encoded['iv']);
 		$aes['mac'] = $encoded['mac'];
 		$aes['key'] = base64_encode($aes['key']);
 

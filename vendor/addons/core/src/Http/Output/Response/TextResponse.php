@@ -70,7 +70,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return $this;
 	}
 
-	public function rawMessage($message)
+	public function rawMessage(?string $message)
 	{
 		$this->message = $message;
 		return $this;
@@ -125,7 +125,9 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 
 			if (!in_array($of, ['txt', 'text', 'json', 'xml', 'yaml', 'html', 'protobuf', 'proto']))
 			{
-				if ($request->accepts(Mimes::getInstance()->mimes_by_ext('proto')))
+				$acceptable = $request->getAcceptableContentTypes();
+
+				if (isset($acceptable[0]) && Str::contains($acceptable[0], Mimes::getInstance()->mimes_by_ext('proto')))
 					$of = 'proto';
 				else if ($request->expectsJson() || (!empty($route) && in_array('api', $route->middleware())))
 					$of = 'json';
@@ -161,7 +163,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			}
 			else
 			{
-				return trans('core::common.default.sucess');
+				return trans('core::common.default.success');
 			}
 		}
 
@@ -237,7 +239,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return parent::send();
 	}
 
-	public function toProtobuf(array $data = null): \Google\Protobuf\Internal\Message
+	public function toProtobuf(): \Google\Protobuf\Internal\Message
 	{
 		$data = $this->getOutputData();
 

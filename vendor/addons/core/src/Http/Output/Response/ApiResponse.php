@@ -67,8 +67,7 @@ class ApiResponse extends TextResponse implements Protobufable {
 		$encrypted = $this->getEncrypted();
 		$data = Arr::except(parent::getOutputData(), ['action', 'message']);
 
-		if (!empty($encrypted))
-			return ['encrypted' => $encrypted, 'data' => $data['data']] + $data;
+		$data['encrypted'] = $encrypted;
 
 		return $data;
 	}

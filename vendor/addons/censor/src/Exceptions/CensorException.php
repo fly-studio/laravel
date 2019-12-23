@@ -15,8 +15,12 @@ class CensorException extends HttpResponseException {
 		if (class_exists('\Addons\Core\Http\Output\ResponseFactory')) {
 
 			$errors = $validator->errors()->toArray();
+			$message = '';
 
-			$this->response = app('\Addons\Core\Http\Output\ResponseFactory')->error()->code(422)->rawMessage($errors);
+			foreach ($errors as $fields => $errorList)
+				$message .= (is_array($errorList) ? implode(PHP_EOL, $errorList) : $errorList) . PHP_EOL;
+
+			$this->response = app('\Addons\Core\Http\Output\ResponseFactory')->error()->code(422)->rawMessage($message);
 
 		} else { //native
 

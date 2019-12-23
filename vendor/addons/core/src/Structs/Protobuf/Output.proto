@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package Addons.Core.Structs.Protobuf;
-option java_package = "org.fly.core.text.lp.result";
+option java_package = "org.fly.core.io.network.result";
 
 message EncryptKey {
 	bytes key = 1;
