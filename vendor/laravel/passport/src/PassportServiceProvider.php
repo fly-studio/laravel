@@ -55,6 +55,7 @@ class PassportServiceProvider extends ServiceProvider
                 Console\InstallCommand::class,
                 Console\ClientCommand::class,
                 Console\KeysCommand::class,
+                Console\PurgeCommand::class,
             ]);
         }
     }
@@ -229,7 +230,7 @@ class PassportServiceProvider extends ServiceProvider
     /**
      * Create a CryptKey instance without permissions check.
      *
-     * @param string $key
+     * @param  string  $key
      * @return \League\OAuth2\Server\CryptKey
      */
     protected function makeCryptKey($type)

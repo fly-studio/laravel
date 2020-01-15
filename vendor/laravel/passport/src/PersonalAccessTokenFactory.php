@@ -2,10 +2,10 @@
 
 namespace Laravel\Passport;
 
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\ServerRequest;
 use Lcobucci\JWT\Parser as JwtParser;
 use League\OAuth2\Server\AuthorizationServer;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\ServerRequest;
 
 class PersonalAccessTokenFactory
 {
@@ -89,7 +89,7 @@ class PersonalAccessTokenFactory
      * @param  \Laravel\Passport\Client  $client
      * @param  mixed  $userId
      * @param  array  $scopes
-     * @return \Zend\Diactoros\ServerRequest
+     * @return \Laminas\Diactoros\ServerRequest
      */
     protected function createRequest($client, $userId, array $scopes)
     {
@@ -105,7 +105,7 @@ class PersonalAccessTokenFactory
     /**
      * Dispatch the given request to the authorization server.
      *
-     * @param  \Zend\Diactoros\ServerRequest  $request
+     * @param  \Laminas\Diactoros\ServerRequest  $request
      * @return array
      */
     protected function dispatchRequestToAuthorizationServer(ServerRequest $request)
@@ -119,7 +119,7 @@ class PersonalAccessTokenFactory
      * Get the access token instance for the parsed response.
      *
      * @param  array  $response
-     * @return Token
+     * @return \Laravel\Passport\Token
      */
     protected function findAccessToken(array $response)
     {

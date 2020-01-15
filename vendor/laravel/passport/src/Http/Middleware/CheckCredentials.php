@@ -4,14 +4,14 @@ namespace Laravel\Passport\Http\Middleware;
 
 use Closure;
 use Illuminate\Auth\AuthenticationException;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\UploadedFileFactory;
 use Laravel\Passport\TokenRepository;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use League\OAuth2\Server\ResourceServer;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
-use Zend\Diactoros\ResponseFactory;
-use Zend\Diactoros\ServerRequestFactory;
-use Zend\Diactoros\StreamFactory;
-use Zend\Diactoros\UploadedFileFactory;
 
 abstract class CheckCredentials
 {
@@ -49,6 +49,7 @@ abstract class CheckCredentials
      * @param  \Closure  $next
      * @param  mixed  ...$scopes
      * @return mixed
+     *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     public function handle($request, Closure $next, ...$scopes)
@@ -77,6 +78,7 @@ abstract class CheckCredentials
      * @param  \Psr\Http\Message\ServerRequestInterface $psr
      * @param  array  $scopes
      * @return void
+     *
      * @throws \Laravel\Passport\Exceptions\MissingScopeException|\Illuminate\Auth\AuthenticationException
      */
     protected function validate($psr, $scopes)
@@ -93,6 +95,7 @@ abstract class CheckCredentials
      *
      * @param  \Laravel\Passport\Token  $token
      * @return void
+     *
      * @throws \Illuminate\Auth\AuthenticationException
      */
     abstract protected function validateCredentials($token);
@@ -103,6 +106,7 @@ abstract class CheckCredentials
      * @param  \Laravel\Passport\Token  $token
      * @param  array  $scopes
      * @return void
+     *
      * @throws \Laravel\Passport\Exceptions\MissingScopeException
      */
     abstract protected function validateScopes($token, $scopes);
