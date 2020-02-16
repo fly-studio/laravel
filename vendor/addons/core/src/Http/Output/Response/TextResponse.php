@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Addons\Core\Tools\Output;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
+use Addons\Core\Tools\OutputEncrypt;
 use Addons\Core\Contracts\Protobufable;
 use Illuminate\Contracts\Support\Jsonable;
 use Addons\Core\Http\Output\ActionFactory;
@@ -30,10 +31,12 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 	protected $action = null;
 	protected $uid = null;
 	protected $code = 0;
+	private $encrypted = null;
 
-	public function data($data)
+
+	public function data($data, bool $raw = false)
 	{
-		$data = json_decode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR), true); //turn Object to Array
+		$data = $raw ? $data : json_decode(json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR), true); //turn Object to Array
 
 		$this->data = $data;
 		return $this;
@@ -110,6 +113,13 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		return $this;
 	}
 
+	public function encrypted(?string $encrypted)
+	{
+		$this->encrypted = $encrypted;
+
+		return $this;
+	}
+
 	public function getRequest()
 	{
 		return is_null($this->request) ? app('request') : $this->request;
@@ -173,6 +183,11 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 	public function getAction()
 	{
 		return $this->action;
+	}
+
+	public function getEncrypted()
+	{
+		return $this->encrypted;
 	}
 
 	public function getOutputData()
@@ -248,6 +263,7 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 		$o->setMessage($data['message']);
 		!empty($data['uid']) && $o->setUid($data['uid']);
 		$o->setAt($data['at']);
+		$o->setEncrypted($this->getEncrypted());
 
 		if (!is_null($data['data']))
 		{
@@ -280,6 +296,11 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			'uid' => $this->uid ? null : (Auth::check() ? Auth::user()->getKey() : null),
 			'at' => Carbon::now()->getPreciseTimestamp(3), //ms timestamp
 		];
+
+		$encrypted = $this->getEncrypted();
+
+		if (!empty($encrypted))
+			$result['encrypted'] = $encrypted;
 
 		if (config('app.debug')) {
 			$result += [
@@ -369,4 +390,5 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 			return mb_strlen($key) * -1;
 		})->all();
 	}
+
 }
