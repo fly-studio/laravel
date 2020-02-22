@@ -38,7 +38,8 @@ class EncryptBody
 	{
 		if ($response instanceOf TextResponse) {
 
-			if (empty($response->getEncrypted()))
+			$data = $response->getData();
+			if (empty($response->getEncrypted()) && (is_numeric($data) || !empty($data)))
 			{
 				$data = json_encode($response->getData(), JSON_PARTIAL_OUTPUT_ON_ERROR);
 

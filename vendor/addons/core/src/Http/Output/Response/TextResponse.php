@@ -139,7 +139,10 @@ class TextResponse extends Response implements Protobufable, Jsonable, Arrayable
 
 				if (isset($acceptable[0]) && Str::contains($acceptable[0], Mimes::getInstance()->mimes_by_ext('proto')))
 					$of = 'proto';
-				else if ($request->expectsJson() || (!empty($route) && in_array('api', $route->middleware())))
+				else if ($request->expectsJson()
+					|| ($this->getStatusCode() == 404 && strpos($request->path(), 'api/') === 0)
+					|| (!empty($route) && in_array('api', $route->middleware()))
+				)
 					$of = 'json';
 				else
 					$of = 'html';
