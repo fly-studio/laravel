@@ -8,7 +8,7 @@ if (! function_exists('mb_basename')) {
  * @param  string $suffix 如果文件名是以 suffix 结束的，那这一部分也会被去掉
  * @return string         返回文件名
  */
-function mb_basename($param, $suffix = NULL) {
+function mb_basename($param, $suffix = null) {
 	$param = str_replace('\\', '/', $param);
 	if ( $suffix ) {
 		$tmpstr = ltrim(substr($param, strrpos($param, '/') ), '/');
@@ -80,7 +80,7 @@ if (! function_exists('normalize_path')) {
  */
 function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
 {
-	$parts = array();// Array to build a new path from the good parts
+	$parts = [];// Array to build a new path from the good parts
 	$path = str_replace('\\', '/', $path);// Replace backslashes with forwardslashes
 	$path = preg_replace('/\/+/', '/', $path);// Combine multiple slashes into a single slash
 	$segments = explode('/', $path);// Collect path segments
@@ -119,11 +119,11 @@ if (! function_exists('rmdir_recursive')) {
  * @param boolean $retain_parent_directory 是否保留父目录
  * @return string
  */
-function rmdir_recursive($dir, $retain_parent_directory = FALSE)
+function rmdir_recursive($dir, $retain_parent_directory = false)
 {
 	foreach(glob($dir . '/*') as $file) {
 		if(is_dir($file) && !is_link($file))
-			rmdir_recursive($file, FALSE);
+			rmdir_recursive($file, false);
 		else
 			unlink($file);
 	}
@@ -194,7 +194,7 @@ function pcre_fnmatch($pattern, $string, $flags = 0) {
 
 	// Period at start must be the same as pattern:
 	if ($flags & FNM_PERIOD) {
-		if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) return FALSE;
+		if (strpos($string, '.') === 0 && strpos($pattern, '.') !== 0) return false;
 	}
 
 	$pattern = '#^'
@@ -248,7 +248,7 @@ if (! function_exists('file_list')) {
  * 如果忽略文件夹，则会忽略本文件夹及子文件，并且请勿以DIRECTORY_SEPARATOR结尾
  * 比如：[base_path('cache'), base_path('attachments'), base_path('logs'), '*'.DIRECTORY_SEPARATOR.'.gitignore', '*'.DIRECTORY_SEPARATOR.'.gitmodules', '*'.DIRECTORY_SEPARATOR.'.git', '*'.DIRECTORY_SEPARATOR.'.svn',]
  *
- * 注意：fnmatch 的第三个参数如果添加[FNM_PATHNAME]属性，使用[*\filename]过滤[\path\to\filename]，在linux下会返回FALSE
+ * 注意：fnmatch 的第三个参数如果添加[FNM_PATHNAME]属性，使用[*\filename]过滤[\path\to\filename]，在linux下会返回false
  *
  * @param  string  $path         需要查找的目录
  * @param  array   $ignore_files 忽略列表，支持通配符，此列表下的所有文件(夹)将被忽略
@@ -260,33 +260,36 @@ define('FILE_LIST_HIDDEN_BASE', 3); // 隐藏KEY的真实路径，将路径转�
 define('FILE_LIST_FILE_INFO', 4); //返回文件信息
 define('FILE_LIST_SUBFOLDER', 8); //去子目录查找
 
-function file_list($path, $include_files = array(), $ignore_files = array(), $setting = NULL)
+function file_list($path, $include_files = [], $ignore_files = [], $setting = null)
 {
-	$result = array();
+	$result = [];
 	$include_files = to_array($include_files);
 	$ignore_files = to_array($ignore_files);
+
 	//Format include_files
 	foreach ($include_files as $key => $value)
 		$include_files[$key] = normalize_path($value);
+
 	//Format ignore_files
 	foreach ($ignore_files as $key => $value)
 		$ignore_files[$key] = normalize_path($value);
 
-	$_setting = array(
+	$_setting = [
 		'file_key' => ($setting & FILE_LIST_FILE_KEY) == FILE_LIST_FILE_KEY,
 		'hidden_base' => ($setting & FILE_LIST_HIDDEN_BASE) == FILE_LIST_HIDDEN_BASE,
 		'file_info' => ($setting & FILE_LIST_FILE_INFO) == FILE_LIST_FILE_INFO,
 		//'with_folder' => ($setting & FILE_LIST_WITH_FOLDER) == FILE_LIST_WITH_FOLDER,
 		'subfolder' => ($setting & FILE_LIST_SUBFOLDER) == FILE_LIST_SUBFOLDER,
-	);
+	];
 
-	$queue = array($path);$pt = NULL;
+	$queue = [$path];
+	$pt = null;
 	while(list($k, $path) = each($queue))
 	{ //3
 		///*
 		if ($handle = opendir($path))
 		{
-			while (FALSE !== ($file = readdir($handle)))
+			while (false !== ($file = readdir($handle)))
 			{ //2
 				if ($file == '.' || $file == '..') continue 1;
 				$real_path =  normalize_path($path.DIRECTORY_SEPARATOR.$file);
@@ -356,7 +359,7 @@ function sys_get_temp_dir()
 		unlink($temp);
 		return dirname($temp);
 	}
-	return NULL;
+	return null;
 }
 }
 
@@ -429,7 +432,7 @@ if (! function_exists('format_bytes')) {
  * @param  int $size 输入字节数
  * @return string    返回带单位的字节数
  */
-function format_bytes($size, $standard_unit = FALSE)
+function format_bytes($size, $standard_unit = false)
 {
 	$arr = $standard_unit ? array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB') : array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB');
 	$log = floor(log($size, 1024));
