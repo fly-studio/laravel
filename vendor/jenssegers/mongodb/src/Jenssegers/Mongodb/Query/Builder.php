@@ -294,7 +294,7 @@ class Builder extends BaseBuilder
                     }
                 }
             }
-            
+
             // The _id field is mandatory when using grouping.
             if ($group && empty($group['_id'])) {
                 $group['_id'] = null;
@@ -384,10 +384,12 @@ class Builder extends BaseBuilder
             if ($this->limit) {
                 $options['limit'] = $this->limit;
             }
+            if ($this->hint) {
+                $options['hint'] = $this->hint;
+            }
             if ($columns) {
                 $options['projection'] = $columns;
             }
-            // if ($this->hint)    $cursor->hint($this->hint);
 
             // Fix for legacy support, converts the results to arrays instead of objects.
             $options['typeMap'] = ['root' => 'array', 'document' => 'array'];
@@ -698,7 +700,11 @@ class Builder extends BaseBuilder
      */
     public function truncate()
     {
-        $result = $this->collection->drop();
+        $options = [
+            'typeMap' => ['root' => 'object', 'document' => 'object'],
+        ];
+
+        $result = $this->collection->drop($options);
 
         return (1 == (int) $result->ok);
     }
@@ -924,18 +930,18 @@ class Builder extends BaseBuilder
                 if (is_array($where['value'])) {
                     array_walk_recursive($where['value'], function (&$item, $key) {
                         if ($item instanceof DateTime) {
-                            $item = new UTCDateTime($item->getTimestamp() * 1000);
+                            $item = new UTCDateTime($item->format('Uv'));
                         }
                     });
                 } else {
                     if ($where['value'] instanceof DateTime) {
-                        $where['value'] = new UTCDateTime($where['value']->getTimestamp() * 1000);
+                        $where['value'] = new UTCDateTime($where['value']->format('Uv'));
                     }
                 }
             } elseif (isset($where['values'])) {
                 array_walk_recursive($where['values'], function (&$item, $key) {
                     if ($item instanceof DateTime) {
-                        $item = new UTCDateTime($item->getTimestamp() * 1000);
+                        $item = new UTCDateTime($item->format('Uv'));
                     }
                 });
             }

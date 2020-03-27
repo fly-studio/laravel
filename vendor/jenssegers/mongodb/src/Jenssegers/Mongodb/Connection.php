@@ -4,6 +4,7 @@ namespace Jenssegers\Mongodb;
 
 use Illuminate\Database\Connection as BaseConnection;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use MongoDB\Client;
 
 class Connection extends BaseConnection
@@ -37,8 +38,11 @@ class Connection extends BaseConnection
         // Create the connection
         $this->connection = $this->createConnection($dsn, $config, $options);
 
+        // Get default database name
+        $default_db = $this->getDefaultDatabaseName($dsn, $config);
+
         // Select database
-        $this->db = $this->connection->selectDatabase($config['database']);
+        $this->db = $this->connection->selectDatabase($default_db);
 
         $this->useDefaultPostProcessor();
 
@@ -115,6 +119,26 @@ class Connection extends BaseConnection
     }
 
     /**
+     * Get the name of the default database based on db config or try to detect it from dsn
+     * @param string $dsn
+     * @param array $config
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    protected function getDefaultDatabaseName($dsn, $config)
+    {
+        if (empty($config['database'])) {
+            if (preg_match('/^mongodb(?:[+]srv)?:\\/\\/.+\\/([^?&]+)/s', $dsn, $matches)) {
+                $config['database'] = $matches[1];
+            } else {
+                throw new InvalidArgumentException("Database is not properly configured.");
+            }
+        }
+
+        return $config['database'];
+    }
+
+    /**
      * Create a new MongoDB connection.
      * @param string $dsn
      * @param array $config
@@ -188,7 +212,6 @@ class Connection extends BaseConnection
 
         // Check if we want to authenticate against a specific database.
         $auth_database = isset($config['options']) && !empty($config['options']['database']) ? $config['options']['database'] : null;
-
         return 'mongodb://' . implode(',', $hosts) . ($auth_database ? '/' . $auth_database : '');
     }
 

@@ -1,3 +1,27 @@
+## Release 7.6.1
+
+- Fixed issue with `guzzlehttp/ringphp` and `guzzle/streams`
+  using forks `ezimuel/ringphp` and `ezimuel/guzzlestreams`
+  [92a6a4a](https://github.com/elastic/elasticsearch-php/commit/92a6a4adda5eafd1823c7c9c386e2c7e5e75cd08)
+
+## Release 7.6.0
+
+- Generated the new endpoints for Elasticsearch 7.6.0
+  [be31f31](https://github.com/elastic/elasticsearch-php/commit/be31f317af704f333b43bbcc7c01ddc7c91ec6f8)
+
+## Release 7.5.1
+
+- Fixes port missing in log [#925](https://github.com/elastic/elasticsearch-php/issues/925)
+  [75e0888](https://github.com/elastic/elasticsearch-php/commit/125594b40d167ef1509b3ee49a3f93426390c426)
+- Added `ClientBuilder::includePortInHostHeader()` to add the
+  `port` in the `Host` header. This fixes [#993](https://github.com/elastic/elasticsearch-php/issues/993).
+  By default the `port` is not included in the `Host` header.
+  [#997](https://github.com/elastic/elasticsearch-php/pull/997)
+- Replace abandoned packages: ringphp, streams and phpstan-shim 
+  [#996](https://github.com/elastic/elasticsearch-php/pull/996)
+- Fixed gzip compression when setting Cloud Id
+  [#986](https://github.com/elastic/elasticsearch-php/pull/986)
+
 ## Release 7.5.0
 
 - Fixed `Client::extractArgument` iterable casting to array;

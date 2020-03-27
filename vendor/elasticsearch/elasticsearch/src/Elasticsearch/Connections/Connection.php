@@ -198,6 +198,11 @@ class Connection implements ConnectionInterface
             $this->headers = array_merge($this->headers, $options['client']['headers']);
         }
 
+        $host = $this->host;
+        if (isset($this->connectionParams['client']['port_in_header']) && $this->connectionParams['client']['port_in_header']) {
+            $host .= ':' . $this->port;
+        }
+        
         $request = [
             'http_method' => $method,
             'scheme'      => $this->transportSchema,
@@ -205,7 +210,7 @@ class Connection implements ConnectionInterface
             'body'        => $body,
             'headers'     => array_merge(
                 [
-                'Host'  => [$this->host]
+                'Host'  => [$host]
                 ],
                 $this->headers
             )
@@ -376,7 +381,7 @@ class Connection implements ConnectionInterface
             array(
                 'method'    => $request['http_method'],
                 'uri'       => $response['effective_url'],
-                'port'      => $response['transfer_stats']['primary_port'],
+                'port'      => $response['transfer_stats']['primary_port'] ?? '',
                 'headers'   => $request['headers'],
                 'HTTP code' => $response['status'],
                 'duration'  => $response['transfer_stats']['total_time'],
@@ -417,7 +422,7 @@ class Connection implements ConnectionInterface
             array(
                 'method'    => $request['http_method'],
                 'uri'       => $response['effective_url'],
-                'port'      => $response['transfer_stats']['primary_port'],
+                'port'      => $response['transfer_stats']['primary_port'] ?? '',
                 'headers'   => $request['headers'],
                 'HTTP code' => $response['status'],
                 'duration'  => $response['transfer_stats']['total_time'],

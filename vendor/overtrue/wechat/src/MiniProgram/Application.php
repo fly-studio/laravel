@@ -39,6 +39,8 @@ use EasyWeChat\Kernel\ServiceContainer;
  * @property \EasyWeChat\BasicService\ContentSecurity\Client    $content_security
  * @property \EasyWeChat\MiniProgram\Mall\ForwardsMall          $mall
  * @property \EasyWeChat\MiniProgram\SubscribeMessage\Client    $subscribe_message
+ * @property \EasyWeChat\MiniProgram\RealtimeLog\Client         $realtime_log
+ * @property \EasyWeChat\MiniProgram\Search\Client              $search
  */
 class Application extends ServiceContainer
 {
@@ -63,6 +65,8 @@ class Application extends ServiceContainer
         Soter\ServiceProvider::class,
         Mall\ServiceProvider::class,
         SubscribeMessage\ServiceProvider::class,
+        RealtimeLog\ServiceProvider::class,
+        Search\ServiceProvider::class,
         // Base services
         BasicService\Media\ServiceProvider::class,
         BasicService\ContentSecurity\ServiceProvider::class,

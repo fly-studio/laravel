@@ -129,8 +129,18 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
             // Transform the columns to the index name.
             $transform = [];
 
-            foreach ($indexOrColumns as $column) {
-                $transform[$column] = $column . '_1';
+            foreach ($indexOrColumns as $key => $value) {
+                if (is_int($key)) {
+                    // There is no sorting order, use the default.
+                    $column = $value;
+                    $sorting = '1';
+                } else {
+                    // This is a column with sorting order e.g 'my_column' => -1.
+                    $column = $key;
+                    $sorting = $value;
+                }
+
+                $transform[$column] = $column . "_" . $sorting;
             }
 
             $indexOrColumns = implode('_', $transform);
@@ -224,16 +234,18 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
     }
 
     /**
-     * @inheritdoc
+     * Indicate that the collection needs to be created.
+     * @param array $options
+     * @return void
      */
-    public function create()
+    public function create($options = [])
     {
         $collection = $this->collection->getCollectionName();
 
         $db = $this->connection->getMongoDB();
 
         // Ensure the collection is created.
-        $db->createCollection($collection);
+        $db->createCollection($collection, $options);
     }
 
     /**

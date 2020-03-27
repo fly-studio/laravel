@@ -5,6 +5,7 @@ namespace Jenssegers\Mongodb\Auth;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as BaseDatabaseTokenRepository;
+use Illuminate\Support\Facades\Date;
 use MongoDB\BSON\UTCDateTime;
 
 class DatabaseTokenRepository extends BaseDatabaseTokenRepository
@@ -17,7 +18,7 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
         return [
             'email' => $email,
             'token' => $this->hasher->make($token),
-            'created_at' => new UTCDateTime(time() * 1000),
+            'created_at' => new UTCDateTime(Date::now()->format('Uv')),
         ];
     }
 
@@ -25,6 +26,23 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
      * @inheritdoc
      */
     protected function tokenExpired($createdAt)
+    {
+        $createdAt = $this->convertDateTime($createdAt);
+
+        return parent::tokenExpired($createdAt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function tokenRecentlyCreated($createdAt)
+    {
+        $createdAt = $this->convertDateTime($createdAt);
+
+        return parent::tokenRecentlyCreated($createdAt);
+    }
+
+    private function convertDateTime($createdAt)
     {
         // Convert UTCDateTime to a date string.
         if ($createdAt instanceof UTCDateTime) {
@@ -37,6 +55,6 @@ class DatabaseTokenRepository extends BaseDatabaseTokenRepository
             $createdAt = $date->format('Y-m-d H:i:s');
         }
 
-        return parent::tokenExpired($createdAt);
+        return $createdAt;
     }
 }
