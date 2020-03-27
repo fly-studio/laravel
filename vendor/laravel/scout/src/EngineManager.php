@@ -31,7 +31,7 @@ class EngineManager extends Manager
     {
         $this->ensureAlgoliaClientIsInstalled();
 
-        UserAgent::addCustomUserAgent('Laravel Scout', '7.2.1');
+        UserAgent::addCustomUserAgent('Laravel Scout', '8.0.0');
 
         return new AlgoliaEngine(
             Algolia::create(config('scout.algolia.id'), config('scout.algolia.secret')),
@@ -43,6 +43,8 @@ class EngineManager extends Manager
      * Ensure the Algolia API client is installed.
      *
      * @return void
+     *
+     * @throws \Exception
      */
     protected function ensureAlgoliaClientIsInstalled()
     {

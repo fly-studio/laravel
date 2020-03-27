@@ -17,15 +17,15 @@
 
 namespace MongoDB;
 
-use MongoDB\BSON\Serializable;
-use MongoDB\Driver\Cursor;
+use Iterator;
+use MongoDB\Driver\CursorId;
 use MongoDB\Driver\Exception\ConnectionException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
-use MongoDB\Exception\InvalidArgumentException;
 use MongoDB\Exception\ResumeTokenException;
-use IteratorIterator;
-use Iterator;
+use MongoDB\Model\ChangeStreamIterator;
+use function call_user_func;
+use function in_array;
 
 /**
  * Iterator for a change stream.
@@ -42,32 +42,39 @@ class ChangeStream implements Iterator
      */
     const CURSOR_NOT_FOUND = 43;
 
-    private static $errorCodeCappedPositionLost = 136;
-    private static $errorCodeInterrupted = 11601;
-    private static $errorCodeCursorKilled = 237;
+    /** @var array */
+    private static $nonResumableErrorCodes = [
+        136, // CappedPositionLost
+        237, // CursorKilled
+        11601, // Interrupted
+    ];
 
-    private $resumeToken;
+    /** @var callable */
     private $resumeCallable;
-    private $csIt;
+
+    /** @var ChangeStreamIterator */
+    private $iterator;
+
+    /** @var integer */
     private $key = 0;
 
     /**
      * Whether the change stream has advanced to its first result. This is used
      * to determine whether $key should be incremented after an iteration event.
+     *
+     * @var boolean
      */
     private $hasAdvanced = false;
 
     /**
-     * Constructor.
-     *
      * @internal
-     * @param Cursor $cursor
-     * @param callable $resumeCallable
+     * @param ChangeStreamIterator $iterator
+     * @param callable             $resumeCallable
      */
-    public function __construct(Cursor $cursor, callable $resumeCallable)
+    public function __construct(ChangeStreamIterator $iterator, callable $resumeCallable)
     {
+        $this->iterator = $iterator;
         $this->resumeCallable = $resumeCallable;
-        $this->csIt = new IteratorIterator($cursor);
     }
 
     /**
@@ -76,15 +83,29 @@ class ChangeStream implements Iterator
      */
     public function current()
     {
-        return $this->csIt->current();
+        return $this->iterator->current();
     }
 
     /**
-     * @return \MongoDB\Driver\CursorId
+     * @return CursorId
      */
     public function getCursorId()
     {
-        return $this->csIt->getInnerIterator()->getId();
+        return $this->iterator->getInnerIterator()->getId();
+    }
+
+    /**
+     * Returns the resume token for the iterator's current position.
+     *
+     * Null may be returned if no change documents have been iterated and the
+     * server did not include a postBatchResumeToken in its aggregate or getMore
+     * command response.
+     *
+     * @return array|object|null
+     */
+    public function getResumeToken()
+    {
+        return $this->iterator->getResumeToken();
     }
 
     /**
@@ -96,41 +117,40 @@ class ChangeStream implements Iterator
         if ($this->valid()) {
             return $this->key;
         }
+
         return null;
     }
 
     /**
      * @see http://php.net/iterator.next
      * @return void
+     * @throws ResumeTokenException
      */
     public function next()
     {
         try {
-            $this->csIt->next();
+            $this->iterator->next();
             $this->onIteration($this->hasAdvanced);
         } catch (RuntimeException $e) {
-            if ($this->isResumableError($e)) {
-                $this->resume();
-            }
+            $this->resumeOrThrow($e);
         }
     }
 
     /**
      * @see http://php.net/iterator.rewind
      * @return void
+     * @throws ResumeTokenException
      */
     public function rewind()
     {
         try {
-            $this->csIt->rewind();
+            $this->iterator->rewind();
             /* Unlike next() and resume(), the decision to increment the key
              * does not depend on whether the change stream has advanced. This
              * ensures that multiple calls to rewind() do not alter state. */
             $this->onIteration(false);
         } catch (RuntimeException $e) {
-            if ($this->isResumableError($e)) {
-                $this->resume();
-            }
+            $this->resumeOrThrow($e);
         }
     }
 
@@ -140,40 +160,7 @@ class ChangeStream implements Iterator
      */
     public function valid()
     {
-        return $this->csIt->valid();
-    }
-
-    /**
-     * Extracts the resume token (i.e. "_id" field) from the change document.
-     *
-     * @param array|object $document Change document
-     * @return mixed
-     * @throws InvalidArgumentException
-     * @throws ResumeTokenException if the resume token is not found or invalid
-     */
-    private function extractResumeToken($document)
-    {
-        if ( ! is_array($document) && ! is_object($document)) {
-            throw InvalidArgumentException::invalidType('$document', $document, 'array or object');
-        }
-
-        if ($document instanceof Serializable) {
-            return $this->extractResumeToken($document->bsonSerialize());
-        }
-
-        $resumeToken = is_array($document)
-            ? (isset($document['_id']) ? $document['_id'] : null)
-            : (isset($document->_id) ? $document->_id : null);
-
-        if ( ! isset($resumeToken)) {
-            throw ResumeTokenException::notFound();
-        }
-
-        if ( ! is_array($resumeToken) && ! is_object($resumeToken)) {
-            throw ResumeTokenException::invalidType($resumeToken);
-        }
-
-        return $resumeToken;
+        return $this->iterator->valid();
     }
 
     /**
@@ -189,11 +176,15 @@ class ChangeStream implements Iterator
             return true;
         }
 
-        if ( ! $exception instanceof ServerException) {
+        if (! $exception instanceof ServerException) {
             return false;
         }
 
-        if (in_array($exception->getCode(), [self::$errorCodeCappedPositionLost, self::$errorCodeCursorKilled, self::$errorCodeInterrupted])) {
+        if ($exception->hasErrorLabel('NonResumableChangeStreamError')) {
+            return false;
+        }
+
+        if (in_array($exception->getCode(), self::$nonResumableErrorCodes)) {
             return false;
         }
 
@@ -219,8 +210,8 @@ class ChangeStream implements Iterator
         }
 
         /* Return early if there is not a current result. Avoid any attempt to
-         * increment the iterator's key or extract a resume token */
-        if (!$this->valid()) {
+         * increment the iterator's key. */
+        if (! $this->valid()) {
             return;
         }
 
@@ -229,27 +220,35 @@ class ChangeStream implements Iterator
         }
 
         $this->hasAdvanced = true;
-        $this->resumeToken = $this->extractResumeToken($this->csIt->current());
     }
 
     /**
-     * Creates a new changeStream after a resumable server error.
+     * Recreates the ChangeStreamIterator after a resumable server error.
      *
      * @return void
      */
     private function resume()
     {
-        $newChangeStream = call_user_func($this->resumeCallable, $this->resumeToken);
-        $this->csIt = $newChangeStream->csIt;
-        $this->csIt->rewind();
-        /* Note: if we are resuming after a call to ChangeStream::rewind(),
-         * $hasAdvanced will always be false. For it to be true, rewind() would
-         * need to have thrown a RuntimeException with a resumable error, which
-         * can only happen during the first call to IteratorIterator::rewind()
-         * before onIteration() has a chance to set $hasAdvanced to true.
-         * Otherwise, IteratorIterator::rewind() would either NOP (consecutive
-         * rewinds) or throw a LogicException (rewind after next), neither of
-         * which would result in a call to resume(). */
+        $this->iterator = call_user_func($this->resumeCallable, $this->getResumeToken(), $this->hasAdvanced);
+        $this->iterator->rewind();
+
         $this->onIteration($this->hasAdvanced);
+    }
+
+    /**
+     * Either resumes after a resumable error or re-throws the exception.
+     *
+     * @param RuntimeException $exception
+     * @throws RuntimeException
+     */
+    private function resumeOrThrow(RuntimeException $exception)
+    {
+        if ($this->isResumableError($exception)) {
+            $this->resume();
+
+            return;
+        }
+
+        throw $exception;
     }
 }

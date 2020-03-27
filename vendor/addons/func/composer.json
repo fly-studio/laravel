@@ -1,7 +1,7 @@
 {
     "name": "addons/func",
     "description": "Some Function files.",
-    "homepage": "https://www.load-page.com/",
+    "homepage": "https://www.load-page.com",
     "keywords": ["Laravel", "Function"],
     "license": "MIT",
     "support": {
