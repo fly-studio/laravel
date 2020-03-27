@@ -1,8 +1,8 @@
 {
     "name": "addons/func",
     "description": "Some Function files.",
-    "homepage": "https://www.load-page.com",
-    "keywords": ["L5", "Laravel 5", "Laravel", "Function"],
+    "homepage": "https://www.load-page.com/",
+    "keywords": ["Laravel", "Function"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/fly-studio/laravel-addons-func/issues",
@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=5.1.0"
+        "php": ">=5.6.10"
     },
     "autoload": {
         "psr-4": {

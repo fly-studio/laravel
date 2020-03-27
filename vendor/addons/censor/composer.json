@@ -1,8 +1,8 @@
 {
     "name": "addons/censor",
     "description": "Laravel's Censor based Validation, support locale.",
-    "homepage": "https://www.load-page.com/manuals",
-    "keywords": ["L5", "Laravel 5", "Laravel","Addons"],
+    "homepage": "https://www.load-page.com/",
+    "keywords": ["Laravel", "Validate"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/fly-studio/laravel-addons-censor/issues",
@@ -16,8 +16,8 @@
     ],
     "require": {
         "php": ">=7.0",
-        "illuminate/validation": "~5.5 || ^6.0",
-        "illuminate/translation": "~5.5 || ^6.0"
+        "illuminate/validation": ">=5.5",
+        "illuminate/translation": ">=5.5"
     },
     "autoload": {
         "psr-4": {
