@@ -9,7 +9,13 @@ use Illuminate\Contracts\Support\Arrayable;
 
 trait PolyfillTrait {
 
-	protected $originalCastTypes = ['int', 'integer', 'real' ,'float', 'double', 'string', 'bool', 'boolean', 'object', 'array', 'json', 'collection', 'date', 'datetime', 'timestamp', 'custom_datetime'];
+	protected $originalCastTypes = [
+		'int', 'integer', 'real' ,'float', 'double',
+		'string',
+		'bool', 'boolean',
+		'object', 'array', 'json', 'collection',
+		'date', 'datetime', 'timestamp', 'custom_datetime'
+	];
 
 	public static function insertUpdate(array $attributes)
 	{
@@ -50,44 +56,6 @@ trait PolyfillTrait {
 		$model->setAttribute($keyName, $id);
 
 		return $model;
-	}
-
-	/**
-	 * Cast an attribute to a native PHP type.
-	 *
-	 * @param  string  $key
-	 * @param  mixed  $value
-	 * @return mixed
-	 */
-	protected function castAttribute($key, $value)
-	{
-		$type = $this->getCastType($key);
-		if (!empty($type) && !in_array($type, $this->originalCastTypes))
-		{
-			$method = 'as'.Str::studly($type);
-			if (method_exists($this, $method))
-				return call_user_func([$this, $method], $value, $key, $type);
-		}
-		return parent::castAttribute($key, $value);
-	}
-
-	/**
-	 * Set a given attribute on the model.
-	 *
-	 * @param  string  $key
-	 * @param  mixed  $value
-	 * @return $this
-	 */
-	public function setAttribute($key, $value)
-	{
-		$type = $this->hasCast($key) ? $this->getCastType($key) : null;
-		if (!empty($type) && !$this->hasSetMutator($key)  && !in_array($type, $this->originalCastTypes))
-		{
-			$method = 'from'.Str::studly($type);
-			if (method_exists($this, $method))
-				$value = call_user_func([$this, $method], $value, $key, $type);
-		}
-		return parent::setAttribute($key, $value);
 	}
 
 	/**
